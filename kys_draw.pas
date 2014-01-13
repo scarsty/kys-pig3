@@ -723,18 +723,18 @@ var
   i1, i2, x, y, num: integer;
   Ex: array[-64..127, -64..127] of smallint;
 begin
+  fillchar(Ex, sizeof(Ex), -1);
+  for i1 := 0 to 63 do
+    for i2 := 0 to 63 do
+    begin
+      case where of
+        1: Ex[i1, i2] := SData[CurScence, 0, i1, i2];
+        2: Ex[i1, i2] := Bfield[0, i1, i2];
+      end;
+    end;
   //绝情谷, 明教地道效果比较奇怪, 屏蔽
   if (EXPAND_GROUND <> 0) and ((MODVersion <> 13) or ((CurScence <> 81) and (CurScence <> 72))) then
   begin
-    fillchar(Ex, sizeof(Ex), 0);
-    for i1 := 0 to 63 do
-      for i2 := 0 to 63 do
-      begin
-        case where of
-          1: Ex[i1, i2] := SData[CurScence, 0, i1, i2];
-          2: Ex[i1, i2] := Bfield[0, i1, i2];
-        end;
-      end;
     for i1 := 31 downto -64 do
       for i2 := 0 to 63 do
       begin
@@ -755,34 +755,35 @@ begin
       begin
         if Ex[i1, i2] <= 0 then Ex[i1, i2] := Ex[i1, i2 - 1];
       end;
-    //生成一整块地面纹理
-    if SW_SURFACE = 0 then
-    begin
-      case where of
-        1: SDL_SetRenderTarget(render, ImgSGroundTex);
-        2: SDL_SetRenderTarget(render, ImgBGroundTex);
-      end;
-    end
-    else
-    begin
-      case where of
-        1: CurTargetSurface := ImgSGround;
-        2: CurTargetSurface := ImgBGround;
-      end;
-    end;
-    for i1 := -64 to 127 do
-      for i2 := -64 to 127 do
-      begin
-        CalPosOnImage(i1, i2, x, y);
-        num := Ex[i1, i2] div 2;
-        DrawSPic(num, x, y);
-      end;
-    SDL_SetRenderTarget(render, screenTex);
-    CurTargetSurface := screen;
+  end;
+  //生成一整块地面纹理
+  if SW_SURFACE = 0 then
+  begin
     case where of
-      1: move(Ex, ExGroundS, sizeof(Ex));
-      2: move(Ex, ExGroundB, sizeof(Ex));
+      1: SDL_SetRenderTarget(render, ImgSGroundTex);
+      2: SDL_SetRenderTarget(render, ImgBGroundTex);
     end;
+  end
+  else
+  begin
+    case where of
+      1: CurTargetSurface := ImgSGround;
+      2: CurTargetSurface := ImgBGround;
+    end;
+  end;
+  for i1 := -64 to 127 do
+    for i2 := -64 to 127 do
+    begin
+      CalPosOnImage(i1, i2, x, y);
+      num := Ex[i1, i2] div 2;
+      if num > 0 then
+        DrawSPic(num, x, y);
+    end;
+  SDL_SetRenderTarget(render, screenTex);
+  CurTargetSurface := screen;
+  case where of
+    1: move(Ex, ExGroundS, sizeof(Ex));
+    2: move(Ex, ExGroundB, sizeof(Ex));
   end;
 end;
 
