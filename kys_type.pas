@@ -502,7 +502,7 @@ var
 
   BasicOffset, RoleOffset, ItemOffset, ScenceOffset, MagicOffset, WeiShopOffset, LenR: integer;
 
-  versionstr: WideString = '  108 Brothers and Sisters (3.2)';
+  versionstr: WideString = '  108 Brothers and Sisters';
 
   BattleNames, statestrs: array of WideString;  //状态的字串
 

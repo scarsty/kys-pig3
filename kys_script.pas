@@ -78,10 +78,17 @@ function DrawRect(L: Plua_state): integer; cdecl;
 function MemberAmount(L: Plua_state): integer; cdecl;
 function GetMember(L: Plua_state): integer; cdecl;
 function PutMember(L: Plua_state): integer; cdecl;
+
+function GetGlobalValue(L: Plua_state): integer; cdecl;
+function PutGlobalValue(L: Plua_state): integer; cdecl;
+
 function GetRolePro(L: Plua_state): integer; cdecl;
 function PutRolePro(L: Plua_state): integer; cdecl;
 function GetItemPro(L: Plua_state): integer; cdecl;
 function PutItemPro(L: Plua_state): integer; cdecl;
+
+function PutItemIntro(L: Plua_state): integer; cdecl; //冰枫月之怒添加
+
 function GetMagicPro(L: Plua_state): integer; cdecl;
 function PutMagicPro(L: Plua_state): integer; cdecl;
 function GetScencePro(L: Plua_state): integer; cdecl;
@@ -276,6 +283,7 @@ begin
   lua_register(Lua_script, 'getmagicpro', GetMagicPro);
   lua_register(Lua_script, 'getmainmapposition', GetMainMapPosition);
   lua_register(Lua_script, 'getmember', GetMember);
+  lua_register(Lua_script, 'getglobalvalue', GetGlobalValue);
   lua_register(Lua_script, 'getmouseposition', GetMousePositionScript);
   lua_register(Lua_script, 'getnameasstring', GetNameAsString);
   lua_register(Lua_script, 'getrolepro', GetRolePro);
@@ -350,6 +358,9 @@ begin
   lua_register(Lua_script, 'putitempro', PutItemPro);
   lua_register(Lua_script, 'putmagicpro', PutMagicPro);
   lua_register(Lua_script, 'putmember', PutMember);
+
+  lua_register(Lua_script, 'putglobalvalue', PutGlobalValue);
+
   lua_register(Lua_script, 'putrolepro', PutRolePro);
   lua_register(Lua_script, 'putscenceeventpro', PutScenceEventPro);
   lua_register(Lua_script, 'putscencemappro', PutScenceMapPro);
@@ -409,6 +420,8 @@ begin
   lua_register(Lua_script, 'setbattlename', SetBattleName);
   lua_register(Lua_script, 'showsimplestatus', ShowSimpleStatusScript);
   lua_register(Lua_script, 'updateallscreen', UpdateAllScreenScript);
+
+  lua_register(Lua_script, 'putitemintro', PutItemIntro); //冰枫月之怒添加
 
 end;
 
@@ -602,6 +615,40 @@ begin
   Result := 0;
 
 end;
+
+//冰枫月之怒添加
+function PutItemIntro(L: Plua_state): integer; cdecl;
+var
+  n, itemnum, i, len: integer;
+  str: WideString;
+  p: pWideChar;
+begin
+  itemnum := lua_tointeger(L, -2);
+  str := UTF8Decode(lua_tostring(L, -1));
+  len := length(str);
+  FillChar(Ritem[itemnum].Introduction[0], sizeof(@Ritem[0].Introduction), 0);
+  if (len > 15) then
+  begin
+    writeln('Intro length is too long!');
+  end
+  else
+  begin
+    p := @Ritem[itemnum].Introduction[0];
+    //Ritem[itemnum].Introduction :=str;
+    for i := 1 to len do
+    begin
+      //if (i<=len) then
+      p^ := str[i];
+      //else p^:=char(0);
+      p := p + 1;
+      //Ritem[itemnum].Introduction[i-1]:=str[i];
+    end;
+  end;
+  Result := 0;
+end;
+
+
+
 
 //talk指令, 参数为3个数字和两个字串,
 //数字为头像号, 姓名号, 显示模式, 是否显示姓名, 颜色, 谈话编号
@@ -1218,6 +1265,32 @@ begin
   Result := 0;
 
 end;
+
+
+//读全局信息
+function GetGlobalValue(L: Plua_state): integer; cdecl;
+var
+  n1, n2: integer;
+begin
+  n1 := lua_tointeger(L, -2);
+  n2 := lua_tointeger(L, -1);
+  //if (n >= 0) and (n <= 1000) then
+  //lua_pushinteger(L, GlobalValue[n])
+  if (n1 >= 0) and (n1 <= 20) and (n2 >= 0) and (n2 <= 14) then
+    lua_pushinteger(L, Rshop[n1].Data[n2])
+  else
+    lua_pushinteger(L, -2);
+  Result := 1;
+end;
+
+//写全局信息
+function PutGlobalValue(L: Plua_state): integer; cdecl;
+begin
+  //GlobalValue[lua_tointeger(L, -1)] := lua_tointeger(L, -2);
+  Rshop[lua_tointeger(L, -2)].Data[lua_tointeger(L, -1)] := lua_tointeger(L, -3);
+  Result := 0;
+end;
+
 
 //读人物信息
 
