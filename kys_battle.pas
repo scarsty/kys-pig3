@@ -5596,8 +5596,9 @@ begin
         //注意此时保存能否走到的是3, 保存距离的是8
         if Bfield[3, curX, curY] >= 0 then
         begin
-          //tempdis := abs(curX - aimX) + abs(curY - aimY);
           tempdis := Bfield[8, curX, curY];
+          if tempdis < 0 then
+            tempdis := abs(curX - aimX) + abs(curY - aimY);
           if (tempdis >= KeepDis) then
             if ProbabilityByValue(tempdis, mindis, -1, n) then
             begin
