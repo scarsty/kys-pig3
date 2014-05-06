@@ -325,6 +325,7 @@ begin
     CheckBook;
   end;
 
+  Redraw;
   UpdateAllScreen;
 
   if Rscence[CurScence].EntranceMusic >= 0 then
@@ -451,11 +452,11 @@ begin
   end;
   grp := FileOpen(AppPath + 'resource/warfld.grp', fmopenread);
   FileSeek(grp, offset, 0);
-  FileRead(grp, Bfield[0, 0, 0], 2 * 64 * 64 * 2);
+  FileRead(grp, BField[0, 0, 0], 2 * 64 * 64 * 2);
   FileClose(grp);
   for i1 := 0 to 63 do
     for i2 := 0 to 63 do
-      Bfield[2, i1, i2] := -1;
+      BField[2, i1, i2] := -1;
   BRoleAmount := 0;
   Result := True;
 
@@ -935,8 +936,8 @@ begin
             10: Auto(i);
             else
             begin
-              Bfield[2, tempBrole.X, tempBrole.Y] := i;
-              Bfield[2, Brole[i].X, Brole[i].Y] := -1;
+              BField[2, tempBrole.X, tempBrole.Y] := i;
+              BField[2, Brole[i].X, Brole[i].Y] := -1;
               Brole[i] := tempBrole;
             end;
           end;
@@ -992,9 +993,9 @@ begin
                   if (Brole[i].X + x1 < 0) or (Brole[i].X + x1 > 63) or (Brole[i].Y + y1 < 0) or
                     (Brole[i].Y + y1 > 63) then
                     continue;
-                  if Bfield[2, Brole[i].X + x1, Brole[i].Y + y1] > 0 then
+                  if BField[2, Brole[i].X + x1, Brole[i].Y + y1] >= 0 then
                   begin
-                    bnum := Bfield[2, Brole[i].X + x1, Brole[i].Y + y1];
+                    bnum := BField[2, Brole[i].X + x1, Brole[i].Y + y1];
                     if Brole[bnum].Team <> Brole[i].Team then
                     begin
                       pnum := Rmagic[neinum].addmp[0] + (Rmagic[neinum].addmp[1] -
@@ -1076,9 +1077,9 @@ begin
                   if (Brole[i].X + x1 < 0) or (Brole[i].X + x1 > 63) or (Brole[i].Y + y1 < 0) or
                     (Brole[i].Y + y1 > 63) then
                     continue;
-                  if Bfield[2, Brole[i].X + x1, Brole[i].Y + y1] > 0 then
+                  if BField[2, Brole[i].X + x1, Brole[i].Y + y1] >= 0 then
                   begin
-                    bnum := Bfield[2, Brole[i].X + x1, Brole[i].Y + y1];
+                    bnum := BField[2, Brole[i].X + x1, Brole[i].Y + y1];
                     if Brole[bnum].Team <> Brole[i].Team then
                     begin
                       pnum := 50 * neilevel;
@@ -1095,7 +1096,6 @@ begin
             end;
           end;
         RoundOver(i);
-
         i := i + 1;
         if SEMIREAL = 1 then
           break;
@@ -1150,7 +1150,7 @@ begin
       end;
     end;
 
-  FillChar(Bfield[2, i1, i2], sizeof(Bfield[2]), -1);
+  FillChar(BField[2, i1, i2], sizeof(BField[2]), -1);
   {for i1 := 0 to 63 do
     for i2 := 0 to 63 do
       Bfield[2, i1, i2] := -1;}
@@ -1158,9 +1158,9 @@ begin
   for i := 0 to BRoleAmount - 1 do
   begin
     if Brole[i].Dead = 0 then
-      Bfield[2, Brole[i].X, Brole[i].Y] := i
+      BField[2, Brole[i].X, Brole[i].Y] := i
     else
-      Bfield[2, Brole[i].X, Brole[i].Y] := -1;
+      BField[2, Brole[i].X, Brole[i].Y] := -1;
   end;
 
 end;
@@ -1486,7 +1486,7 @@ begin
   Result := abs(Ax - Bx) + abs(Ay - By) > 0;
   if Result then
     Brole[bnum].Acted := 2; //2表示移动过
-  if Bfield[3, Ax, Ay] > 0 then
+  if BField[3, Ax, Ay] > 0 then
   begin
     //Brole[bnum].Step := Brole[bnum].Step - abs(Ax - Bx) - abs(Ay - By);
     Xinc[1] := 1;
@@ -1499,19 +1499,19 @@ begin
     Yinc[4] := -1;
     linebx[0] := Ax;
     lineby[0] := Ay;
-    for a := 1 to Bfield[3, Ax, Ay] do
+    for a := 1 to BField[3, Ax, Ay] do
     begin
       seekError := True;
       for i := 1 to 4 do
       begin
         tempx := linebx[a - 1] + Xinc[i];
         tempy := lineby[a - 1] + Yinc[i];
-        if Bfield[3, tempx, tempy] = Bfield[3, linebx[a - 1], lineby[a - 1]] - 1 then
+        if BField[3, tempx, tempy] = BField[3, linebx[a - 1], lineby[a - 1]] - 1 then
         begin
           linebx[a] := tempx;
           lineby[a] := tempy;
           seekError := False;
-          if (Bfield[7, tempx, tempy] = 0) or ((Bfield[7, tempx, tempy] = 1) and
+          if (BField[7, tempx, tempy] = 0) or ((BField[7, tempx, tempy] = 1) and
             (tempx = Ax) and (tempy = Ay)) then
             break;
         end;
@@ -1523,7 +1523,7 @@ begin
         exit;
       end;
     end;
-    a := Bfield[3, Ax, Ay] - 1;
+    a := BField[3, Ax, Ay] - 1;
     while (SDL_PollEvent(@event) >= 0) do
     begin
       CheckBasicEvent;
@@ -1536,12 +1536,12 @@ begin
       else
         Brole[bnum].Face := 1;
       SDL_Delay(BATTLE_SPEED);
-      if Bfield[2, Bx, By] = bnum then
-        Bfield[2, Bx, By] := -1;
+      if BField[2, Bx, By] = bnum then
+        BField[2, Bx, By] := -1;
       Bx := linebx[a];
       By := lineby[a];
-      if Bfield[2, Bx, By] = -1 then
-        Bfield[2, Bx, By] := bnum;
+      if BField[2, Bx, By] = -1 then
+        BField[2, Bx, By] := bnum;
       Redraw;
       UpdateAllScreen;
       Brole[bnum].Step := Brole[bnum].Step - 1;
@@ -1584,11 +1584,11 @@ begin
       begin
         if (event.key.keysym.sym = SDLK_RETURN) or (event.key.keysym.sym = SDLK_SPACE) then
         begin
-          if Bfield[2, Ax, Ay] >= 0 then
+          if BField[2, Ax, Ay] >= 0 then
           begin
-            rnum := Brole[Bfield[2, Ax, Ay]].rnum;
+            rnum := Brole[BField[2, Ax, Ay]].rnum;
             TransBlackScreen;
-            ShowStatus(rnum, Bfield[2, Ax, Ay]);
+            ShowStatus(rnum, BField[2, Ax, Ay]);
             UpdateAllScreen;
             WaitAnyKey;
             DrawBFieldWithCursor(AttAreaType, step, range);
@@ -1624,11 +1624,11 @@ begin
       begin
         if (event.button.button = SDL_BUTTON_LEFT) then
         begin
-          if Bfield[2, Ax, Ay] >= 0 then
+          if BField[2, Ax, Ay] >= 0 then
           begin
             TransBlackScreen;
-            rnum := Brole[Bfield[2, Ax, Ay]].rnum;
-            ShowStatus(rnum, Bfield[2, Ax, Ay]);
+            rnum := Brole[BField[2, Ax, Ay]].rnum;
+            ShowStatus(rnum, BField[2, Ax, Ay]);
             //ShowAbility(rnum,0);
             UpdateAllScreen;
             WaitAnyKey;
@@ -1671,8 +1671,8 @@ begin
   Ax := Bx;
   Ay := By;
   DrawBFieldWithCursor(0, step, 0);
-  if (Bfield[2, Ax, Ay] >= 0) then
-    ShowSimpleStatus(Brole[Bfield[2, Ax, Ay]].rnum, CENTER_X * 2 - 320, CENTER_Y * 2 - 160);
+  if (BField[2, Ax, Ay] >= 0) then
+    ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 320, CENTER_Y * 2 - 160);
   UpdateAllScreen;
   while (SDL_WaitEvent(@event) >= 0) do
   begin
@@ -1698,25 +1698,25 @@ begin
         if (event.key.keysym.sym = SDLK_LEFT) then
         begin
           Ay := Ay - 1;
-          if (abs(Ax - Bx) + abs(Ay - By) > step) or (Bfield[3, Ax, Ay] < 0) then
+          if (abs(Ax - Bx) + abs(Ay - By) > step) or (BField[3, Ax, Ay] < 0) then
             Ay := Ay + 1;
         end;
         if (event.key.keysym.sym = SDLK_RIGHT) then
         begin
           Ay := Ay + 1;
-          if (abs(Ax - Bx) + abs(Ay - By) > step) or (Bfield[3, Ax, Ay] < 0) then
+          if (abs(Ax - Bx) + abs(Ay - By) > step) or (BField[3, Ax, Ay] < 0) then
             Ay := Ay - 1;
         end;
         if (event.key.keysym.sym = SDLK_DOWN) then
         begin
           Ax := Ax + 1;
-          if (abs(Ax - Bx) + abs(Ay - By) > step) or (Bfield[3, Ax, Ay] < 0) then
+          if (abs(Ax - Bx) + abs(Ay - By) > step) or (BField[3, Ax, Ay] < 0) then
             Ax := Ax - 1;
         end;
         if (event.key.keysym.sym = SDLK_UP) then
         begin
           Ax := Ax - 1;
-          if (abs(Ax - Bx) + abs(Ay - By) > step) or (Bfield[3, Ax, Ay] < 0) then
+          if (abs(Ax - Bx) + abs(Ay - By) > step) or (BField[3, Ax, Ay] < 0) then
             Ax := Ax + 1;
         end;
       end;
@@ -1724,7 +1724,7 @@ begin
       begin
         if (event.button.button = SDL_BUTTON_LEFT) then
         begin
-          if (abs(Axp - Bx) + abs(Ayp - By) <= step) and (Bfield[3, Ax, Ay] >= 0) then
+          if (abs(Axp - Bx) + abs(Ayp - By) <= step) and (BField[3, Ax, Ay] >= 0) then
           begin
             Result := True;
             break;
@@ -1743,7 +1743,7 @@ begin
           round(event.button.y / (RealScreen.h / screen.h)) - 2 * CENTER_y + 18) div 36 + Bx;
         Ayp := (round(event.button.x / (RealScreen.w / screen.w)) - CENTER_x + 2 *
           round(event.button.y / (RealScreen.h / screen.h)) - 2 * CENTER_y + 18) div 36 + By;}
-        if (abs(Axp - Bx) + abs(Ayp - By) <= step) and (Bfield[3, Axp, Ayp] >= 0) then
+        if (abs(Axp - Bx) + abs(Ayp - By) <= step) and (BField[3, Axp, Ayp] >= 0) then
         begin
           Ax := Axp;
           Ay := Ayp;
@@ -1751,8 +1751,8 @@ begin
       end;
     end;
     DrawBFieldWithCursor(0, step, 0);
-    if Bfield[2, Ax, Ay] >= 0 then
-      ShowSimpleStatus(Brole[Bfield[2, Ax, Ay]].rnum, CENTER_X * 2 - 320, CENTER_Y * 2 - 160);
+    if BField[2, Ax, Ay] >= 0 then
+      ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 320, CENTER_Y * 2 - 160);
     UpdateAllScreen;
   end;
   //SDL_EnableKeyRepeat(30, 30);
@@ -1812,8 +1812,8 @@ begin
   Ax := Bx;
   Ay := By;
   DrawBFieldWithCursor(AttAreaType, step, range);
-  if (Bfield[2, Ax, Ay] >= 0) then
-    ShowSimpleStatus(Brole[Bfield[2, Ax, Ay]].rnum, CENTER_X * 2 - 320, CENTER_Y * 2 - 160);
+  if (BField[2, Ax, Ay] >= 0) then
+    ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 320, CENTER_Y * 2 - 160);
   UpdateAllScreen;
   while (SDL_WaitEvent(@event) >= 0) do
   begin
@@ -1858,8 +1858,8 @@ begin
             Ax := Ax + 1;
         end;
         DrawBFieldWithCursor(AttAreaType, step, range);
-        if (Bfield[2, Ax, Ay] >= 0) then
-          ShowSimpleStatus(Brole[Bfield[2, Ax, Ay]].rnum, CENTER_X * 2 - 320, CENTER_Y * 2 - 160);
+        if (BField[2, Ax, Ay] >= 0) then
+          ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 320, CENTER_Y * 2 - 160);
         UpdateAllScreen;
       end;
       SDL_MOUSEBUTTONUP:
@@ -1887,8 +1887,8 @@ begin
           Ax := Axp;
           Ay := Ayp;
           DrawBFieldWithCursor(AttAreaType, step, range);
-          if (Bfield[2, Ax, Ay] >= 0) then
-            ShowSimpleStatus(Brole[Bfield[2, Ax, Ay]].rnum, CENTER_X * 2 - 320, CENTER_Y * 2 - 160);
+          if (BField[2, Ax, Ay] >= 0) then
+            ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 320, CENTER_Y * 2 - 160);
           UpdateAllScreen;
         end;
       end;
@@ -2239,16 +2239,16 @@ begin
         nextY := curY + Yinc[i];
         if (nextX < 0) or (nextX > 63) or (nextY < 0) or (nextY > 63) then
           Bgrid[i] := 4
-        else if Bfield[layer, nextX, nextY] >= 0 then
+        else if BField[layer, nextX, nextY] >= 0 then
           Bgrid[i] := 5
-        else if (Bfield[1, nextX, nextY] > 0) or ((Bfield[0, nextX, nextY] >= 358) and
-          (Bfield[0, nextX, nextY] <= 362)) or (Bfield[0, nextX, nextY] = 522) or
-          (Bfield[0, nextX, nextY] = 1022) or ((Bfield[0, nextX, nextY] >= 1324) and
-          (Bfield[0, nextX, nextY] <= 1330)) or (Bfield[0, nextX, nextY] = 1348) then
+        else if (BField[1, nextX, nextY] > 0) or ((BField[0, nextX, nextY] >= 358) and
+          (BField[0, nextX, nextY] <= 362)) or (BField[0, nextX, nextY] = 522) or
+          (BField[0, nextX, nextY] = 1022) or ((BField[0, nextX, nextY] >= 1324) and
+          (BField[0, nextX, nextY] <= 1330)) or (BField[0, nextX, nextY] = 1348) then
           Bgrid[i] := 1
-        else if (Bfield[2, nextX, nextY] >= 0) and (Brole[Bfield[2, nextX, nextY]].Dead = 0) and (mode = 0) then
+        else if (BField[2, nextX, nextY] >= 0) and (Brole[BField[2, nextX, nextY]].Dead = 0) and (mode = 0) then
         begin
-          if Brole[Bfield[2, nextX, nextY]].Team = myteam then
+          if Brole[BField[2, nextX, nextY]].Team = myteam then
             Bgrid[i] := 2
           else
             Bgrid[i] := 3;
@@ -2259,12 +2259,12 @@ begin
             ((Bfield[0, nextX, nextY] div 2 >= 224) and (Bfield[0, nextX, nextY] div 2 <= 232)) or
             ((Bfield[0, nextX, nextY] div 2 >= 662) and (Bfield[0, nextX, nextY] div 2 <= 674)) then
             Bgrid[i] := 6}
-        else if (Bfield[6, nextX, nextY] < 0) and (mode = 0) then
+        else if (BField[6, nextX, nextY] < 0) and (mode = 0) then
           Bgrid[i] := 8
         else
           Bgrid[i] := 0;
         //寻人成功则跳出, 节省计算量
-        if (Bfield[2, nextX, nextY] = bnum) and (mode = 3) then
+        if (BField[2, nextX, nextY] = bnum) and (mode = 3) then
         begin
           exit;
         end;
@@ -2274,8 +2274,8 @@ begin
             nextnextX := nextX + Xinc[j];
             nextnextY := nextY + Yinc[j];
             if (nextnextX >= 0) and (nextnextX < 63) and (nextnextY >= 0) and (nextnextY < 63) then
-              if (Bfield[2, nextnextX, nextnextY] >= 0) and (Brole[Bfield[2, nextnextX, nextnextY]].Dead =
-                0) and (Brole[Bfield[2, nextnextX, nextnextY]].Team <> myteam) then
+              if (BField[2, nextnextX, nextnextY] >= 0) and (Brole[BField[2, nextnextX, nextnextY]].Dead =
+                0) and (Brole[BField[2, nextnextX, nextnextY]].Team <> myteam) then
               begin
                 BField[7, nextX, nextY] := 1;
               end;
@@ -2297,7 +2297,7 @@ begin
                 Xlist[totalgrid] := curX + Xinc[i];
                 Ylist[totalgrid] := curY + Yinc[i];
                 steplist[totalgrid] := curstep + 1;
-                Bfield[layer, Xlist[totalgrid], Ylist[totalgrid]] := steplist[totalgrid];
+                BField[layer, Xlist[totalgrid], Ylist[totalgrid]] := steplist[totalgrid];
                 //if (Bgrid[i] = 3) then Bfield[3, Xlist[totalgrid], Ylist[totalgrid]] := step;
                 //showmessage(inttostr(steplist[totalgrid]));
                 totalgrid := totalgrid + 1;
@@ -2315,7 +2315,7 @@ begin
               Xlist[totalgrid] := curX + Xinc[i];
               Ylist[totalgrid] := curY + Yinc[i];
               steplist[totalgrid] := curstep + 1;
-              Bfield[layer, Xlist[totalgrid], Ylist[totalgrid]] := steplist[totalgrid];
+              BField[layer, Xlist[totalgrid], Ylist[totalgrid]] := steplist[totalgrid];
               totalgrid := totalgrid + 1;
             end;
           end;
@@ -2437,14 +2437,14 @@ begin
 
   if (mode = 0) or (mode = 3) then
   begin
-    FillChar(Bfield[3, 0, 0], 4096 * 2, -1);
-    FillChar(Bfield[7, 0, 0], 4096 * 2, 0); //第7层标记敌人身旁的位置
+    FillChar(BField[3, 0, 0], 4096 * 2, -1);
+    FillChar(BField[7, 0, 0], 4096 * 2, 0); //第7层标记敌人身旁的位置
     if Brole[bnum].Acted = 0 then
-      FillChar(Bfield[6, 0, 0], sizeof(Bfield[6]), 0); //第6层标记第一次不能走到的位置, 小于0表示不能到达
-    Bfield[3, Brole[bnum].X, Brole[bnum].Y] := 0;
+      FillChar(BField[6, 0, 0], sizeof(BField[6]), 0); //第6层标记第一次不能走到的位置, 小于0表示不能到达
+    BField[3, Brole[bnum].X, Brole[bnum].Y] := 0;
     SeekPath2(Brole[bnum].X, Brole[bnum].Y, Step, Brole[bnum].Team, mode);
     if Brole[bnum].Acted = 0 then
-      move(Bfield[3, 0, 0], Bfield[6, 0, 0], 4096 * 2); //保存第一次可以走到的位置, 后续的移动只能在此范围
+      move(BField[3, 0, 0], BField[6, 0, 0], 4096 * 2); //保存第一次可以走到的位置, 后续的移动只能在此范围
     {else
       for i1 := 0 to 63 do
         for i2 := 0 to 63 do
@@ -2456,13 +2456,14 @@ begin
 
   if mode = 1 then
   begin
-    FillChar(Bfield[3, 0, 0], 4096 * 2, -1);
-    for i1 := Brole[bnum].X - step to Brole[bnum].X + step do
+    FillChar(BField[3, 0, 0], 4096 * 2, -1);
+    for i1 := max(0, Brole[bnum].X - step) to min(63, Brole[bnum].X + step) do
     begin
       step0 := abs(i1 - Brole[bnum].X);
-      for i2 := Brole[bnum].Y - step + step0 to Brole[bnum].Y + step - step0 do
+      for i2 := max(0, Brole[bnum].Y - step + step0) to min(63, Brole[bnum].Y + step - step0) do
       begin
-        Bfield[3, i1, i2] := 0;
+        //if (i1 >= 0) and (i1 <= 63) and (i2 >= 0) and (i2 <= 63) then
+        BField[3, i1, i2] := 0;
       end;
     end;
   end;
@@ -2471,9 +2472,9 @@ begin
     for i1 := 0 to 63 do
       for i2 := 0 to 63 do
       begin
-        Bfield[3, i1, i2] := -1;
-        if Bfield[2, i1, i2] >= 0 then
-          Bfield[3, i1, i2] := 0;
+        BField[3, i1, i2] := -1;
+        if BField[2, i1, i2] >= 0 then
+          BField[3, i1, i2] := 0;
       end;
 
 end;
@@ -2726,7 +2727,7 @@ begin
       if Rmagic[mnum].HurtType = 0 then
       begin
         //19号状态, 青翼, 被攻击后移动
-        if (Brole[bnum].Team <> Brole[i].Team) and (Bfield[4, Brole[i].X, Brole[i].Y] > 0) and
+        if (Brole[bnum].Team <> Brole[i].Team) and (BField[4, Brole[i].X, Brole[i].Y] > 0) and
           (Brole[i].StateLevel[19] = 1) then
         begin
           movestep := Rrole[Brole[i].rnum].Movestep;
@@ -2742,11 +2743,11 @@ begin
             FarthestMove(Ax, Ay, i);
           Brole[i].X := Ax;
           Brole[i].Y := Ay;
-          Bfield[2, Bx, By] := -1;
-          Bfield[2, Ax, Ay] := i;
+          BField[2, Bx, By] := -1;
+          BField[2, Ax, Ay] := i;
         end;
         //17号状态, 博采, 受攻击后增加兵器值
-        if (Bfield[4, Brole[i].X, Brole[i].Y] > 0) and (Brole[i].StateLevel[17] > 0) then
+        if (BField[4, Brole[i].X, Brole[i].Y] > 0) and (Brole[i].StateLevel[17] > 0) then
         begin
           if random(100) < Brole[i].StateLevel[17] then
           begin
@@ -2783,7 +2784,7 @@ begin
       //8号状态, 风雷, 攻击后直线敌人后移N格
       if (Brole[bnum].StateLevel[8] > 0) and (Brole[bnum].Team <> Brole[i].Team) then
       begin
-        if (Bfield[4, Brole[i].X, Brole[i].Y] > 0) and ((Brole[i].Y = Bx) or (Brole[i].Y = By)) then
+        if (BField[4, Brole[i].X, Brole[i].Y] > 0) and ((Brole[i].Y = Bx) or (Brole[i].Y = By)) then
         begin
           incx := sign(Brole[i].X - Bx);
           incy := sign(Brole[i].Y - By);
@@ -2791,7 +2792,7 @@ begin
           aimy := Brole[i].Y;
           for j := 0 to Brole[bnum].StateLevel[8] - 1 do
           begin
-            if (bfield[2, aimx + incx, aimy + incy] = -1) and (bfield[1, aimx + incx, aimy + incy] = 0) then
+            if (BField[2, aimx + incx, aimy + incy] = -1) and (BField[1, aimx + incx, aimy + incy] = 0) then
             begin
               aimx := aimx + incx;
               aimy := aimy + incy;
@@ -2799,10 +2800,10 @@ begin
             else
               break;
           end;
-          Bfield[2, Brole[i].x, Brole[i].y] := -1;
+          BField[2, Brole[i].x, Brole[i].y] := -1;
           Brole[i].X := aimx;
           Brole[i].Y := aimy;
-          Bfield[2, aimx, aimy] := i;
+          BField[2, aimx, aimy] := i;
         end;
       end;
     end;
@@ -2998,10 +2999,10 @@ procedure SetAminationPosition(Bx, By, Ax, Ay, mode, step, range: integer; aimMo
 var
   i, i1, i2, dis0, dis, Ax1, Ay1, step1, bnum: integer;
 begin
-  FillChar(Bfield[4, 0, 0], 4096 * 2, 0);
+  FillChar(BField[4, 0, 0], 4096 * 2, 0);
   //按攻击类型判断是否在范围内
   //1范围内我方, 2敌方全体, 3我方全体, 4自身, 5范围内全部, 6全部, 7无高亮
-  bnum := bfield[2, Bx, By];
+  bnum := BField[2, Bx, By];
   case aimMode of
     2, 3, 6:
       if bnum >= 0 then
@@ -3009,9 +3010,9 @@ begin
         begin
           if (Brole[i].Dead = 0) and (((aimMode = 2) and (Brole[bnum].Team <> Brole[i].Team)) or
             ((aimMode = 3) and (Brole[bnum].Team = Brole[i].Team)) or (aimMode = 6)) then
-            Bfield[4, Brole[i].X, Brole[i].Y] := 1 + random(6);
+            BField[4, Brole[i].X, Brole[i].Y] := 1 + random(6);
         end;
-    4: Bfield[4, Bx, By] := 1;
+    4: BField[4, Bx, By] := 1;
     0, 1, 5:
       case mode of
         0, 6: //目标系点型、目标系十型、目标系菱型、原地系菱型、远程
@@ -3022,7 +3023,7 @@ begin
             dis0 := abs(i1 - Ax);
             for i2 := max(Ay - dis + dis0, 0) to min(Ay + dis - dis0, 63) do
             begin
-              Bfield[4, i1, i2] := (abs(i1 - Bx) + abs(i2 - By)) * 2 + 1;
+              BField[4, i1, i2] := (abs(i1 - Bx) + abs(i2 - By)) * 2 + 1;
             end;
           end;
           //if (abs(i1 - Ax) + abs(i2 - Ay)) <= range then
@@ -3032,7 +3033,7 @@ begin
         begin
           for i1 := max(Ax - range, 0) to min(Ax + range, 63) do
             for i2 := max(Ay - range, 0) to min(Ay + range, 63) do
-              Bfield[4, i1, i2] := abs(i1 - Bx) + abs(i2 - By) * 2 + random(24) + 1;
+              BField[4, i1, i2] := abs(i1 - Bx) + abs(i2 - By) * 2 + random(24) + 1;
         end;
         1: //方向系线型
         begin
@@ -3051,16 +3052,16 @@ begin
             step := 0;
           while i <= step do
           begin
-            Bfield[4, Bx + i1 * i, By + i2 * i] := i * 2 + 1;
+            BField[4, Bx + i1 * i, By + i2 * i] := i * 2 + 1;
             i := i + 1;
           end;
         end;
         2: //原地系十型、原地系叉型、原地系米型
         begin
           for i1 := max(Bx - step, 0) to min(Bx + step, 63) do
-            Bfield[4, i1, By] := abs(i1 - Bx) * 4;
+            BField[4, i1, By] := abs(i1 - Bx) * 4;
           for i2 := max(By - step, 0) to min(By + step, 63) do
-            Bfield[4, Bx, i2] := abs(i2 - By) * 4;
+            BField[4, Bx, i2] := abs(i2 - By) * 4;
           for i := 1 to range do
           begin
             i1 := -i;
@@ -3070,7 +3071,7 @@ begin
               while i2 <= i do
               begin
                 if (Bx + i1 in [0..63]) and (By + i2 in [0..63]) then
-                  Bfield[4, Bx + i1, By + i2] := 2 * i * 2 + 1;
+                  BField[4, Bx + i1, By + i2] := 2 * i * 2 + 1;
                 i2 := i2 + 2 * i;
               end;
               i1 := i1 + 2 * i;
@@ -3089,7 +3090,7 @@ begin
             for i2 := max(Ay1 - dis + dis0, 0) to min(Ay1 + dis - dis0, 63) do
             begin
               if abs(i1 - Bx) <> abs(i2 - By) then
-                Bfield[4, i1, i2] := abs(i1 - Bx) + abs(i2 - By) * 2 + 1;
+                BField[4, i1, i2] := abs(i1 - Bx) + abs(i2 - By) * 2 + 1;
             end;
           end;
           //Bfield[4, Bx, By] := 0;
@@ -3105,7 +3106,7 @@ begin
             for i2 := max(Ay1 - dis + dis0, 0) to min(Ay1 + dis - dis0, 63) do
             begin
               if (i1 in [0..63]) and (i2 in [0..63]) and (abs(i1 - Bx) <= step) and (abs(i2 - By) <= step) then
-                Bfield[4, i1, i2] := abs(i1 - Bx) + abs(i2 - By) * 2 + 1;
+                BField[4, i1, i2] := abs(i1 - Bx) + abs(i2 - By) * 2 + 1;
             end;
           end;
           //Bfield[4, Bx, By] := 0;
@@ -3114,7 +3115,7 @@ begin
         begin
           if ((Ax = Bx) and (i2 = Ay) and (abs(i1 - Ax) <= step)) or ((Ay = By) and (i1 = Ax) and
             (abs(i2 - Ay) <= step)) then
-            Bfield[4, i1, i2] := 1;
+            BField[4, i1, i2] := 1;
         end;
       end;
   end;
@@ -3143,12 +3144,12 @@ begin
   for i1 := 0 to 63 do
     for i2 := 0 to 63 do
     begin
-      if Bfield[4, i1, i2] > 0 then
+      if BField[4, i1, i2] > 0 then
       begin
-        if Bfield[4, i1, i2] > max then
-          max := Bfield[4, i1, i2];
-        if Bfield[4, i1, i2] < min then
-          min := Bfield[4, i1, i2];
+        if BField[4, i1, i2] > max then
+          max := BField[4, i1, i2];
+        if BField[4, i1, i2] < min then
+          min := BField[4, i1, i2];
       end;
     end;
 
@@ -3213,7 +3214,7 @@ begin
   writeln(Rrole[rnum].CurrentMP, level, Rmagic[mnum].NeedMP);}
   for i := 0 to BRoleAmount - 1 do
   begin
-    if (Bfield[4, Brole[i].X, Brole[i].Y] > 0) and (Brole[bnum].Team <> Brole[i].Team) and
+    if (BField[4, Brole[i].X, Brole[i].Y] > 0) and (Brole[bnum].Team <> Brole[i].Team) and
       (Brole[i].Dead = 0) and (bnum <> i) then
     begin
       Brole[i].ShowNumber := -1;
@@ -3278,7 +3279,7 @@ begin
           Brole[bnum].ShowNumber := hurt1;
           Brole[bnum].AntiHurt := hurt1;
           Rrole[Brole[bnum].rnum].CurrentHP := Rrole[Brole[bnum].rnum].CurrentHP - hurt1;
-          Bfield[4, Brole[bnum].X, Brole[bnum].Y] := 20;
+          BField[4, Brole[bnum].X, Brole[bnum].Y] := 20;
         end;
 
         //吸星融功法
@@ -3311,8 +3312,8 @@ begin
           if Brole[i].StateLevel[23] > 0 then
           begin
             Brole[Brole[i].StateLevel[23]].ShowNumber := hurt;
-            Bfield[4, Brole[Brole[i].StateLevel[23]].X, Brole[Brole[i].StateLevel[23]].Y] := 1;
-            Bfield[4, Brole[i].X, Brole[i].Y] := 0;
+            BField[4, Brole[Brole[i].StateLevel[23]].X, Brole[Brole[i].StateLevel[23]].Y] := 1;
+            BField[4, Brole[i].X, Brole[i].Y] := 0;
             Rrole[Brole[Brole[i].StateLevel[23]].rnum].CurrentHP :=
               Rrole[Brole[Brole[i].StateLevel[23]].rnum].CurrentHP - hurt;
             //受伤
@@ -3906,7 +3907,7 @@ begin
     if Rrole[Brole[i].rnum].CurrentHP <= 0 then
     begin
       Brole[i].Dead := 1;
-      Bfield[2, Brole[i].X, Brole[i].Y] := -1;
+      BField[2, Brole[i].X, Brole[i].Y] := -1;
       //Brole[i].X := 0;
       //Brole[i].Y := 0;
       //伤逝状态, 被击退时敌人攻击防御下降
@@ -3957,7 +3958,7 @@ begin
   end;
   for i := 0 to BRoleAmount - 1 do
     if Brole[i].Dead = 0 then
-      bfield[2, Brole[i].X, Brole[i].Y] := i;
+      BField[2, Brole[i].X, Brole[i].Y] := i;
 
 end;
 
@@ -3977,9 +3978,9 @@ begin
   for i := 0 to BRoleAmount - 1 do
   begin
     if Brole[i].Dead = 0 then
-      Bfield[2, Brole[i].X, Brole[i].Y] := i
+      BField[2, Brole[i].X, Brole[i].Y] := i
     else
-      Bfield[2, Brole[i].X, Brole[i].Y] := -1;
+      BField[2, Brole[i].X, Brole[i].Y] := -1;
   end;
 
 end;
@@ -4124,6 +4125,7 @@ begin
   UpdateAllScreen;
   Redraw;
   WaitAnyKey;
+
 end;
 
 //检查是否能够升级
@@ -4368,7 +4370,7 @@ begin
   k := 0;
   for i := 0 to BRoleAmount - 1 do
   begin
-    if (Brole[i].Team <> Brole[bnum].Team) and (Brole[i].Dead = 0) and (Bfield[4, Brole[i].X, Brole[i].Y] > 0) then
+    if (Brole[i].Team <> Brole[bnum].Team) and (Brole[i].Dead = 0) and (BField[4, Brole[i].X, Brole[i].Y] > 0) then
     begin
       k := k + 1;
       if random(k) = 0 then
@@ -4455,7 +4457,7 @@ begin
       if (Brole[i].Dead = 0) and (Brole[i].Team <> Brole[bnum].Team) then
       begin
         if (Rrole[Brole[i].rnum].DefPoi <= minDefPoi) and (Rrole[Brole[i].rnum].Poison < 100) and
-          (Bfield[3, Brole[i].X, Brole[i].Y] >= 0) then
+          (BField[3, Brole[i].X, Brole[i].Y] >= 0) then
         begin
           //bnum1 := i;
           minDefPoi := Rrole[Brole[i].rnum].DefPoi;
@@ -4467,11 +4469,11 @@ begin
       end;
     end;
   end;
-  if (bfield[2, Ax, Ay] >= 0) and (select = True) then
+  if (BField[2, Ax, Ay] >= 0) and (select = True) then
   begin
     Brole[bnum].Acted := 1;
     Rrole[rnum].PhyPower := Rrole[rnum].PhyPower - 3;
-    bnum1 := bfield[2, Ax, Ay];
+    bnum1 := BField[2, Ax, Ay];
     if Brole[bnum1].Team <> Brole[bnum].Team then
     begin
       rnum1 := Brole[bnum1].rnum;
@@ -4510,14 +4512,14 @@ begin
     select := SelectAim(bnum, step)
   else
   begin
-    if Bfield[3, Ax, Ay] >= 0 then
+    if BField[3, Ax, Ay] >= 0 then
       select := True;
   end;
-  if (bfield[2, Ax, Ay] >= 0) and (select = True) then
+  if (BField[2, Ax, Ay] >= 0) and (select = True) then
   begin
     Brole[bnum].Acted := 1;
     Rrole[rnum].PhyPower := Rrole[rnum].PhyPower - 4;
-    bnum1 := bfield[2, Ax, Ay];
+    bnum1 := BField[2, Ax, Ay];
     if Brole[bnum1].Team = Brole[bnum].Team then
     begin
       rnum1 := Brole[bnum1].rnum;
@@ -4565,14 +4567,14 @@ begin
     select := SelectAim(bnum, step)
   else
   begin
-    if Bfield[3, Ax, Ay] >= 0 then
+    if BField[3, Ax, Ay] >= 0 then
       select := True;
   end;
-  if (bfield[2, Ax, Ay] >= 0) and (select = True) then
+  if (BField[2, Ax, Ay] >= 0) and (select = True) then
   begin
     Brole[bnum].Acted := 1;
     Rrole[rnum].PhyPower := Rrole[rnum].PhyPower - 5;
-    bnum1 := bfield[2, Ax, Ay];
+    bnum1 := BField[2, Ax, Ay];
     if Brole[bnum1].Team = Brole[bnum].Team then
     begin
       rnum1 := Brole[bnum1].rnum;
@@ -4624,12 +4626,12 @@ begin
     end
     else
     begin
-      if Bfield[3, Ax, Ay] >= 0 then
+      if BField[3, Ax, Ay] >= 0 then
       begin
         select := True;
       end;
     end;
-    if (bfield[2, Ax, Ay] >= 0) and (select = True) and (Brole[bfield[2, Ax, Ay]].Team <> Brole[bnum].Team) then
+    if (BField[2, Ax, Ay] >= 0) and (select = True) and (Brole[BField[2, Ax, Ay]].Team <> Brole[bnum].Team) then
     begin
       //如果自动, 选择伤害最大的暗器
       if (Brole[bnum].Team = 0) and (Brole[bnum].Auto <> 0) then
@@ -4672,7 +4674,7 @@ begin
         else
           instruct_41(rnum, inum, -1);
 
-        bnum1 := bfield[2, Ax, Ay];
+        bnum1 := BField[2, Ax, Ay];
         if Brole[bnum1].Team <> Brole[bnum].Team then
         begin
           rnum1 := Brole[bnum1].rnum;
@@ -5069,9 +5071,6 @@ begin
 
 end;
 
-
-
-
 //自动战斗AI2, 小小猪更改
 procedure AutoBattle2(bnum: integer);
 {var
@@ -5333,7 +5332,7 @@ begin
   for curX := 0 to 63 do
     for curY := 0 to 63 do
     begin
-      if Bfield[3, curX, curY] >= 0 then
+      if BField[3, curX, curY] >= 0 then
       begin
         case AttAreaType of
           0:
@@ -5382,7 +5381,7 @@ begin
             begin
               for i := 0 to BRoleAmount - 1 do
               begin
-                if (Brole[i].Team <> myteam) and (Brole[i].Dead = 0) and (Bfield[4, Brole[i].X, Brole[i].Y] > 0) then
+                if (Brole[i].Team <> myteam) and (Brole[i].Dead = 0) and (BField[4, Brole[i].X, Brole[i].Y] > 0) then
                 begin
                   temphurt := temphurt + CalHurtValue2(bnum, i, mnum, level);
                 end;
@@ -5413,43 +5412,7 @@ var
   temp1, temp2: integer;
 begin
   NearestMoveByPro(Mx1, My1, temp1, temp2, bnum, 0, 1, 0, 0, 0);
-  {myteam := Brole[bnum].Team;
-  mindis := 9999;
-  step := Brole[bnum].Step;
 
-  Mx1 := Bx;
-  My1 := By;
-  //选择一个最近的敌人
-  for i := 0 to BRoleAmount - 1 do
-  begin
-    if (myteam <> Brole[i].Team) and (Brole[i].Dead = 0) then
-    begin
-      tempdis := abs(Brole[i].X - Bx) + abs(Brole[i].Y - By);
-      if tempdis < mindis then
-      begin
-        mindis := tempdis;
-        aimX := Brole[i].X;
-        aimY := Brole[i].Y;
-      end;
-    end;
-  end;
-
-  CalCanSelect(bnum, 0, step);
-
-  for curX := 0 to 63 do
-    for curY := 0 to 63 do
-    begin
-      if Bfield[3, curX, curY] >= 0 then
-      begin
-        tempdis := abs(curX - aimX) + abs(curY - aimY);
-        if tempdis < mindis then
-        begin
-          mindis := tempdis;
-          Mx1 := curX;
-          My1 := curY;
-        end;
-      end;
-    end; }
 end;
 
 
@@ -5475,7 +5438,7 @@ begin
   for curX := 0 to 63 do
     for curY := 0 to 63 do
     begin
-      if Bfield[3, curX, curY] >= 0 then
+      if BField[3, curX, curY] >= 0 then
       begin
         tempdis := 0;
         for k := 0 to BRoleAmount - 1 do
@@ -5586,8 +5549,8 @@ begin
   mindis := 9999;
 
 
-  FillChar(Bfield[8, 0, 0], sizeof(Bfield[8]), -1);
-  Bfield[8, aimX, aimY] := 0;
+  FillChar(BField[8, 0, 0], sizeof(BField[8]), -1);
+  BField[8, aimX, aimY] := 0;
   SeekPath2(aimX, aimY, 128, TeamMate, 3, bnum);  //从敌方的位置寻路回自己的位置, 标记每格到目标的距离
   n := 0;
   if aimX > 0 then
@@ -5596,9 +5559,9 @@ begin
       for curY := 0 to 63 do
       begin
         //注意此时保存能否走到的是3, 保存距离的是8
-        if Bfield[3, curX, curY] >= 0 then
+        if BField[3, curX, curY] >= 0 then
         begin
-          tempdis := Bfield[8, curX, curY];
+          tempdis := BField[8, curX, curY];
           if tempdis < 0 then
             tempdis := abs(curX - aimX) + abs(curY - aimY);
           if (tempdis >= KeepDis) then
@@ -5659,7 +5622,7 @@ begin
   for curX := 0 to 63 do
     for curY := 0 to 63 do
     begin
-      if Bfield[3, curX, curY] >= 0 then
+      if BField[3, curX, curY] >= 0 then
       begin
         for i := 0 to BRoleAmount - 1 do
         begin
@@ -5689,7 +5652,7 @@ var
 begin
   rnum := Brole[bnum].rnum;
   Rrole[rnum].PhyPower := Rrole[rnum].PhyPower - 5;
-  bnum1 := bfield[2, Ax, Ay];
+  bnum1 := BField[2, Ax, Ay];
   rnum1 := Brole[bnum1].rnum;
   addlife := Rrole[rnum].Medcine; //calculate the value
   if addlife < 0 then
@@ -5722,9 +5685,9 @@ begin
     for i1 := 0 to 63 do
       for i2 := 0 to 63 do
       begin
-        if Bfield[1, i1, i2] = 1487 * 2 then
+        if BField[1, i1, i2] = 1487 * 2 then
         begin
-          Bfield[1, i1, i2] := 0;
+          BField[1, i1, i2] := 0;
           removeStone := True;
         end;
       end;
@@ -6064,7 +6027,6 @@ begin
   ShowSimpleStatus(rnum, 50, CENTER_Y * 2 - 160);
   UpdateAllScreen;
   SDL_Delay(450);
-
   if Brole[bnum].AutoMode = 3 then
   begin //呆子型, 直接调息
     Rest(bnum);
@@ -6150,7 +6112,6 @@ begin
       //尝试使用特技
       if (Brole[bnum].Acted <> 1) and (Rrole[rnum].PhyPower >= 10) and (Rrole[rnum].Poison < 100) then
         SpecialAttack(bnum);
-
       //自身医疗大于70, 寻找生命最低的队友进行医疗
       //When Medcine is more than 70, and physical power is more than 70, 50% probability to cure one teammate.
       if (Brole[bnum].Acted <> 1) and (Rrole[rnum].Medcine > 70) and (Rrole[rnum].PhyPower >= 70) then
@@ -6167,7 +6128,6 @@ begin
           end;
         end;
       end;
-
       //用毒大于80, 可能尝试用毒
       if (Brole[bnum].Acted <> 1) and (Rrole[rnum].UsePoi > 80) and (Rrole[rnum].PhyPower >= 60) then
       begin
@@ -6184,7 +6144,6 @@ begin
           end;
         end;
       end;
-
       //有可能尝试解毒
       if (Brole[bnum].Acted <> 1) and (Rrole[rnum].MedPoi > 50) and (Rrole[rnum].PhyPower >= 70) then
       begin
@@ -6200,7 +6159,6 @@ begin
           end;
         end;
       end;
-
     end;
 
     //尝试攻击, 这里不会使用伤害类型为2的技能
@@ -6223,8 +6181,10 @@ begin
         for i := 0 to HaveMagicAmount(rnum) - 1 do
           minstep := max(minstep, Rmagic[Rrole[rnum].Magic[i]].MinStep + 1);
       end;
+
       NearestMoveByPro(Movex, Movey, temp1, temp2, bnum, 0, minstep, 0, 0, 0);
       TryAttack(Ax1, Ay1, magicid, Cmlevel, Movex, Movey, bnum);
+
       //移动并攻击
       if magicid > -1 then
       begin
@@ -6251,6 +6211,7 @@ begin
 
     //If all other actions fail, rest.
     //如果上面行动全部失败, 生命和内力都有一个多于一半就向敌人移动, 如果二者均小于1/10则远离,否则原地调息
+
     if Brole[bnum].Acted <> 1 then
     begin
       if (Rrole[rnum].CurrentHP > Rrole[rnum].MaxHP div 2) or (Rrole[rnum].CurrentMP >
@@ -6262,6 +6223,7 @@ begin
         Ay := Movey;
         MoveAmination(bnum);
         Rest(bnum);
+
       end
       else if (Rrole[rnum].CurrentHP < Rrole[rnum].MaxHP div 10) and (Rrole[rnum].CurrentMP <
         Rrole[rnum].MaxMP div 10) then
@@ -6442,7 +6404,7 @@ begin
             //选择原则, 优先级有一定随机性
             for i := 0 to BRoleAmount - 1 do
             begin
-              if (Brole[i].Dead = 0) and (Bfield[4, Brole[i].X, Brole[i].Y] > 0) then
+              if (Brole[i].Dead = 0) and (BField[4, Brole[i].X, Brole[i].Y] > 0) then
               begin
                 if ((Rmagic[mnum].AddMP[0] = 0) and (Brole[i].Team <> Brole[bnum].Team)) or
                   ((Rmagic[mnum].AddMP[0] = 1) and (Brole[i].Team = Brole[bnum].Team)) or
@@ -6566,7 +6528,7 @@ begin
         begin
           for i := 0 to BRoleAmount - 1 do
           begin
-            if (Brole[i].Team <> myteam) and (Brole[i].Dead = 0) and (Bfield[4, Brole[i].X, Brole[i].Y] > 0) then
+            if (Brole[i].Team <> myteam) and (Brole[i].Dead = 0) and (BField[4, Brole[i].X, Brole[i].Y] > 0) then
             begin
               temphurt := temphurt + CalHurtValue2(bnum, i, mnum, level);
             end;
@@ -6628,7 +6590,7 @@ begin
     end;
   for i := 0 to BRoleAmount - 1 do
   begin
-    if (Brole[bnum].Team <> Brole[i].Team) and (Brole[i].Dead = 0) and (Bfield[4, Brole[i].X, Brole[i].Y] > 0) then
+    if (Brole[bnum].Team <> Brole[i].Team) and (Brole[i].Dead = 0) and (BField[4, Brole[i].X, Brole[i].Y] > 0) then
     begin
       f := Rrole[Brole[i].rnum].AmiFrameNum[0];
       if (f >= low(p2)) and (f <= high(p2)) then
@@ -6693,7 +6655,7 @@ begin
   ShowMagicName(mnum);
   for i := 0 to BRoleAmount - 1 do
   begin
-    if (Bfield[4, Brole[i].X, Brole[i].Y] > 0) and (Brole[i].Dead = 0) then
+    if (BField[4, Brole[i].X, Brole[i].Y] > 0) and (Brole[i].Dead = 0) then
     begin
       if (Rmagic[mnum].HurtType = 2) then
       begin
@@ -6829,9 +6791,9 @@ procedure GiveMeLife(bnum, mnum, level, Si: integer);
 var
   i, addvalue, rnum, aimbnum: integer;
 begin
-  if Bfield[2, Ax, Ay] >= 0 then
+  if BField[2, Ax, Ay] >= 0 then
   begin
-    aimbnum := Bfield[2, Ax, Ay];
+    aimbnum := BField[2, Ax, Ay];
     if Brole[aimbnum].Team = Brole[bnum].Team then
     begin
       //ShowMagicName(mnum);
@@ -6845,8 +6807,8 @@ begin
         addvalue := Rrole[Brole[aimbnum].rnum].CurrentMP;
       if addvalue > Rrole[Brole[bnum].rnum].MAXHP - Rrole[Brole[bnum].rnum].CurrentHP then
         addvalue := Rrole[Brole[bnum].rnum].MAXHP - Rrole[Brole[bnum].rnum].CurrentHP;
-      bfield[4, Brole[bnum].X, Brole[bnum].Y] := 1;
-      bfield[4, Brole[aimbnum].X, Brole[aimbnum].Y] := 1;
+      BField[4, Brole[bnum].X, Brole[bnum].Y] := 1;
+      BField[4, Brole[aimbnum].X, Brole[aimbnum].Y] := 1;
       if Brole[aimbnum].StateLevel[Si] > 10 then
         Brole[aimbnum].StateRound[Si] := Brole[aimbnum].StateRound[Si] + 1
       else
@@ -6868,9 +6830,9 @@ var
   i, aimbnum, rnum, MPnum: integer;
 begin
   ShowMagicName(mnum);
-  if Bfield[2, Ax, Ay] >= 0 then
+  if BField[2, Ax, Ay] >= 0 then
   begin
-    aimbnum := Bfield[2, Ax, Ay];
+    aimbnum := BField[2, Ax, Ay];
     if Brole[aimbnum].Team = Brole[bnum].Team then
     begin
       //ShowMagicName(mnum);
@@ -6920,7 +6882,7 @@ begin
     begin
       Brole[i].ShowNumber := min(Rrole[Brole[i].rnum].Poison, curenum);
       Rrole[Brole[i].rnum].Poison := max(0, Rrole[Brole[i].rnum].Poison - curenum);
-      Bfield[4, Brole[i].X, Brole[i].Y] := 1;
+      BField[4, Brole[i].X, Brole[i].Y] := 1;
     end;
   end;
 
@@ -6957,7 +6919,7 @@ begin
   Rrole[rnum].PhyPower := Rrole[rnum].PhyPower - dePhy;
   Rrole[rnum].CurrentMP := Rrole[rnum].CurrentMP + addMp;
 
-  Bfield[4, Brole[bnum].X, Brole[bnum].Y] := 1;
+  BField[4, Brole[bnum].X, Brole[bnum].Y] := 1;
   Brole[bnum].ShowNumber := addMp;
   PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
   ShowHurtValue(2, 0, '+d%');
@@ -7001,8 +6963,8 @@ var
 
 begin
   ShowMagicName(mnum);
-  aimbnum := Bfield[2, Ax, Ay];
-  Bfield[4, Ax, Ay] := 1;
+  aimbnum := BField[2, Ax, Ay];
+  BField[4, Ax, Ay] := 1;
   instruct_67(Rmagic[mnum].SoundNum);
   PlayActionAmination(bnum, Rmagic[mnum].MagicType); //动作效果
   PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]); //武功效果
@@ -7040,10 +7002,10 @@ begin
   begin
     str := UTF8Decode('偷天換日');
     ShowMagicName(0, str);
-    FillChar(Bfield[4, 0, 0], 4096 * 2, 0);
+    FillChar(BField[4, 0, 0], 4096 * 2, 0);
     for i := 0 to BRoleAmount - 1 do
       if (Brole[bnum].Team <> Brole[i].Team) and (Brole[i].Dead = 0) then
-        Bfield[4, Brole[i].x, Brole[i].y] := 1 + random(6);
+        BField[4, Brole[i].x, Brole[i].y] := 1 + random(6);
     instruct_67(Rmagic[mnum].SoundNum);
     PlayActionAmination(bnum, Rmagic[mnum].MagicType); //动作效果
     PlayMagicAmination(bnum, 100, Rmagic[mnum].AddMP[0]); //武功效果
@@ -7115,7 +7077,7 @@ begin
       Rrole[Brole[i].rnum].CurrentHP := Rrole[Brole[i].rnum].CurrentHP + curenum;
       if Rrole[Brole[i].rnum].CurrentHP > Rrole[Brole[i].rnum].MAXHP then
         Rrole[Brole[i].rnum].CurrentHP := Rrole[Brole[i].rnum].MAXHP;
-      Bfield[4, Brole[i].X, Brole[i].Y] := 1;
+      BField[4, Brole[i].X, Brole[i].Y] := 1;
       Brole[i].ShowNumber := curenum;
     end;
   end;
@@ -7149,7 +7111,7 @@ begin
   Rrole[rnum].CurrentMP := Rrole[rnum].CurrentMP - deMP;
   Rrole[rnum].CurrentHP := Rrole[rnum].CurrentHP + addHp;
 
-  Bfield[4, Brole[bnum].X, Brole[bnum].Y] := 1;
+  BField[4, Brole[bnum].X, Brole[bnum].Y] := 1;
   Brole[bnum].ShowNumber := addHp;
   PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
   ShowHurtValue(3);
@@ -7191,7 +7153,7 @@ begin
           Brole[i].StateLevel[Si] := Brole[i].StateLevel[Si] - 1;
           Brole[i].StateRound[Si] := Brole[i].StateRound[Si] + 1;
         end;
-        bfield[4, Brole[i].X, Brole[i].Y] := 1;
+        BField[4, Brole[i].X, Brole[i].Y] := 1;
       end;
 
       if Brole[i].StateLevel[18] > 0 then
@@ -7207,7 +7169,7 @@ begin
           Brole[i].StateLevel[Si] := Brole[i].StateLevel[Si] + 1;
           Brole[i].StateRound[Si] := Brole[i].StateRound[Si] + 1;
         end;
-        bfield[4, Brole[i].X, Brole[i].Y] := 1;
+        BField[4, Brole[i].X, Brole[i].Y] := 1;
       end;
     end;
 
@@ -7235,7 +7197,7 @@ begin
       Rrole[Brole[i].rnum].CurrentHP := Rrole[Brole[i].rnum].CurrentHP - hurt;
       if Rrole[Brole[i].rnum].CurrentHP < 0 then
         Rrole[Brole[i].rnum].CurrentHP := 0;
-      Bfield[4, Brole[i].X, Brole[i].Y] := 1;
+      BField[4, Brole[i].X, Brole[i].Y] := 1;
       Brole[i].ShowNumber := hurt;
     end;
 
@@ -7244,7 +7206,7 @@ begin
       Rrole[Brole[i].rnum].CurrentHP := Rrole[Brole[i].rnum].CurrentHP + hurt;
       if Rrole[Brole[i].rnum].CurrentHP > Rrole[Brole[i].rnum].MAXHP then
         Rrole[Brole[i].rnum].CurrentHP := Rrole[Brole[i].rnum].MAXHP;
-      bfield[4, Brole[i].X, Brole[i].Y] := 1;
+      BField[4, Brole[i].X, Brole[i].Y] := 1;
       //brole[i].ShowNumber:=addmp;
     end;
 
@@ -7273,18 +7235,18 @@ begin
   begin
     curx := curx + incx;
     cury := cury + incy;
-    if Bfield[2, curx, cury] >= 0 then
+    if BField[2, curx, cury] >= 0 then
     begin
-      aimbnum := Bfield[2, curx, cury];
+      aimbnum := BField[2, curx, cury];
       aimx := curx;
       aimy := cury;
-      while (Bfield[2, aimx - incx, aimy - incy] < 0) and (Bfield[1, aimx - incx, aimy - incy] <= 0) do
+      while (BField[2, aimx - incx, aimy - incy] < 0) and (BField[1, aimx - incx, aimy - incy] <= 0) do
       begin
         aimx := aimx - incx;
         aimy := aimy - incy;
       end;
-      Bfield[2, curx, cury] := -1;
-      Bfield[2, aimx, aimy] := aimbnum;
+      BField[2, curx, cury] := -1;
+      BField[2, aimx, aimy] := aimbnum;
       Brole[aimbnum].X := aimx;
       Brole[aimbnum].Y := aimy;
 
@@ -7333,7 +7295,7 @@ begin
       Brole[i].ShowNumber := curenum;
       if Rrole[Brole[i].rnum].Poison > 99 then
         Rrole[Brole[i].rnum].Poison := 99;
-      Bfield[4, Brole[i].X, Brole[i].Y] := 1 + random(6);
+      BField[4, Brole[i].X, Brole[i].Y] := 1 + random(6);
     end;
   end;
   PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
@@ -7369,7 +7331,7 @@ begin
 
     if (Brole[bnum].Auto = 0) and (Brole[bnum].Team = 0) then
     begin
-      while (Bfield[2, Ax, Ay] <> -1) or (Bfield[1, Ax, Ay] <> 0) do
+      while (BField[2, Ax, Ay] <> -1) or (BField[1, Ax, Ay] <> 0) do
         while not SelectRange(bnum, 0, Rmagic[mnum].MoveDistance[level - 1], 0) do ;
     end
     else
@@ -7378,7 +7340,7 @@ begin
       for i1 := 0 to 63 do
         for i2 := 0 to 63 do
         begin
-          if (Bfield[2, i1, i2] = -1) and (Bfield[1, i1, i2] = 0) and (Bfield[3, i1, i2] = 0) then
+          if (BField[2, i1, i2] = -1) and (BField[1, i1, i2] = 0) and (BField[3, i1, i2] = 0) then
           begin
             k1 := random(10000);
             if k1 > k then
@@ -7391,7 +7353,7 @@ begin
         end;
     end;
 
-    Bfield[1, Ax, Ay] := 1487 * 2;
+    BField[1, Ax, Ay] := 1487 * 2;
     CalPosOnImage(Ax, Ay, x, y);
     //InitialBPic(1487, x, y, 1, CalBlock(Ax, Ay)); //建筑层需遮挡值
     Redraw;
@@ -7432,14 +7394,14 @@ begin
   if Ay2 > 63 then
     Ay2 := 63;
 
-  Bfield[4, Ax, Ay] := 1;
+  BField[4, Ax, Ay] := 1;
   for x := Ax1 to Ax2 do
     for y := Ay1 to Ay2 do
     begin
-      if Bfield[2, x, y] > -1 then
-        if (Brole[Bfield[2, x, y]].Dead = 0) and (Brole[Bfield[2, x, y]].Team = Brole[bnum].Team) then
+      if BField[2, x, y] > -1 then
+        if (Brole[BField[2, x, y]].Dead = 0) and (Brole[BField[2, x, y]].Team = Brole[bnum].Team) then
         begin
-          attackbnum := Bfield[2, x, y];
+          attackbnum := BField[2, x, y];
           attackmnum := Rrole[Brole[attackbnum].rnum].magic[1];
           attacklevel := Rrole[Brole[attackbnum].rnum].maglevel[1] div 100 + 1;
           //AttackAction(attackbnum, attackmnum, attacklevel);
@@ -7489,7 +7451,7 @@ begin
       Rrole[Brole[i].rnum].PhyPower := Rrole[Brole[i].rnum].PhyPower + curenum;
       if Rrole[Brole[i].rnum].PhyPower > MAX_PHYSICAL_POWER then
         Rrole[Brole[i].rnum].PhyPower := MAX_PHYSICAL_POWER;
-      Bfield[4, Brole[i].X, Brole[i].Y] := 1;
+      BField[4, Brole[i].X, Brole[i].Y] := 1;
       Brole[i].ShowNumber := curenum;
     end;
   end;
@@ -7508,7 +7470,7 @@ begin
   ShowMagicName(mnum);
   BField[4, Bx, By] := 1;
   BField[4, Ax, Ay] := 10;
-  bnum2 := Bfield[2, Ax, Ay];
+  bnum2 := BField[2, Ax, Ay];
   Bx := Ax;
   By := Ay;
   if bnum2 >= 0 then
@@ -7564,7 +7526,7 @@ begin
     for i1 := 0 to 63 do
       for i2 := 0 to 63 do
       begin
-        if (Bfield[2, i1, i2] = -1) and (Bfield[1, i1, i2] = 0) and (Bfield[3, i1, i2] = 0) then
+        if (BField[2, i1, i2] = -1) and (BField[1, i1, i2] = 0) and (BField[3, i1, i2] = 0) then
         begin
           k1 := random(10000);
           if k1 > k then
@@ -7576,7 +7538,7 @@ begin
         end;
       end;
   end;
-  if (Bfield[2, Ax, Ay] = -1) and (Bfield[1, Ax, Ay] = 0) and (Rrole[Brole[bnum].rnum].CurrentHP > 1) then
+  if (BField[2, Ax, Ay] = -1) and (BField[1, Ax, Ay] = 0) and (Rrole[Brole[bnum].rnum].CurrentHP > 1) then
   begin
     setlength(menuString, 26);
     setlength(bnumarray, 26);
@@ -7608,7 +7570,7 @@ begin
         Rrole[rnum2].CurrentHP := Rrole[rnum2].MaxHP;
       Brole[bnumarray[res]].X := Ax;
       Brole[bnumarray[res]].Y := Ay;
-      Bfield[2, Ax, Ay] := bnumarray[res];
+      BField[2, Ax, Ay] := bnumarray[res];
     end
     else
     begin
@@ -7637,7 +7599,7 @@ begin
   ShowMagicName(mnum);
   enemyamount := 0;
   findenemy := True;
-  bnum2 := Bfield[2, Ax, Ay];
+  bnum2 := BField[2, Ax, Ay];
   //这里如果方向不正确, 所选位置没有敌人, 则重选方向, 否则失败
   if (bnum2 < 0) or (abs(Ax - Bx) + (Ay - By) <> 1) or (Brole[bnum2].Team = Brole[bnum].Team) then
   begin
@@ -7650,7 +7612,7 @@ begin
         begin
           Ax1 := Bx + i1;
           Ay1 := By + i2;
-          bnum2 := Bfield[2, Ax1, Ay1];
+          bnum2 := BField[2, Ax1, Ay1];
           if (bnum2 >= 0) and (Brole[bnum2].Team <> Brole[bnum].Team) then
           begin
             k := k + 1;
@@ -7672,18 +7634,18 @@ begin
   begin
     while True do
     begin
-      if Bfield[2, aimx, aimy] <> -1 then
+      if BField[2, aimx, aimy] <> -1 then
       begin
-        if Brole[Bfield[2, aimx, aimy]].Team <> Brole[bnum].team then
+        if Brole[BField[2, aimx, aimy]].Team <> Brole[bnum].team then
         begin
-          bnumarray[enemyamount] := Bfield[2, aimx, aimy];
+          bnumarray[enemyamount] := BField[2, aimx, aimy];
           bnumx[enemyamount] := aimx;
           bnumy[enemyamount] := aimy;
           enemyamount := enemyamount + 1;
         end;
       end
       else
-      if Bfield[1, aimx, aimy] = 0 then
+      if BField[1, aimx, aimy] = 0 then
         break
       else
       begin
@@ -7714,11 +7676,11 @@ begin
           Rrole[Brole[bnumarray[i]].rnum].CurrentHP - Rrole[Brole[bnumarray[i]].rnum].MaxHP div 10;
         if Rrole[Brole[bnumarray[i]].rnum].CurrentHP < 1 then
           Rrole[Brole[bnumarray[i]].rnum].CurrentHP := 1;
-        Bfield[4, bnumx[i], bnumy[i]] := (abs(bnumx[i] - Bx) + abs(bnumy[i] - By)) * 10;
+        BField[4, bnumx[i], bnumy[i]] := (abs(bnumx[i] - Bx) + abs(bnumy[i] - By)) * 10;
       end;
     end;
-    Bfield[2, Brole[bnum].X, Brole[bnum].Y] := -1;
-    Bfield[2, aimx, aimy] := bnum;
+    BField[2, Brole[bnum].X, Brole[bnum].Y] := -1;
+    BField[2, aimx, aimy] := bnum;
     Brole[bnum].X := aimx;
     Brole[bnum].Y := aimy;
     Bx := aimx;
@@ -7738,7 +7700,7 @@ var
 begin
   ShowMagicName(mnum);
   instruct_67(Rmagic[mnum].SoundNum);
-  aimbnum := bfield[2, Ax, Ay];
+  aimbnum := BField[2, Ax, Ay];
   step := abs(Ax - Brole[bnum].X) + abs(Ay - Brole[bnum].Y);
   select := False;
   Ax2 := Ax;
@@ -7753,7 +7715,7 @@ begin
         begin
           ax1 := Ax + i1;
           ay1 := Ay + i2;
-          if (bfield[1, ax1, ay1] <= 0) and (bfield[2, ax1, ay1] < 0) or (bfield[2, ax1, ay1] = bnum) then
+          if (BField[1, ax1, ay1] <= 0) and (BField[2, ax1, ay1] < 0) or (BField[2, ax1, ay1] = bnum) then
           begin
             k := k + 1;
             if random(k) = 0 then
@@ -7768,18 +7730,18 @@ begin
   for i1 := min(Ax2, Brole[bnum].X) to max(Ax2, Brole[bnum].X) do
   begin
     i2 := min(Ay2, Brole[bnum].Y) + random(abs(Ay2 - Brole[bnum].Y));
-    bfield[4, i1, i2] := 1 + random(4);
+    BField[4, i1, i2] := 1 + random(4);
   end;
-  bfield[4, Ax2, Ay2] := 4;
-  Bfield[2, Brole[bnum].X, Brole[bnum].Y] := -1;  //此处如果写成Bx, By在触发连击时可能会有问题
-  Bfield[2, Ax2, Ay2] := bnum;
+  BField[4, Ax2, Ay2] := 4;
+  BField[2, Brole[bnum].X, Brole[bnum].Y] := -1;  //此处如果写成Bx, By在触发连击时可能会有问题
+  BField[2, Ax2, Ay2] := bnum;
   Brole[bnum].X := Ax2;
   Brole[bnum].Y := Ay2;
   PlayMagicAmination(bnum, Rmagic[mnum].AmiNum);
-  fillchar(bfield[4, 0, 0], sizeof(bfield[4]), 0);
+  fillchar(BField[4, 0, 0], sizeof(BField[4]), 0);
   if select then
   begin
-    bfield[4, Ax, Ay] := 1;
+    BField[4, Ax, Ay] := 1;
     if Brole[aimbnum].Team <> Brole[bnum].Team then
     begin
       Rmagic[mnum].HurtType := 0;
@@ -7830,7 +7792,7 @@ begin
         if Rrole[Brole[bnum].rnum].CurrentMP > Rrole[Brole[bnum].rnum].MaxMP then
           Rrole[Brole[bnum].rnum].CurrentMP := Rrole[Brole[i].rnum].MaxHP;
       end;
-      Bfield[4, Brole[i].X, Brole[i].Y] := 1 + random(6);
+      BField[4, Brole[i].X, Brole[i].Y] := 1 + random(6);
     end;
   end;
   CalMoveAbility;
@@ -7862,7 +7824,7 @@ begin
             Brole[i].StateRound[Rmagic[mnum].AddMP[1 + j]] := 3;
         end;
       end;
-      Bfield[4, Brole[i].X, Brole[i].Y] := 1 + random(6);
+      BField[4, Brole[i].X, Brole[i].Y] := 1 + random(6);
     end;
   end;
   PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
@@ -7880,16 +7842,16 @@ begin
   //如果是AI控制, 则在目标有正面状态时使用
   if (Brole[bnum].Team <> 0) or (Brole[bnum].Auto <> 0) then
   begin
-    aimbrole := Brole[Bfield[2, Ax, Ay]];
+    aimbrole := Brole[BField[2, Ax, Ay]];
     j := 0;
     for i := 0 to 20 do
       if aimbrole.StateLevel[i] > 0 then j := j + 1;
     if j = 0 then exit;
   end;
   ShowMagicName(mnum);
-  if Bfield[2, Ax, Ay] >= 0 then
+  if BField[2, Ax, Ay] >= 0 then
   begin
-    aimbrole := Brole[Bfield[2, Ax, Ay]];
+    aimbrole := Brole[BField[2, Ax, Ay]];
     if aimbrole.Team = Brole[bnum].Team then
     begin
       for i := 0 to BRoleAmount - 1 do
@@ -7904,7 +7866,7 @@ begin
               Brole[i].StateRound[j] := 3;
             end;
           end;
-          Bfield[4, Brole[i].X, Brole[i].Y] := 1;
+          BField[4, Brole[i].X, Brole[i].Y] := 1;
         end;
       end;
       PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
@@ -7924,16 +7886,16 @@ begin
   //如果是AI控制, 则在目标有负面状态时使用
   if (Brole[bnum].Team <> 0) or (Brole[bnum].Auto <> 0) then
   begin
-    aimbrole := Brole[Bfield[2, Ax, Ay]];
+    aimbrole := Brole[BField[2, Ax, Ay]];
     j := 0;
     for i := 0 to 6 do
       if aimbrole.StateLevel[i] < 0 then j := j + 1;
     if j = 0 then exit;
   end;
   ShowMagicName(mnum);
-  if Bfield[2, Ax, Ay] >= 0 then
+  if BField[2, Ax, Ay] >= 0 then
   begin
-    aimbrole := Brole[Bfield[2, Ax, Ay]];
+    aimbrole := Brole[BField[2, Ax, Ay]];
     if aimbrole.Team <> Brole[bnum].Team then
     begin
       for i := 0 to BRoleAmount - 1 do
@@ -7950,7 +7912,7 @@ begin
               Brole[i].StateRound[j] := 3;
             end;
           end;
-          Bfield[4, Brole[i].X, Brole[i].Y] := 1;
+          BField[4, Brole[i].X, Brole[i].Y] := 1;
         end;
       end;
       PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
@@ -7991,7 +7953,7 @@ begin
         if Rrole[Brole[i].rnum].CurrentMP + addmp > Rrole[Brole[i].rnum].MAXMP then
           addmp := Rrole[Brole[i].rnum].MAXMP - Rrole[Brole[i].rnum].CurrentMP;
         Rrole[Brole[i].rnum].CurrentMP := Rrole[Brole[i].rnum].CurrentMP + addmp;
-        bfield[4, Brole[i].X, Brole[i].Y] := 1;
+        BField[4, Brole[i].X, Brole[i].Y] := 1;
         Brole[i].ShowNumber := addmp;
       end;
 
@@ -8001,7 +7963,7 @@ begin
         if Rrole[Brole[i].rnum].CurrentMP + addmp > Rrole[Brole[i].rnum].MAXMP then
           addmp := Rrole[Brole[i].rnum].MAXMP - Rrole[Brole[i].rnum].CurrentMP;
         Rrole[Brole[i].rnum].CurrentMP := Rrole[Brole[i].rnum].CurrentMP + addmp;
-        bfield[4, Brole[i].X, Brole[i].Y] := 1;
+        BField[4, Brole[i].X, Brole[i].Y] := 1;
         Brole[i].ShowNumber := addmp;
       end;
     end;
@@ -8025,7 +7987,7 @@ begin
 
   for i := 0 to BRoleAmount - 1 do
   begin
-    if (Bfield[4, Brole[i].X, Brole[i].Y] <> 0) and (Brole[i].Dead = 0) and (bnum <> i) then
+    if (BField[4, Brole[i].X, Brole[i].Y] <> 0) and (Brole[i].Dead = 0) and (bnum <> i) then
     begin
       Brole[i].ShowNumber := -1;
       //敌人伤害
@@ -8099,21 +8061,21 @@ begin
   //标记状态 -阵营编码-1
   if Pctrl < Pm then
   begin
-    aimBnum := Bfield[2, Ax, Ay];
+    aimBnum := BField[2, Ax, Ay];
     if aimBnum >= 0 then
       if Brole[aimBnum].Team <> Brole[bnum].Team then
       begin
         Brole[aimBnum].StateLevel[27] := -Brole[bnum].Team - 1;
         Brole[aimBnum].StateRound[27] := 3;
         //Brole[aimBnum].Team := 1 - Brole[aimBnum].Team;
-        Bfield[4, Ax, Ay] := 1;
+        BField[4, Ax, Ay] := 1;
       end
       else
       begin
         //可以解除我方混乱状态
         Brole[aimBnum].StateLevel[28] := 0;
         Brole[aimBnum].StateRound[28] := 0;
-        Bfield[4, Ax, Ay] := 1;
+        BField[4, Ax, Ay] := 1;
       end;
   end;
   Brole[bnum].Acted := 1;
@@ -8129,7 +8091,7 @@ var
   cmnum, cmlevel, cmatt, hmnumA, hmlevelA, hmattA, hmnumB, hmlevelB, hmattB: integer;
 begin
   ShowMagicName(mnum);
-  Anum := Bfield[2, Ax, Ay];
+  Anum := BField[2, Ax, Ay];
   if Anum >= 0 then
     if Brole[Anum].Team <> Brole[bnum].Team then
     begin
@@ -8178,7 +8140,7 @@ begin
         instruct_67(Rmagic[hmnumB].SoundNum);
         PlayActionAmination(bnum, Rmagic[hmnumB].MagicType);
         hurt := CalHurtValue(bnum, Anum, hmnumB, hmlevelB, 1);
-        Bfield[4, Brole[Anum].X, Brole[Anum].Y] := 1;
+        BField[4, Brole[Anum].X, Brole[Anum].Y] := 1;
         Bx := Brole[Anum].X;
         By := Brole[Anum].Y;
         Ax := Brole[Bnum].X;
@@ -8186,7 +8148,7 @@ begin
         PlayMagicAmination(bnum, Rmagic[hmnumB].AmiNum);
         Brole[Anum].ShowNumber := hurt;
         ShowHurtValue(Rmagic[hmnumB].HurtType);
-        Bfield[4, Brole[Anum].X, Brole[Anum].Y] := 0;
+        BField[4, Brole[Anum].X, Brole[Anum].Y] := 0;
         Brole[Anum].ShowNumber := 0;
         Rrole[rnumA].CurrentHP := Rrole[rnumA].CurrentHP - hurt;
         if Rrole[rnumA].CurrentHP <= 0 then
@@ -8199,7 +8161,7 @@ begin
         instruct_67(Rmagic[hmnumA].SoundNum);
         PlayActionAmination(Anum, Rmagic[hmnumA].MagicType);
         hurt := CalHurtValue(Anum, Bnum, hmnumA, hmlevelA, 1);
-        Bfield[4, Brole[Bnum].X, Brole[Bnum].Y] := 1;
+        BField[4, Brole[Bnum].X, Brole[Bnum].Y] := 1;
         Bx := Brole[Bnum].X;
         By := Brole[Bnum].Y;
         Ax := Brole[Anum].X;
@@ -8208,7 +8170,7 @@ begin
         Brole[Bnum].ShowNumber := hurt;
         ShowHurtValue(Rmagic[hmnumA].HurtType);
         Brole[Bnum].ShowNumber := 0;
-        Bfield[4, Brole[Bnum].X, Brole[Bnum].Y] := 0;
+        BField[4, Brole[Bnum].X, Brole[Bnum].Y] := 0;
         Rrole[rnumB].CurrentHP := Rrole[rnumB].CurrentHP - hurt;
         if Rrole[rnumB].CurrentHP <= 0 then
         begin
@@ -8239,7 +8201,7 @@ begin
   //如果是AI控制, 则在目标有正面状态时使用
   if (Brole[bnum].Team <> 0) or (Brole[bnum].Auto <> 0) then
   begin
-    aimbnum := Bfield[2, Ax, Ay];
+    aimbnum := BField[2, Ax, Ay];
     j := 0;
     for i := 0 to 20 do
       if Brole[aimbnum].StateLevel[i] > 0 then j := j + 1;
@@ -8248,7 +8210,7 @@ begin
   ShowMagicName(mnum);
   for j := 0 to BRoleAmount - 1 do
   begin
-    if (Bfield[4, Brole[j].X, Brole[j].Y] <> 0) and (Brole[j].Team = Brole[bnum].Team) then
+    if (BField[4, Brole[j].X, Brole[j].Y] <> 0) and (Brole[j].Team = Brole[bnum].Team) then
     begin
       aimbnum := j;
       if Brole[aimbnum].Team = Brole[bnum].Team then
@@ -8277,16 +8239,16 @@ var
 begin
   //注意AI可能会乱用
   ShowMagicName(mnum);
-  if Bfield[2, Ax, Ay] >= 0 then
+  if BField[2, Ax, Ay] >= 0 then
   begin
-    aimbnum := Bfield[2, Ax, Ay];
-    Bfield[4, Ax, Ay] := 1;
-    aimbrole := Brole[Bfield[2, Ax, Ay]];
+    aimbnum := BField[2, Ax, Ay];
+    BField[4, Ax, Ay] := 1;
+    aimbrole := Brole[BField[2, Ax, Ay]];
     if aimbrole.Team = Brole[bnum].team then
     begin
       if (Brole[bnum].Auto = 0) and (Brole[bnum].Team = 0) then
       begin
-        while Bfield[2, Ax, Ay] <> -1 do
+        while BField[2, Ax, Ay] <> -1 do
           while not SelectRange(bnum, 0, Rmagic[mnum].MoveDistance[level - 1], 0) do ;
       end
       else
@@ -8296,7 +8258,7 @@ begin
         for i1 := 0 to 63 do
           for i2 := 0 to 63 do
           begin
-            if (Bfield[2, i1, i2] = -1) and (Bfield[1, i1, i2] = 0) and (Bfield[3, i1, i2] = 0) then
+            if (BField[2, i1, i2] = -1) and (BField[1, i1, i2] = 0) and (BField[3, i1, i2] = 0) then
             begin
               k1 := random(10000);
               if k1 > k then
@@ -8308,15 +8270,15 @@ begin
             end;
           end;
       end;
-      Bfield[4, Ax, Ay] := 10;
+      BField[4, Ax, Ay] := 10;
       //ShowMagicName(mnum);
       instruct_67(Rmagic[mnum].SoundNum);
       PlayActionAmination(bnum, Rmagic[mnum].MagicType);
       PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
-      Bfield[2, aimbrole.X, aimbrole.Y] := -1;
+      BField[2, aimbrole.X, aimbrole.Y] := -1;
       Brole[aimbnum].X := Ax;
       Brole[aimbnum].Y := Ay;
-      Bfield[2, Ax, Ay] := aimbnum;
+      BField[2, Ax, Ay] := aimbnum;
     end;
   end;
   Brole[bnum].Acted := 1;
@@ -8447,7 +8409,7 @@ begin
     begin
       Rrole[Brole[i].rnum].CurrentHP := min(life, Rrole[Brole[i].rnum].MaxHP);
       //Brole[i].ShowNumber := minlife;
-      Bfield[4, Brole[i].X, Brole[i].Y] := 1 + random(6);
+      BField[4, Brole[i].X, Brole[i].Y] := 1 + random(6);
     end;
 
   PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
@@ -8465,9 +8427,9 @@ begin
   //AI会乱用
   ShowMagicName(mnum);
   rnum := Brole[bnum].rnum;
-  if Bfield[2, Ax, Ay] >= 0 then
+  if BField[2, Ax, Ay] >= 0 then
   begin
-    aimbnum1 := Bfield[2, Ax, Ay];
+    aimbnum1 := BField[2, Ax, Ay];
     if (Brole[bnum].Auto = 0) and (Brole[bnum].Team = 0) then
     begin
       aimbnum2 := -1;
@@ -8475,7 +8437,7 @@ begin
       begin
         if not SelectRange(bnum, 0, Rmagic[mnum].MoveDistance[level - 1], 0) then
           break;
-        aimbnum2 := Bfield[2, Ax, Ay];
+        aimbnum2 := BField[2, Ax, Ay];
         if aimbnum2 = aimbnum1 then
         begin
           str := '不可選同一人！';
@@ -8491,7 +8453,7 @@ begin
       CalCanSelect(bnum, 1, Rmagic[mnum].MoveDistance[level - 1]);
       for i := 0 to BRoleAmount - 1 do
       begin
-        if (Brole[i].Dead = 0) and (Bfield[3, Brole[i].x, Brole[i].y] >= 0) then
+        if (Brole[i].Dead = 0) and (BField[3, Brole[i].x, Brole[i].y] >= 0) then
         begin
           //AI会随意选第二个人进行交换, 有失败可能
           k1 := random(10000);
@@ -8504,7 +8466,7 @@ begin
         end;
       end;
     end;
-    aimbnum2 := Bfield[2, Ax, Ay];
+    aimbnum2 := BField[2, Ax, Ay];
     instruct_67(Rmagic[mnum].SoundNum);
     PlayActionAmination(bnum, Rmagic[mnum].MagicType);
     if (aimbnum1 >= 0) and (aimbnum2 >= 0) and (aimbnum1 <> aimbnum2) then
@@ -8517,8 +8479,8 @@ begin
       if Rrole[Brole[aimbnum2].rnum].CurrentMP > Rrole[Brole[aimbnum2].rnum].MaxMP then
         Rrole[Brole[aimbnum2].rnum].CurrentMP := Rrole[Brole[aimbnum2].rnum].MaxMP;
 
-      Bfield[4, Brole[aimbnum1].X, Brole[aimbnum1].Y] := 1;
-      Bfield[4, Brole[aimbnum2].X, Brole[aimbnum2].Y] := 10;
+      BField[4, Brole[aimbnum1].X, Brole[aimbnum1].Y] := 1;
+      BField[4, Brole[aimbnum2].X, Brole[aimbnum2].Y] := 10;
     end;
   end;
 
@@ -8537,9 +8499,9 @@ begin
   //AI会乱用
   ShowMagicName(mnum);
   rnum := Brole[bnum].rnum;
-  if Bfield[2, Ax, Ay] >= 0 then
+  if BField[2, Ax, Ay] >= 0 then
   begin
-    aimbnum1 := Bfield[2, Ax, Ay];
+    aimbnum1 := BField[2, Ax, Ay];
     if (Brole[bnum].Auto = 0) and (Brole[bnum].Team = 0) then
     begin
       aimbnum2 := -1;
@@ -8547,7 +8509,7 @@ begin
       begin
         if not SelectRange(bnum, 0, Rmagic[mnum].MoveDistance[level - 1], 0) then
           break;
-        aimbnum2 := Bfield[2, Ax, Ay];
+        aimbnum2 := BField[2, Ax, Ay];
         if aimbnum2 = aimbnum1 then
         begin
           str := '不可選同一人！';
@@ -8563,7 +8525,7 @@ begin
       CalCanSelect(bnum, 1, Rmagic[mnum].MoveDistance[level - 1]);
       for i := 0 to BRoleAmount - 1 do
       begin
-        if (Brole[i].Dead = 0) and (Bfield[3, Brole[i].x, Brole[i].y] >= 0) then
+        if (Brole[i].Dead = 0) and (BField[3, Brole[i].x, Brole[i].y] >= 0) then
         begin
           //AI会随意选第二个人进行交换, 有失败可能
           k1 := random(10000);
@@ -8576,7 +8538,7 @@ begin
         end;
       end;
     end;
-    aimbnum2 := Bfield[2, Ax, Ay];
+    aimbnum2 := BField[2, Ax, Ay];
     //ShowMagicName(mnum);
     instruct_67(Rmagic[mnum].SoundNum);
     PlayActionAmination(bnum, Rmagic[mnum].MagicType);
@@ -8591,8 +8553,8 @@ begin
       if Rrole[Brole[aimbnum2].rnum].CurrentHP > Rrole[Brole[aimbnum2].rnum].MaxHP then
         Rrole[Brole[aimbnum2].rnum].CurrentMP := Rrole[Brole[aimbnum2].rnum].MaxHP;
     end;
-    Bfield[4, Brole[aimbnum1].X, Brole[aimbnum1].Y] := 1;
-    Bfield[4, Brole[aimbnum2].X, Brole[aimbnum2].Y] := 10;
+    BField[4, Brole[aimbnum1].X, Brole[aimbnum1].Y] := 1;
+    BField[4, Brole[aimbnum2].X, Brole[aimbnum2].Y] := 10;
   end;
 
   PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
@@ -8606,9 +8568,9 @@ var
   i, aimbnum, rnum: integer;
 begin
   ShowMagicName(mnum);
-  if Bfield[2, Ax, Ay] >= 0 then
+  if BField[2, Ax, Ay] >= 0 then
   begin
-    aimbnum := Bfield[2, Ax, Ay];
+    aimbnum := BField[2, Ax, Ay];
     if Brole[aimbnum].Team <> Brole[bnum].Team then
     begin
       //ShowMagicName(mnum);
@@ -8675,7 +8637,7 @@ begin
         Brole[i].StateLevel[2] := Brole[i].StateLevel[2] - 1;
         Brole[i].StateRound[2] := Brole[i].StateRound[2] + 1;
       end;
-      bfield[4, Brole[i].x, Brole[i].Y] := 1;
+      BField[4, Brole[i].x, Brole[i].Y] := 1;
     end;
   end;
   PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
@@ -8691,13 +8653,13 @@ var
 begin
   if (Rmagic[mnum].MagicType = 3) then
   begin
-    FillChar(Bfield[4, 0, 0], 4096 * 2, 0);
+    FillChar(BField[4, 0, 0], 4096 * 2, 0);
     for i := 0 to BRoleAmount - 1 do
     begin
       Brole[i].ShowNumber := -1;
       if (Brole[bnum].Team <> Brole[i].Team) and (Brole[i].Dead = 0) then
       begin
-        Bfield[4, Brole[i].x, Brole[i].y] := 1 + random(6);
+        BField[4, Brole[i].x, Brole[i].y] := 1 + random(6);
         rnum := Brole[i].rnum;
         hurt := 100 * level + Rrole[Brole[bnum].rnum].Level * 10 - Rrole[rnum].Defence;
         hurt := max(0, hurt);
@@ -8739,7 +8701,7 @@ begin
     begin
       Brole[i].ShowNumber := -1;
       if (Brole[bnum].Team <> Brole[i].Team) and (Brole[i].Dead = 0) and
-        (Bfield[4, Brole[i].X, Brole[i].Y] > 0) then
+        (BField[4, Brole[i].X, Brole[i].Y] > 0) then
       begin
         rnum := Brole[i].rnum;
         hurt := 100 * level + Rrole[Brole[bnum].rnum].Level * 10 - Rrole[rnum].Defence;
@@ -8776,7 +8738,7 @@ begin
     begin
       Brole[i].ShowNumber := -1;
       if (Brole[bnum].Team <> Brole[i].Team) and (Brole[i].Dead = 0) and
-        (Bfield[4, Brole[i].X, Brole[i].Y] > 0) then
+        (BField[4, Brole[i].X, Brole[i].Y] > 0) then
       begin
         rnum := Brole[i].rnum;
         hurt := 100 * level + Rrole[Brole[bnum].rnum].Level * 10 - Rrole[rnum].Defence;
@@ -8806,13 +8768,13 @@ var
 begin
   if (mnum = 56) then
   begin
-    FillChar(Bfield[4, 0, 0], 4096 * 2, 0);
+    FillChar(BField[4, 0, 0], 4096 * 2, 0);
     for i := 0 to BRoleAmount - 1 do
     begin
       Brole[i].ShowNumber := -1;
       if (Brole[bnum].Team <> Brole[i].Team) and (Brole[i].Dead = 0) then
       begin
-        Bfield[4, Brole[i].x, Brole[i].y] := 1 + random(6);
+        BField[4, Brole[i].x, Brole[i].y] := 1 + random(6);
         rnum := Brole[i].rnum;
         hurt := 200 + random(Rrole[Brole[bnum].rnum].Level) * 5;
         Rrole[rnum].CurrentHP := max(Rrole[rnum].CurrentHP - hurt, 0);
@@ -8859,11 +8821,11 @@ begin
     Rrole[rnum].CurrentMP := min(Rrole[rnum].CurrentMP + Rrole[rnum].MaxMP * 30 div 100, Rrole[rnum].MaxMP);
     str := UTF8Decode('有餘不盡');
     ShowMagicName(0, str);
-    move(Bfield[4, 0, 0], Bfield[5, 0, 0], 4096 * 2);
-    FillChar(Bfield[4, 0, 0], 4096 * 2, 0);
+    move(BField[4, 0, 0], BField[5, 0, 0], 4096 * 2);
+    FillChar(BField[4, 0, 0], 4096 * 2, 0);
     BField[4, Brole[bnum].X, Brole[bnum].Y] := 1;
     PlayMagicAmination(bnum, 22); //动作效果
-    move(Bfield[5, 0, 0], Bfield[4, 0, 0], 4096 * 2);
+    move(BField[5, 0, 0], BField[4, 0, 0], 4096 * 2);
     AttackAction(bnum, mnum, level);
   end;
 end;
@@ -8879,7 +8841,7 @@ begin
   begin
     for i := 0 to BRoleAmount - 1 do
     begin
-      if (Brole[bnum].Team <> Brole[i].Team) and (Bfield[4, Brole[i].X, Brole[i].Y] > 0) then
+      if (Brole[bnum].Team <> Brole[i].Team) and (BField[4, Brole[i].X, Brole[i].Y] > 0) then
       begin
         {Brole[i].StateLevel[0] := -50;
         Brole[i].StateRound[0] := random(5);
@@ -8894,11 +8856,11 @@ begin
     end;
     str := UTF8Decode('重劍無鋒');
     ShowMagicName(0, str);
-    move(Bfield[4, 0, 0], Bfield[5, 0, 0], 4096 * 2);
-    FillChar(Bfield[4, 0, 0], 4096 * 2, 0);
+    move(BField[4, 0, 0], BField[5, 0, 0], 4096 * 2);
+    FillChar(BField[4, 0, 0], 4096 * 2, 0);
     BField[4, Brole[bnum].X, Brole[bnum].Y] := 1;
     PlayMagicAmination(bnum, 83); //动作效果
-    move(Bfield[5, 0, 0], Bfield[4, 0, 0], 4096 * 2);
+    move(BField[5, 0, 0], BField[4, 0, 0], 4096 * 2);
     AttackAction(bnum, mnum, level);
   end;
 end;
@@ -8914,14 +8876,14 @@ begin
   begin
     str := UTF8Decode('意假情真');
     ShowMagicName(0, str);
-    move(Bfield[4, 0, 0], Bfield[5, 0, 0], 4096 * 2);
-    FillChar(Bfield[4, 0, 0], 4096 * 2, 0);
+    move(BField[4, 0, 0], BField[5, 0, 0], 4096 * 2);
+    FillChar(BField[4, 0, 0], 4096 * 2, 0);
     BField[4, Brole[bnum].X, Brole[bnum].Y] := 1;
     PlayMagicAmination(bnum, 62); //动作效果
-    move(Bfield[5, 0, 0], Bfield[4, 0, 0], 4096 * 2);
+    move(BField[5, 0, 0], BField[4, 0, 0], 4096 * 2);
     for i := 0 to BRoleAmount - 1 do
     begin
-      if (Brole[bnum].Team <> Brole[i].Team) and (Bfield[4, Brole[i].X, Brole[i].Y] > 0) then
+      if (Brole[bnum].Team <> Brole[i].Team) and (BField[4, Brole[i].X, Brole[i].Y] > 0) then
       begin
         //设定目标减防御120%一回合
         Brole[i].StateLevel[1] := Brole[i].StateLevel[1] - 120;
@@ -8931,7 +8893,7 @@ begin
     AttackAction(bnum, mnum, level);
     for i := 0 to BRoleAmount - 1 do
     begin
-      if (Brole[bnum].Team <> Brole[i].Team) and (Bfield[4, Brole[i].X, Brole[i].Y] > 0) then
+      if (Brole[bnum].Team <> Brole[i].Team) and (BField[4, Brole[i].X, Brole[i].Y] > 0) then
       begin
         Brole[i].StateLevel[1] := Brole[i].StateLevel[1] + 120;
         Brole[i].StateRound[1] := Brole[i].StateRound[1] - 1;
@@ -8949,13 +8911,13 @@ var
 begin
   if (mnum = 254) then
   begin
-    FillChar(Bfield[4, 0, 0], 4096 * 2, 0);
+    FillChar(BField[4, 0, 0], 4096 * 2, 0);
     for i := 0 to BRoleAmount - 1 do
     begin
       Brole[i].ShowNumber := -1;
       if (Brole[bnum].Team <> Brole[i].Team) and (Brole[i].Dead = 0) then
       begin
-        Bfield[4, Brole[i].x, Brole[i].y] := 1 + random(6);
+        BField[4, Brole[i].x, Brole[i].y] := 1 + random(6);
         rnum := Brole[i].rnum;
         hurt := random(100) + random(Rrole[Brole[bnum].rnum].CurrentHP);
         Rrole[rnum].CurrentHP := max(Rrole[rnum].CurrentHP - hurt, 0);
@@ -8980,7 +8942,7 @@ var
 begin
   if (mnum = 332) then
   begin
-    bnum2 := bfield[2, Ax, Ay];
+    bnum2 := BField[2, Ax, Ay];
     if (bnum2 >= 0) then
       if Brole[bnum].Team <> Brole[bnum2].Team then
       begin
@@ -9002,7 +8964,7 @@ begin
           Brole[bnum].ShowNumber := hurt;
           Brole[bnum2].ShowNumber := 0;
         end;
-        bfield[4, Brole[bnum].X, Brole[bnum].Y] := 1 + random(6);
+        BField[4, Brole[bnum].X, Brole[bnum].Y] := 1 + random(6);
         str := UTF8Decode('一空到底');
         ShowMagicName(0, str);
         PlayActionAmination(bnum, Rmagic[mnum].MagicType); //动作效果
@@ -9027,7 +8989,7 @@ begin
     for i := 0 to BRoleAmount - 1 do
     begin
       Brole[i].ShowNumber := -1;
-      if (Brole[bnum].Team <> Brole[i].Team) and (Bfield[4, Brole[i].X, Brole[i].Y] > 0) then
+      if (Brole[bnum].Team <> Brole[i].Team) and (BField[4, Brole[i].X, Brole[i].Y] > 0) then
       begin
         rnum := Brole[i].rnum;
         hurt := Rrole[rnum].CurrentHP div 10;
@@ -9061,7 +9023,7 @@ begin
     begin
       Brole[i].ShowNumber := -1;
       if (Brole[bnum].Team <> Brole[i].Team) and (Brole[i].Dead = 0) and
-        (Bfield[4, Brole[i].X, Brole[i].Y] > 0) then
+        (BField[4, Brole[i].X, Brole[i].Y] > 0) then
       begin
         rnum := Brole[i].rnum;
         hurt := 100 * level + Rrole[Brole[bnum].rnum].Level * 10 - Rrole[rnum].Defence;
@@ -9088,11 +9050,11 @@ begin
   rnum := Brole[bnum].rnum;
   if (Rmagic[mnum].MagicType = 3) then
   begin
-	for i := 0 to BRoleAmount - 1 do
+    for i := 0 to BRoleAmount - 1 do
     begin
       Brole[i].ShowNumber := -1;
       if (Brole[bnum].Team <> Brole[i].Team) and (Brole[i].Dead = 0) and
-        (Bfield[4, Brole[i].X, Brole[i].Y] > 0) then
+        (BField[4, Brole[i].X, Brole[i].Y] > 0) then
       begin
         rnum := Brole[i].rnum;
         hurt := 500;
@@ -9124,7 +9086,7 @@ begin
     str := UTF8Decode('瑜伽密乘');
     ShowMagicName(0, str);
     //move(Bfield[4, 0, 0], Bfield[5, 0, 0], 4096 * 2);
-    FillChar(Bfield[4, 0, 0], 4096 * 2, 0);
+    FillChar(BField[4, 0, 0], 4096 * 2, 0);
     BField[4, Brole[bnum].X, Brole[bnum].Y] := 1;
     PlayMagicAmination(bnum, 84);
     {Brole[bnum].StateLevel[0] := 50;
@@ -9156,7 +9118,7 @@ begin
     str := UTF8Decode('九陽歸一');
     ShowMagicName(0, str);
     //move(Bfield[4, 0, 0], Bfield[5, 0, 0], 4096 * 2);
-    FillChar(Bfield[4, 0, 0], 4096 * 2, 0);
+    FillChar(BField[4, 0, 0], 4096 * 2, 0);
     BField[4, Brole[bnum].X, Brole[bnum].Y] := 1;
     PlayActionAmination(bnum, 59);
     Rrole[rnum].PhyPower := min(MAX_PHYSICAL_POWER, Rrole[rnum].PhyPower + 20);

@@ -167,12 +167,14 @@ end;
 
 procedure instruct_1(talknum, headnum, dismode: integer);
 var
-  idx, grp, offset, len, i, p, l, headx, heady, diagx, diagy: integer;
+  idx, grp, offset, len, i, p, l, headx, heady, diagx, diagy, namenum: integer;
   talkarray: array of byte;
   Name: WideString;
 begin
+  namenum := headnum;
   if dismode in [2, 3] then headnum := -1;
-  NewTalk(headnum, talknum, headnum, dismode mod 2, 0, 0, 0);
+  if MODVersion = 81 then namenum := -2;
+  NewTalk(headnum, talknum, namenum, dismode mod 2, 0, 0, 0);
 
   {case dismode of
     0:
@@ -492,7 +494,7 @@ end;
 function instruct_6(battlenum, jump1, jump2, getexp: integer): integer;
 begin
   Result := jump2;
-  if Battle(battlenum, getexp) then
+  if (ForceBattleWin = 1) or Battle(battlenum, getexp) then
     Result := jump1;
 
 end;

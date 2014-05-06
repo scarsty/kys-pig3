@@ -729,7 +729,7 @@ begin
     begin
       case where of
         1: Ex[i1, i2] := SData[CurScence, 0, i1, i2];
-        2: Ex[i1, i2] := Bfield[0, i1, i2];
+        2: Ex[i1, i2] := BField[0, i1, i2];
       end;
     end;
   //绝情谷, 明教地道效果比较奇怪, 屏蔽
@@ -965,6 +965,7 @@ begin
       begin
         Pos := GetPositionOnScreen(i1, i2, Bx, By);
         num := ExGroundB[i1, i2] div 2;
+
         //重画闪烁的地面贴图
         if (num > 0) and (SPNGIndex[num].Frame > 1) then
           DrawSPic(num, pos.x, pos.y);
@@ -972,12 +973,12 @@ begin
         //建筑和人物
         if (i1 >= 0) and (i1 <= 63) and (i2 >= 0) and (i2 <= 63) then
         begin
-          num := bfield[1, i1, i2] div 2;
+          num := BField[1, i1, i2] div 2;
           if num > 0 then
           begin
             DrawSPic(num, pos.x, pos.y);
           end;
-          num := bfield[2, i1, i2];
+          num := BField[2, i1, i2];
           if num >= 0 then
           begin
             if Brole[num].Pic > 0 then
@@ -1115,23 +1116,23 @@ begin
   for i1 := 0 to 63 do
     for i2 := 0 to 63 do
     begin
-      if Bfield[0, i1, i2] > 0 then
+      if BField[0, i1, i2] > 0 then
       begin
         pos := GetPositionOnScreen(i1, i2, Bx, By);
         shadow := 0;
         case AttAreaType of
           0: //目标系点型(用于移动、点攻、用毒、医疗等)、目标系十型、目标系菱型、原地系菱型
           begin
-            if Bfield[4, i1, i2] > 0 then
+            if BField[4, i1, i2] > 0 then
               shadow := 1
-            else if (abs(i1 - Bx) + abs(i2 - By) <= step) and (Bfield[3, i1, i2] >= 0) then
+            else if (abs(i1 - Bx) + abs(i2 - By) <= step) and (BField[3, i1, i2] >= 0) then
               shadow := 0
             else
               shadow := -1;
           end;
           1: //方向系线型
           begin
-            if Bfield[4, i1, i2] > 0 then
+            if BField[4, i1, i2] > 0 then
               shadow := 1
             else if ((i1 = Bx) and (abs(i2 - By) <= step)) or ((i2 = By) and (abs(i1 - Bx) <= step)) then
               shadow := 0
@@ -1140,23 +1141,23 @@ begin
           end;
           2: //原地系十型、原地系叉型、原地系米型
           begin
-            if Bfield[4, i1, i2] > 0 then
+            if BField[4, i1, i2] > 0 then
               shadow := 1
             else
               shadow := -1;
           end;
           3: //目标系方型、原地系方型
           begin
-            if Bfield[4, i1, i2] > 0 then
+            if BField[4, i1, i2] > 0 then
               shadow := 1
-            else if (abs(i1 - Bx) + abs(i2 - By) <= step) and (Bfield[0, i1, i2] >= 0) then
+            else if (abs(i1 - Bx) + abs(i2 - By) <= step) and (BField[0, i1, i2] >= 0) then
               shadow := 0
             else
               shadow := -1;
           end;
           4: //方向系菱型
           begin
-            if Bfield[4, i1, i2] > 0 then
+            if BField[4, i1, i2] > 0 then
               shadow := 1
             else if (abs(i1 - Bx) + abs(i2 - By) <= step) and (abs(i1 - Bx) <> abs(i2 - By)) then
               shadow := 0
@@ -1165,7 +1166,7 @@ begin
           end;
           5: //方向系角型
           begin
-            if Bfield[4, i1, i2] > 0 then
+            if BField[4, i1, i2] > 0 then
               shadow := 1
             else if (abs(i1 - Bx) <= step) and (abs(i2 - By) <= step) and (abs(i1 - Bx) <> abs(i2 - By)) then
               shadow := 0
@@ -1175,20 +1176,20 @@ begin
           6: //远程
           begin
             minstep := 3;
-            if Bfield[4, i1, i2] > 0 then
+            if BField[4, i1, i2] > 0 then
               shadow := 1
             else if (abs(i1 - Bx) + abs(i2 - By) <= step) and (abs(i1 - Bx) + abs(i2 - By) > minstep) and
-              (Bfield[3, i1, i2] >= 0) then
+              (BField[3, i1, i2] >= 0) then
               shadow := 0
             else
               shadow := -1;
           end;
         end;
         if shadow = 0 then
-          DrawSPic(Bfield[0, i1, i2] div 2, pos.x, pos.y, nil, shadow, 0, 0, 0);
+          DrawSPic(BField[0, i1, i2] div 2, pos.x, pos.y, nil, shadow, 0, 0, 0);
         if shadow > 0 then
         begin
-          DrawSPic(Bfield[0, i1, i2] div 2, pos.x, pos.y, nil, shadow, 0, 0, 0);
+          DrawSPic(BField[0, i1, i2] div 2, pos.x, pos.y, nil, shadow, 0, 0, 0);
           //DrawMPic(1, pos.x, pos.y, 0, 0, 0, 0, 50);
         end;
       end;
@@ -1200,20 +1201,20 @@ begin
     for i2 := 0 to 63 do
     begin
       pos := GetPositionOnScreen(i1, i2, Bx, By);
-      if Bfield[1, i1, i2] > 0 then
-        DrawSPic(Bfield[1, i1, i2] div 2, pos.x, pos.y, nil, 0, 30, 0, 0);
-      bnum := Bfield[2, i1, i2];
+      if BField[1, i1, i2] > 0 then
+        DrawSPic(BField[1, i1, i2] div 2, pos.x, pos.y, nil, 0, 30, 0, 0);
+      bnum := BField[2, i1, i2];
       if (bnum >= 0) and (Brole[bnum].Dead = 0) then
       begin
         HighLight := False;
         //0-范围内敌方, 1-范围内我方, 2-敌方全部, 3-我方全部, 4-自身, 5-范围内全部, 6-全部, 7-不高亮
         case SelectAimMode of
-          0: HighLight := (Bfield[4, i1, i2] > 0) and (Brole[bnum].Team <> 0);
-          1: HighLight := (Bfield[4, i1, i2] > 0) and (Brole[bnum].Team = 0);
+          0: HighLight := (BField[4, i1, i2] > 0) and (Brole[bnum].Team <> 0);
+          1: HighLight := (BField[4, i1, i2] > 0) and (Brole[bnum].Team = 0);
           2: HighLight := Brole[bnum].Team <> 0;
           3: HighLight := Brole[bnum].Team = 0;
           4: HighLight := (i1 = Bx) and (i2 = By);
-          5: HighLight := (Bfield[4, i1, i2] > 0);
+          5: HighLight := (BField[4, i1, i2] > 0);
           6: HighLight := True;
           7: HighLight := False;
         end;
@@ -1258,7 +1259,7 @@ begin
   begin
     //检测是否需要高亮
     t := 0;
-    if (Bfield[4, Brole[i].X, Brole[i].Y] > 0) then
+    if (BField[4, Brole[i].X, Brole[i].Y] > 0) then
       if CanSelectAim(bnum, i, -1, SelectAimMode) then t := 1;
     if t = 1 then
     begin
@@ -1272,10 +1273,10 @@ begin
   for i1 := 0 to 63 do
     for i2 := 0 to 63 do
     begin
-      if (Bfield[4, i1, i2] > 0) then
+      if (BField[4, i1, i2] > 0) then
       begin
         pos := GetPositionOnScreen(i1, i2, Bx, By);
-        k := Epicnum + curlevel - Bfield[4, i1, i2];
+        k := Epicnum + curlevel - BField[4, i1, i2];
         if (k >= beginpic) and (k <= endpic) then
         begin
           //以下选择颜色

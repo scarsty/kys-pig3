@@ -136,6 +136,7 @@ procedure CloudCreate(num: integer);
 procedure CloudCreateOnSide(num: integer);
 function IsCave(snum: integer): boolean;
 
+function CheckString(str: string): boolean;
 
 //输出函数
 //procedure write1();
@@ -372,7 +373,7 @@ begin
       BEGIN_SCENCE := 70;
       MONEY_ID := 174;
       COMPASS_ID := 182;
-      BEGIN_LEAVE_EVENT := 950;
+      BEGIN_LEAVE_EVENT := 100;
       BEGIN_NAME_IN_TALK := 2977;
       MAX_LOVER := 0;
       EventScriptPath := 'script/oldevent/oldevent_';
@@ -1011,6 +1012,8 @@ begin
   //if FULLSCREEN = 1 then
   //RealScreen := SDL_SetVideoMode(RESOLUTIONX, RESOLUTIONY, 32, ScreenFlag);
 
+  //if MODVersion = 81 then exit;
+
   Name := '蕭笑竹'; //默认名
   str := '請輸入主角之姓名';
   if SIMPLE = 1 then
@@ -1018,8 +1021,6 @@ begin
     Name := '萧笑竹'; //默认名
     str := '请输入主角之姓名';
   end;
-
-  if MODVersion = 81 then Name := '北辰月';
 
   if FULLSCREEN = 0 then
     Result := inputquery('Enter name', str, Name)
@@ -2184,7 +2185,7 @@ begin
             if totalgrid > 4096 then
               exit;
           end;
-        0:
+        else
         begin
           CanWalk := False;
           case MODVersion of
@@ -8301,5 +8302,11 @@ begin
   end;
 end;
 
+function CheckString(str: string): boolean;
+begin
+  Redraw;
+  UpdateAllScreen;
+  ShowMessage(str);
+end;
 
 end.
