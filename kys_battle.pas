@@ -163,6 +163,7 @@ type
     procedure SA2_8(bnum, mnum, level: integer);
     procedure SA2_9(bnum, mnum, level: integer);
     procedure SA2_10(bnum, mnum, level: integer);
+    procedure SA2_11(bnum, mnum, level: integer);
     procedure SA2_100(bnum, mnum, level: integer);
     procedure SA2_101(bnum, mnum, level: integer);
   end;
@@ -4026,7 +4027,8 @@ begin
   end;
 
   //恢复0号人物的森罗万象
-  Rrole[0].Magic[0] := 278;
+  if MODVersion in [0, 13] then
+    Rrole[0].Magic[0] := 278;
 
 end;
 
@@ -9077,6 +9079,38 @@ begin
   end;
 end;
 
+//固定500伤害 仅刀系
+procedure TSpecialAbility2.SA2_11(bnum, mnum, level: integer);
+var
+  str: WideString;
+  i, rnum, hurt: integer;
+begin
+  rnum := Brole[bnum].rnum;
+  if (Rmagic[mnum].MagicType = 3) then
+  begin
+	for i := 0 to BRoleAmount - 1 do
+    begin
+      Brole[i].ShowNumber := -1;
+      if (Brole[bnum].Team <> Brole[i].Team) and (Brole[i].Dead = 0) and
+        (Bfield[4, Brole[i].X, Brole[i].Y] > 0) then
+      begin
+        rnum := Brole[i].rnum;
+        hurt := 500;
+        hurt := max(0, hurt);
+        Rrole[rnum].CurrentHP := max(Rrole[rnum].CurrentHP - hurt, 0);
+        Brole[i].ShowNumber := hurt;
+      end;
+    end;
+
+    str := UTF8Decode('刀破无极');
+    ShowMagicName(0, str);
+    PlayActionAmination(bnum, Rmagic[mnum].MagicType); //动作效果
+    PlayMagicAmination(bnum, 98); //武功效果
+    ShowHurtValue(0); //显示数字
+  end;
+end;
+
+
 //100瑜伽密乘
 //15%几率攻防增加三回合, 拳系特效触发概率提升
 procedure TSpecialAbility2.SA2_100(bnum, mnum, level: integer);
@@ -9129,5 +9163,7 @@ begin
     Brole[bnum].StateLevel[14] := Brole[i].StateLevel[14] + 50;
   end;
 end;
+
+
 
 end.

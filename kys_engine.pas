@@ -3646,6 +3646,11 @@ begin
       src.w := CENTER_X * 2;
       src.h := CENTER_Y * 2;
       dest := GetRealRect(src, 1);
+      {src.x := CENter_X div 2;
+      src.y := CENter_y div 2;
+      src.w := CENTER_X;
+      src.h := CENTER_Y;
+      SDL_RenderCopy(render, screenTex, @src, @dest); }
       SDL_RenderCopy(render, screenTex, nil, @dest);
     end
     else

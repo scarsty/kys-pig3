@@ -365,6 +365,19 @@ begin
       EventScriptPath := 'script/oldevent/oldevent_';
       EventScriptExt := '.lua';
     end;
+    81:
+    begin
+      versionstr := '龍之覺醒';
+      BEGIN_EVENT := 691;
+      BEGIN_SCENCE := 70;
+      MONEY_ID := 174;
+      COMPASS_ID := 182;
+      BEGIN_LEAVE_EVENT := 950;
+      BEGIN_NAME_IN_TALK := 2977;
+      MAX_LOVER := 0;
+      EventScriptPath := 'script/oldevent/oldevent_';
+      EventScriptExt := '.lua';
+    end;
   end;
 
 {$IFDEF fpc}
@@ -949,7 +962,7 @@ begin
   end
   else
   begin
-    filename := AppPath + 'save/0.bt';
+    filename := AppPath + 'save/0.zip';
     zfile := unzOpen(pchar(filename));
     if zfile <> nil then
     begin
@@ -1005,6 +1018,9 @@ begin
     Name := '萧笑竹'; //默认名
     str := '请输入主角之姓名';
   end;
+
+  if MODVersion = 81 then Name := '北辰月';
+
   if FULLSCREEN = 0 then
     Result := inputquery('Enter name', str, Name)
   else
@@ -1259,7 +1275,7 @@ begin
   p := StrAlloc(LenR + 8192);
 
   SaveNum := num;
-  zfilename := AppPath + 'save/' + IntToStr(num) + '.bt';
+  zfilename := AppPath + 'save/' + IntToStr(num) + '.zip';
   if (num > 0) and (ZIP_SAVE = 1) then
     s := '1'
   else
@@ -1513,7 +1529,7 @@ begin
   BufferWrite(p1, @Rshop[0], LenR - WeiShopOffset);
 
   SaveNum := num;
-  zfilename := AppPath + 'save/' + IntToStr(num) + '.bt';
+  zfilename := AppPath + 'save/' + IntToStr(num) + '.zip';
   if (num > 0) and (ZIP_SAVE = 1) then
     s := '1'
   else
@@ -5707,12 +5723,17 @@ begin
   //alpha := 50;
 
   //文字不分层时使用黑色画空白部分, 使文字略为明显
-  w := 138 * Rrole[rnum].CurrentHP div Rrole[rnum].MaxHP;
+  if Rrole[rnum].MaxHP = 0 then
+    w := 138
+  else
+    w := 138 * Rrole[rnum].CurrentHP div Rrole[rnum].MaxHP;
   color := MapRGBA(196, max(0, 25 - Rrole[rnum].Hurt div 5), 16);
   DrawRectangleWithoutFrame(x + 96, y + 32, w, 9, color, -1);
   //DrawRectangleWithoutFrame(x + 96 + w, y + 32, 138 - w, 9, color, alpha);
-
-  w := 138 * Rrole[rnum].CurrentMP div Rrole[rnum].MaxMP;
+  if Rrole[rnum].MaxMP = 0 then
+    w := 138
+  else
+    w := 138 * Rrole[rnum].CurrentMP div Rrole[rnum].MaxMP;
   case Rrole[rnum].MPType of
     0: color := MapRGBA(112, 12, 112);
     1: color := MapRGBA(224, 180, 32);
@@ -6903,7 +6924,7 @@ begin
     if ZIP_SAVE = 0 then
       filename := AppPath + 'save/r' + IntToStr(i + 1) + '.grp'
     else
-      filename := AppPath + 'save/' + IntToStr(i + 1) + '.bt';
+      filename := AppPath + 'save/' + IntToStr(i + 1) + '.zip';
     if FileExists(filename) then
       menuEngString[i] := DateTimeToStr(FileDateToDateTime(FileAge(filename)))
     else
@@ -6978,7 +6999,7 @@ begin
     if ZIP_SAVE = 0 then
       filename := AppPath + 'save/r' + IntToStr(i + 1) + '.grp'
     else
-      filename := AppPath + 'save/' + IntToStr(i + 1) + '.bt';
+      filename := AppPath + 'save/' + IntToStr(i + 1) + '.zip';
     if FileExists(filename) then
       menuEngString[i] := DateTimeToStr(FileDateToDateTime(FileAge(filename)))
     else
@@ -7031,7 +7052,7 @@ begin
     if ZIP_SAVE = 0 then
       filename := AppPath + 'save/r' + IntToStr(i + 1) + '.grp'
     else
-      filename := AppPath + 'save/' + IntToStr(i + 1) + '.bt';
+      filename := AppPath + 'save/' + IntToStr(i + 1) + '.zip';
     if FileExists(filename) then
       menuEngString[i] := DateTimeToStr(FileDateToDateTime(FileAge(filename)))
     else
