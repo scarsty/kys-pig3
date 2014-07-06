@@ -738,22 +738,26 @@ begin
     for i1 := 31 downto -64 do
       for i2 := 0 to 63 do
       begin
-        if Ex[i1, i2] <= 0 then Ex[i1, i2] := Ex[i1 + 1, i2];
+        if Ex[i1, i2] <= 0 then
+          Ex[i1, i2] := Ex[i1 + 1, i2];
       end;
     for i1 := 32 to 127 do
       for i2 := 0 to 63 do
       begin
-        if Ex[i1, i2] <= 0 then Ex[i1, i2] := Ex[i1 - 1, i2];
+        if Ex[i1, i2] <= 0 then
+          Ex[i1, i2] := Ex[i1 - 1, i2];
       end;
     for i1 := -64 to 127 do
       for i2 := 31 downto -64 do
       begin
-        if Ex[i1, i2] <= 0 then Ex[i1, i2] := Ex[i1, i2 + 1];
+        if Ex[i1, i2] <= 0 then
+          Ex[i1, i2] := Ex[i1, i2 + 1];
       end;
     for i1 := -64 to 127 do
       for i2 := 32 to 127 do
       begin
-        if Ex[i1, i2] <= 0 then Ex[i1, i2] := Ex[i1, i2 - 1];
+        if Ex[i1, i2] <= 0 then
+          Ex[i1, i2] := Ex[i1, i2 - 1];
       end;
   end;
   //生成一整块地面纹理
@@ -1238,9 +1242,6 @@ begin
 
 end;
 
-
-
-
 procedure DrawBFieldWithEft(Epicnum, beginpic, endpic, curlevel, bnum, SelectAimMode, flash: integer;
   mixColor: uint32; index: integer = 0; shadow: integer = 0; alpha: integer = 0; MixColor2: uint32 = 0;
   MixAlpha2: integer = 0); overload;
@@ -1260,7 +1261,8 @@ begin
     //检测是否需要高亮
     t := 0;
     if (BField[4, Brole[i].X, Brole[i].Y] > 0) then
-      if CanSelectAim(bnum, i, -1, SelectAimMode) then t := 1;
+      if CanSelectAim(bnum, i, -1, SelectAimMode) then
+        t := 1;
     if t = 1 then
     begin
       Brole[i].shadow := 1;

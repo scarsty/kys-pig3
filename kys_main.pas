@@ -35,6 +35,7 @@ uses
   SysUtils,
   SDL2_TTF,
   SDL2,
+  SDL2_image,
   Math,
   iniFiles,
   Dialogs,
@@ -47,6 +48,7 @@ uses
 
 
 //程序重要子程
+procedure Run0;
 procedure Run;
 procedure Quit;
 procedure SetMODVersion;
@@ -151,13 +153,11 @@ uses
   kys_battle,
   kys_draw;
 
-procedure test();
+procedure Run0;
 var
-  r, g, b, a: byte;
+  th: PSDL_Thread;
 begin
-  writeln(MapRGBA(1, 2, 3, 4));
-  GetRGBA(MapRGBA(1, 2, 3, 4), @r, @g, @b, @a);
-  writeln(r, ',', g, ',', b, ',', a);
+  th := SDL_CreateThread(@Run, nil, nil);
 end;
 
 //初始化字体, 音效, 视频, 启动游戏
@@ -248,7 +248,8 @@ begin
       end;
     end;
   end;
-  if rendernum = -1 then RENDERER := 0;
+  if rendernum = -1 then
+    RENDERER := 0;
 
   writeln('All pictures will be loaded as textures: ', not Bool(SW_SURFACE));
   writeln('Text will be draw on single layer: ', Bool(TEXT_LAYER));
@@ -306,6 +307,7 @@ begin
       SDL_AddTimer(JOY_AXIS_DELAY, JoyAxisMouse, nil);
     end;
   end;
+
   Start;
 
   Quit;
@@ -489,8 +491,10 @@ begin
   begin
     Redraw;
     DrawHeadPic(headnum, CENTER_X - 250, CENTER_Y, 0, alpha, 0, 0);
-    if alpha >= 100 then alphastep := -2;
-    if alpha <= 0 then alphastep := 2;
+    if alpha >= 100 then
+      alphastep := -2;
+    if alpha <= 0 then
+      alphastep := 2;
     alpha := alpha + alphastep;
     if alpha >= 100 then
     begin
@@ -658,7 +662,8 @@ begin
   begin
     Redraw;
     src.w := i * 5 + 50;
-    if src.w > 490 then break;
+    if src.w > 490 then
+      break;
     DrawTPic(12, x, y + 10, @src);
     DrawTPic(10, x, y);
     DrawTPic(10, x + i * 5 + 34, y);
@@ -821,8 +826,10 @@ begin
     JOY_AXIS_DELAY := Kys_ini.ReadInteger('joystick', 'JOY_AXIS_DELAY', 10);
 
 
-    if KEEP_SCREEN_RATIO = 0 then TEXT_LAYER := 0;
-    if SW_OUTPUT = 1 then TEXT_LAYER := 0;
+    if KEEP_SCREEN_RATIO = 0 then
+      TEXT_LAYER := 0;
+    if SW_OUTPUT = 1 then
+      TEXT_LAYER := 0;
 
     if (not FileExists(AppPath + 'resource/mmap/index.ka')) and
       (not FileExists(AppPath + 'resource/mmap.imz')) then
@@ -831,9 +838,11 @@ begin
       ZIP_SAVE := 1;
 {$ifdef unix}
     THREAD_READ_PNG := 0;
-    if RENDERER = 0 then RENDERER := 1;
+    if RENDERER = 0 then
+      RENDERER := 1;
 {$endif}
-    if DISABLE_MENU_AMI <> 0 then DISABLE_MENU_AMI := 25;
+    if DISABLE_MENU_AMI <> 0 then
+      DISABLE_MENU_AMI := 25;
   finally
     Kys_ini.Free;
   end;
@@ -939,14 +948,38 @@ begin
   setlength(statestrs, length(Brole[0].StateLevel));
   for i := 0 to high(statestrs) do
     statestrs[i] := '';
-  statestrs[0] := '攻擊';  statestrs[1] := '防禦';  statestrs[2] := '輕功';  statestrs[3] := '移動';
-  statestrs[4] := '傷害';  statestrs[5] := '回命';  statestrs[6] := '回內';  statestrs[7] := '戰神';
-  statestrs[8] := '風雷';  statestrs[9] := '孤注';  statestrs[10] := '傾國';  statestrs[11] := '毒箭';
-  statestrs[12] := '遠攻';  statestrs[13] := '連擊';  statestrs[14] := '反傷';  statestrs[15] := '靈精';
-  statestrs[16] := '閃避';  statestrs[17] := '博采';  statestrs[18] := '聆音';  statestrs[19] := '青翼';
-  statestrs[20] := '回體';  statestrs[21] := '傷逝';  statestrs[22] := '黯然';  statestrs[23] := '慈悲';
-  statestrs[24] := '悲歌';  statestrs[26] := '定身';  statestrs[27] := '控制';  statestrs[28] := '混亂';
-  statestrs[29] := '拳理';  statestrs[30] := '劍意';  statestrs[31] := '刀氣';  statestrs[32] := '奇兵';
+  statestrs[0] := '攻擊';
+  statestrs[1] := '防禦';
+  statestrs[2] := '輕功';
+  statestrs[3] := '移動';
+  statestrs[4] := '傷害';
+  statestrs[5] := '回命';
+  statestrs[6] := '回內';
+  statestrs[7] := '戰神';
+  statestrs[8] := '風雷';
+  statestrs[9] := '孤注';
+  statestrs[10] := '傾國';
+  statestrs[11] := '毒箭';
+  statestrs[12] := '遠攻';
+  statestrs[13] := '連擊';
+  statestrs[14] := '反傷';
+  statestrs[15] := '靈精';
+  statestrs[16] := '閃避';
+  statestrs[17] := '博采';
+  statestrs[18] := '聆音';
+  statestrs[19] := '青翼';
+  statestrs[20] := '回體';
+  statestrs[21] := '傷逝';
+  statestrs[22] := '黯然';
+  statestrs[23] := '慈悲';
+  statestrs[24] := '悲歌';
+  statestrs[26] := '定身';
+  statestrs[27] := '控制';
+  statestrs[28] := '混亂';
+  statestrs[29] := '拳理';
+  statestrs[30] := '劍意';
+  statestrs[31] := '刀氣';
+  statestrs[32] := '奇兵';
   statestrs[33] := '狙擊';
 
   //读取存档的索引
@@ -1012,8 +1045,6 @@ begin
   //if FULLSCREEN = 1 then
   //RealScreen := SDL_SetVideoMode(RESOLUTIONX, RESOLUTIONY, 32, ScreenFlag);
 
-  //if MODVersion = 81 then exit;
-
   Name := '蕭笑竹'; //默认名
   str := '請輸入主角之姓名';
   if SIMPLE = 1 then
@@ -1033,6 +1064,7 @@ begin
     Redraw;
     UpdateAllScreen;
   end;
+
   if Name = '' then
     Result := False;
   if Result then
@@ -1103,89 +1135,94 @@ begin
     //设定初始成长
     InitGrowth();
 
+
     //特殊名字
-    if Name = '曹輕羽' then
-    begin
-      Rrole[0].MaxHP := 125;
-      Rrole[0].CurrentHP := 125;
-      Rrole[0].MaxMP := 125;
-      Rrole[0].CurrentMP := 125;
-      Rrole[0].MPType := 2;
-      Rrole[0].IncLife := 28;
-      Rrole[0].AddMP := 28;
-      Rrole[0].AddAtk := 8;
-      Rrole[0].AddDef := 8;
-      Rrole[0].AddSpeed := 4;
+    case MODVersion of
+      0, 13:
+      begin
+        if Name = '曹輕羽' then
+        begin
+          Rrole[0].MaxHP := 125;
+          Rrole[0].CurrentHP := 125;
+          Rrole[0].MaxMP := 125;
+          Rrole[0].CurrentMP := 125;
+          Rrole[0].MPType := 2;
+          Rrole[0].IncLife := 28;
+          Rrole[0].AddMP := 28;
+          Rrole[0].AddAtk := 8;
+          Rrole[0].AddDef := 8;
+          Rrole[0].AddSpeed := 4;
 
-      Rrole[0].Attack := 35;
-      Rrole[0].Speed := 35;
-      Rrole[0].Defence := 35;
-      Rrole[0].Medcine := 30;
-      Rrole[0].UsePoi := 30;
-      Rrole[0].MedPoi := 30;
-      Rrole[0].Fist := 30;
-      Rrole[0].Sword := 30;
-      Rrole[0].Knife := 30;
-      Rrole[0].Unusual := 30;
-      Rrole[0].HidWeapon := 30;
+          Rrole[0].Attack := 35;
+          Rrole[0].Speed := 35;
+          Rrole[0].Defence := 35;
+          Rrole[0].Medcine := 30;
+          Rrole[0].UsePoi := 30;
+          Rrole[0].MedPoi := 30;
+          Rrole[0].Fist := 30;
+          Rrole[0].Sword := 30;
+          Rrole[0].Knife := 30;
+          Rrole[0].Unusual := 30;
+          Rrole[0].HidWeapon := 30;
 
-      Rrole[0].Aptitude := 100;
-      Rrole[0].MagLevel[0] := 999;
+          Rrole[0].Aptitude := 100;
+          Rrole[0].MagLevel[0] := 999;
+        end;
+
+        if Name = '風劍琴' then
+        begin
+          Rrole[0].addnum := 1;
+          Rrole[0].AmiFrameNum[0] := 0;
+        end;
+
+        if (Name = '阮小二') then
+        begin
+          Rrole[0].addnum := 1;
+          Rrole[0].Aptitude := 100;
+          Rrole[0].MagLevel[0] := 999;
+          Rrole[0].AmiFrameNum[0] := 1;
+          if MODVersion = 13 then
+            Rrole[0].HeadNum := 434;
+        end;
+
+        if (Name = '史進') then
+        begin
+          Rrole[0].addnum := 1;
+          Rrole[0].Aptitude := 100;
+          Rrole[0].MagLevel[0] := 999;
+          Rrole[0].AmiFrameNum[0] := 2;
+          if MODVersion = 13 then
+            Rrole[0].HeadNum := 435;
+        end;
+
+        if (Name = '筷子') then
+        begin
+          instruct_32(277, 1);
+          Rrole[0].Fist := 150;
+          Ritem[277].ItemType := 1;
+          Ritem[277].EquipType := 0;
+          Ritem[277].AddSpeed := 150;
+          Ritem[277].AddAttack := 75;
+          Ritem[277].NeedMPType := 2;
+        end;
+
+        if Name = '獨孤令狐' then
+        begin
+          instruct_33(0, $A8, 1);
+          Ritem[$27].AddAttack := 160;
+          Ritem[$65].AddAttack := 8;
+          Ritem[$6C].AddAttack := 10;
+          Ritem[$A5].AddAttack := 6;
+          Rrole[0].Movestep := 50;
+          Rrole[0].AmiFrameNum[0] := 3;
+          //Rrole[0].Magic[2] := $a8;
+          //instruct_32($27, 1);
+          //instruct_32($65, 1);
+          //instruct_32($6c, 1);
+          //instruct_32($a5, 1);
+        end;
+      end;
     end;
-
-    if Name = '風劍琴' then
-    begin
-      Rrole[0].addnum := 1;
-      Rrole[0].AmiFrameNum[0] := 0;
-    end;
-
-    if (Name = '阮小二') then
-    begin
-      Rrole[0].addnum := 1;
-      Rrole[0].Aptitude := 100;
-      Rrole[0].MagLevel[0] := 999;
-      Rrole[0].AmiFrameNum[0] := 1;
-      if MODVersion = 13 then
-        Rrole[0].HeadNum := 434;
-    end;
-
-    if (Name = '史進') then
-    begin
-      Rrole[0].addnum := 1;
-      Rrole[0].Aptitude := 100;
-      Rrole[0].MagLevel[0] := 999;
-      Rrole[0].AmiFrameNum[0] := 2;
-      if MODVersion = 13 then
-        Rrole[0].HeadNum := 435;
-    end;
-
-    if (Name = '筷子') then
-    begin
-      instruct_32(277, 1);
-      Rrole[0].Fist := 150;
-      Ritem[277].ItemType := 1;
-      Ritem[277].EquipType := 0;
-      Ritem[277].AddSpeed := 150;
-      Ritem[277].AddAttack := 75;
-      Ritem[277].NeedMPType := 2;
-    end;
-
-    if Name = '獨孤令狐' then
-    begin
-      instruct_33(0, $A8, 1);
-      Ritem[$27].AddAttack := 160;
-      Ritem[$65].AddAttack := 8;
-      Ritem[$6C].AddAttack := 10;
-      Ritem[$A5].AddAttack := 6;
-      Rrole[0].Movestep := 50;
-      Rrole[0].AmiFrameNum[0] := 3;
-      //Rrole[0].Magic[2] := $a8;
-      //instruct_32($27, 1);
-      //instruct_32($65, 1);
-      //instruct_32($6c, 1);
-      //instruct_32($a5, 1);
-    end;
-
     Redraw;
     ShowStatus(0);
     //DrawShadowText(@str2[1], 30, CENTER_Y + 111, ColColor($21), ColColor($23));
@@ -1439,10 +1476,14 @@ begin
   if MODVersion = 0 then
     for i := 0 to high(Rrole) do
     begin
-      if Rrole[i].Level <= 0 then break;
-      if Rrole[i].PracticeBook >= 0 then Ritem[Rrole[i].PracticeBook].User := i;
-      if Rrole[i].Equip[0] >= 0 then Ritem[Rrole[i].Equip[0]].User := i;
-      if Rrole[i].Equip[1] >= 0 then Ritem[Rrole[i].Equip[1]].User := i;
+      if Rrole[i].Level <= 0 then
+        break;
+      if Rrole[i].PracticeBook >= 0 then
+        Ritem[Rrole[i].PracticeBook].User := i;
+      if Rrole[i].Equip[0] >= 0 then
+        Ritem[Rrole[i].Equip[0]].User := i;
+      if Rrole[i].Equip[1] >= 0 then
+        Ritem[Rrole[i].Equip[1]].User := i;
     end;
 
   {for i1 := 900 downto 00 do
@@ -2562,10 +2603,14 @@ begin
               begin
                 if abs(Axp - Sx) + Abs(Ayp - Sy) = 1 then
                 begin
-                  if Axp < Sx then SFace := 0;
-                  if Axp > Sx then SFace := 3;
-                  if Ayp < Sy then SFace := 2;
-                  if Ayp > Sy then SFace := 1;
+                  if Axp < Sx then
+                    SFace := 0;
+                  if Axp > Sx then
+                    SFace := 3;
+                  if Ayp < Sy then
+                    SFace := 2;
+                  if Ayp > Sy then
+                    SFace := 1;
                   if CheckEvent1 then
                   begin
                     //检查到事件时则不动
@@ -3660,7 +3705,8 @@ begin
       else
       begin
         j := j + 6;
-        if j >= 360 then j := 0;
+        if j >= 360 then
+          j := 0;
         dest.x := pos[i].x - MPNGIndex[2021].w div 2;
         dest.y := pos[i].y - MPNGIndex[2021].h div 2;
         k := 45 - abs(j div 4 - 45);
@@ -4154,6 +4200,13 @@ begin
 
   d := 83;  //图片的尺寸
 
+  if MODversion = 81 then
+  begin
+    col := 10;
+    row := 5;
+    d := 42;
+  end;
+
   //标题区的位置, 标题每项的宽度
   titlex1 := CENTER_X - 384 + 300;
   titley1 := CENTER_Y - 240 + 35;
@@ -4260,7 +4313,8 @@ begin
     begin
       //writeln(x, y, listLT, menu, Result, dragitem);
       //writeln(px, py, plistLT, pmenu);
-      if menu <> pmenu then listLT := 0;
+      if menu <> pmenu then
+        listLT := 0;
       iamount := ReadItemList(ItemTypeList[menu]);
       LoadFreshScreen;
       //SDL_BlitSurface(tempsur, nil, screen, nil);
@@ -4663,7 +4717,8 @@ begin
       if (subType = 2) and (ItemType >= 20) then
       begin
         mnum := Ritem[RItemlist[i].Number].Magic;
-        if mnum <= 0 then subType := 20
+        if mnum <= 0 then
+          subType := 20
         else
           case Rmagic[mnum].HurtType of
             1: subType := 26;
@@ -4704,7 +4759,8 @@ var
   str, str1: WideString;
   menuString: array of WideString;
 begin
-  if where = 2 then exit;
+  if where = 2 then
+    exit;
   CurItem := inum;
   {//following is for test.
   ritem[inum].AddAttack :=1;
@@ -5004,8 +5060,10 @@ begin
         else
         begin
           case Rmagic[mnum].HurtType of
-            3: if HaveMagicAmount(rnum, 1) >= 4 then Result := False;
-            0, 1, 2: if HaveMagicAmount(rnum) >= 10 then Result := False;
+            3: if HaveMagicAmount(rnum, 1) >= 4 then
+                Result := False;
+            0, 1, 2: if HaveMagicAmount(rnum) >= 10 then
+                Result := False;
           end;
         end;
       end;
@@ -5258,7 +5316,7 @@ var
   p: array[0..10] of integer;
   addatk, adddef, addspeed: integer;
   str: WideString;
-  strs: array[0..23] of WideString;
+  strs: array[0..24] of WideString;
   //strs1: array of WideString;
   color1, color2: uint32;
   Name: WideString;
@@ -5330,6 +5388,7 @@ begin
     //显示姓名
     Name := pWideChar(@Rrole[rnum].Name);
     DrawShadowText(@Name[1], x + 76 - DrawLength(pchar(@Rrole[rnum].Name)) * 5, y + 200, ColColor($64), ColColor($66));
+
     //显示所需字符
     for i := 0 to 5 do
       DrawShadowText(@strs[i, 1], x + 10, y + 225 + 21 * i, ColColor($21), ColColor($23));
@@ -5667,7 +5726,8 @@ var
   bigtran, Mask, mixColor: uint32;
   engsize, x1, y1, w1, h1, alpha, mixAlpha: integer;
 begin
-  if rnum < 0 then exit;
+  if rnum < 0 then
+    exit;
   x1 := 0;
   y1 := 0;
   w1 := 270;
@@ -5918,10 +5978,22 @@ var
   vp: array[0..3] of real;
   i: integer;
 begin
-  r[0] := 250;  r[1] := 50;  r[2] := 250;  r[3] := 250;
-  g[0] := 250;  g[1] := 250;  g[2] := 250;  g[3] := 50;
-  b[0] := 250;  b[1] := 50;  b[2] := 50;  b[3] := 50;
-  vp[0] := 0;  vp[1] := 0.5;  vp[2] := 0.75;  vp[3] := 1;
+  r[0] := 250;
+  r[1] := 50;
+  r[2] := 250;
+  r[3] := 250;
+  g[0] := 250;
+  g[1] := 250;
+  g[2] := 250;
+  g[3] := 50;
+  b[0] := 250;
+  b[1] := 50;
+  b[2] := 50;
+  b[3] := 50;
+  vp[0] := 0;
+  vp[1] := 0.5;
+  vp[2] := 0.75;
+  vp[3] := 1;
   v := cur / MaxValue;
   if v > 1 then
     v := 1;
@@ -6033,12 +6105,14 @@ begin
     if ((event.type_ = SDL_KEYDOWN) and (event.key.keysym.sym = SDLK_LEFT)) then
     begin
       select := select - 1;
-      if select < 0 then select := maxselect;
+      if select < 0 then
+        select := maxselect;
     end;
     if ((event.type_ = SDL_KEYDOWN) and (event.key.keysym.sym = SDLK_RIGHT)) then
     begin
       select := select + 1;
-      if select > maxselect then select := 0;
+      if select > maxselect then
+        select := 0;
     end;
     if ((event.type_ = SDL_KEYUP) and (event.key.keysym.sym = SDLK_ESCAPE)) or
       ((event.type_ = SDL_MOUSEBUTTONUP) and (event.button.button = SDL_BUTTON_RIGHT)) then
@@ -6334,7 +6408,8 @@ begin
   begin
     DrawMPic(2013, x + 170, y + 370);
   end;
-  if select = 2 then DrawItemFrame(itemx, itemy, 1);
+  if select = 2 then
+    DrawItemFrame(itemx, itemy, 1);
 end;
 
 //离队选单
@@ -6385,6 +6460,7 @@ begin
 
   Redraw;
   //DrawTitleMenu;
+  DrawMPic(2026, CENTER_X - 384 + 283, CENTER_Y - 240);
   TransBlackScreen;
   DrawTitleMenu(3);
   RecordFreshScreen;
@@ -6630,8 +6706,10 @@ begin
           mixcolorr := $FFFFFFFF;
           if i = menu then
           begin
-            if leftright < 0 then mixalphal := 25;
-            if leftright > 0 then mixalphar := 25;
+            if leftright < 0 then
+              mixalphal := 25;
+            if leftright > 0 then
+              mixalphar := 25;
           end;
           if value[i] <= 0 then
           begin
@@ -6702,12 +6780,14 @@ begin
           SDLK_UP:
           begin
             menu := menu - 1;
-            if menu < 0 then menu := maxmenu;
+            if menu < 0 then
+              menu := maxmenu;
           end;
           SDLK_DOWN:
           begin
             menu := menu + 1;
-            if menu > maxmenu then menu := 0;
+            if menu > maxmenu then
+              menu := 0;
           end;
           SDLK_LEFT:
           begin

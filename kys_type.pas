@@ -44,6 +44,7 @@ type
 
   PPSDL_Surface = ^PSDL_Surface;
   PPSDL_Texture = ^PSDL_Texture;
+
   TPNGIndex = record
     FileNum, PointerNum, Frame, x, y, w, h, Loaded, UseGRP: integer;
     BeginPointer: Pointer;
@@ -77,9 +78,12 @@ type
         CurrentHP, MaxHP, Hurt, Poison, PhyPower: smallint;
         ExpForItem: uint16;
         Equip: array[0..1] of smallint;
-        AmiFrameNum, AmiDelay, SoundDealy: array[0..4] of smallint;
+        AmiFrameNum: array[0..4] of smallint;
+        AmiDelay: array[0..4] of smallint;
+        SoundDealy: array[0..4] of smallint;
         MPType, CurrentMP, MaxMP: smallint;
-        Attack, Speed, Defence, Medcine, UsePoi, MedPoi, DefPoi, Fist, Sword, Knife, Unusual, HidWeapon: smallint;
+        Attack, Speed, Defence, Medcine, UsePoi, MedPoi, DefPoi, Fist,
+        Sword, Knife, Unusual, HidWeapon: smallint;
         Knowledge, Ethics, AttPoi, Movestep, Repute, Aptitude, PracticeBook: smallint;
         ExpForBook: uint16;
         Magic, MagLevel: array[0..9] of smallint;
@@ -97,12 +101,18 @@ type
         ForgeTimes, Price: smallint;
         Name: array[0..19] of char;
         Introduction: array[0..29] of char;
-        Magic, AmiNum, User, EquipType, ShowIntro, ItemType, UnKnow5, UnKnow6, UnKnow7: smallint;
-        AddCurrentHP, AddMaxHP, AddPoi, AddPhyPower, ChangeMPType, AddCurrentMP, AddMaxMP: smallint;
-        AddAttack, AddSpeed, AddDefence, AddMedcine, AddUsePoi, AddMedPoi, AddDefPoi: smallint;
-        AddFist, AddSword, AddKnife, AddUnusual, AddHidWeapon, AddKnowledge, AddRepute, AddMove, AddAttPoi: smallint;
-        OnlyPracRole, NeedMPType, NeedMP, NeedAttack, NeedSpeed, NeedUsePoi, NeedMedcine, NeedMedPoi: smallint;
-        NeedFist, NeedSword, NeedKnife, NeedUnusual, NeedHidWeapon, NeedAptitude: smallint;
+        Magic, AmiNum, User, EquipType, ShowIntro, ItemType, UnKnow5,
+        UnKnow6, UnKnow7: smallint;
+        AddCurrentHP, AddMaxHP, AddPoi, AddPhyPower, ChangeMPType,
+        AddCurrentMP, AddMaxMP: smallint;
+        AddAttack, AddSpeed, AddDefence, AddMedcine, AddUsePoi,
+        AddMedPoi, AddDefPoi: smallint;
+        AddFist, AddSword, AddKnife, AddUnusual, AddHidWeapon,
+        AddKnowledge, AddRepute, AddMove, AddAttPoi: smallint;
+        OnlyPracRole, NeedMPType, NeedMP, NeedAttack, NeedSpeed,
+        NeedUsePoi, NeedMedcine, NeedMedPoi: smallint;
+        NeedFist, NeedSword, NeedKnife, NeedUnusual, NeedHidWeapon,
+        NeedAptitude: smallint;
         NeedExp, NeedExpForItem, NeedMaterial: smallint;
         GetItem, NeedMatAmount: array[0..4] of smallint);
       Address: (Data: array[0..94] of smallint);
@@ -159,7 +169,9 @@ type
         StateLevel, StateRound: array[0..33] of smallint;
         RealSpeed, RealProgress, BHead: smallint;
         StaticPic: array[0..3] of smallint;
-        shadow, alpha: integer; mixColor: uint32; mixAlpha: integer);
+        shadow, alpha: integer;
+        mixColor: uint32;
+        mixAlpha: integer);
       Address: (Data: array[0..82] of smallint);
   end;
   //情侣加成, loverlevel：
@@ -198,6 +210,7 @@ type
     filemem: pchar;
     beginIndex: ^TPNGIndex;
   end;
+
 var
 
   MODVersion: integer = 13;
@@ -207,10 +220,10 @@ var
   //初始值
   TitleString: string;
 
-  CHINESE_FONT: PAnsiChar = 'resource/kaiu.ttf';
+  CHINESE_FONT: PAnsiChar = 'resource/chinese.ttf';
   CHINESE_FONT_SIZE: integer = 20;
   CHINESE_FONT_REALSIZE: integer = 20;
-  ENGLISH_FONT: PAnsiChar = 'resource/consola.ttf';
+  ENGLISH_FONT: PAnsiChar = 'resource/eng.ttf';
   ENGLISH_FONT_SIZE: integer = 18;
   ENGLISH_FONT_REALSIZE: integer = 18;
 
@@ -567,6 +580,9 @@ var
   joy: PSDL_Joystick;
   JOY_RETURN, JOY_ESCAPE, JOY_LEFT, JOY_RIGHT, JOY_UP, JOY_DOWN, JOY_MOUSE_LEFT: uint32;
   JOY_AXIS_DELAY: uint32;
+
+  //指针图片
+  //CursorSurface: array[0..6] of PSDL_Cursor;
 
   tttt, cccc1, cccc2: int64;
 //其他

@@ -95,6 +95,7 @@ procedure SwitchFullscreen;
 procedure QuitConfirm;
 
 function JoyAxisMouse(interval: uint32; param: pointer): uint32;
+
 function CheckBasicEvent: uint32;
 
 procedure ChangeCol;
@@ -188,6 +189,9 @@ procedure QuickSortB(var a: array of TBuildInfo; l, r: integer);
 //计时, 测速用
 procedure tic;
 procedure toc;
+
+function Myth_VideoPlay(window: integer; filename: string): integer; cdecl; external 'myth-simpleplayer.dll';
+
 
 implementation
 
@@ -731,8 +735,16 @@ begin
   else
   begin
     tempsur := TTF_RenderUNICODE_blended(pfont, @word[0], TSDL_Color(whitecolor));
-    src.w := tempsur.w - src.x;
-    src.h := tempsur.h;
+    if tempsur <> nil then
+    begin
+      src.w := tempsur.w - src.x;
+      src.h := tempsur.h;
+    end
+    else
+    begin
+      src.w := 0;
+      src.h := 0;
+    end;
     dst.x := 0;
     dst.y := 0;
     dst.w := src.w;
@@ -756,7 +768,7 @@ begin
       //检查是否需要保存
       if size = size0 then
       begin
-        write(widechar(num));
+        Write(widechar(num));
         if CharSize[num] > 0 then
           SDL_DestroyTexture(CharTex[num]);
         CharTex[num] := tex;
@@ -769,7 +781,7 @@ begin
       p := pointer(Sur);
       if size = size0 then
       begin
-        write(widechar(num));
+        Write(widechar(num));
         if CharSize[num] > 0 then
           SDL_FreeSurface(CharSur[num]);
         CharSur[num] := sur;
@@ -1965,6 +1977,7 @@ begin
     SDL_WarpMouseInWindow(window, x, y);
   end;
   Result := JOY_AXIS_DELAY;
+
 end;
 
 function CheckBasicEvent: uint32;
@@ -2739,7 +2752,8 @@ begin
   //shadow设置混合方式, 以及预设值等
   with PNGIndex do
   begin
-    if (CurPointerT = nil) or (CurPointerT^ = nil) then exit;
+    if (CurPointerT = nil) or (CurPointerT^ = nil) then
+      exit;
     if Frame > 1 then
       Inc(CurPointerT, FrameNum mod Frame);
     tex := CurPointerT^;
@@ -2824,7 +2838,8 @@ begin
   end;
   SDL_RenderCopyEx(render, tex, region, @rect, angle, center, SDL_FLIP_NONE);
   //SDL_RenderCopy(render, tex, nil, nil);
-  if newtex then SDL_DestroyTexture(tex);
+  if newtex then
+    SDL_DestroyTexture(tex);
 
 end;
 
@@ -2841,7 +2856,8 @@ begin
   try
     with PNGIndex do
     begin
-      if (CurPointer = nil) or (CurPointer^ = nil) then exit;
+      if (CurPointer = nil) or (CurPointer^ = nil) then
+        exit;
       if Frame > 1 then
         Inc(CurPointer, FrameNum mod Frame);
       sur := CurPointer^;
@@ -2924,7 +2940,8 @@ begin
       SDL_UpperBlit(sur, region, scr, @rect)
     else
       SDL_UpperBlitScaled(sur, region, scr, @rect);
-    if newsur then SDL_FreeSurface(sur);
+    if newsur then
+      SDL_FreeSurface(sur);
   except
     writeln('Bad PNGINDEX, filenum, width and height are ', PNGIndex.FileNum, ', ', PNGIndex.w, ', ', PNGIndex.h);
   end;
@@ -2986,6 +3003,8 @@ var
   audioStream, sizeA: integer;
 
   bmp: PSDL_Texture;
+
+  //info: SDL_SysWMinfo;
 
   function LoadAudioThread(Data: pointer): longint; cdecl;
   var
@@ -3070,6 +3089,8 @@ begin
   //openAudio := BASS_StreamCreateFile(False, PChar(filename), 0, 0, 0);
 
   //sdl_setrendertarget(render,nil);
+
+
   where := 5;
   av_register_all();
   if av_open_input_file(pFormatCtx, pchar(filename), nil, 0, nil) = 0 then
@@ -3280,10 +3301,14 @@ end;
 
 procedure GetRGBA(color: uint32; r, g, b: pbyte; a: pbyte = nil);
 begin
-  if r <> nil then r^ := (color shr 16) and $FF;
-  if g <> nil then g^ := (color shr 8) and $FF;
-  if b <> nil then b^ := (color shr 0) and $FF;
-  if a <> nil then a^ := (color shr 24) and $FF;
+  if r <> nil then
+    r^ := (color shr 16) and $FF;
+  if g <> nil then
+    g^ := (color shr 8) and $FF;
+  if b <> nil then
+    b^ := (color shr 0) and $FF;
+  if a <> nil then
+    a^ := (color shr 24) and $FF;
 end;
 
 //force: 1-不按照比例计算, 2-恢复为20, 18, -1-初始化
@@ -3611,7 +3636,6 @@ var
   scr: PSDL_Texture;
   r, g, b: byte;
 begin
-
   case ScreenBlendMode of
     0:
     begin
@@ -3646,11 +3670,6 @@ begin
       src.w := CENTER_X * 2;
       src.h := CENTER_Y * 2;
       dest := GetRealRect(src, 1);
-      {src.x := CENter_X div 2;
-      src.y := CENter_y div 2;
-      src.w := CENTER_X;
-      src.h := CENTER_Y;
-      SDL_RenderCopy(render, screenTex, @src, @dest); }
       SDL_RenderCopy(render, screenTex, nil, @dest);
     end
     else
@@ -3664,7 +3683,6 @@ begin
       SDL_SetTextureColorMod(TextScreenTex, r, g, b);
       SDL_RenderCopy(render, TextScreenTex, nil, @destfull);
     end;
-
     SDL_RenderPresent(render);
     SDL_SetRenderTarget(render, screenTex);
   end
@@ -3698,7 +3716,9 @@ begin
       end;
     end;
   end;
+
 end;
+
 
 //清除文字层
 procedure CleanTextScreen; overload;
@@ -3880,8 +3900,10 @@ begin
     Result.py := (h2 - h1 * w2 div w1) div 2;
   end;
   //分子和分母均不能为零, 在后面的计算中均可能作为被除数
-  if Result.num = 0 then Result.num := 1;
-  if Result.den = 0 then Result.den := 1;
+  if Result.num = 0 then
+    Result.num := 1;
+  if Result.den = 0 then
+    Result.den := 1;
 end;
 
 procedure QuickSort(var a: array of integer; l, r: integer);
@@ -3892,8 +3914,10 @@ begin
   j := r;
   x := a[(l + r) div 2];
   repeat
-    while a[i] < x do Inc(i);
-    while a[j] > x do Dec(j);
+    while a[i] < x do
+      Inc(i);
+    while a[j] > x do
+      Dec(j);
     if i <= j then
     begin
       t := a[i];
@@ -3919,8 +3943,10 @@ begin
   j := r;
   x := a[(l + r) div 2];
   repeat
-    while a[i].c < x.c do Inc(i);
-    while a[j].c > x.c do Dec(j);
+    while a[i].c < x.c do
+      Inc(i);
+    while a[j].c > x.c do
+      Dec(j);
     if i <= j then
     begin
       t := a[i];

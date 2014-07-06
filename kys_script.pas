@@ -687,7 +687,8 @@ begin
   begin
     strs[1] := UTF8Decode(lua_tostring(L, -n + 2));
   end;
-  if nums[3] < 0 then nums[3] := abs(nums[3]);
+  if nums[3] < 0 then
+    nums[3] := abs(nums[3]);
   NewTalk(nums[0], nums[1], nums[2], nums[3], nums[4], nums[5], 0, strs[0], strs[1]);
 
   {Width := 48;
@@ -843,14 +844,17 @@ begin
   x := lua_tointeger(L, -n);
   y := lua_tointeger(L, -n + 1);
   str := UTF8Decode(lua_tostring(L, -n + 2));
-  if n >= 4 then alpha := lua_tointeger(L, -n + 3);
+  if n >= 4 then
+    alpha := lua_tointeger(L, -n + 3);
   if n >= 6 then
   begin
     color1 := lua_tointeger(L, -n + 4);
     color2 := lua_tointeger(L, -n + 5);
   end;
-  if n >= 7 then incolor := lua_tointeger(L, -n + 6);
-  if n >= 8 then framecolor := lua_tointeger(L, -n + 7);
+  if n >= 7 then
+    incolor := lua_tointeger(L, -n + 6);
+  if n >= 8 then
+    framecolor := lua_tointeger(L, -n + 7);
   DrawRectangle(x, y - 2, DrawLength(str) * 10 + 8, 26, incolor, framecolor, alpha);
   DrawShadowText(@str[1], x + 3, y, color1, color2);
   UpdateAllScreen;
@@ -2098,7 +2102,8 @@ begin
   if not lua_isnumber(L, -n) then
     str := UTF8Decode(lua_tostring(L, -n));
   color := 1;
-  if n > 1 then color := lua_tointeger(L, -1);
+  if n > 1 then
+    color := lua_tointeger(L, -1);
   NewTalk(0, talknum, -1, 2, 1, color, 0, str);
 end;
 

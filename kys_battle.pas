@@ -362,7 +362,8 @@ begin
     for i := 0 to BRoleAmount - 1 do
     begin
       actionnum := Rrole[Brole[i].rnum].ActionNum;
-      if Brole[i].rnum = 0 then actionnum := 0;
+      if Brole[i].rnum = 0 then
+        actionnum := 0;
       if FPicLoaded[actionnum] = 0 then
       begin
         LoadPNGTiles(formatfloat('resource/fight/fight000', actionnum), FPNGIndex[actionnum],
@@ -1253,7 +1254,7 @@ end;
 
 function BattleMenu(bnum: integer): integer;
 var
-  i, p, MenuStatus, menu, max, rnum, menup, xm, ym, step: integer;
+  i, p, MenuStatus, menu, max, rnum, menup, xm, ym, step, x, y: integer;
   realmenu: array[0..10] of integer;
   str: WideString;
   word: array[0..10] of WideString;
@@ -1262,19 +1263,21 @@ var
   var
     i, p: integer;
   begin
-    LoadFreshScreen(100, 50);
-    DrawRectangle(100, 50, 47, max * 22 + 28, 0, ColColor(255), 30);
+    LoadFreshScreen(x, y);
+    //DrawRectangle(100, 50, 47, max * 22 + 28, 0, ColColor(255), 30);
     p := 0;
     for i := 0 to 10 do
     begin
       if (p = menu) and ((MenuStatus and (1 shl i) > 0)) then
       begin
-        DrawShadowText(@word[i][1], 103, 53 + 22 * p, ColColor($64), ColColor($66));
+        DrawMPic(2110 + i, x + 5, y + 30 * p, SIMPLE);
+        //DrawShadowText(@word[i][1], 103, 53 + 22 * p, ColColor($64), ColColor($66));
         p := p + 1;
       end
       else if (p <> menu) and ((MenuStatus and (1 shl i) > 0)) then
       begin
-        DrawShadowText(@word[i][1], 103, 53 + 22 * p, ColColor($21), ColColor($23));
+        DrawMPic(2110 + i, x, y + 30 * p, SIMPLE, 0, 20);
+        //DrawShadowText(@word[i][1], 103, 53 + 22 * p, ColColor($21), ColColor($23));
         p := p + 1;
       end;
     end;
@@ -1369,10 +1372,20 @@ begin
   end;
   Redraw;
   ShowSimpleStatus(Brole[bnum].rnum, 50, CENTER_Y * 2 - 160);
-  str := UTF8Decode(format('回合%d', [BattleRound]));
-  DrawTextWithRect(puint16(str), 160, 50, DrawLength(str) * 10 + 7, ColColor($21), ColColor($23), 30);
+  //str := UTF8Decode(format('回合%d', [BattleRound]));
+  //DrawTextWithRect(puint16(str), 160, 50, DrawLength(str) * 10 + 7, ColColor($21), ColColor($23), 30);
+  DrawMPic(2121, 160, 50);
+  str := UTF8Decode(format('%d', [BattleRound]));
+
+  for i := 1 to length(str) do
+  begin
+    DrawMPic(2130 + StrToInt(str[i]), 182 + 31 * i, 50);
+  end;
+
   UpdateAllScreen;
-  RecordFreshScreen(100, 50, 48, max * 22 + 29);
+  x := CENTER_X + 100;
+  y := 50;
+  RecordFreshScreen(x, y, 140, max * 35 + 40);
   menu := 0;
   ShowBMenu(MenuStatus, menu, max);
   //SDL_UpdateRect2(screen,0,0,screen.w,screen.h);
@@ -1413,7 +1426,7 @@ begin
       SDL_MOUSEBUTTONUP:
       begin
         if (event.button.button = SDL_BUTTON_LEFT) and (menu <> -1) and
-          MouseInRegion(100, 50, 47, (max + 1) * 22, xm, ym) then
+          MouseInRegion(x, y, 120, (max + 1) * 35, xm, ym) then
           break;
         if (event.button.button = SDL_BUTTON_RIGHT) and (menu <> -1) then
         begin
@@ -1423,10 +1436,10 @@ begin
       end;
       SDL_MOUSEMOTION:
       begin
-        if MouseInRegion(100, 50, 47, (max + 1) * 22, xm, ym) then
+        if MouseInRegion(x, y, 120, (max + 1) * 35, xm, ym) then
         begin
           menup := menu;
-          menu := (ym - 52) div 22;
+          menu := (ym - 52) div 30;
           if menu > max then
             menu := max;
           if menu < 0 then
@@ -3033,7 +3046,12 @@ begin
         begin
           for i1 := max(Ax - range, 0) to min(Ax + range, 63) do
             for i2 := max(Ay - range, 0) to min(Ay + range, 63) do
-              BField[4, i1, i2] := abs(i1 - Bx) + abs(i2 - By) * 2 + random(24) + 1;
+            begin
+              if MODVersion = 81 then
+                BField[4, i1, i2] := 1
+              else
+                BField[4, i1, i2] := abs(i1 - Bx) + abs(i2 - By) * 2 + random(24) + 1;
+            end;
         end;
         1: //方向系线型
         begin
@@ -3231,9 +3249,12 @@ begin
         if (Rmagic[mnum].MagicType = 1) and (random(1000) < Rrole[rnum].Fist *
           (100 + Brole[bnum].StateLevel[29]) div 100) then
         begin
-          if random(100) < 30 then ModifyState(i, 0, -30, 3);
-          if random(100) < 30 then ModifyState(i, 1, -30, 3);
-          if random(100) < 30 then ModifyState(i, 2, -30, 3);
+          if random(100) < 30 then
+            ModifyState(i, 0, -30, 3);
+          if random(100) < 30 then
+            ModifyState(i, 1, -30, 3);
+          if random(100) < 30 then
+            ModifyState(i, 2, -30, 3);
         end;
 
         //特系福利, 几率打成脑残
@@ -3618,7 +3639,8 @@ begin
   //分母仅在二者都为0时才为零, 此时认为攻击失败
   if att + def > 0 then
     Result := trunc((1.0 * att * att) / (att + def) / 2 + random(10) - random(10))
-  else Result := 10 + random(10) - random(10);
+  else
+    Result := 10 + random(10) - random(10);
   //result := ( att * att ) div ( att + def ) div 4;
   //writeln(att, ', ', def, ' ,', Result);
   //距离衰减
@@ -3716,7 +3738,8 @@ begin
       str := '-%d';
     end;
   end;
-  if fstr <> '' then str := fstr;
+  if fstr <> '' then
+    str := fstr;
   setlength(word, BRoleAmount);
   for i := 0 to BRoleAmount - 1 do
   begin
@@ -4362,7 +4385,8 @@ var
   filename: string;
 begin
   //暗器类用特殊的动作
-  if mode = 5 then mode := 4;
+  if mode = 5 then
+    mode := 4;
 
   Ax1 := Ax;
   Ay1 := Ay;
@@ -4386,7 +4410,8 @@ begin
   Redraw;
   rnum := Brole[bnum].rnum;
   actnum := Rrole[rnum].ActionNum;
-  if rnum = 0 then actnum := 0;
+  if rnum = 0 then
+    actnum := 0;
 
   //计算动作帧数
   //if Rrole[rnum].AmiFrameNum[mode] > 0 then
@@ -4394,7 +4419,8 @@ begin
   if FightFrame[actNum, mode] <= 0 then
   begin
     for mode := 0 to 4 do
-      if FightFrame[actNum, mode] > 0 then break;
+      if FightFrame[actNum, mode] > 0 then
+        break;
   end;
   if FightFrame[actNum, mode] > 0 then
   begin
@@ -5691,7 +5717,8 @@ begin
           removeStone := True;
         end;
       end;
-    if removeStone then InitialBfieldImage(1);
+    if removeStone then
+      InitialBfieldImage(1);
   end;
   {//以下处理状态类事件的回合数
   for i := 0 to BRoleAmount - 1 do
@@ -6290,7 +6317,8 @@ begin
       level := Rrole[rnum].CurrentMP div Rmagic[mnum].NeedMP;
     if level > 10 then
       level := 10;
-    if level < 1 then exit;
+    if level < 1 then
+      exit;
     distance := Rmagic[mnum].MoveDistance[level - 1];
     range := Rmagic[mnum].AttDistance[level - 1];
     //选择移动模式
@@ -6701,7 +6729,8 @@ begin
               //如果二者异号, 强制为特技达到的水平, 即正面能覆盖负面, 或反之
               //其他情况, 包括有一个为0, 如果等级和回合能达到更大则覆盖, 即正面或负面效果只能保留最大
               r := Rmagic[mnum].HurtMP[level - 1];
-              if bnum = i then r := r + 1;  //当对象为自身的时候, 回合数加1, 因为人物行动之后会立刻扣掉一回合
+              if bnum = i then
+                r := r + 1;  //当对象为自身的时候, 回合数加1, 因为人物行动之后会立刻扣掉一回合
               ModifyState(i, Rmagic[mnum].AddMP[s], j, r);
             end;
             s := s + 1;
@@ -6749,13 +6778,16 @@ begin
             //如需改为负面状态, 则首先计算能否抵消
             curvalue := curvalue + MaxValue;
             //刚好抵消则回合清零
-            if curvalue = 0 then curround := 0;
+            if curvalue = 0 then
+              curround := 0;
             //未能完全抵消则回合数不变
             //if curvalue > 0 then curround := curround;
             //抵消仍有多余, 回合数若能完全抵消, 则按照新的
-            if curvalue < 0 then curround := maxround;
+            if curvalue < 0 then
+              curround := maxround;
           end;
-        end; -1:
+        end;
+        -1:
         begin
           if MaxValue < 0 then
           begin
@@ -6765,8 +6797,10 @@ begin
           else
           begin
             curvalue := curvalue + MaxValue;
-            if curvalue = 0 then curround := 0;
-            if curvalue > 0 then curround := maxround;
+            if curvalue = 0 then
+              curround := 0;
+            if curvalue > 0 then
+              curround := maxround;
             //if curvalue < 0 then curround := maxround;
           end;
         end;
@@ -6866,9 +6900,11 @@ begin
     begin
       rnum := Brole[i].rnum;
       if Brole[bnum].team = Brole[i].team then
-        if Rrole[rnum].Poison > 0 then m := m + 1;
+        if Rrole[rnum].Poison > 0 then
+          m := m + 1;
     end;
-    if m < 2 then exit;
+    if m < 2 then
+      exit;
   end;
   ShowMagicName(mnum);
   instruct_67(Rmagic[mnum].SoundNum);
@@ -6901,7 +6937,8 @@ begin
   //如果是AI控制, 则在内力少于一半才使用
   rnum := Brole[bnum].rnum;
   if (Brole[bnum].Team <> 0) or (Brole[bnum].Auto <> 0) then
-    if Rrole[rnum].CurrentMP > Rrole[rnum].MaxMP div 2 then exit;
+    if Rrole[rnum].CurrentMP > Rrole[rnum].MaxMP div 2 then
+      exit;
   ShowMagicName(mnum);
   instruct_67(Rmagic[mnum].SoundNum);
   PlayActionAmination(bnum, Rmagic[mnum].MagicType); //动作效果
@@ -7062,7 +7099,8 @@ begin
         if Rrole[rnum].CurrentHP < Rrole[rnum].MaxHP * 4 div 5 then
           m := m + 1;
     end;
-    if m < 2 then exit;
+    if m < 2 then
+      exit;
   end;
 
   ShowMagicName(mnum);
@@ -7095,7 +7133,8 @@ begin
   //如果是AI控制, 则在生命少于一半才使用
   rnum := Brole[bnum].rnum;
   if (Brole[bnum].Team <> 0) or (Brole[bnum].Auto <> 0) then
-    if Rrole[rnum].CurrentHP > Rrole[rnum].MaxHP div 2 then exit;
+    if Rrole[rnum].CurrentHP > Rrole[rnum].MaxHP div 2 then
+      exit;
   ShowMagicName(mnum);
   instruct_67(Rmagic[mnum].SoundNum);
   PlayActionAmination(bnum, Rmagic[mnum].MagicType); //动作效果
@@ -7434,7 +7473,8 @@ begin
         if Rrole[rnum].PhyPower < MAX_PHYSICAL_POWER div 2 then
           m := m + 1;
     end;
-    if m < 2 then exit;
+    if m < 2 then
+      exit;
   end;
 
   ShowMagicName(mnum);
@@ -7775,7 +7815,8 @@ begin
         if (Brole[i].StateLevel[3] <= 0) then
           m := m + 1;
     end;
-    if m = 0 then exit;
+    if m = 0 then
+      exit;
   end;
   ShowMagicName(mnum);
   for i := 0 to BRoleAmount - 1 do
@@ -7845,8 +7886,10 @@ begin
     aimbrole := Brole[BField[2, Ax, Ay]];
     j := 0;
     for i := 0 to 20 do
-      if aimbrole.StateLevel[i] > 0 then j := j + 1;
-    if j = 0 then exit;
+      if aimbrole.StateLevel[i] > 0 then
+        j := j + 1;
+    if j = 0 then
+      exit;
   end;
   ShowMagicName(mnum);
   if BField[2, Ax, Ay] >= 0 then
@@ -7889,8 +7932,10 @@ begin
     aimbrole := Brole[BField[2, Ax, Ay]];
     j := 0;
     for i := 0 to 6 do
-      if aimbrole.StateLevel[i] < 0 then j := j + 1;
-    if j = 0 then exit;
+      if aimbrole.StateLevel[i] < 0 then
+        j := j + 1;
+    if j = 0 then
+      exit;
   end;
   ShowMagicName(mnum);
   if BField[2, Ax, Ay] >= 0 then
@@ -7938,7 +7983,8 @@ begin
         if Rrole[rnum].CurrentMP < Rrole[rnum].MaxMP * 4 div 5 then
           m := m + 1;
     end;
-    if m < 2 then exit;
+    if m < 2 then
+      exit;
   end;
 
   ShowMagicName(mnum);
@@ -8204,8 +8250,10 @@ begin
     aimbnum := BField[2, Ax, Ay];
     j := 0;
     for i := 0 to 20 do
-      if Brole[aimbnum].StateLevel[i] > 0 then j := j + 1;
-    if j = 0 then exit;
+      if Brole[aimbnum].StateLevel[i] > 0 then
+        j := j + 1;
+    if j = 0 then
+      exit;
   end;
   ShowMagicName(mnum);
   for j := 0 to BRoleAmount - 1 do
@@ -8401,8 +8449,10 @@ begin
       sum := sum + 1;
     end;
 
-  if sum <> 0 then life := life div sum
-  else life := Rrole[Brole[bnum].rnum].CurrentHP;
+  if sum <> 0 then
+    life := life div sum
+  else
+    life := Rrole[Brole[bnum].rnum].CurrentHP;
 
   for i := 0 to BRoleAmount - 1 do
     if (Brole[i].dead = 0) then
@@ -8444,7 +8494,8 @@ begin
           DrawTextWithRect(@str[1], CENTER_X - 70, CENTER_Y - 20, 145, ColColor(15), ColColor(17));
           WaitAnyKey;
         end;
-        if (aimbnum2 >= 0) and (aimbnum2 <> aimbnum1) then break;
+        if (aimbnum2 >= 0) and (aimbnum2 <> aimbnum1) then
+          break;
       end;
     end
     else
@@ -8516,7 +8567,8 @@ begin
           DrawTextWithRect(@str[1], CENTER_X - 70, CENTER_Y - 20, 145, ColColor(15), ColColor(17));
           WaitAnyKey;
         end;
-        if (aimbnum2 >= 0) and (aimbnum2 <> aimbnum1) then break;
+        if (aimbnum2 >= 0) and (aimbnum2 <> aimbnum1) then
+          break;
       end;
     end
     else
@@ -9095,11 +9147,16 @@ begin
     Brole[bnum].StateRound[1] := 3;}
     ModifyState(bnum, 0, 50, 3);
     ModifyState(bnum, 1, 50, 3);
-    if random(100) < 50 then ModifyState(bnum, 29, 30, 3);
-    if random(100) < 50 then ModifyState(bnum, 30, 30, 3);
-    if random(100) < 50 then ModifyState(bnum, 31, 30, 3);
-    if random(100) < 50 then ModifyState(bnum, 32, 30, 3);
-    if random(100) < 50 then ModifyState(bnum, 33, 30, 3);
+    if random(100) < 50 then
+      ModifyState(bnum, 29, 30, 3);
+    if random(100) < 50 then
+      ModifyState(bnum, 30, 30, 3);
+    if random(100) < 50 then
+      ModifyState(bnum, 31, 30, 3);
+    if random(100) < 50 then
+      ModifyState(bnum, 32, 30, 3);
+    if random(100) < 50 then
+      ModifyState(bnum, 33, 30, 3);
   end;
 end;
 

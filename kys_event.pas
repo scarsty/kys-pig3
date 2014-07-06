@@ -172,8 +172,10 @@ var
   Name: WideString;
 begin
   namenum := headnum;
-  if dismode in [2, 3] then headnum := -1;
-  if MODVersion = 81 then namenum := -2;
+  if dismode in [2, 3] then
+    headnum := -1;
+  if MODVersion = 81 then
+    namenum := -2;
   NewTalk(headnum, talknum, namenum, dismode mod 2, 0, 0, 0);
 
   {case dismode of
@@ -1704,9 +1706,12 @@ begin
         0: x50[e3] := x50[e4] + t1;
         1: x50[e3] := x50[e4] - t1;
         2: x50[e3] := x50[e4] * t1;
-        3: if t1 <> 0 then x50[e3] := x50[e4] div t1;
-        4: if t1 <> 0 then x50[e3] := x50[e4] mod t1;
-        5: if t1 <> 0 then x50[e3] := uint16(x50[e4]) div t1;
+        3: if t1 <> 0 then
+            x50[e3] := x50[e4] div t1;
+        4: if t1 <> 0 then
+            x50[e3] := x50[e4] mod t1;
+        5: if t1 <> 0 then
+            x50[e3] := uint16(x50[e4]) div t1;
       end;
     end;
     4: //Judge the parameter.
@@ -2499,14 +2504,16 @@ begin
         begin
           if (Rrole[person].NeiGong[i] = mnum) then
             Result := Rrole[person].NGLevel[i] div 100 + 1;
-          if Result > 0 then break;
+          if Result > 0 then
+            break;
         end;
       0, 1, 2:
         for i := 0 to 9 do
         begin
           if (Rrole[person].Magic[i] = mnum) then
             Result := Rrole[person].MagLevel[i] div 100 + 1;
-          if Result > 0 then break;
+          if Result > 0 then
+            break;
         end;
     end;
   end;
@@ -2564,27 +2571,88 @@ begin
     3:
     begin
       surname2 := TStringList.Create;
-      surname2.Add('歐陽');  surname2.Add('太史');  surname2.Add('端木');  surname2.Add('上官');
-      surname2.Add('司馬');  surname2.Add('東方');  surname2.Add('獨孤');  surname2.Add('南宮');
-      surname2.Add('萬俟');  surname2.Add('聞人');  surname2.Add('夏侯');  surname2.Add('諸葛');
-      surname2.Add('尉遲');  surname2.Add('公羊');  surname2.Add('赫連');  surname2.Add('澹台');
-      surname2.Add('皇甫');  surname2.Add('宗政');  surname2.Add('濮陽');  surname2.Add('公冶');
-      surname2.Add('太叔');  surname2.Add('申屠');  surname2.Add('公孫');  surname2.Add('慕容');
-      surname2.Add('仲孫');  surname2.Add('鍾離');  surname2.Add('長孫');  surname2.Add('宇文');
-      surname2.Add('司徒');  surname2.Add('鮮於');  surname2.Add('司空');  surname2.Add('閭丘');
-      surname2.Add('子車');  surname2.Add('亓官');  surname2.Add('司寇');  surname2.Add('巫馬');
-      surname2.Add('公西');  surname2.Add('顓孫');  surname2.Add('壤駟');  surname2.Add('公良');
-      surname2.Add('漆雕');  surname2.Add('樂正');  surname2.Add('宰父');  surname2.Add('穀梁');
-      surname2.Add('拓跋');  surname2.Add('夾穀');  surname2.Add('軒轅');  surname2.Add('令狐');
-      surname2.Add('段幹');  surname2.Add('百裏');  surname2.Add('呼延');  surname2.Add('東郭');
-      surname2.Add('南門');  surname2.Add('羊舌');  surname2.Add('微生');  surname2.Add('公戶');
-      surname2.Add('公玉');  surname2.Add('公儀');  surname2.Add('梁丘');  surname2.Add('公仲');
-      surname2.Add('公上');  surname2.Add('公門');  surname2.Add('公山');  surname2.Add('公堅');
-      surname2.Add('左丘');  surname2.Add('公伯');  surname2.Add('西門');  surname2.Add('公祖');
-      surname2.Add('第五');  surname2.Add('公乘');  surname2.Add('貫丘');  surname2.Add('公皙');
-      surname2.Add('南榮');  surname2.Add('東裏');  surname2.Add('東宮');  surname2.Add('仲長');
-      surname2.Add('子書');  surname2.Add('子桑');  surname2.Add('即墨');  surname2.Add('達奚');
-      surname2.Add('褚師');  surname2.Add('第二');
+      surname2.Add('歐陽');
+      surname2.Add('太史');
+      surname2.Add('端木');
+      surname2.Add('上官');
+      surname2.Add('司馬');
+      surname2.Add('東方');
+      surname2.Add('獨孤');
+      surname2.Add('南宮');
+      surname2.Add('萬俟');
+      surname2.Add('聞人');
+      surname2.Add('夏侯');
+      surname2.Add('諸葛');
+      surname2.Add('尉遲');
+      surname2.Add('公羊');
+      surname2.Add('赫連');
+      surname2.Add('澹台');
+      surname2.Add('皇甫');
+      surname2.Add('宗政');
+      surname2.Add('濮陽');
+      surname2.Add('公冶');
+      surname2.Add('太叔');
+      surname2.Add('申屠');
+      surname2.Add('公孫');
+      surname2.Add('慕容');
+      surname2.Add('仲孫');
+      surname2.Add('鍾離');
+      surname2.Add('長孫');
+      surname2.Add('宇文');
+      surname2.Add('司徒');
+      surname2.Add('鮮於');
+      surname2.Add('司空');
+      surname2.Add('閭丘');
+      surname2.Add('子車');
+      surname2.Add('亓官');
+      surname2.Add('司寇');
+      surname2.Add('巫馬');
+      surname2.Add('公西');
+      surname2.Add('顓孫');
+      surname2.Add('壤駟');
+      surname2.Add('公良');
+      surname2.Add('漆雕');
+      surname2.Add('樂正');
+      surname2.Add('宰父');
+      surname2.Add('穀梁');
+      surname2.Add('拓跋');
+      surname2.Add('夾穀');
+      surname2.Add('軒轅');
+      surname2.Add('令狐');
+      surname2.Add('段幹');
+      surname2.Add('百裏');
+      surname2.Add('呼延');
+      surname2.Add('東郭');
+      surname2.Add('南門');
+      surname2.Add('羊舌');
+      surname2.Add('微生');
+      surname2.Add('公戶');
+      surname2.Add('公玉');
+      surname2.Add('公儀');
+      surname2.Add('梁丘');
+      surname2.Add('公仲');
+      surname2.Add('公上');
+      surname2.Add('公門');
+      surname2.Add('公山');
+      surname2.Add('公堅');
+      surname2.Add('左丘');
+      surname2.Add('公伯');
+      surname2.Add('西門');
+      surname2.Add('公祖');
+      surname2.Add('第五');
+      surname2.Add('公乘');
+      surname2.Add('貫丘');
+      surname2.Add('公皙');
+      surname2.Add('南榮');
+      surname2.Add('東裏');
+      surname2.Add('東宮');
+      surname2.Add('仲長');
+      surname2.Add('子書');
+      surname2.Add('子桑');
+      surname2.Add('即墨');
+      surname2.Add('達奚');
+      surname2.Add('褚師');
+      surname2.Add('第二');
       surname := Copy(fullname, 1, 2);
       hysur := 0;
       for i := 0 to surname2.Count - 1 do
@@ -2765,7 +2833,8 @@ begin
         TalkStr := '';
     end;
   end
-  else TalkStr := content;
+  else
+    TalkStr := content;
   TalkStr := ' ' + TalkStr;
   //******************************************//
 
@@ -2886,7 +2955,8 @@ begin
     ix := 0;
     iy := 0;
     skipSync := False;
-    if SkipTalk = 1 then break;
+    if SkipTalk = 1 then
+      break;
     while SDL_PollEvent(@event) >= 0 do
     begin
       CheckBasicEvent;
@@ -2999,7 +3069,8 @@ begin
         tempstr[2] := widechar(0);
         xtemp := Talk_X + ColSpacing * ix;
         //调整半角字符的位置
-        if uint16(tempstr[1]) < $1000 then xtemp := xtemp + 5;
+        if uint16(tempstr[1]) < $1000 then
+          xtemp := xtemp + 5;
         DrawShadowText(@TempStr[1], xtemp, Talk_Y + RowSpacing * iy,
           DrawForeGroundCol, DrawBackGroundCol);
       end;
@@ -3020,7 +3091,8 @@ begin
           begin
             UpdateAllScreen;
             WaitAnyKey;
-            if skipSync then WaitAnyKey;
+            if skipSync then
+              WaitAnyKey;
             skipSync := False;
           end;
           UpdateAllScreen;
@@ -3037,7 +3109,8 @@ begin
   if SkipTalk = 0 then
   begin
     WaitAnyKey;
-    if skipSync then WaitAnyKey;
+    if skipSync then
+      WaitAnyKey;
   end;
   //Redraw;
   //******************************************//
@@ -3334,27 +3407,115 @@ var
     64, 65, 66, 85, 55, 54, 72, 73, 88, 102, 71, 96, 76, 68, 78, 79, 42, 81, 82, 83, 84, 53,
     80, 56, 95, 70, 90, 97, 104, 105, 91, 67, 75, 369, 60, 99, 100, 101, 98, 103, 87, 86, 107, 106, 108, 114, 115);}
 begin
-  head[0] := 0;  head[1] := 1;  head[2] := 2;  head[3] := 8;  head[4] := 4;  head[5] := 7;
-  head[6] := 6;  head[7] := 21;  head[8] := 34;  head[9] := 11;  head[10] := 3;  head[11] := 14;
-  head[12] := 12;  head[13] := 13;  head[14] := 23;  head[15] := 31;  head[16] := 16;  head[17] := 17;
-  head[18] := 18;  head[19] := 5;  head[20] := 20;  head[21] := 22;  head[22] := 26;  head[23] := 27;
-  head[24] := 24;  head[25] := 25;  head[26] := 19;  head[27] := 30;  head[28] := 28;  head[29] := 29;
-  head[30] := 15;  head[31] := 32;  head[32] := 10;  head[33] := 33;  head[34] := 9;  head[35] := 35;
+  head[0] := 0;
+  head[1] := 1;
+  head[2] := 2;
+  head[3] := 8;
+  head[4] := 4;
+  head[5] := 7;
+  head[6] := 6;
+  head[7] := 21;
+  head[8] := 34;
+  head[9] := 11;
+  head[10] := 3;
+  head[11] := 14;
+  head[12] := 12;
+  head[13] := 13;
+  head[14] := 23;
+  head[15] := 31;
+  head[16] := 16;
+  head[17] := 17;
+  head[18] := 18;
+  head[19] := 5;
+  head[20] := 20;
+  head[21] := 22;
+  head[22] := 26;
+  head[23] := 27;
+  head[24] := 24;
+  head[25] := 25;
+  head[26] := 19;
+  head[27] := 30;
+  head[28] := 28;
+  head[29] := 29;
+  head[30] := 15;
+  head[31] := 32;
+  head[32] := 10;
+  head[33] := 33;
+  head[34] := 9;
+  head[35] := 35;
 
-  head[36] := 36;  head[37] := 38;  head[38] := 46;  head[39] := 39;  head[40] := 40;  head[41] := 41;
-  head[42] := 48;  head[43] := 43;  head[44] := 49;  head[45] := 45;  head[46] := 89;  head[47] := 47;
-  head[48] := 37;  head[49] := 50;  head[50] := 51;  head[51] := 74;  head[52] := 52;  head[53] := 92;
-  head[54] := 93;  head[55] := 77;  head[56] := 44;  head[57] := 57;  head[58] := 58;  head[59] := 59;
-  head[60] := 69;  head[61] := 64;  head[62] := 65;  head[63] := 66;  head[64] := 85;  head[65] := 55;
-  head[66] := 54;  head[67] := 72;  head[68] := 73;  head[69] := 88;  head[70] := 102;  head[71] := 71;
-  head[72] := 96;  head[73] := 76;  head[74] := 68;  head[75] := 78;  head[76] := 79;  head[77] := 42;
-  head[78] := 81;  head[79] := 82;  head[80] := 83;  head[81] := 84;  head[82] := 53;  head[83] := 80;
-  head[84] := 56;  head[85] := 95;  head[86] := 70;  head[87] := 90;  head[88] := 97;  head[89] := 104;
-  head[90] := 105;  head[91] := 91;  head[92] := 67;  head[93] := 75;  head[94] := 369;  head[95] := 60;
-  head[96] := 99;  head[97] := 100;  head[98] := 101;  head[99] := 98;  head[100] := 103;
+  head[36] := 36;
+  head[37] := 38;
+  head[38] := 46;
+  head[39] := 39;
+  head[40] := 40;
+  head[41] := 41;
+  head[42] := 48;
+  head[43] := 43;
+  head[44] := 49;
+  head[45] := 45;
+  head[46] := 89;
+  head[47] := 47;
+  head[48] := 37;
+  head[49] := 50;
+  head[50] := 51;
+  head[51] := 74;
+  head[52] := 52;
+  head[53] := 92;
+  head[54] := 93;
+  head[55] := 77;
+  head[56] := 44;
+  head[57] := 57;
+  head[58] := 58;
+  head[59] := 59;
+  head[60] := 69;
+  head[61] := 64;
+  head[62] := 65;
+  head[63] := 66;
+  head[64] := 85;
+  head[65] := 55;
+  head[66] := 54;
+  head[67] := 72;
+  head[68] := 73;
+  head[69] := 88;
+  head[70] := 102;
+  head[71] := 71;
+  head[72] := 96;
+  head[73] := 76;
+  head[74] := 68;
+  head[75] := 78;
+  head[76] := 79;
+  head[77] := 42;
+  head[78] := 81;
+  head[79] := 82;
+  head[80] := 83;
+  head[81] := 84;
+  head[82] := 53;
+  head[83] := 80;
+  head[84] := 56;
+  head[85] := 95;
+  head[86] := 70;
+  head[87] := 90;
+  head[88] := 97;
+  head[89] := 104;
+  head[90] := 105;
+  head[91] := 91;
+  head[92] := 67;
+  head[93] := 75;
+  head[94] := 369;
+  head[95] := 60;
+  head[96] := 99;
+  head[97] := 100;
+  head[98] := 101;
+  head[99] := 98;
+  head[100] := 103;
   head[101] := 87;
-  head[102] := 86;  head[103] := 107;  head[104] := 106;  head[105] := 108;
-  head[106] := 114;  head[107] := 115;
+  head[102] := 86;
+  head[103] := 107;
+  head[104] := 106;
+  head[105] := 108;
+  head[106] := 114;
+  head[107] := 115;
   Result := head[Starnum];
 end;
 
@@ -4484,7 +4645,8 @@ begin
       mnum := Rrole[rnum].Magic[i];
     magiclevel := trunc(Rrole[rnum].MagLevel[i] div 100) + 1;
     magichurt := Rmagic[mnum].Attack[0] + (Rmagic[mnum].Attack[1] - Rmagic[mnum].Attack[0]) * magiclevel div 10;
-    if Rmagic[mnum].HurtType = 2 then magichurt := 1000;
+    if Rmagic[mnum].HurtType = 2 then
+      magichurt := 1000;
     magichurt := magichurt div 10;
     case Rmagic[mnum].MagicType of
       1: Rrole[rnum].Fist := Rrole[rnum].Fist + magichurt;
@@ -4886,7 +5048,8 @@ begin
   if SPNGIndex[picnum].Loaded = 0 then
     LoadOnePNGTexture('resource/smap', pSPic, SPNGIndex[picnum]);
   WoodPic := SPNGIndex[picnum].CurPointerT^;
-  if WoodPic = nil then WoodPic := SPNGIndex[picnum].CurPointer^;
+  if WoodPic = nil then
+    WoodPic := SPNGIndex[picnum].CurPointer^;
   for i := 0 to 99 do
   begin
     x1 := i div 10;
@@ -5470,11 +5633,13 @@ begin
   h := 440;
   right := 0;
   picnum := 4700 + num;
-  if picnum >= SPicAmount then exit;
+  if picnum >= SPicAmount then
+    exit;
   if SPNGIndex[picnum].Loaded = 0 then
     LoadOnePNGTexture('resource/smap', pSPic, SPNGIndex[picnum]);
   Pic := SPNGIndex[picnum].CurPointerT^;
-  if Pic = nil then Pic := SPNGIndex[picnum].CurPointer^;
+  if Pic = nil then
+    Pic := SPNGIndex[picnum].CurPointer^;
   //filename := 'resource/Pic' + IntToStr(num);
   //if FileExists(filename) then
   //Pic := IMG_Load(@filename[1]);
@@ -6012,12 +6177,14 @@ begin
           SDLK_UP:
           begin
             menu := menu - 1;
-            if menu < 0 then menu := 5;
+            if menu < 0 then
+              menu := 5;
           end;
           SDLK_DOWN:
           begin
             menu := menu + 1;
-            if menu > 5 then menu := 0;
+            if menu > 5 then
+              menu := 0;
           end;
           SDLK_LEFT:
           begin
@@ -6107,7 +6274,8 @@ begin
     begin
       totalprice := totalprice + sell.Price[i] * buy.BuyAmount[i];
     end;
-    if totalprice > money then buy := pbuy;
+    if totalprice > money then
+      buy := pbuy;
     if sure then
     begin
       sure := False;
@@ -6185,16 +6353,20 @@ begin
   n := 0;
   p := 0;
   u := 0;
-  xp := CENTER_X - 320;;
+  xp := CENTER_X - 320;
+  ;
   yp := 10;
   Redraw;
-  a11 := 1.2762;  a12 := -0.7717;
-  a21 := 0.1185;  a22 := 1.6291;
+  a11 := 1.2762;
+  a12 := -0.7717;
+  a21 := 0.1185;
+  a22 := 1.6291;
   x0 := 121.9534;
   y0 := -194.0342;
   //if FileExists(AppPath + 'resource/map') then
   //Map_Pic := IMG_Load(PChar(AppPath + 'resource/map'));
-  if picnum >= SPicAmount then exit;
+  if picnum >= SPicAmount then
+    exit;
   if SPNGIndex[picnum].Loaded = 0 then
     LoadOnePNGTexture('resource/smap', pSPic, SPNGIndex[picnum]);
   SPNGIndex[picnum].x := 0;
