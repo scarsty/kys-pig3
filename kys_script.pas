@@ -77,26 +77,26 @@ function Delay(L: Plua_state): integer; cdecl;
 function DrawRect(L: Plua_state): integer; cdecl;
 function MemberAmount(L: Plua_state): integer; cdecl;
 function GetMember(L: Plua_state): integer; cdecl;
-function PutMember(L: Plua_state): integer; cdecl;
+function SetMember(L: Plua_state): integer; cdecl;
 
 function GetGlobalValue(L: Plua_state): integer; cdecl;
-function PutGlobalValue(L: Plua_state): integer; cdecl;
+function SetGlobalValue(L: Plua_state): integer; cdecl;
 
 function GetRolePro(L: Plua_state): integer; cdecl;
-function PutRolePro(L: Plua_state): integer; cdecl;
+function SetRolePro(L: Plua_state): integer; cdecl;
 function GetItemPro(L: Plua_state): integer; cdecl;
-function PutItemPro(L: Plua_state): integer; cdecl;
+function SetItemPro(L: Plua_state): integer; cdecl;
 
-function PutItemIntro(L: Plua_state): integer; cdecl; //冰枫月之怒添加
+function SetItemIntro(L: Plua_state): integer; cdecl; //冰枫月之怒添加
 
 function GetMagicPro(L: Plua_state): integer; cdecl;
-function PutMagicPro(L: Plua_state): integer; cdecl;
+function SetMagicPro(L: Plua_state): integer; cdecl;
 function GetScencePro(L: Plua_state): integer; cdecl;
-function PutScencePro(L: Plua_state): integer; cdecl;
+function SetScencePro(L: Plua_state): integer; cdecl;
 function GetScenceMapPro(L: Plua_state): integer; cdecl;
-function PutScenceMapPro(L: Plua_state): integer; cdecl;
+function SetScenceMapPro(L: Plua_state): integer; cdecl;
 function GetScenceEventPro(L: Plua_state): integer; cdecl;
-function PutScenceEventPro(L: Plua_state): integer; cdecl;
+function SetScenceEventPro(L: Plua_state): integer; cdecl;
 function JudgeScenceEvent(L: Plua_state): integer; cdecl;
 function PlayMusic(L: Plua_state): integer; cdecl;
 function PlayWave(L: Plua_state): integer; cdecl;
@@ -113,7 +113,7 @@ function GetCurrentEvent(L: Plua_state): integer; cdecl;
 function GetBattleNumber(L: Plua_state): integer; cdecl;
 function SelectOneAim(L: Plua_state): integer; cdecl;
 function GetBattleRolePro(L: Plua_state): integer; cdecl;
-function PutBattleRolePro(L: Plua_state): integer; cdecl;
+function SetBattleRolePro(L: Plua_state): integer; cdecl;
 function PlayAction(L: Plua_state): integer; cdecl;
 //function GetRoundNumber(L: Plua_state): integer; cdecl;
 function PlayHurtValue(L: Plua_state): integer; cdecl;
@@ -126,7 +126,7 @@ function WeiShop(L: Plua_state): integer; cdecl;
 function OpenAllScence(L: Plua_state): integer; cdecl;
 function ShowEthics(L: Plua_state): integer; cdecl;
 function ShowRepute(L: Plua_state): integer; cdecl;
-function OldPutScenceMapPro(L: Plua_state): integer; cdecl;
+function OldSetScenceMapPro(L: Plua_state): integer; cdecl;
 function ChangeMMapMusic(L: Plua_state): integer; cdecl;
 function OldSetScencePosition(L: Plua_state): integer; cdecl;
 function ZeroAllMP(L: Plua_state): integer; cdecl;
@@ -168,7 +168,7 @@ function EnterNumberScript(L: Plua_state): integer; cdecl;
 function SetMenuEscType(L: Plua_state): integer; cdecl;
 
 function GetBattlePro(L: Plua_state): integer; cdecl;
-function PutBattlePro(L: Plua_state): integer; cdecl;
+function SetBattlePro(L: Plua_state): integer; cdecl;
 
 function ShowStatusScript(L: Plua_state): integer; cdecl;
 function ShowSimpleStatusScript(L: Plua_state): integer; cdecl;
@@ -180,7 +180,7 @@ function GetScreenSize(L: Plua_state): integer; cdecl;
 function JumpScenceScript(L: Plua_state): integer; cdecl;
 
 function GetX50(L: Plua_state): integer; cdecl;
-function PutX50(L: Plua_state): integer; cdecl;
+function SetX50(L: Plua_state): integer; cdecl;
 
 function ShowTitleScript(L: Plua_state): integer; cdecl;
 function ReadTalkAsString(L: Plua_state): integer; cdecl;
@@ -189,6 +189,9 @@ function ExitScript(L: Plua_state): integer; cdecl;
 function AddRoleProWithHintScript(L: Plua_state): integer; cdecl;
 function ColColorScript(L: Plua_state): integer; cdecl;
 function SetBattleName(L: Plua_state): integer; cdecl;
+
+function SetShowMR(L: Plua_state): integer; cdecl;
+function SetScreenBlendMode(L: Plua_state): integer; cdecl;
 
 
 
@@ -333,9 +336,9 @@ begin
   lua_register(Lua_script, 'modifyevent', ModifyEvent);
   lua_register(Lua_script, 'instruct_33', OldLearnMagic);
   lua_register(Lua_script, 'learnmagic2', OldLearnMagic);
-  lua_register(Lua_script, 'instruct_17', OldPutScenceMapPro);
-  lua_register(Lua_script, 'setscencemappro', OldPutScenceMapPro);
-  lua_register(Lua_script, 'setscencemap', OldPutScenceMapPro);
+  lua_register(Lua_script, 'instruct_17', OldSetScenceMapPro);
+  lua_register(Lua_script, 'setscencemappro', OldSetScenceMapPro);
+  lua_register(Lua_script, 'setscencemap', OldSetScenceMapPro);
   lua_register(Lua_script, 'instruct_19', OldSetScencePosition);
   lua_register(Lua_script, 'setscenceposition2', OldSetScencePosition);
   lua_register(Lua_script, 'instruct_1', OldTalk);
@@ -353,18 +356,30 @@ begin
   lua_register(Lua_script, 'playmusic', PlayMusic);
   lua_register(Lua_script, 'instruct_67', PlayWave);
   lua_register(Lua_script, 'playwave', PlayWave);
-  lua_register(Lua_script, 'putbattlepro', PutBattlePro);
-  lua_register(Lua_script, 'putbattlerolepro', PutBattleRolePro);
-  lua_register(Lua_script, 'putitempro', PutItemPro);
-  lua_register(Lua_script, 'putmagicpro', PutMagicPro);
-  lua_register(Lua_script, 'putmember', PutMember);
 
-  lua_register(Lua_script, 'putglobalvalue', PutGlobalValue);
+  //set可以写成put
+  lua_register(Lua_script, 'setbattlepro', SetBattlePro);
+  lua_register(Lua_script, 'setbattlerolepro', SetBattleRolePro);
+  lua_register(Lua_script, 'setitempro', SetItemPro);
+  lua_register(Lua_script, 'setmagicpro', SetMagicPro);
+  lua_register(Lua_script, 'setmember', SetMember);
+  lua_register(Lua_script, 'setglobalvalue', SetGlobalValue);
+  lua_register(Lua_script, 'setrolepro', SetRolePro);
+  lua_register(Lua_script, 'setscenceeventpro', SetScenceEventPro);
+  lua_register(Lua_script, 'setscencemappro', SetScenceMapPro);
+  lua_register(Lua_script, 'setscencepro', SetScencePro);
 
-  lua_register(Lua_script, 'putrolepro', PutRolePro);
-  lua_register(Lua_script, 'putscenceeventpro', PutScenceEventPro);
-  lua_register(Lua_script, 'putscencemappro', PutScenceMapPro);
-  lua_register(Lua_script, 'putscencepro', PutScencePro);
+  lua_register(Lua_script, 'putbattlepro', SetBattlePro);
+  lua_register(Lua_script, 'putbattlerolepro', SetBattleRolePro);
+  lua_register(Lua_script, 'putitempro', SetItemPro);
+  lua_register(Lua_script, 'putmagicpro', SetMagicPro);
+  lua_register(Lua_script, 'putmember', SetMember);
+  lua_register(Lua_script, 'putglobalvalue', SetGlobalValue);
+  lua_register(Lua_script, 'putrolepro', SetRolePro);
+  lua_register(Lua_script, 'putscenceeventpro', SetScenceEventPro);
+  lua_register(Lua_script, 'putscencemappro', SetScenceMapPro);
+  lua_register(Lua_script, 'putscencepro', SetScencePro);
+
   lua_register(Lua_script, 'instruct_12', Rest);
   lua_register(Lua_script, 'rest', Rest);
   lua_register(Lua_script, 'instruct_25', ScenceFromTo);
@@ -409,7 +424,7 @@ begin
   lua_register(Lua_script, 'instruct_22', ZeroAllMP);
   lua_register(Lua_script, 'zeroallmp', ZeroAllMP);
   lua_register(Lua_script, 'getx50', GetX50);
-  lua_register(Lua_script, 'putx50', PutX50);
+  lua_register(Lua_script, 'putx50', SetX50);
 
   lua_register(Lua_script, 'showtitle', ShowTitleScript);
   lua_register(Lua_script, 'readtalkasstring', ReadTalkAsString);
@@ -421,7 +436,12 @@ begin
   lua_register(Lua_script, 'showsimplestatus', ShowSimpleStatusScript);
   lua_register(Lua_script, 'updateallscreen', UpdateAllScreenScript);
 
-  lua_register(Lua_script, 'putitemintro', PutItemIntro); //冰枫月之怒添加
+  lua_register(Lua_script, 'putitemintro', SetItemIntro); //冰枫月之怒添加
+
+  lua_register(Lua_script, 'setitemintro', SetItemIntro); //冰枫月之怒添加
+
+  lua_register(Lua_script, 'setshowmainrole', SetShowMR);
+  lua_register(Lua_script, 'setscreenblendmode', SetScreenBlendMode);
 
 end;
 
@@ -449,6 +469,7 @@ begin
     FileClose(h);
     ExecScriptString(script, functionname);
   end;
+  Result := 0;
 end;
 
 function ExecScriptString(script, functionname: string): integer;
@@ -617,7 +638,7 @@ begin
 end;
 
 //冰枫月之怒添加
-function PutItemIntro(L: Plua_state): integer; cdecl;
+function SetItemIntro(L: Plua_state): integer; cdecl;
 var
   n, itemnum, i, len: integer;
   str: WideString;
@@ -1263,7 +1284,7 @@ end;
 
 //写队伍信息
 
-function PutMember(L: Plua_state): integer; cdecl;
+function SetMember(L: Plua_state): integer; cdecl;
 begin
   TeamList[lua_tointeger(L, -1)] := lua_tointeger(L, -2);
   Result := 0;
@@ -1288,7 +1309,7 @@ begin
 end;
 
 //写全局信息
-function PutGlobalValue(L: Plua_state): integer; cdecl;
+function SetGlobalValue(L: Plua_state): integer; cdecl;
 begin
   //GlobalValue[lua_tointeger(L, -1)] := lua_tointeger(L, -2);
   Rshop[lua_tointeger(L, -2)].Data[lua_tointeger(L, -1)] := lua_tointeger(L, -3);
@@ -1307,7 +1328,7 @@ end;
 
 //写人物信息
 
-function PutRolePro(L: Plua_state): integer; cdecl;
+function SetRolePro(L: Plua_state): integer; cdecl;
 begin
   Rrole[lua_tointeger(L, -2)].Data[lua_tointeger(L, -1)] := lua_tointeger(L, -3);
   Result := 0;
@@ -1325,7 +1346,7 @@ end;
 
 //写物品信息
 
-function PutItemPro(L: Plua_state): integer; cdecl;
+function SetItemPro(L: Plua_state): integer; cdecl;
 begin
   Ritem[lua_tointeger(L, -2)].Data[lua_tointeger(L, -1)] := lua_tointeger(L, -3);
   Result := 0;
@@ -1343,7 +1364,7 @@ end;
 
 //写武功信息
 
-function PutMagicPro(L: Plua_state): integer; cdecl;
+function SetMagicPro(L: Plua_state): integer; cdecl;
 begin
   Rmagic[lua_tointeger(L, -2)].Data[lua_tointeger(L, -1)] := lua_tointeger(L, -3);
   Result := 0;
@@ -1361,7 +1382,7 @@ end;
 
 //写场景信息
 
-function PutScencePro(L: Plua_state): integer; cdecl;
+function SetScencePro(L: Plua_state): integer; cdecl;
 begin
   Rscence[lua_tointeger(L, -2)].Data[lua_tointeger(L, -1)] := lua_tointeger(L, -3);
   Result := 0;
@@ -1379,7 +1400,7 @@ end;
 
 //写场景图信息
 
-function PutScenceMapPro(L: Plua_state): integer; cdecl;
+function SetScenceMapPro(L: Plua_state): integer; cdecl;
 begin
   sdata[lua_tointeger(L, -4), lua_tointeger(L, -3), lua_tointeger(L, -2),
     lua_tointeger(L, -1)] := lua_tointeger(L, -5);
@@ -1387,7 +1408,7 @@ begin
 
 end;
 
-function OldPutScenceMapPro(L: Plua_state): integer; cdecl;
+function OldSetScenceMapPro(L: Plua_state): integer; cdecl;
 var
   list: array[0..4] of integer;
   i: integer;
@@ -1410,7 +1431,7 @@ end;
 
 //写场景事件信息
 
-function PutScenceEventPro(L: Plua_state): integer; cdecl;
+function SetScenceEventPro(L: Plua_state): integer; cdecl;
 begin
   ddata[lua_tointeger(L, -3), lua_tointeger(L, -2), lua_tointeger(L, -1)] :=
     lua_tointeger(L, -4);
@@ -1654,7 +1675,7 @@ end;
 
 //写战斗属性
 
-function PutBattleRolePro(L: Plua_state): integer; cdecl;
+function SetBattleRolePro(L: Plua_state): integer; cdecl;
 begin
   Brole[lua_tointeger(L, -2)].Data[lua_tointeger(L, -1)] := lua_tointeger(L, -3);
   Result := 0;
@@ -2033,7 +2054,7 @@ end;
 
 //写战场信息
 
-function PutBattlePro(L: Plua_state): integer; cdecl;
+function SetBattlePro(L: Plua_state): integer; cdecl;
 begin
   WarStaList[lua_tointeger(L, -2)].Data[lua_tointeger(L, -1)] := lua_tointeger(L, -3);
   Result := 0;
@@ -2086,7 +2107,7 @@ begin
   Result := 1;
 end;
 
-function PutX50(L: Plua_state): integer; cdecl;
+function SetX50(L: Plua_state): integer; cdecl;
 begin
   x50[lua_tointeger(L, -1)] := lua_tointeger(L, -2);
   Result := 0;
@@ -2105,6 +2126,7 @@ begin
   if n > 1 then
     color := lua_tointeger(L, -1);
   NewTalk(0, talknum, -1, 2, 1, color, 0, str);
+  Result := 0;
 end;
 
 function CheckJumpFlag(L: Plua_state): integer; cdecl;
@@ -2142,6 +2164,21 @@ end;
 function SetBattleName(L: Plua_state): integer; cdecl;
 begin
   BattleNames[lua_tointeger(L, -2)] := UTF8Decode(lua_tostring(L, -1));
+  Result := 0;
+end;
+
+function SetShowMR(L: Plua_state): integer; cdecl;
+var
+  a: integer;
+begin
+  a := lua_tointeger(L, -1);
+  ShowMR := a = 0;
+  Result := 0;
+end;
+
+function SetScreenBlendMode(L: Plua_state): integer; cdecl;
+begin
+  ScreenBlendMode := lua_tointeger(L, -1);
   Result := 0;
 end;
 

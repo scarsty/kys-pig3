@@ -66,6 +66,7 @@ function instruct_42(jump1, jump2: integer): integer;
 function instruct_43(inum, jump1, jump2: integer): integer;
 procedure instruct_44(enum1, beginpic1, endpic1, enum2, beginpic2, endpic2: integer);
 procedure instruct_44e(enum1, beginpic1, endpic1, enum2, beginpic2, enum3, beginpic3: integer);
+procedure Show3HintString(str1, str2, str3: pWideChar);
 procedure AddRoleProWithHint(rnum, datalist, value: integer; word: WideString = '');
 procedure instruct_45(rnum, speed: integer);
 procedure instruct_46(rnum, mp: integer);
@@ -299,33 +300,39 @@ end;
 
 procedure instruct_2(inum, amount: integer);
 var
-  i, x, y: integer;
+  i, x, y, l1, l2: integer;
   word: WideString;
 begin
   instruct_32(inum, amount);
   SetRolePic(0);
   x := CENTER_X;
-  y := CENTER_Y - 240 + 98;
+  y := CENTER_Y;
   if where = 2 then
   begin
-    x := CENTER_X - 150 + 30 + 85;
-    y := CENTER_Y - 240 + 200;
+    x := CENTER_X;
+    y := CENTER_Y;
   end;
 
-  DrawRectangle(x - 85, y, 170, 76, 0, ColColor(255), 30);
+  //DrawRectangle(x - 85, y, 170, 76, 0, ColColor(255), 30);
+  word := UTF8Decode(format('%d', [amount]));
+  l1 := length(pWideChar(@Ritem[inum].Name));
+  l2 := (length(word) + 1) div 2;
+  DrawTextFrame(CENTER_X - (3 + l1 + l2) * 10 - 20, y, 3 + l1 + l2);
+  x := CENTER_X - (3 + l1 + l2) * 10 + 1;
+  DrawEngShadowText(@word[1], x + 40 + 20 + l1 * 20, 3 + y, 0, $202020);
   if amount >= 0 then
-    word := '得到物品'
+    word := '得到'
   else
   begin
-    word := '失去物品';
+    word := '失去';
     amount := -amount;
   end;
-  DrawShadowText(@word[1], x - 80, 2 + y, ColColor($21), ColColor($23));
-  DrawU16ShadowText(@Ritem[inum].Name, x - 80, 27 + y, ColColor(5), ColColor(7));
-  word := '數量';
-  DrawShadowText(@word[1], x - 80, 52 + y, ColColor($64), ColColor($66));
-  word := format('%5d', [amount]);
-  DrawEngShadowText(@word[1], x - 5, 52 + y, ColColor($64), ColColor($66));
+  DrawShadowText(@word[1], x, 3 + y, 0, ColColor($23));
+  //word := '數量';
+  //DrawShadowText(@word[1], x - 60, 3 + y, ColColor($64), ColColor($66));
+  DrawIPic(inum, CENTER_X - 40, y - 90, 0, 0, 0, 0);
+
+  DrawU16ShadowText(@Ritem[inum].Name, x + 40, 3 + y, ColColor($64), ColColor($66));
   UpdateAllScreen;
   //SDL_UpdateRect2(screen, x - 85, y, 171, 77);
   //有3种机会得到物品-平时, 战斗中偷窃, 战斗结束制造
@@ -1008,7 +1015,7 @@ end;
 
 procedure instruct_33(rnum, mnum, dismode: integer);
 var
-  i: integer;
+  i, l, x, l1: integer;
   word: WideString;
 begin
   if Rmagic[mnum].HurtType = 3 then
@@ -1042,14 +1049,8 @@ begin
   //if i = 10 then rrole[rnum].data[i+63] := magicnum;
   if dismode = 0 then
   begin
-    DrawRectangle(CENTER_X - 75, 98, 145, 76, 0, ColColor(255), 30);
-    word := '學會';
-    DrawShadowText(@word[1], CENTER_X - 70, 125, ColColor(5), ColColor(7));
-    DrawU16ShadowText(@Rrole[rnum].Name, CENTER_X - 70, 100, ColColor($21), ColColor($23));
-    DrawU16ShadowText(@Rmagic[mnum].Name, CENTER_X - 70, 150, ColColor($64), ColColor($66));
-    UpdateAllScreen;
-    WaitAnyKey;
-    Redraw;
+    word := UTF8Decode('學會');
+    Show3HintString(@Rrole[rnum].Name, @word[1], @Rmagic[mnum].Name);
   end;
 end;
 
@@ -1068,15 +1069,8 @@ begin
   end;
   if iq > 0 then
   begin
-    DrawRectangle(CENTER_X - 75, 98, 145, 51, 0, ColColor(255), 30);
-    word := '資質增加';
-    DrawShadowText(@word[1], CENTER_X - 70, 125, ColColor(5), ColColor(7));
-    DrawU16ShadowText(@Rrole[rnum].Name, CENTER_X - 70, 100, ColColor($21), ColColor($23));
-    word := format('%3d', [iq]);
-    DrawEngShadowText(@word[1], CENTER_X + 30, 125, ColColor($64), ColColor($66));
-    UpdateAllScreen;
-    WaitAnyKey;
-    Redraw;
+    word := UTF8Decode('資質增加');
+    Show3HintString(@Rrole[rnum].Name, @word[1], pWideChar(UTF8Decode(format('%3d', [iq]))));
   end;
 end;
 
@@ -1251,19 +1245,34 @@ begin
   //SData[CurScence, 3, DData[CurScence, [enum,10],DData[CurScence, [enum,9]]:=-1;
 end;
 
+procedure Show3HintString(str1, str2, str3: pWideChar);
+var
+  l, l1, l2, l3, x: integer;
+begin
+  l1 := (DrawLength(str1) + 1) div 2;
+  l2 := (DrawLength(str2) + 1) div 2;
+  l3 := (DrawLength(str3) + 1) div 2;
+  l := l1 + l2 + l3;
+  x := CENTER_X - l * 10;
+  DrawTextFrame(x - 19, 150, l);
+  //DrawRectangle(CENTER_X - 75, 98, 150, 51, 0, ColColor(255), 30);
+  if l1 > 0 then
+    DrawShadowText(puint16(str1), x, 153, ColColor($64), ColColor($66));
+  if l2 > 0 then
+    DrawShadowText(puint16(str2), x + l1 * 20, 153, 0, $202020);
+  if l3 > 0 then
+    DrawShadowText(puint16(str3), x + l1 * 20 + l2 * 20, 153, ColColor($64), ColColor($66));
+  UpdateAllScreen;
+  WaitAnyKey;
+  Redraw;
+end;
+
 procedure AddRoleProWithHint(rnum, datalist, value: integer; word: WideString = '');
 begin
   Rrole[rnum].Data[datalist] := Rrole[rnum].Data[datalist] + value;
   if word <> '' then
   begin
-    DrawRectangle(CENTER_X - 75, 98, 150, 51, 0, ColColor(255), 30);
-    DrawShadowText(@word[1], CENTER_X - 70, 125, ColColor(5), ColColor(7));
-    DrawU16ShadowText(@Rrole[rnum].Name, CENTER_X - 70, 100, ColColor($21), ColColor($23));
-    word := format('%4d', [value]);
-    DrawEngShadowText(@word[1], CENTER_X + 20, 125, ColColor($64), ColColor($66));
-    UpdateAllScreen;
-    WaitAnyKey;
-    Redraw;
+    Show3HintString((@Rrole[rnum].Name), @word[1], pWideChar(UTF8Decode(format('%d', [value]))));
   end;
 end;
 
@@ -1326,13 +1335,8 @@ end;
 procedure ShowRolePro(rnum, datalist: integer; word: WideString);
 begin
   Redraw;
-  DrawRectangle(CENTER_X - 110, 98, 220, 26, 0, ColColor(255), 30);
-  DrawShadowText(@word[1], CENTER_X - 105, 100, ColColor(5), ColColor(7));
-  word := format('%3d', [Rrole[rnum].Data[datalist]]);
-  DrawEngShadowText(@word[1], CENTER_X + 65, 100, ColColor($64), ColColor($66));
-  UpdateAllScreen;
-  WaitAnyKey;
-  Redraw;
+  Show3HintString(pWideChar(''), pWideChar(word), pWideChar(UTF8Decode(format('%4d', [Rrole[rnum].Data[datalist]]))));
+  //Redraw;
 end;
 
 procedure instruct_52;
@@ -2062,15 +2066,16 @@ begin
         if uint16(pw^) = $2A then
         begin
           pw^ := 0;
-          DrawU16ShadowText(pchar(pw1), e3 - 2, e4 + 22 * i - 25, ColColor(e5 and $FF),
-            ColColor((e5 and $FF00) shr 8));
+          //DrawU16ShadowText(pchar(pw1), e3 - 2, e4 + 22 * i - 25, ColColor(e5 and $FF), ColColor((e5 and $FF00) shr 8));
+          DrawU16ShadowText(pchar(pw1), e3 - 2, e4 + 22 * i - 25, 0, $202020);
           i := i + 1;
           pw1 := pw;
           Inc(pw1);
         end;
         Inc(pw);
       end;
-      Drawu16ShadowText(pchar(pw1), e3 - 2, e4 + 22 - 25, ColColor(e5 and $FF), ColColor((e5 and $FF00) shr 8));
+      //Drawu16ShadowText(pchar(pw1), e3 - 2, e4 + 22 - 25, ColColor(e5 and $FF), ColColor((e5 and $FF00) shr 8));
+      Drawu16ShadowText(pchar(pw1), e3 - 2, e4 + 22 - 25, 0, $202020);
       UpdateAllScreen;
       //waitanykey;
     end;
@@ -2131,7 +2136,8 @@ begin
         i1 := 1;
       if (pw^) = $2A then
         i1 := i1 - 1;
-      DrawRectangle(e3, e4, i2 * 20 + 25, i1 * 22 + 5, 0, ColColor(255), 30);
+      //DrawRectangle(e3, e4, i2 * 20 + 25, i1 * 22 + 5, 0, ColColor(255), 30);
+      DrawTextFrame(e3, e4, i2);
       pw := @x50[e2];
       pw1 := pw;
       i := 0;
@@ -3521,7 +3527,7 @@ end;
 
 procedure NewTeammateList;
 var
-  xStar, yStar, xTeam, yTeam, xState, yState: integer;
+  xStar, yStar, xTeam, yTeam, xState, yState, Show, h: integer;
   CurrentStar, CurrentTeam, page, numStar, state, headn, menup, menu, x1, y1, pstar, pteam: integer;
   StarMenu, TeamMenu: array of WideString;
   StateList: array of integer;
@@ -3532,16 +3538,18 @@ var
   color1, color2: uint32;
 begin
   xStar := 120;
-  yStar := 35;
+  yStar := 75;
   CurrentStar := 0;
   CurrentTeam := 1;
-  xTeam := 350;
-  yTeam := 35;
+  xTeam := 400;
+  yTeam := 75;
   xState := 350;
-  yState := 200;
-  setlength(StarMenu, 18);
+  yState := 300;
+  Show := 12;
+  h := 28;
+  setlength(StarMenu, Show);
   setlength(TeamMenu, 6);
-  setlength(StateList, 18);
+  setlength(StateList, Show);
   menuid := 0;
   escape := False;
   refresh := True;
@@ -3552,11 +3560,11 @@ begin
   RecordFreshScreen;
   while (not escape) do
   begin
-    page := CurrentStar div 18;
-    numStar := CurrentStar - page * 18;
-    for i := page * 18 to page * 18 + 17 do
+    page := CurrentStar div Show;
+    numStar := CurrentStar - page * Show;
+    for i := page * Show to page * Show + Show - 1 do
     begin
-      n := i - (i div 18) * 18;
+      n := i - (i div Show) * Show;
       if (i = CurrentStar) and (menuid = 0) then
         temp := '>'
       else
@@ -3594,35 +3602,42 @@ begin
     begin
       refresh := False;
       LoadFreshScreen;
-      DrawRectangle(xStar, yStar, 200, 18 * 22 + 8, 0, ColColor(255), 50);
-      for i := 0 to 17 do
+      //DrawRectangle(xStar, yStar, 200, show * h + 8, 0, ColColor(255), 50);
+      for i := 0 to Show - 1 do
+      begin
+        DrawTextFrame(xStar - 16, yStar + h * i, 9, 10);
         if (i = numStar) and (menuid = 0) then
         begin
-          DrawShadowText(@StarMenu[i][1], xStar + 3, yStar + 2 + 22 * i, ColColor($64), ColColor($66));
+          DrawTextFrame(xStar - 16, yStar + h * i, 9);
+          DrawShadowText(@StarMenu[i][1], xStar + 3, yStar + 3 + h * i, ColColor($64), ColColor($66));
         end
         else if StateList[i] = 2 then
         begin
-          DrawShadowText(@StarMenu[i][1], xStar + 3, yStar + 2 + 22 * i, ColColor($78), ColColor($7a));
+          DrawShadowText(@StarMenu[i][1], xStar + 3, yStar + 3 + h * i, ColColor($78), ColColor($7a));
         end
         else if StateList[i] > 2 then
         begin
-          DrawShadowText(@StarMenu[i][1], xStar + 3, yStar + 2 + 22 * i, ColColor($20), ColColor($22));
+          DrawShadowText(@StarMenu[i][1], xStar + 3, yStar + 3 + h * i, $E02020, $a04040);
         end
         else
-          DrawShadowText(@StarMenu[i][1], xStar + 3, yStar + 2 + 22 * i, ColColor($5), ColColor($7));
+          DrawShadowText(@StarMenu[i][1], xStar + 3, yStar + 3 + h * i, 0, $202020);
+      end;
 
-      DrawRectangle(xTeam, yTeam, 200, 28, 0, ColColor(255), 50);
-      DrawShadowText(@TeamMenu[0][1], xTeam + 3, yTeam + 2, ColColor($5), ColColor($7));
+      //DrawRectangle(xTeam, yTeam, 200, 28, 0, ColColor(255), 50);
+      DrawTextFrame(xTeam - 16, yTeam, 8);
+      DrawShadowText(@TeamMenu[0][1], xTeam + 3, yTeam + 3, 0, $202020);
 
       DrawRectangle(xTeam, yTeam + 38, 200, 4 * 22 + 28, 0, ColColor(255), 50);
       for i := 1 to 5 do
         if (i = CurrentTeam) and (menuid = 1) then
         begin
-          DrawShadowText(@TeamMenu[i][1], xTeam + 3, yTeam + 40 + 22 * (i - 1), ColColor($64), ColColor($66));
+          DrawTextFrame(xTeam - 16, yTeam + 37 + h * (i - 1), 8);
+          DrawShadowText(@TeamMenu[i][1], xTeam + 3, yTeam + 40 + h * (i - 1), ColColor($64), ColColor($66));
         end
         else
         begin
-          DrawShadowText(@TeamMenu[i][1], xTeam + 3, yTeam + 40 + 22 * (i - 1), ColColor($5), ColColor($7));
+          DrawTextFrame(xTeam - 16, yTeam + 37 + h * (i - 1), 8, 10);
+          DrawShadowText(@TeamMenu[i][1], xTeam + 3, yTeam + 40 + h * (i - 1), 0, $202020);
         end;
 
       //显示当前人物的状态
@@ -3639,9 +3654,9 @@ begin
 
       if ((state > 0) and (state <> 2) and (headn >= 0)) then
       begin
-        DrawRectangle(xState, yState + 83, 200, 95, 0, ColColor(255), 50);
+        //DrawRectangle(xState, yState + 83, 200, 95, 0, ColColor(255), 50);
         ShowSimpleStatus(headn, xState, yState - 3);
-        strs[0] := '攻擊';
+        {strs[0] := '攻擊';
         strs[1] := '防禦';
         strs[2] := '輕功';
         strs[3] := '移動';
@@ -3656,7 +3671,7 @@ begin
         statusstr := format('%4d', [Rrole[headn].Speed]);
         DrawEngShadowText(@statusstr[1], xState + 105, yState + 80 + 49, ColColor(5), ColColor(7));
         statusstr := format('%4d', [Rrole[headn].Movestep div 10]);
-        DrawEngShadowText(@statusstr[1], xState + 105, yState + 80 + 71, ColColor(5), ColColor(7));
+        DrawEngShadowText(@statusstr[1], xState + 105, yState + 80 + 71, ColColor(5), ColColor(7));}
       end;
       UpdateAllScreen;
     end;
@@ -3673,16 +3688,16 @@ begin
           begin
             if menuid = 0 then
             begin
-              if CurrentStar < 90 then
-                CurrentStar := CurrentStar + 18;
+              if CurrentStar < 108 - Show then
+                CurrentStar := CurrentStar + Show;
             end;
           end;
           if (event.key.keysym.sym = SDLK_PAGEUP) then
           begin
             if menuid = 0 then
             begin
-              if CurrentStar > 17 then
-                CurrentStar := CurrentStar - 18;
+              if CurrentStar > Show - 1 then
+                CurrentStar := CurrentStar - Show;
             end;
           end;
           if (event.key.keysym.sym = SDLK_DOWN) then
@@ -3821,22 +3836,22 @@ begin
         end;
         SDL_MOUSEMOTION:
         begin
-          if MouseInRegion(xStar, yStar, 200, 18 * 22 + 29, x1, y1) then
+          if MouseInRegion(xStar, yStar, 200, Show * h + 32, x1, y1) then
           begin
             menuid := 0;
             menup := CurrentStar;
-            menu := (y1 - yStar - 2) div 22;
-            if menu > 17 then
-              menu := 17;
+            menu := (y1 - yStar - 2) div h;
+            if menu > Show - 1 then
+              menu := Show - 1;
             if menu < 0 then
               menu := 0;
-            CurrentStar := menu + CurrentStar div 18 * 18;
+            CurrentStar := menu + CurrentStar div Show * Show;
           end;
-          if MouseInRegion(xTeam, yTeam, 200, 5 * 22 + 29, x1, y1) then
+          if MouseInRegion(xTeam, yTeam, 200, 5 * h + 32, x1, y1) then
           begin
             menuid := 1;
             menup := CurrentTeam;
-            menu := (y1 - yTeam - 40) div 22 + 1;
+            menu := (y1 - yTeam - 40) div h + 1;
             if menu > 5 then
               menu := 5;
             if menu < 0 then
@@ -3960,7 +3975,7 @@ end;
 
 procedure ShowStarList;
 var
-  hx, hy, hw, hh, headnum, Count, n, i, c1, r1, offset, idx, len, grp: integer;
+  hx, hy, hw, hh, headnum, Count, n, i, c1, r1, offset, idx, len, grp, h: integer;
   str: ansistring;
   pword: array[0..1] of uint16;
   talkarray: array of byte;
@@ -3989,16 +4004,19 @@ var
     if max + 1 < maxshow then
       maxshow := max + 1;
     Redraw;
-    DrawRectangle(x, y, w, maxshow * 22 + 6, 0, ColColor(255), 50);
+    TransBlackScreen;
+    //DrawRectangle(x, y, w, maxshow * 22 + 6, 0, ColColor(255), 50);
 
     for i := menutop to menutop + maxshow - 1 do
       if i = menu then
       begin
-        DrawShadowText(@menuString[i][1], x + 3, y + 2 + 22 * (i - menutop), ColColor($64), ColColor($66));
+        DrawTextFrame(x - 16, y + h * (i - menutop), 8);
+        DrawShadowText(@menuString[i][1], x + 3, y + 3 + h * (i - menutop), ColColor($64), ColColor($66));
       end
       else
       begin
-        DrawShadowText(@menuString[i][1], x + 3, y + 2 + 22 * (i - menutop), ColColor($5), ColColor($7));
+        DrawTextFrame(x - 16, y + h * (i - menutop), 8, 10);
+        DrawShadowText(@menuString[i][1], x + 3, y + 3 + h * (i - menutop), 0, $202020);
       end;
 
     if (GetStarState(menu) > 0) then
@@ -4014,7 +4032,7 @@ var
       hw := 57;
       hh := 72;
       i := 0;
-      DrawRectangle(CENTER_X - 384 + 304, y, 379, maxshow * 22 + 6, 0, ColColor(255), 75);
+      //DrawRectangle(CENTER_X - 384 + 304, y, 379, maxshow * 22 + 6, 0, ColColor(255), 75);
       str1 := concat(Star[menu], ' ');
       str2 := concat(str1, RoleName[menu]);
       len := length(str2);
@@ -4205,7 +4223,8 @@ begin
   y := CENTER_Y - 240 + 15;
   w := 200;
   max := 107;
-  maxshow := 20;
+  h := 28;
+  maxshow := 15;
   //SDL_EnableKeyRepeat(20, 100);
   menu := 0;
   menutop := 0;
@@ -4327,8 +4346,8 @@ begin
           menutop := menutop + 1;
           if menu > max then
             menu := 107;
-          if menutop > 88 then
-            menutop := 88;
+          if menutop > 108 - maxshow then
+            menutop := 108 - maxshow;
           ShowCommonScrollMenu_starlist(x, y, w, max, maxshow, menu, menutop, head[menu]);
           //SDL_UpdateRect2(screen, x, y, w + 1, maxshow * 22 + 29);
         end;
@@ -4346,10 +4365,10 @@ begin
       end;
       SDL_MOUSEMOTION:
       begin
-        if MouseInRegion(x, y, w, max * 22 + 29, x1, y1) then
+        if MouseInRegion(x, y, w, max * h + 32, x1, y1) then
         begin
           menup := menu;
-          menu := (y1 - y - 2) div 22 + menutop;
+          menu := (y1 - y - 2) div h + menutop;
           if menu > max then
             menu := max;
           if menu < 0 then
@@ -4876,7 +4895,7 @@ begin
   UpdateAllScreen;
   if length(MissionList) > 0 then
   begin
-    menu := CommonScrollMenu(x, y, 500, n - 1, 20, menuString);
+    menu := CommonScrollMenu(x, y, 500, n - 1, 15, menuString);
     Redraw;
     UpdateAllScreen;
   end;
@@ -5860,7 +5879,7 @@ begin
       end;
     end;
   end;
-  i := CommonScrollMenu(x, y, w, j - 1, 20, menuString);
+  i := CommonScrollMenu(x, y, w, j - 1, 15, menuString);
   if i > -1 then
     i := itemlist[i];
   x50[28931] := i;
@@ -6558,13 +6577,13 @@ begin
   Button[13].h := 53;
   //Redraw;
   strv := UTF8Decode(format('範圍%d~%d', [MinValue, MaxValue]));
-  DrawTextWithRect(@strv[1], x, y - 35, DrawLength(strv) * 10 + 8, ColColor($21), ColColor($27));
-  DrawRectangle(x, y, 180, 180, 0, ColColor(255), 50);
-  DrawRectangle(x + 20, y + 10, 140, 23, 0, ColColor(255), 75);
+  DrawTextWithRect(@strv[1], x, y - 35, DrawLength(strv) * 10 + 8, 0, ColColor($27));
+  DrawRectangle(x, y, 180, 180, 0, ColColor(255), 50, 0);
+  DrawRectangle(x + 20, y + 10, 140, 23, 0, ColColor(255), 75, 0);
   highButton := high(Button);
   for  i := 0 to highButton do
   begin
-    DrawRectangle(Button[i].x, Button[i].y, Button[i].w, Button[i].h, 0, ColColor(255), 50);
+    DrawRectangle(Button[i].x, Button[i].y, Button[i].w, Button[i].h, 0, ColColor(255), 50, 0);
   end;
   UpdateAllScreen;
   RecordFreshScreen(x, y, 181, 181);
@@ -6633,7 +6652,7 @@ begin
       if (menu >= 0) and (menu <= highButton) then
       begin
         DrawRectangle(Button[menu].x, Button[menu].y, Button[menu].w, Button[menu].h,
-          ColColor(20 * i + random(20)), ColColor(255), 50);
+          ColColor(20 * i + random(20)), ColColor(255), 50, 0);
       end;
       for i := 0 to highButton do
       begin

@@ -65,6 +65,12 @@ procedure DrawProgress;
 
 procedure LoadGroundTex(x, y: integer);
 
+function DrawTextFrame(x, y: integer; len: integer; alpha: integer = 0; mixColor: uint32 = 0;
+  mixAlpha: integer = 0): integer;
+
+procedure DrawTextWithRect(word: puint16; x, y, w: integer; color1, color2: uint32;
+  alpha: integer = 0; Refresh: integer = 1);
+
 implementation
 
 uses
@@ -377,9 +383,9 @@ begin
     begin
       CleanTextScreen;
       DrawTPic(0, OpenPicPosition.x, OpenPicPosition.y);
-      DrawTPic(12, CENTER_X - 384 + 45, CENTER_Y - 240 + 53);
-      DrawTPic(10, CENTER_X - 384 + 45, CENTER_Y - 240 + 43);
-      DrawTPic(10, CENTER_X - 384 + 524, CENTER_Y - 240 + 43);
+      DrawTPic(12, CENTER_X - 384 + 112, CENTER_Y - 240 + 15);
+      DrawTPic(10, CENTER_X - 384 + 110, CENTER_Y - 240 + 5);
+      DrawTPic(10, CENTER_X - 384 + 591, CENTER_Y - 240 + 5);
       DrawShadowText(@versionstr[1], OpenPicPosition.x + 5, CENTER_Y - 240 + 455, ColColor($64), ColColor($66));
     end;
     4: //处于标题动画中
@@ -1444,6 +1450,39 @@ begin
       2: SDL_UpperBlit(ImgBGround, @dest, screen, nil);
     end;
   end;
+end;
+
+function DrawTextFrame(x, y: integer; len: integer; alpha: integer = 0; mixColor: uint32 = 0;
+  mixAlpha: integer = 0): integer;
+var
+  j: integer;
+begin
+  DrawMPic(2141, x, y, 0, 0, alpha, mixColor, mixAlpha);
+  for j := 0 to len - 1 do
+  begin
+    DrawMPic(2142, x + 19 + j * 20, y, 0, 0, alpha, mixColor, mixAlpha);
+  end;
+  DrawMPic(2143, x + 19 + len * 20, y, 0, 0, alpha, mixColor, mixAlpha);
+  Result := 19;
+end;
+
+//显示带边框的文字, 仅用于unicode, 需自定义宽度
+//默认情况为透明度50, 立即刷新
+
+procedure DrawTextWithRect(word: puint16; x, y, w: integer; color1, color2: uint32;
+  alpha: integer = 0; Refresh: integer = 1);
+var
+  len, j: integer;
+  p: pchar;
+begin
+  //DrawRectangle(x, y, w, 26, 0, ColColor(255), alpha);
+  len := (DrawLength(pWideChar(word)) + 1) div 2;
+  DrawTextFrame(x, y, len, alpha);
+  DrawShadowText(word, x + 19, y + 3, color1, color2);
+  if Refresh <> 0 then
+    UpdateAllScreen;
+  //SDL_UpdateRect2(screen, x, y, w + 1, 29);
+
 end;
 
 end.

@@ -51,7 +51,7 @@ procedure PlaySound(filename: pchar; times: integer); overload;
 function GetPixel(surface: PSDL_Surface; x: integer; y: integer): uint32;
 procedure PutPixel(surface: PSDL_Surface; x: integer; y: integer; pixel: uint32);
 function ColColor(num: integer): uint32;
-procedure DrawRectangle(x, y, w, h: integer; colorin, colorframe: uint32; alpha: integer);
+procedure DrawRectangle(x, y, w, h: integer; colorin, colorframe: uint32; alpha: integer; trans:integer = 1);
 procedure DrawRectangleWithoutFrame(x, y, w, h: integer; colorin: uint32; alpha: integer);
 procedure DrawItemFrame(x, y: integer; realcoord: integer = 0);
 
@@ -74,8 +74,6 @@ procedure DrawEngShadowText(word: puint16; x_pos, y_pos: integer; color1, color2
   Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil);
 procedure DrawBig5Text(sur: PSDL_Surface; str: pchar; x_pos, y_pos: integer; color: uint32);
 procedure DrawBig5ShadowText(word: pchar; x_pos, y_pos: integer; color1, color2: uint32);
-procedure DrawTextWithRect(word: puint16; x, y, w: integer; color1, color2: uint32;
-  alpha: integer = 50; Refresh: integer = 1);
 procedure DrawGBKShadowText(word: pchar; x_pos, y_pos: integer; color1, color2: uint32);
 procedure DrawU16ShadowText(word: pchar; x_pos, y_pos: integer; color1, color2: uint32);
 
@@ -879,7 +877,7 @@ begin
     if i >= $1000 then
       dest.y := y_pos
     else
-      dest.y := y_pos + 4;
+      dest.y := y_pos + 3;
     saved := CreateFontTile(i, SW_SURFACE, p, w, h);
     dest.w := w;
     dest.h := h;
@@ -1070,26 +1068,9 @@ begin
 
 end;
 
-//显示带边框的文字, 仅用于unicode, 需自定义宽度
-//默认情况为透明度50, 立即刷新
+//画带边框矩形, (x坐标, y坐标, 宽度, 高度, 内部颜色, 边框颜色, 透明度, 可能转为单行框）
 
-procedure DrawTextWithRect(word: puint16; x, y, w: integer; color1, color2: uint32;
-  alpha: integer = 50; Refresh: integer = 1);
-var
-  len: integer;
-  p: pchar;
-begin
-  DrawRectangle(x, y, w, 26, 0, ColColor(255), alpha);
-  DrawShadowText(word, x + 3, y + 2, color1, color2);
-  if Refresh <> 0 then
-    UpdateAllScreen;
-  //SDL_UpdateRect2(screen, x, y, w + 1, 29);
-
-end;
-
-//画带边框矩形, (x坐标, y坐标, 宽度, 高度, 内部颜色, 边框颜色, 透明度）
-
-procedure DrawRectangle(x, y, w, h: integer; colorin, colorframe: uint32; alpha: integer);
+procedure DrawRectangle(x, y, w, h: integer; colorin, colorframe: uint32; alpha: integer; trans:integer = 1);
 var
   i1, i2, l1, l2, l3, l4, x1, y1, w1, h1: integer;
   tempscr, tempsur1: PSDL_Surface;
@@ -1098,6 +1079,12 @@ var
   tex, ptex: PSDL_Texture;
   color: TSDL_Color;
 begin
+  if (h <= 35) and (trans<>0) then
+  begin
+    DrawTextFrame(x - 12, y + 1, w div 20);
+    exit;
+  end;
+
   if SW_SURFACE = 0 then
   begin
     ptex := SDL_GetRenderTarget(render);
@@ -1127,14 +1114,14 @@ begin
           SDL_RenderDrawPoint(render, i1, i2);
         end;
         //框线
-        if TEXT_LAYER = 0 then
+        {if TEXT_LAYER = 0 then
           if (((l1 >= 4) and (l2 >= 4) and (l3 >= 4) and (l4 >= 4) and ((i1 = 0) or (i1 = w) or
             (i2 = 0) or (i2 = h))) or ((l1 = 4) or (l2 = 4) or (l3 = 4) or (l4 = 4))) then
           begin
             a := round(250 - abs(i1 / w + i2 / h - 1) * 150);
             SDL_SetRenderDrawColor(render, r1, g1, b1, a);
             SDL_RenderDrawPoint(render, i1, i2);
-          end;
+          end;}
       end;
     SDL_SetRenderTarget(render, ptex);
     SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
@@ -1161,13 +1148,13 @@ begin
           l3 := (i1) - (i2 - h);
           l4 := -(i1 - w) - (i2 - h);
           //框线
-          if (((l1 >= 4) and (l2 >= 4) and (l3 >= 4) and (l4 >= 4) and ((i1 = 0) or (i1 = w) or
+          {if (((l1 >= 4) and (l2 >= 4) and (l3 >= 4) and (l4 >= 4) and ((i1 = 0) or (i1 = w) or
             (i2 = 0) or (i2 = h))) or ((l1 = 4) or (l2 = 4) or (l3 = 4) or (l4 = 4))) then
           begin
             a := round(250 - abs(i1 / w + i2 / h - 1) * 150);
             SDL_SetRenderDrawColor(render, r1, g1, b1, a);
             SDL_RenderDrawPoint(render, i1, i2);
-          end;
+          end;}
         end;
       SDL_SetRenderTarget(render, TextScreenTex);
       SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
@@ -1207,7 +1194,7 @@ begin
           PutPixel(tempscr, i1 + x1, i2 + y1, 0);
         end;
         //框线
-        if TEXT_LAYER = 0 then
+        {if TEXT_LAYER = 0 then
           if (((l1 >= 4) and (l2 >= 4) and (l3 >= 4) and (l4 >= 4) and ((i1 = 0) or (i1 = w) or
             (i2 = 0) or (i2 = h))) or ((l1 = 4) or (l2 = 4) or (l3 = 4) or (l4 = 4))) then
           begin
@@ -1215,7 +1202,7 @@ begin
             a := round(250 - abs(i1 / w + i2 / h - 1) * 150);
             //writeln(a);
             PutPixel(tempscr, i1 + x1, i2 + y1, MapRGBA(r1, g1, b1, a));
-          end;
+          end;}
       end;
 
     SDL_UpperBlit(tempscr, nil, CurTargetSurface, @dest);
@@ -1237,14 +1224,14 @@ begin
           l3 := (i1) - (i2 - h);
           l4 := -(i1 - w) - (i2 - h);
           //框线
-          if (((l1 >= 4) and (l2 >= 4) and (l3 >= 4) and (l4 >= 4) and ((i1 = 0) or (i1 = w) or
+          {if (((l1 >= 4) and (l2 >= 4) and (l3 >= 4) and (l4 >= 4) and ((i1 = 0) or (i1 = w) or
             (i2 = 0) or (i2 = h))) or ((l1 = 4) or (l2 = 4) or (l3 = 4) or (l4 = 4))) then
           begin
             //a := round(200 - min(abs(i1/w-0.5),abs(i2/h-0.5))*2 * 100);
             a := round(250 - abs(i1 / w + i2 / h - 1) * 150);
             //writeln(a);
             PutPixel(tempscr, i1 + x1, i2 + y1, MapRGBA(r1, g1, b1, a));
-          end;
+          end;}
         end;
       dest.x := x;
       dest.y := y;
@@ -1951,7 +1938,7 @@ begin
     UpdateAllScreen;
     menuString[0] := '取消';
     menuString[1] := '確認';
-    if CommonMenu(CENTER_X * 2 - 50, 2, 47, 1, 0, menuString) = 1 then
+    if CommonMenu(CENTER_X * 2 - 100, 10, 47, 1, 0, menuString) = 1 then
       Quit;
     //Redraw;
     //SDL_BlitSurface(tempscr, nil, screen, nil);
@@ -3264,32 +3251,51 @@ function DrawLength(str: WideString): integer; overload;
 var
   l, i: integer;
 begin
-  l := length(str);
-  Result := l;
-  for i := 1 to l do
-  begin
-    if uint16(str[i]) >= $1000 then
-      Result := Result + 1;
-  end;
+  Result := DrawLength(pWideChar(@str[1]));
 end;
 
 function DrawLength(p: pWideChar): integer; overload;
 var
-  l, i: integer;
+  l, i, Count, c: integer;
+  str: string;
+  strw: WideString;
 begin
   l := length(p);
   Result := l;
+  Count := 0;
+  str := '';
   for i := 0 to l - 1 do
   begin
-    if puint16(p)^ >= $1000 then
+    c := puint16(p)^;
+    if c >= $1000 then
       Result := Result + 1;
+    if c <= $255 then
+    begin
+      str := str + char(c);
+      Count := Count + 1;
+    end;
     Inc(p);
   end;
+  //这是个被打散的utf8字串, 重新测试
+  if Count = l then
+  begin
+    strw := UTF8Decode(str);
+    l := length(strw);
+    Result := l;
+    for i := 1 to l do
+    begin
+      c := uint16(strw[i]);
+      if c >= $1000 then
+        Result := Result + 1;
+      Inc(p);
+    end;
+  end;
+
 end;
 
 function DrawLength(p: pchar): integer; overload;
 begin
-  DrawLength(pWideChar(p));
+  Result := DrawLength(pWideChar(p));
 end;
 
 //顺序ARGB
