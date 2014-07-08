@@ -5847,16 +5847,16 @@ var
     begin
       if (i = menu) then
       begin
-        DrawTextFrame(x, y + h * i, 6);
+        DrawTextFrame(x, y + h * i, 7);
         DrawShadowText(@namestr[i][1], x + 19, y + 3 + h * i, ColColor($64), ColColor($66));
-        DrawShadowText(@modestring[Brole[a[i]].AutoMode][1], x + 103, y + 3 + h * i,
+        DrawShadowText(@modestring[Brole[a[i]].AutoMode][1], x + 119, y + 3 + h * i,
           ColColor($64), ColColor($66));
       end
       else
       begin
-        DrawTextFrame(x, y + h * i, 6, 20);
+        DrawTextFrame(x, y + h * i, 7, 20);
         DrawShadowText(@namestr[i][1], x + 19, y + 3 + h * i, 0, $202020);
-        DrawShadowText(@modestring[Brole[a[i]].AutoMode][1], x + 103, y + 3 + h * i,
+        DrawShadowText(@modestring[Brole[a[i]].AutoMode][1], x + 119, y + 3 + h * i,
           0, $202020);
       end;
     end;
@@ -6620,35 +6620,31 @@ var
   Funcname: string;
   pFunc: function(bnum, mnum, level: integer): integer of object;
   f, i: integer;
-  p1: array[0..10] of integer = (20, 20, 30, 20, 30, 20, 40, 30, 40, 20, 30);
-  p2: array[100..101] of integer = (15, 15);
 begin
   f := Rrole[Brole[bnum].rnum].AmiFrameNum[0];
-  if (f >= low(p1)) and (f <= high(p1)) then
-    if random(100) < p1[f] then
-    begin
-      Funcname := Format('SA2_%d', [f]);
-      TMethod(pFunc).Code := TSpecialAbility2.MethodAddress(Funcname);
-      if Assigned(TMethod(pFunc).Code) then
-      begin
-        pFunc(bnum, mnum, level);
-      end;
-    end;
+  if (f>=0) and (f<100)then
+  begin
+  Funcname := Format('SA2_%d', [f]);
+  TMethod(pFunc).Code := TSpecialAbility2.MethodAddress(Funcname);
+  if Assigned(TMethod(pFunc).Code) then
+  begin
+    pFunc(bnum, mnum, level);
+  end;
+  end;
   for i := 0 to BRoleAmount - 1 do
   begin
     if (Brole[bnum].Team <> Brole[i].Team) and (Brole[i].Dead = 0) and (BField[4, Brole[i].X, Brole[i].Y] > 0) then
     begin
       f := Rrole[Brole[i].rnum].AmiFrameNum[0];
-      if (f >= low(p2)) and (f <= high(p2)) then
-        if random(100) < p2[f] then
-        begin
-          Funcname := Format('SA2_%d', [f]);
-          TMethod(pFunc).Code := TSpecialAbility2.MethodAddress(Funcname);
-          if Assigned(TMethod(pFunc).Code) then
-          begin
-            pFunc(i, mnum, level);
-          end;
-        end;
+      if (f>=100) then
+      begin
+      Funcname := Format('SA2_%d', [f]);
+      TMethod(pFunc).Code := TSpecialAbility2.MethodAddress(Funcname);
+      if Assigned(TMethod(pFunc).Code) then
+      begin
+        pFunc(i, mnum, level);
+      end;
+      end;
     end;
   end;
 end;
@@ -8722,31 +8718,34 @@ var
   str: WideString;
   i, rnum, hurt: integer;
 begin
-  if (Rmagic[mnum].MagicType = 3) then
+  if random(100) < 20 then
   begin
-    FillChar(BField[4, 0, 0], 4096 * 2, 0);
-    for i := 0 to BRoleAmount - 1 do
+    if (Rmagic[mnum].MagicType = 3) then
     begin
-      Brole[i].ShowNumber := -1;
-      if (Brole[bnum].Team <> Brole[i].Team) and (Brole[i].Dead = 0) then
+      FillChar(BField[4, 0, 0], 4096 * 2, 0);
+      for i := 0 to BRoleAmount - 1 do
       begin
-        BField[4, Brole[i].x, Brole[i].y] := 1 + random(6);
-        rnum := Brole[i].rnum;
-        hurt := 100 * level + Rrole[Brole[bnum].rnum].Level * 10 - Rrole[rnum].Defence;
-        hurt := max(0, hurt);
-        Rrole[rnum].CurrentHP := max(Rrole[rnum].CurrentHP - hurt, 0);
-        Brole[i].ShowNumber := hurt;
-        ModifyState(i, 26, -1, 3);
+        Brole[i].ShowNumber := -1;
+        if (Brole[bnum].Team <> Brole[i].Team) and (Brole[i].Dead = 0) then
+        begin
+          BField[4, Brole[i].x, Brole[i].y] := 1 + random(6);
+          rnum := Brole[i].rnum;
+          hurt := 100 * level + Rrole[Brole[bnum].rnum].Level * 10 - Rrole[rnum].Defence;
+          hurt := max(0, hurt);
+          Rrole[rnum].CurrentHP := max(Rrole[rnum].CurrentHP - hurt, 0);
+          Brole[i].ShowNumber := hurt;
+          ModifyState(i, 26, -1, 3);
+        end;
       end;
+      //Rmagic[0].Attack[0] := 100 * level + Rrole[Brole[bnum].rnum].Level * 10;
+      //Rmagic[0].Attack[1] := 200 * level + Rrole[Brole[bnum].rnum].Level * 20;
+      str := UTF8Decode('冷刃冰心');
+      ShowMagicName(0, str);
+      PlayActionAmination(bnum, Rmagic[mnum].MagicType); //动作效果
+      //CalHurtRole(bnum, 0, level, 1); //计算被打到的人物
+      PlayMagicAmination(bnum, 48); //武功效果
+      ShowHurtValue(0); //显示数字
     end;
-    //Rmagic[0].Attack[0] := 100 * level + Rrole[Brole[bnum].rnum].Level * 10;
-    //Rmagic[0].Attack[1] := 200 * level + Rrole[Brole[bnum].rnum].Level * 20;
-    str := UTF8Decode('冷刃冰心');
-    ShowMagicName(0, str);
-    PlayActionAmination(bnum, Rmagic[mnum].MagicType); //动作效果
-    //CalHurtRole(bnum, 0, level, 1); //计算被打到的人物
-    PlayMagicAmination(bnum, 48); //武功效果
-    ShowHurtValue(0); //显示数字
   end;
 end;
 
@@ -8757,39 +8756,42 @@ var
   str: WideString;
   i, rnum, hurt: integer;
 begin
-  if (Rmagic[mnum].MagicType = 3) then
+  if random(100) < 20 then
   begin
-    Ax := Bx;
-    Ay := By;
-    case Brole[bnum].Face of
-      0: Ax := Bx - 1;
-      1: Ay := By + 1;
-      2: Ay := By - 1;
-      3: Ax := Bx + 1;
-    end;
-    SetAminationPosition(1, 32, 0);
-    for i := 0 to BRoleAmount - 1 do
+    if (Rmagic[mnum].MagicType = 3) then
     begin
-      Brole[i].ShowNumber := -1;
-      if (Brole[bnum].Team <> Brole[i].Team) and (Brole[i].Dead = 0) and
-        (BField[4, Brole[i].X, Brole[i].Y] > 0) then
-      begin
-        rnum := Brole[i].rnum;
-        hurt := 100 * level + Rrole[Brole[bnum].rnum].Level * 10 - Rrole[rnum].Defence;
-        hurt := max(0, hurt);
-        Rrole[rnum].CurrentHP := max(Rrole[rnum].CurrentHP - hurt, 0);
-        Brole[i].ShowNumber := hurt;
-        ModifyState(i, 1, -50, 5);
+      Ax := Bx;
+      Ay := By;
+      case Brole[bnum].Face of
+        0: Ax := Bx - 1;
+        1: Ay := By + 1;
+        2: Ay := By - 1;
+        3: Ax := Bx + 1;
       end;
+      SetAminationPosition(1, 32, 0);
+      for i := 0 to BRoleAmount - 1 do
+      begin
+        Brole[i].ShowNumber := -1;
+        if (Brole[bnum].Team <> Brole[i].Team) and (Brole[i].Dead = 0) and
+          (BField[4, Brole[i].X, Brole[i].Y] > 0) then
+        begin
+          rnum := Brole[i].rnum;
+          hurt := 100 * level + Rrole[Brole[bnum].rnum].Level * 10 - Rrole[rnum].Defence;
+          hurt := max(0, hurt);
+          Rrole[rnum].CurrentHP := max(Rrole[rnum].CurrentHP - hurt, 0);
+          Brole[i].ShowNumber := hurt;
+          ModifyState(i, 1, -50, 5);
+        end;
+      end;
+      //Rmagic[0].Attack[0] := 100 * level + Rrole[Brole[bnum].rnum].Level * 10;
+      //Rmagic[0].Attack[1] := 200 * level + Rrole[Brole[bnum].rnum].Level * 20;
+      str := UTF8Decode('斷江斬');
+      ShowMagicName(0, str);
+      PlayActionAmination(bnum, Rmagic[mnum].MagicType); //动作效果
+      //CalHurtRole(bnum, 0, level, 1); //计算被打到的人物
+      PlayMagicAmination(bnum, 35); //武功效果
+      ShowHurtValue(0); //显示数字
     end;
-    //Rmagic[0].Attack[0] := 100 * level + Rrole[Brole[bnum].rnum].Level * 10;
-    //Rmagic[0].Attack[1] := 200 * level + Rrole[Brole[bnum].rnum].Level * 20;
-    str := UTF8Decode('斷江斬');
-    ShowMagicName(0, str);
-    PlayActionAmination(bnum, Rmagic[mnum].MagicType); //动作效果
-    //CalHurtRole(bnum, 0, level, 1); //计算被打到的人物
-    PlayMagicAmination(bnum, 35); //武功效果
-    ShowHurtValue(0); //显示数字
   end;
 end;
 
@@ -8800,33 +8802,36 @@ var
   str: WideString;
   i, rnum, hurt: integer;
 begin
-  if (Rmagic[mnum].MagicType = 4) then
+  if random(100) < 20 then
   begin
-    Ax := Bx;
-    Ay := By;
-    SetAminationPosition(3, 0, 4);
-    for i := 0 to BRoleAmount - 1 do
+    if (Rmagic[mnum].MagicType = 4) then
     begin
-      Brole[i].ShowNumber := -1;
-      if (Brole[bnum].Team <> Brole[i].Team) and (Brole[i].Dead = 0) and
-        (BField[4, Brole[i].X, Brole[i].Y] > 0) then
+      Ax := Bx;
+      Ay := By;
+      SetAminationPosition(3, 0, 4);
+      for i := 0 to BRoleAmount - 1 do
       begin
-        rnum := Brole[i].rnum;
-        hurt := 100 * level + Rrole[Brole[bnum].rnum].Level * 10 - Rrole[rnum].Defence;
-        hurt := max(0, hurt);
-        Rrole[rnum].CurrentHP := max(Rrole[rnum].CurrentHP - hurt, 0);
-        Brole[i].ShowNumber := hurt;
-        ModifyState(i, 0, -50, 5);
+        Brole[i].ShowNumber := -1;
+        if (Brole[bnum].Team <> Brole[i].Team) and (Brole[i].Dead = 0) and
+          (BField[4, Brole[i].X, Brole[i].Y] > 0) then
+        begin
+          rnum := Brole[i].rnum;
+          hurt := 100 * level + Rrole[Brole[bnum].rnum].Level * 10 - Rrole[rnum].Defence;
+          hurt := max(0, hurt);
+          Rrole[rnum].CurrentHP := max(Rrole[rnum].CurrentHP - hurt, 0);
+          Brole[i].ShowNumber := hurt;
+          ModifyState(i, 0, -50, 5);
+        end;
       end;
+      //Rmagic[0].Attack[0] := 100 * level + Rrole[Brole[bnum].rnum].Level * 10;
+      //Rmagic[0].Attack[1] := 200 * level + Rrole[Brole[bnum].rnum].Level * 20;
+      str := UTF8Decode('雲龍九現');
+      ShowMagicName(0, str);
+      PlayActionAmination(bnum, Rmagic[mnum].MagicType); //动作效果
+      //CalHurtRole(bnum, 0, level, 1); //计算被打到的人物
+      PlayMagicAmination(bnum, 98); //武功效果
+      ShowHurtValue(0); //显示数字
     end;
-    //Rmagic[0].Attack[0] := 100 * level + Rrole[Brole[bnum].rnum].Level * 10;
-    //Rmagic[0].Attack[1] := 200 * level + Rrole[Brole[bnum].rnum].Level * 20;
-    str := UTF8Decode('雲龍九現');
-    ShowMagicName(0, str);
-    PlayActionAmination(bnum, Rmagic[mnum].MagicType); //动作效果
-    //CalHurtRole(bnum, 0, level, 1); //计算被打到的人物
-    PlayMagicAmination(bnum, 98); //武功效果
-    ShowHurtValue(0); //显示数字
   end;
 end;
 
@@ -8837,44 +8842,47 @@ var
   str: WideString;
   i, rnum, hurt, j: integer;
 begin
-  if (mnum = 56) then
+  if random(100) < 20 then
   begin
-    FillChar(BField[4, 0, 0], 4096 * 2, 0);
-    for i := 0 to BRoleAmount - 1 do
+    if (mnum = 56) then
     begin
-      Brole[i].ShowNumber := -1;
-      if (Brole[bnum].Team <> Brole[i].Team) and (Brole[i].Dead = 0) then
+      FillChar(BField[4, 0, 0], 4096 * 2, 0);
+      for i := 0 to BRoleAmount - 1 do
       begin
-        BField[4, Brole[i].x, Brole[i].y] := 1 + random(6);
-        rnum := Brole[i].rnum;
-        hurt := 200 + random(Rrole[Brole[bnum].rnum].Level) * 5;
-        Rrole[rnum].CurrentHP := max(Rrole[rnum].CurrentHP - hurt, 0);
-        Brole[i].ShowNumber := hurt;
-        for j := 29 to 33 do
+        Brole[i].ShowNumber := -1;
+        if (Brole[bnum].Team <> Brole[i].Team) and (Brole[i].Dead = 0) then
         begin
-          if Brole[i].StateLevel[j] > 0 then
+          BField[4, Brole[i].x, Brole[i].y] := 1 + random(6);
+          rnum := Brole[i].rnum;
+          hurt := 200 + random(Rrole[Brole[bnum].rnum].Level) * 5;
+          Rrole[rnum].CurrentHP := max(Rrole[rnum].CurrentHP - hurt, 0);
+          Brole[i].ShowNumber := hurt;
+          for j := 29 to 33 do
           begin
-            Brole[i].StateLevel[j] := 0;
-            Brole[i].StateRound[j] := 0;
-          end
-          else
-          if random(100) < 50 then
-            Brole[i].StateLevel[j] := min(-99, Brole[i].StateLevel[j] - 15);
-          Brole[i].StateRound[j] := Brole[i].StateRound[j] - 3;
-        end;
+            if Brole[i].StateLevel[j] > 0 then
+            begin
+              Brole[i].StateLevel[j] := 0;
+              Brole[i].StateRound[j] := 0;
+            end
+            else
+            if random(100) < 50 then
+              Brole[i].StateLevel[j] := min(-99, Brole[i].StateLevel[j] - 15);
+            Brole[i].StateRound[j] := Brole[i].StateRound[j] - 3;
+          end;
         {if random(100) < 50 then Rrole[rnum].Fist := max(Rrole[rnum].Fist * 85 div 100, 10);
         if random(100) < 50 then Rrole[rnum].Sword := max(Rrole[rnum].Sword * 85 div 100, 10);
         if random(100) < 50 then Rrole[rnum].Knife := max(Rrole[rnum].Knife * 85 div 100, 10);
         if random(100) < 50 then Rrole[rnum].Unusual := max(Rrole[rnum].Unusual * 85 div 100, 10);
         if random(100) < 50 then Rrole[rnum].HidWeapon := max(Rrole[rnum].HidWeapon * 85 div 100, 10);}
+        end;
       end;
+      str := UTF8Decode('破盡天下');
+      ShowMagicName(0, str);
+      PlayActionAmination(bnum, Rmagic[mnum].MagicType); //动作效果
+      //CalHurtRole(bnum, mnum, level, 1); //计算被打到的人物
+      PlayMagicAmination(bnum, 3); //武功效果
+      ShowHurtValue(0); //显示数字
     end;
-    str := UTF8Decode('破盡天下');
-    ShowMagicName(0, str);
-    PlayActionAmination(bnum, Rmagic[mnum].MagicType); //动作效果
-    //CalHurtRole(bnum, mnum, level, 1); //计算被打到的人物
-    PlayMagicAmination(bnum, 3); //武功效果
-    ShowHurtValue(0); //显示数字
   end;
 end;
 
@@ -8885,19 +8893,22 @@ var
   str: WideString;
   i, rnum, hurt: integer;
 begin
-  if (mnum = 24) then
+  if random(100) < 30 then
   begin
-    rnum := Brole[bnum].rnum;
-    Rrole[rnum].CurrentMP := Rrole[rnum].CurrentMP + Rmagic[mnum].NeedMP * level div 2;
-    Rrole[rnum].CurrentMP := min(Rrole[rnum].CurrentMP + Rrole[rnum].MaxMP * 30 div 100, Rrole[rnum].MaxMP);
-    str := UTF8Decode('有餘不盡');
-    ShowMagicName(0, str);
-    move(BField[4, 0, 0], BField[5, 0, 0], 4096 * 2);
-    FillChar(BField[4, 0, 0], 4096 * 2, 0);
-    BField[4, Brole[bnum].X, Brole[bnum].Y] := 1;
-    PlayMagicAmination(bnum, 22); //动作效果
-    move(BField[5, 0, 0], BField[4, 0, 0], 4096 * 2);
-    AttackAction(bnum, mnum, level);
+    if (mnum = 24) then
+    begin
+      rnum := Brole[bnum].rnum;
+      Rrole[rnum].CurrentMP := Rrole[rnum].CurrentMP + Rmagic[mnum].NeedMP * level div 2;
+      Rrole[rnum].CurrentMP := min(Rrole[rnum].CurrentMP + Rrole[rnum].MaxMP * 30 div 100, Rrole[rnum].MaxMP);
+      str := UTF8Decode('有餘不盡');
+      ShowMagicName(0, str);
+      move(BField[4, 0, 0], BField[5, 0, 0], 4096 * 2);
+      FillChar(BField[4, 0, 0], 4096 * 2, 0);
+      BField[4, Brole[bnum].X, Brole[bnum].Y] := 1;
+      PlayMagicAmination(bnum, 22); //动作效果
+      move(BField[5, 0, 0], BField[4, 0, 0], 4096 * 2);
+      AttackAction(bnum, mnum, level);
+    end;
   end;
 end;
 
@@ -8908,31 +8919,34 @@ var
   str: WideString;
   i, rnum, hurt: integer;
 begin
-  if (mnum = 49) then
+  if random(100) < 20 then
   begin
-    for i := 0 to BRoleAmount - 1 do
+    if (mnum = 49) then
     begin
-      if (Brole[bnum].Team <> Brole[i].Team) and (BField[4, Brole[i].X, Brole[i].Y] > 0) then
+      for i := 0 to BRoleAmount - 1 do
       begin
+        if (Brole[bnum].Team <> Brole[i].Team) and (BField[4, Brole[i].X, Brole[i].Y] > 0) then
+        begin
         {Brole[i].StateLevel[0] := -50;
         Brole[i].StateRound[0] := random(5);
         Brole[i].StateLevel[1] := -50;
         Brole[i].StateRound[1] := random(5);
         Brole[i].StateLevel[3] := -1;
         Brole[i].StateRound[3] := random(5);}
-        ModifyState(i, 0, -50, random(5));
-        ModifyState(i, 1, -50, random(5));
-        ModifyState(i, 3, -1, random(5));
+          ModifyState(i, 0, -50, random(5));
+          ModifyState(i, 1, -50, random(5));
+          ModifyState(i, 3, -1, random(5));
+        end;
       end;
+      str := UTF8Decode('重劍無鋒');
+      ShowMagicName(0, str);
+      move(BField[4, 0, 0], BField[5, 0, 0], 4096 * 2);
+      FillChar(BField[4, 0, 0], 4096 * 2, 0);
+      BField[4, Brole[bnum].X, Brole[bnum].Y] := 1;
+      PlayMagicAmination(bnum, 83); //动作效果
+      move(BField[5, 0, 0], BField[4, 0, 0], 4096 * 2);
+      AttackAction(bnum, mnum, level);
     end;
-    str := UTF8Decode('重劍無鋒');
-    ShowMagicName(0, str);
-    move(BField[4, 0, 0], BField[5, 0, 0], 4096 * 2);
-    FillChar(BField[4, 0, 0], 4096 * 2, 0);
-    BField[4, Brole[bnum].X, Brole[bnum].Y] := 1;
-    PlayMagicAmination(bnum, 83); //动作效果
-    move(BField[5, 0, 0], BField[4, 0, 0], 4096 * 2);
-    AttackAction(bnum, mnum, level);
   end;
 end;
 
@@ -8943,31 +8957,34 @@ var
   str: WideString;
   i, rnum, hurt: integer;
 begin
-  if (mnum = 47) then
+  if random(100) < 40 then
   begin
-    str := UTF8Decode('意假情真');
-    ShowMagicName(0, str);
-    move(BField[4, 0, 0], BField[5, 0, 0], 4096 * 2);
-    FillChar(BField[4, 0, 0], 4096 * 2, 0);
-    BField[4, Brole[bnum].X, Brole[bnum].Y] := 1;
-    PlayMagicAmination(bnum, 62); //动作效果
-    move(BField[5, 0, 0], BField[4, 0, 0], 4096 * 2);
-    for i := 0 to BRoleAmount - 1 do
+    if (mnum = 47) then
     begin
-      if (Brole[bnum].Team <> Brole[i].Team) and (BField[4, Brole[i].X, Brole[i].Y] > 0) then
+      str := UTF8Decode('意假情真');
+      ShowMagicName(0, str);
+      move(BField[4, 0, 0], BField[5, 0, 0], 4096 * 2);
+      FillChar(BField[4, 0, 0], 4096 * 2, 0);
+      BField[4, Brole[bnum].X, Brole[bnum].Y] := 1;
+      PlayMagicAmination(bnum, 62); //动作效果
+      move(BField[5, 0, 0], BField[4, 0, 0], 4096 * 2);
+      for i := 0 to BRoleAmount - 1 do
       begin
-        //设定目标减防御120%一回合
-        Brole[i].StateLevel[1] := Brole[i].StateLevel[1] - 120;
-        Brole[i].StateRound[1] := Brole[i].StateRound[1] + 1;
+        if (Brole[bnum].Team <> Brole[i].Team) and (BField[4, Brole[i].X, Brole[i].Y] > 0) then
+        begin
+          //设定目标减防御120%一回合
+          Brole[i].StateLevel[1] := Brole[i].StateLevel[1] - 120;
+          Brole[i].StateRound[1] := Brole[i].StateRound[1] + 1;
+        end;
       end;
-    end;
-    AttackAction(bnum, mnum, level);
-    for i := 0 to BRoleAmount - 1 do
-    begin
-      if (Brole[bnum].Team <> Brole[i].Team) and (BField[4, Brole[i].X, Brole[i].Y] > 0) then
+      AttackAction(bnum, mnum, level);
+      for i := 0 to BRoleAmount - 1 do
       begin
-        Brole[i].StateLevel[1] := Brole[i].StateLevel[1] + 120;
-        Brole[i].StateRound[1] := Brole[i].StateRound[1] - 1;
+        if (Brole[bnum].Team <> Brole[i].Team) and (BField[4, Brole[i].X, Brole[i].Y] > 0) then
+        begin
+          Brole[i].StateLevel[1] := Brole[i].StateLevel[1] + 120;
+          Brole[i].StateRound[1] := Brole[i].StateRound[1] - 1;
+        end;
       end;
     end;
   end;
@@ -8980,27 +8997,30 @@ var
   str: WideString;
   i, rnum, hurt: integer;
 begin
-  if (mnum = 254) then
+  if random(100) < 0 then
   begin
-    FillChar(BField[4, 0, 0], 4096 * 2, 0);
-    for i := 0 to BRoleAmount - 1 do
+    if (mnum = 254) then
     begin
-      Brole[i].ShowNumber := -1;
-      if (Brole[bnum].Team <> Brole[i].Team) and (Brole[i].Dead = 0) then
+      FillChar(BField[4, 0, 0], 4096 * 2, 0);
+      for i := 0 to BRoleAmount - 1 do
       begin
-        BField[4, Brole[i].x, Brole[i].y] := 1 + random(6);
-        rnum := Brole[i].rnum;
-        hurt := random(100) + random(Rrole[Brole[bnum].rnum].CurrentHP);
-        Rrole[rnum].CurrentHP := max(Rrole[rnum].CurrentHP - hurt, 0);
-        Brole[i].ShowNumber := hurt;
+        Brole[i].ShowNumber := -1;
+        if (Brole[bnum].Team <> Brole[i].Team) and (Brole[i].Dead = 0) then
+        begin
+          BField[4, Brole[i].x, Brole[i].y] := 1 + random(6);
+          rnum := Brole[i].rnum;
+          hurt := random(100) + random(Rrole[Brole[bnum].rnum].CurrentHP);
+          Rrole[rnum].CurrentHP := max(Rrole[rnum].CurrentHP - hurt, 0);
+          Brole[i].ShowNumber := hurt;
+        end;
       end;
+      //Rrole[Brole[bnum].rnum].CurrentHP := min(Rrole[Brole[bnum].rnum].CurrentHP + );
+      str := UTF8Decode('無影神拳');
+      ShowMagicName(0, str);
+      PlayActionAmination(bnum, Rmagic[mnum].MagicType); //动作效果
+      PlayMagicAmination(bnum, 5); //武功效果
+      ShowHurtValue(Rmagic[mnum].HurtType); //显示数字
     end;
-    //Rrole[Brole[bnum].rnum].CurrentHP := min(Rrole[Brole[bnum].rnum].CurrentHP + );
-    str := UTF8Decode('無影神拳');
-    ShowMagicName(0, str);
-    PlayActionAmination(bnum, Rmagic[mnum].MagicType); //动作效果
-    PlayMagicAmination(bnum, 5); //武功效果
-    ShowHurtValue(Rmagic[mnum].HurtType); //显示数字
   end;
 end;
 
@@ -9011,37 +9031,40 @@ var
   str: WideString;
   i, bnum2, rnum, rnum2, hurt, hurtMP: integer;
 begin
-  if (mnum = 332) then
+  if random(100) < 40 then
   begin
-    bnum2 := BField[2, Ax, Ay];
-    if (bnum2 >= 0) then
-      if Brole[bnum].Team <> Brole[bnum2].Team then
-      begin
-        rnum := Brole[bnum].rnum;
-        rnum2 := Brole[bnum2].rnum;
-        hurt := Rrole[rnum].CurrentMP - Rrole[rnum2].CurrentMP;
-        hurtMP := min(Rrole[rnum].CurrentMP, Rrole[rnum2].CurrentMP);
-        Rrole[rnum].CurrentMP := Rrole[rnum].CurrentMP - hurtMP;
-        Rrole[rnum2].CurrentMP := Rrole[rnum2].CurrentMP - hurtMP;
-        if hurt >= 0 then
+    if (mnum = 332) then
+    begin
+      bnum2 := BField[2, Ax, Ay];
+      if (bnum2 >= 0) then
+        if Brole[bnum].Team <> Brole[bnum2].Team then
         begin
-          Rrole[rnum2].CurrentHP := max(Rrole[rnum2].CurrentHP - hurt, 0);
-          Brole[bnum].ShowNumber := 0;
-          Brole[bnum2].ShowNumber := hurt;
-        end
-        else
-        begin
-          Rrole[rnum].CurrentHP := max(Rrole[rnum].CurrentHP - hurt, 0);
-          Brole[bnum].ShowNumber := hurt;
-          Brole[bnum2].ShowNumber := 0;
+          rnum := Brole[bnum].rnum;
+          rnum2 := Brole[bnum2].rnum;
+          hurt := Rrole[rnum].CurrentMP - Rrole[rnum2].CurrentMP;
+          hurtMP := min(Rrole[rnum].CurrentMP, Rrole[rnum2].CurrentMP);
+          Rrole[rnum].CurrentMP := Rrole[rnum].CurrentMP - hurtMP;
+          Rrole[rnum2].CurrentMP := Rrole[rnum2].CurrentMP - hurtMP;
+          if hurt >= 0 then
+          begin
+            Rrole[rnum2].CurrentHP := max(Rrole[rnum2].CurrentHP - hurt, 0);
+            Brole[bnum].ShowNumber := 0;
+            Brole[bnum2].ShowNumber := hurt;
+          end
+          else
+          begin
+            Rrole[rnum].CurrentHP := max(Rrole[rnum].CurrentHP - hurt, 0);
+            Brole[bnum].ShowNumber := hurt;
+            Brole[bnum2].ShowNumber := 0;
+          end;
+          BField[4, Brole[bnum].X, Brole[bnum].Y] := 1 + random(6);
+          str := UTF8Decode('一空到底');
+          ShowMagicName(0, str);
+          PlayActionAmination(bnum, Rmagic[mnum].MagicType); //动作效果
+          PlayMagicAmination(bnum, 104); //武功效果
+          ShowHurtValue(Rmagic[mnum].HurtType); //显示数字
         end;
-        BField[4, Brole[bnum].X, Brole[bnum].Y] := 1 + random(6);
-        str := UTF8Decode('一空到底');
-        ShowMagicName(0, str);
-        PlayActionAmination(bnum, Rmagic[mnum].MagicType); //动作效果
-        PlayMagicAmination(bnum, 104); //武功效果
-        ShowHurtValue(Rmagic[mnum].HurtType); //显示数字
-      end;
+    end;
   end;
 end;
 
@@ -9052,29 +9075,32 @@ var
   str: WideString;
   i, rnum, hurt: integer;
 begin
-  if (mnum = 164) and (Rrole[Brole[bnum].rnum].Equip[0] = 31) then
+  if random(100) < 20 then
   begin
-    Ax := Bx;
-    Ay := By;
-    SetAminationPosition(3, 0, 4);
-    for i := 0 to BRoleAmount - 1 do
+    if (mnum = 164) and (Rrole[Brole[bnum].rnum].Equip[0] = 31) then
     begin
-      Brole[i].ShowNumber := -1;
-      if (Brole[bnum].Team <> Brole[i].Team) and (BField[4, Brole[i].X, Brole[i].Y] > 0) then
+      Ax := Bx;
+      Ay := By;
+      SetAminationPosition(3, 0, 4);
+      for i := 0 to BRoleAmount - 1 do
       begin
-        rnum := Brole[i].rnum;
-        hurt := Rrole[rnum].CurrentHP div 10;
-        Rrole[rnum].CurrentHP := max(Rrole[rnum].CurrentHP - hurt, 0);
-        Brole[i].ShowNumber := hurt;
-        if (random(100) < 30) then
-          ModifyState(i, 28, -1, 3);
+        Brole[i].ShowNumber := -1;
+        if (Brole[bnum].Team <> Brole[i].Team) and (BField[4, Brole[i].X, Brole[i].Y] > 0) then
+        begin
+          rnum := Brole[i].rnum;
+          hurt := Rrole[rnum].CurrentHP div 10;
+          Rrole[rnum].CurrentHP := max(Rrole[rnum].CurrentHP - hurt, 0);
+          Brole[i].ShowNumber := hurt;
+          if (random(100) < 30) then
+            ModifyState(i, 28, -1, 3);
+        end;
       end;
+      str := UTF8Decode('分心二用.天羅地網');
+      ShowMagicName(0, str);
+      PlayActionAmination(bnum, Rmagic[mnum].MagicType); //动作效果
+      PlayMagicAmination(bnum, 103); //武功效果
+      ShowHurtValue(Rmagic[mnum].HurtType); //显示数字
     end;
-    str := UTF8Decode('分心二用.天羅地網');
-    ShowMagicName(0, str);
-    PlayActionAmination(bnum, Rmagic[mnum].MagicType); //动作效果
-    PlayMagicAmination(bnum, 103); //武功效果
-    ShowHurtValue(Rmagic[mnum].HurtType); //显示数字
   end;
 end;
 
@@ -9084,31 +9110,34 @@ var
   str: WideString;
   i, rnum, hurt: integer;
 begin
-  rnum := Brole[bnum].rnum;
-  if (mnum = 87) and (HaveMagic(rnum, 299, 0)) then
+  if random(100) < 20 then
   begin
-    Ax := Bx;
-    Ay := By;
-    SetAminationPosition(3, 0, 4);
-    for i := 0 to BRoleAmount - 1 do
+    rnum := Brole[bnum].rnum;
+    if (mnum = 87) and (HaveMagic(rnum, 299, 0)) then
     begin
-      Brole[i].ShowNumber := -1;
-      if (Brole[bnum].Team <> Brole[i].Team) and (Brole[i].Dead = 0) and
-        (BField[4, Brole[i].X, Brole[i].Y] > 0) then
+      Ax := Bx;
+      Ay := By;
+      SetAminationPosition(3, 0, 4);
+      for i := 0 to BRoleAmount - 1 do
       begin
-        rnum := Brole[i].rnum;
-        hurt := 100 * level + Rrole[Brole[bnum].rnum].Level * 10 - Rrole[rnum].Defence;
-        hurt := max(0, hurt);
-        Rrole[rnum].CurrentHP := max(Rrole[rnum].CurrentHP - hurt, 0);
-        Brole[i].ShowNumber := hurt;
-        Rrole[rnum].Poison := 100;
+        Brole[i].ShowNumber := -1;
+        if (Brole[bnum].Team <> Brole[i].Team) and (Brole[i].Dead = 0) and
+          (BField[4, Brole[i].X, Brole[i].Y] > 0) then
+        begin
+          rnum := Brole[i].rnum;
+          hurt := 100 * level + Rrole[Brole[bnum].rnum].Level * 10 - Rrole[rnum].Defence;
+          hurt := max(0, hurt);
+          Rrole[rnum].CurrentHP := max(Rrole[rnum].CurrentHP - hurt, 0);
+          Brole[i].ShowNumber := hurt;
+          Rrole[rnum].Poison := 100;
+        end;
       end;
+      str := UTF8Decode('密宗.火焰刀');
+      ShowMagicName(0, str);
+      PlayActionAmination(bnum, Rmagic[mnum].MagicType); //动作效果
+      PlayMagicAmination(bnum, 11); //武功效果
+      ShowHurtValue(0); //显示数字
     end;
-    str := UTF8Decode('密宗.火焰刀');
-    ShowMagicName(0, str);
-    PlayActionAmination(bnum, Rmagic[mnum].MagicType); //动作效果
-    PlayMagicAmination(bnum, 11); //武功效果
-    ShowHurtValue(0); //显示数字
   end;
 end;
 
@@ -9118,32 +9147,34 @@ var
   str: WideString;
   i, rnum, hurt: integer;
 begin
-  if (Rmagic[mnum].MagicType = 3) then
+  if random(100) < 20 then
   begin
-    Ax := Bx;
-    Ay := By;
-    SetAminationPosition(3, 0, 6);
-    for i := 0 to BRoleAmount - 1 do
+    if (Rmagic[mnum].MagicType = 3) then
     begin
-      Brole[i].ShowNumber := -1;
-      if (Brole[bnum].Team <> Brole[i].Team) and (Brole[i].Dead = 0) and
-        (Bfield[4, Brole[i].X, Brole[i].Y] > 0) then
+      Ax := Bx;
+      Ay := By;
+      SetAminationPosition(3, 0, 6);
+      for i := 0 to BRoleAmount - 1 do
       begin
-        rnum := Brole[i].rnum;
-        hurt := 600;
-        hurt := max(0, hurt);
-        Rrole[rnum].CurrentHP := max(Rrole[rnum].CurrentHP - hurt, 0);
-        Brole[i].ShowNumber := hurt;
+        Brole[i].ShowNumber := -1;
+        if (Brole[bnum].Team <> Brole[i].Team) and (Brole[i].Dead = 0) and
+          (Bfield[4, Brole[i].X, Brole[i].Y] > 0) then
+        begin
+          rnum := Brole[i].rnum;
+          hurt := 600;
+          hurt := max(0, hurt);
+          Rrole[rnum].CurrentHP := max(Rrole[rnum].CurrentHP - hurt, 0);
+          Brole[i].ShowNumber := hurt;
+        end;
       end;
+      str := UTF8Decode('陆家刀法');
+      ShowMagicName(0, str);
+      PlayActionAmination(bnum, Rmagic[mnum].MagicType); //动作效果
+      PlayMagicAmination(bnum, 45); //武功效果
+      ShowHurtValue(0); //显示数字
     end;
-    str := UTF8Decode('陆家刀法');
-    ShowMagicName(0, str);
-    PlayActionAmination(bnum, Rmagic[mnum].MagicType); //动作效果
-    PlayMagicAmination(bnum, 45); //武功效果
-    ShowHurtValue(0); //显示数字
   end;
 end;
-
 
 //100瑜伽密乘
 //15%几率攻防增加三回合, 拳系特效触发概率提升
@@ -9152,31 +9183,34 @@ var
   str: WideString;
   i, rnum, hurt: integer;
 begin
-  rnum := Brole[bnum].rnum;
-  if HaveMagic(rnum, 301, 0) then
+  if random(100) < 15 then
   begin
-    str := UTF8Decode('瑜伽密乘');
-    ShowMagicName(0, str);
-    //move(Bfield[4, 0, 0], Bfield[5, 0, 0], 4096 * 2);
-    FillChar(BField[4, 0, 0], 4096 * 2, 0);
-    BField[4, Brole[bnum].X, Brole[bnum].Y] := 1;
-    PlayMagicAmination(bnum, 84);
+    rnum := Brole[bnum].rnum;
+    if HaveMagic(rnum, 301, 0) then
+    begin
+      str := UTF8Decode('瑜伽密乘');
+      ShowMagicName(0, str);
+      //move(Bfield[4, 0, 0], Bfield[5, 0, 0], 4096 * 2);
+      FillChar(BField[4, 0, 0], 4096 * 2, 0);
+      BField[4, Brole[bnum].X, Brole[bnum].Y] := 1;
+      PlayMagicAmination(bnum, 84);
     {Brole[bnum].StateLevel[0] := 50;
     Brole[bnum].StateRound[0] := 3;
     Brole[bnum].StateLevel[1] := 50;
     Brole[bnum].StateRound[1] := 3;}
-    ModifyState(bnum, 0, 50, 3);
-    ModifyState(bnum, 1, 50, 3);
-    if random(100) < 50 then
-      ModifyState(bnum, 29, 30, 3);
-    if random(100) < 50 then
-      ModifyState(bnum, 30, 30, 3);
-    if random(100) < 50 then
-      ModifyState(bnum, 31, 30, 3);
-    if random(100) < 50 then
-      ModifyState(bnum, 32, 30, 3);
-    if random(100) < 50 then
-      ModifyState(bnum, 33, 30, 3);
+      ModifyState(bnum, 0, 50, 3);
+      ModifyState(bnum, 1, 50, 3);
+      if random(100) < 50 then
+        ModifyState(bnum, 29, 30, 3);
+      if random(100) < 50 then
+        ModifyState(bnum, 30, 30, 3);
+      if random(100) < 50 then
+        ModifyState(bnum, 31, 30, 3);
+      if random(100) < 50 then
+        ModifyState(bnum, 32, 30, 3);
+      if random(100) < 50 then
+        ModifyState(bnum, 33, 30, 3);
+    end;
   end;
 end;
 
@@ -9187,22 +9221,23 @@ var
   str: WideString;
   i, rnum, hurt: integer;
 begin
-  rnum := Brole[bnum].rnum;
-  //if (random(100) < 15) then
-  if HaveMagic(rnum, 128, 0) and (not HaveMagic(rnum, 127, 0)) and (not HaveMagic(rnum, 129, 0)) and
-    (Rrole[rnum].CurrentMP >= 9000) then
+  if random(100) < 15 then
   begin
-    str := UTF8Decode('九陽歸一');
-    ShowMagicName(0, str);
-    //move(Bfield[4, 0, 0], Bfield[5, 0, 0], 4096 * 2);
-    FillChar(BField[4, 0, 0], 4096 * 2, 0);
-    BField[4, Brole[bnum].X, Brole[bnum].Y] := 1;
-    PlayActionAmination(bnum, 59);
-    Rrole[rnum].PhyPower := min(MAX_PHYSICAL_POWER, Rrole[rnum].PhyPower + 20);
-    Brole[bnum].StateLevel[14] := Brole[i].StateLevel[14] + 50;
+    rnum := Brole[bnum].rnum;
+    //if (random(100) < 15) then
+    if HaveMagic(rnum, 128, 0) and (not HaveMagic(rnum, 127, 0)) and (not HaveMagic(rnum, 129, 0)) and
+      (Rrole[rnum].CurrentMP >= 9000) then
+    begin
+      str := UTF8Decode('九陽歸一');
+      ShowMagicName(0, str);
+      //move(Bfield[4, 0, 0], Bfield[5, 0, 0], 4096 * 2);
+      FillChar(BField[4, 0, 0], 4096 * 2, 0);
+      BField[4, Brole[bnum].X, Brole[bnum].Y] := 1;
+      PlayActionAmination(bnum, 59);
+      Rrole[rnum].PhyPower := min(MAX_PHYSICAL_POWER, Rrole[rnum].PhyPower + 20);
+      Brole[bnum].StateLevel[14] := Brole[i].StateLevel[14] + 50;
+    end;
   end;
 end;
-
-
 
 end.
