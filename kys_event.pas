@@ -2189,7 +2189,7 @@ begin
         if i1 > t1 then
           t1 := i1;
       end;
-      x50[e4] := CommonMenu(e5, e6, t1 * 10 + 7, e2 - 1, 0, menuString) + 1;
+      x50[e4] := CommonScrollMenu(e5, e6, t1 * 10 + 7, e2 - 1, 10, menuString) + 1;
     end;
     40: //Show a menu to select.
     begin

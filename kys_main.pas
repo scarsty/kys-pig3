@@ -82,18 +82,11 @@ function CommonMenu(x, y, w, max, default: integer; menuString, menuEngString: a
 function CommonMenu(x, y, w, max, default: integer; menuString: array of WideString): integer; overload;
 function CommonMenu(x, y, w, max, default: integer; menuString, menuEngString: array of WideString;
   needFrame: integer; color1, color2, menucolor1, menucolor2: uint32): integer; overload;
-function CommonMenu(x, y, w, max, default: integer; menuString, menuEngString: array of WideString;
-  fn: TPInt1): integer; overload;
-procedure ShowCommonMenu(x, y, w, max, menu: integer; menuString, menuEngString: array of WideString); overload;
-procedure ShowCommonMenu(x, y, w, max, menu: integer; menuString, menuEngString: array of WideString;
-  needFrame: integer; color1, color2, menucolor1, menucolor2: uint32); overload;
+//function CommonMenu(x, y, w, max, default: integer; menuString, menuEngString: array of WideString; fn: TPInt1): integer; overload;
 function CommonScrollMenu(x, y, w, max, maxshow: integer; menuString: array of WideString): integer; overload;
 function CommonScrollMenu(x, y, w, max, maxshow: integer; menuString, menuEngString: array of WideString): integer;
   overload;
-procedure ShowCommonScrollMenu(x, y, w, max, maxshow, menu, menutop: integer;
-  menuString, menuEngString: array of WideString);
 function CommonMenu2(x, y, w: integer; menuString: array of WideString; max: integer = 1): integer; overload;
-procedure ShowCommonMenu2(x, y, w, menu: integer; menuString: array of WideString; max: integer = 1); overload;
 function SelectOneTeamMember(x, y: integer; str: WideString; list1, list2: integer; mask: integer = 63): integer;
 procedure MenuEsc;
 procedure DrawTitleMenu(menu: integer = -1);
@@ -2931,87 +2924,15 @@ end;
 
 //Menus.
 //通用选单, (位置(x, y), 宽度, 最大选项(编号均从0开始))
-
+{
 function CommonMenu(x, y, w, max, default: integer; menuString, menuEngString: array of WideString;
   fn: TPInt1): integer; overload;
 var
   menu, menup, x1, y1: integer;
 begin
-  menu := default;
-  ////SDL_EnableKeyRepeat(0,10);
-  //DrawMMap;
-  RecordFreshScreen(x, y, w + 1, max * 22 + 29);
-  ShowCommonMenu(x, y, w, max, menu, menuString, menuEngString);
-  UpdateAllScreen;
-  fn(menu);
-  while (SDL_WaitEvent(@event) >= 0) do
-  begin
-    CheckBasicEvent;
-    case event.type_ of
-      SDL_KEYUP:
-      begin
-        if (event.key.keysym.sym = SDLK_DOWN) then
-        begin
-          menu := menu + 1;
-          if menu > max then
-            menu := 0;
-          ShowCommonMenu(x, y, w, max, menu, menuString, menuEngString);
-          UpdateAllScreen;
-          fn(menu);
-        end;
-        if (event.key.keysym.sym = SDLK_UP) then
-        begin
-          menu := menu - 1;
-          if menu < 0 then
-            menu := max;
-          ShowCommonMenu(x, y, w, max, menu, menuString, menuEngString);
-          UpdateAllScreen;
-          fn(menu);
-        end;
-        if ((event.key.keysym.sym = SDLK_ESCAPE)) {and (where <= 2)} then
-        begin
-          Result := -1;
-          Redraw;
-          //SDL_UpdateRect2(screen, x, y, w + 1, max * 22 + 29);
-          break;
-        end;
-      end;
-      SDL_MOUSEBUTTONUP:
-      begin
-        if (event.button.button = SDL_BUTTON_RIGHT) {and (where <= 2)} then
-        begin
-          Result := -1;
-          Redraw;
-          //SDL_UpdateRect2(screen, x, y, w + 1, max * 22 + 29);
-          break;
-        end;
-      end;
-      SDL_MOUSEMOTION:
-      begin
-        if MouseInRegion(x, y, w, max * 22 + 29, x1, y1) then
-        begin
-          menup := menu;
-          menu := (y1 - y - 2) div 22;
-          if menu > max then
-            menu := max;
-          if menu < 0 then
-            menu := 0;
-          if menup <> menu then
-          begin
-            ShowCommonMenu(x, y, w, max, menu, menuString, menuEngString);
-            UpdateAllScreen;
-            fn(menu);
-          end;
-        end;
-      end;
-    end;
-  end;
-
-  //清空键盘键和鼠标键值, 避免影响其余部分
-  event.key.keysym.sym := 0;
-  event.button.button := 0;
-  FreeFreshScreen;
-end;
+  Result := CommonMenu(x, y, w, max, default, menuString, menuEngString, 1, $0, $202020,
+      ColColor($64), ColColor($66), fn);
+end;}
 
 //显示通用选单(位置, 宽度, 最大值)
 //这个通用选单包含两个字符串组, 可分别显示中文和英文
@@ -3033,14 +2954,66 @@ end;
 function CommonMenu(x, y, w, max, default: integer; menuString, menuEngString: array of WideString;
   needFrame: integer; color1, color2, menucolor1, menucolor2: uint32): integer; overload;
 var
-  menu, menup, x1, y1, h: integer;
+  menu, menup, x1, y1, h, len, len1, lene, p, i: integer;
+
+  procedure ShowCommonMenu;
+  var
+    i, alpha: integer;
+    c1, c2: uint32;
+  begin
+    LoadFreshScreen(x, y);
+    //if needframe = 1 then
+    //DrawRectangle(x, y, w, max * 22 + 28, 0, ColColor(255), 50);
+    for i := 0 to min(max, length(menuString) - 1) do
+    begin
+      if i = menu then
+      begin
+        alpha := 0;
+        c1 := menucolor1;
+        c2 := menucolor2;
+      end
+      else
+      begin
+        alpha := 10;
+        c1 := color1;
+        c2 := color2;
+      end;
+      //画菜单
+      DrawTextFrame(x, y + i * h, len1, alpha);
+      DrawShadowText(@menuString[i][1], x + 19, y + 3 + h * i, c1, c2);
+      if p = 1 then
+        DrawEngShadowText(@menuEngString[i][1], x + 19 + (len + 1) * 20, y + 3 + h * i, c1, c2);
+    end;
+
+  end;
+
 begin
   h := 28;
   menu := default;
+  //标记是否需要英文字串
+  if (length(menuEngString) > 0) and (length(menuString) = length(menuEngString)) then
+    p := 1
+  else
+    p := 0;
+  len := 0;
+  lene := 0;
+  //测试长度
+  for i := 0 to high(menuString) do
+  begin
+    len1 := (DrawLength(menuString[i]) + 1) div 2;
+    if len1 > len then
+      len := len1;
+    if p = 1 then
+    begin
+      len1 := (DrawLength(menuEngString[i]) + 1) div 2 + 1;
+      if len1 > lene then
+        lene := len1;
+    end;
+  end;
+  len1 := len + lene;
   w := w + 40;
   RecordFreshScreen(x, y, w, max * h + h + 2);
-  ShowCommonMenu(x, y, w, max, menu, menuString, menuEngString, needFrame, color1,
-    color2, menucolor1, menucolor2);
+  ShowCommonMenu;
   UpdateAllScreen;
   while (SDL_WaitEvent(@event) >= 0) do
   begin
@@ -3053,8 +3026,7 @@ begin
           menu := menu + 1;
           if menu > max then
             menu := 0;
-          ShowCommonMenu(x, y, w, max, menu, menuString, menuEngString, needFrame, color1,
-            color2, menucolor1, menucolor2);
+          ShowCommonMenu;
           UpdateAllScreen;
         end;
         if (event.key.keysym.sym = SDLK_UP) then
@@ -3062,8 +3034,7 @@ begin
           menu := menu - 1;
           if menu < 0 then
             menu := max;
-          ShowCommonMenu(x, y, w, max, menu, menuString, menuEngString, needFrame, color1,
-            color2, menucolor1, menucolor2);
+          ShowCommonMenu;
           UpdateAllScreen;
         end;
         if ((event.key.keysym.sym = SDLK_ESCAPE)) {and (where <= 2)} then
@@ -3105,8 +3076,7 @@ begin
             menu := 0;
           if menup <> menu then
           begin
-            ShowCommonMenu(x, y, w, max, menu, menuString, menuEngString, needFrame, color1,
-              color2, menucolor1, menucolor2);
+            ShowCommonMenu;
             UpdateAllScreen;
           end;
         end;
@@ -3118,67 +3088,6 @@ begin
   event.key.keysym.sym := 0;
   event.button.button := 0;
   FreeFreshScreen;
-end;
-
-procedure ShowCommonMenu(x, y, w, max, menu: integer; menuString, menuEngString: array of WideString); overload;
-begin
-  ShowCommonMenu(x, y, w, max, menu, menuString, menuEngString, 1, 0, $202020,
-    ColColor($64), ColColor($66));
-
-end;
-
-procedure ShowCommonMenu(x, y, w, max, menu: integer; menuString, menuEngString: array of WideString;
-  needFrame: integer; color1, color2, menucolor1, menucolor2: uint32); overload;
-var
-  i, j, p, len, len1, lene, alpha, h: integer;
-  c1, c2: uint32;
-begin
-  LoadFreshScreen(x, y);
-  //if needframe = 1 then
-  //DrawRectangle(x, y, w, max * 22 + 28, 0, ColColor(255), 50);
-  //标记是否需要英文字串
-  if (length(menuEngString) > 0) and (length(menuString) = length(menuEngString)) then
-    p := 1
-  else
-    p := 0;
-  len := 0;
-  lene := 0;
-  //测试长度
-  for i := 0 to high(menuString) do
-  begin
-    len1 := DrawLength(menuString[i]);
-    if len1 > len then
-      len := len1;
-    if p = 1 then
-    begin
-      len1 := DrawLength(menuEngString[i]) + 2;
-      if len1 > lene then
-        lene := len1;
-    end;
-  end;
-  len1 := (len + lene) div 2 + 1;
-  h := 28;
-  for i := 0 to min(max, length(menuString) - 1) do
-  begin
-    if i = menu then
-    begin
-      alpha := 0;
-      c1 := menucolor1;
-      c2 := menucolor2;
-    end
-    else
-    begin
-      alpha := 10;
-      c1 := color1;
-      c2 := color2;
-    end;
-    //画菜单
-    DrawTextFrame(x, y + i * h, len1, alpha);
-    DrawShadowText(@menuString[i][1], x + 19, y + 3 + h * i, c1, c2);
-    if p = 1 then
-      DrawEngShadowText(@menuEngString[i][1], x + 19 + (len + 2) * 10, y + 3 + h * i, c1, c2);
-  end;
-
 end;
 
 
@@ -3196,6 +3105,39 @@ function CommonScrollMenu(x, y, w, max, maxshow: integer; menuString, menuEngStr
   overload;
 var
   menu, menup, menutop, x1, y1, h, i, len, lene, len1, p: integer;
+
+  procedure ShowCommonScrollMenu;
+  var
+    i, alpha: integer;
+    c1, c2: uint32;
+  begin
+    LoadFreshScreen(x, y);
+    //showmessage(inttostr(y));
+    if max + 1 < maxshow then
+      maxshow := max + 1;
+    for i := menutop to menutop + maxshow - 1 do
+    begin
+      if (i = menu) and (i < length(menuString)) then
+      begin
+        alpha := 0;
+        c1 := ColColor($64);
+        c2 := ColColor($66);
+      end
+      else
+      begin
+        alpha := 10;
+        c1 := 0;
+        c2 := $202020;
+      end;
+      //画菜单
+      DrawTextFrame(x, y + h * (i - menutop), len1, alpha);
+      DrawShadowText(@menuString[i][1], x + 19, y + 3 + h * (i - menutop), c1, c2);
+      if p = 1 then
+        DrawEngShadowText(@menuEngString[i][1], x + 19 + (len + 1) * 20, y + 3 + h * (i - menutop),
+          c1, c2);
+    end;
+  end;
+
 begin
   menu := 0;
   menutop := 0;
@@ -3210,22 +3152,21 @@ begin
   lene := 0;
   for i := 0 to high(menuString) do
   begin
-    writeln(menuString[i]);
-    len1 := DrawLength(menuString[i]);
+    len1 := (DrawLength(menuString[i]) + 1) div 2;
     if len1 > len then
       len := len1;
     if p = 1 then
     begin
-      len1 := DrawLength(menuEngString[i]) + 2;
+      len1 := (DrawLength(menuEngString[i]) + 1) div 2 + 1;
       if len1 > lene then
         lene := len1;
     end;
   end;
-  len1 := (len + lene) div 2;
+  len1 := len + lene;
   w := len1 * 20 + 40;
   h := 28;
   RecordFreshScreen(x, y, w + 1, maxshow * h + 32);
-  ShowCommonScrollMenu(x, y, w, max, maxshow, menu, menutop, menuString, menuEngString);
+  ShowCommonScrollMenu;
   //SDL_UpdateRect2(screen, x, y, w + 1, maxshow * 22 + 29);
   UpdateAllScreen;
   while (SDL_WaitEvent(@event) >= 0) do
@@ -3246,7 +3187,7 @@ begin
             menu := 0;
             menutop := 0;
           end;
-          ShowCommonScrollMenu(x, y, w, max, maxshow, menu, menutop, menuString, menuEngString);
+          ShowCommonScrollMenu;
           UpdateAllScreen;
         end;
         if (event.key.keysym.sym = SDLK_UP) then
@@ -3261,7 +3202,7 @@ begin
             menu := max;
             menutop := menu - maxshow + 1;
           end;
-          ShowCommonScrollMenu(x, y, w, max, maxshow, menu, menutop, menuString, menuEngString);
+          ShowCommonScrollMenu;
           UpdateAllScreen;
         end;
         if (event.key.keysym.sym = SDLK_PAGEDOWN) then
@@ -3276,7 +3217,7 @@ begin
           begin
             menutop := max - maxshow + 1;
           end;
-          ShowCommonScrollMenu(x, y, w, max, maxshow, menu, menutop, menuString, menuEngString);
+          ShowCommonScrollMenu;
           UpdateAllScreen;
         end;
         if (event.key.keysym.sym = SDLK_PAGEUP) then
@@ -3291,20 +3232,20 @@ begin
           begin
             menutop := 0;
           end;
-          ShowCommonScrollMenu(x, y, w, max, maxshow, menu, menutop, menuString, menuEngString);
+          ShowCommonScrollMenu;
           UpdateAllScreen;
         end;
         if ((event.key.keysym.sym = SDLK_ESCAPE)) and (where <= 2) then
         begin
           Result := -1;
-          Redraw;
+          //Redraw;
           UpdateAllScreen;
           break;
         end;
         if (event.key.keysym.sym = SDLK_RETURN) or (event.key.keysym.sym = SDLK_SPACE) then
         begin
           Result := menu;
-          Redraw;
+          //Redraw;
           UpdateAllScreen;
           break;
         end;
@@ -3314,7 +3255,7 @@ begin
         if (event.button.button = SDL_BUTTON_RIGHT) and (where <= 2) then
         begin
           Result := -1;
-          Redraw;
+          //Redraw;
           UpdateAllScreen;
           break;
         end;
@@ -3323,7 +3264,7 @@ begin
           if MouseInRegion(x, y, w, max * h + 32) then
           begin
             Result := menu;
-            Redraw;
+            //Redraw;
             UpdateAllScreen;
             break;
           end;
@@ -3343,7 +3284,7 @@ begin
             menu := 0;
             menutop := 0;
           end;
-          ShowCommonScrollMenu(x, y, w, max, maxshow, menu, menutop, menuString, menuEngString);
+          ShowCommonScrollMenu;
           UpdateAllScreen;
         end;
         if (event.wheel.y > 0) then
@@ -3358,7 +3299,7 @@ begin
             menu := max;
             menutop := menu - maxshow + 1;
           end;
-          ShowCommonScrollMenu(x, y, w, max, maxshow, menu, menutop, menuString, menuEngString);
+          ShowCommonScrollMenu;
           UpdateAllScreen;
         end;
       end;
@@ -3374,7 +3315,7 @@ begin
             menu := 0;
           if menup <> menu then
           begin
-            ShowCommonScrollMenu(x, y, w, max, maxshow, menu, menutop, menuString, menuEngString);
+            ShowCommonScrollMenu;
             UpdateAllScreen;
           end;
         end;
@@ -3387,53 +3328,60 @@ begin
   FreeFreshScreen;
 end;
 
-
-procedure ShowCommonScrollMenu(x, y, w, max, maxshow, menu, menutop: integer;
-  menuString, menuEngString: array of WideString);
-var
-  i, p, h: integer;
-begin
-  h := 28;
-  LoadFreshScreen(x, y);
-  //showmessage(inttostr(y));
-  if max + 1 < maxshow then
-    maxshow := max + 1;
-  //DrawRectangle(x, y, w, maxshow * 22 + 6, 0, ColColor(255), 50);
-  if (length(menuEngString) > 0) and (length(menuString) = length(menuEngString)) then
-    p := 1
-  else
-    p := 0;
-  for i := menutop to menutop + maxshow - 1 do
-    if (i = menu) and (i < length(menuString)) then
-    begin
-      DrawTextFrame(x, y + h * (i - menutop), w div 20 - 2);
-      DrawShadowText(@menuString[i][1], x + 19, y + 3 + h * (i - menutop), ColColor($64), ColColor($66));
-      if p = 1 then
-        DrawEngShadowText(@menuEngString[i][1], x + 110, y + 3 + h * (i - menutop), ColColor($64), ColColor($66));
-    end
-    else
-    begin
-      DrawTextFrame(x, y + h * (i - menutop), w div 20 - 2, 20);
-      DrawShadowText(@menuString[i][1], x + 19, y + 3 + h * (i - menutop), 0, $202020);
-      if p = 1 then
-        DrawEngShadowText(@menuEngString[i][1], x + 110, y + 3 + h * (i - menutop), 0, $202020);
-    end;
-
-end;
-
 //仅有两个选项的横排选单, 为美观使用横排
 //此类选单中每个选项限制为两个中文字, 仅适用于提问'继续', '取消'的情况
 
 function CommonMenu2(x, y, w: integer; menuString: array of WideString; max: integer = 1): integer; overload;
 var
-  menu, menup, x1, y1: integer;
+  menu, menup, x1, y1, len, len1, i: integer;
+
+  procedure ShowCommonMenu2;
+  var
+    alpha, i: integer;
+    c1, c2: uint32;
+  begin
+    //redraw;
+    LoadFreshScreen(x, y);
+    //DrawRectangle(x, y, w * (max + 1) + 2, 26, 0, ColColor(255), 50);
+    //if length(Menuengstring) > 0 then p := 1 else p := 0;
+    for i := 0 to max do
+    begin
+      if i = menu then
+      begin
+        alpha := 0;
+        c1 := ColColor($64);
+        c2 := ColColor($66);
+      end
+      else
+      begin
+        alpha := 10;
+        c1 := 0;
+        c2 := $202020;
+      end;
+      //画菜单
+      DrawTextFrame(x + i * w, y, len, alpha);
+      DrawShadowText(@menuString[i][1], x + 19 + i * w, y + 3, c1, c2);
+    end;
+
+  end;
+
 begin
   menu := 0;
   ////SDL_EnableKeyRepeat(0,10);
   //DrawMMap;
+  //测试长度
+  len := 0;
+  for i := 0 to high(menuString) do
+  begin
+    len1 := (DrawLength(menuString[i]) + 1) div 2;
+    if len1 > len then
+      len := len1;
+  end;
+
   w := w + 40;
+
   RecordFreshScreen(x, y, w * (max + 1) + 3, 30);
-  ShowCommonMenu2(x, y, w, menu, menuString, max);
+  ShowCommonMenu2;
   UpdateAllScreen;
   CleanKeyValue;
   while (SDL_WaitEvent(@event) >= 0) do
@@ -3447,7 +3395,7 @@ begin
           menu := menu - 1;
           if menu < 0 then
             menu := max;
-          ShowCommonMenu2(x, y, w, menu, menuString, max);
+          ShowCommonMenu2;
           UpdateAllScreen;
         end;
         if (event.key.keysym.sym = SDLK_RIGHT) then
@@ -3455,7 +3403,7 @@ begin
           menu := menu + 1;
           if menu > max then
             menu := 0;
-          ShowCommonMenu2(x, y, w, menu, menuString, max);
+          ShowCommonMenu2;
           UpdateAllScreen;
         end;
         if ((event.key.keysym.sym = SDLK_ESCAPE)) and (where <= 2) then
@@ -3505,7 +3453,7 @@ begin
             menu := 0;
           if menup <> menu then
           begin
-            ShowCommonMenu2(x, y, w, menu, menuString, max);
+            ShowCommonMenu2;
             UpdateAllScreen;
           end;
         end;
@@ -3520,48 +3468,6 @@ begin
 
 end;
 
-//显示仅有两个选项的横排选单
-
-procedure ShowCommonMenu2(x, y, w, menu: integer; menuString: array of WideString; max: integer = 1); overload;
-var
-  i, j, len, alpha, len1: integer;
-  c1, c2: uint32;
-begin
-  //redraw;
-  LoadFreshScreen(x, y);
-  //DrawRectangle(x, y, w * (max + 1) + 2, 26, 0, ColColor(255), 50);
-  //if length(Menuengstring) > 0 then p := 1 else p := 0;
-  //测试长度
-  len := 0;
-  for i := 0 to high(menuString) do
-  begin
-    len1 := length(menuString[i]);
-    if len1 > len then
-      len := len1;
-  end;
-
-  len := len div 2 - 1;
-
-  for i := 0 to max do
-  begin
-    if i = menu then
-    begin
-      alpha := 0;
-      c1 := ColColor($64);
-      c2 := ColColor($66);
-    end
-    else
-    begin
-      alpha := 10;
-      c1 := 0;
-      c2 := $202020;
-    end;
-    //画菜单
-    DrawTextFrame(x + i * w, y, len, alpha);
-    DrawShadowText(@menuString[i][1], x + 19 + i * w, y + 3, c1, c2);
-  end;
-
-end;
 
 //选择一名队员
 //mask用来表示哪些人是可选的
