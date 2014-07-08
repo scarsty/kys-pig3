@@ -6,7 +6,8 @@ uses
   SDL2_TTF,
   SDL2,
   bass,
-  lua52;
+  lua52,
+  Classes;
 
 type
 
@@ -541,7 +542,7 @@ var
   render: PSDL_Renderer;
 
   screenTex, ImgSGroundTex, ImgBGroundTex, TextScreenTex, BlackScreenTex, SimpleStateTex: PSDL_Texture;
-  FreshScreenTex: array of PSDL_Texture;
+  //FreshScreenTex: TList;
 
   keystate: pchar;
   keyup, keydown, keyright, keyleft: puint8;
@@ -567,7 +568,7 @@ var
   SurfaceFlag: uint32;
 
   CurTargetSurface, RealScreen, screen, ImgSGround, ImgBGround, TextScreen, BlackScreenSur, SimpleState: PSDL_Surface;
-  FreshScreen: array of PSDL_Surface;
+  FreshScreen: TList;
   //含义参考上面
 
   SimpleStatus: array[0..5] of PSDL_Texture; //全队简明状态的表面

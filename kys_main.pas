@@ -2806,15 +2806,15 @@ var
   scencename: WideString;
   //c: uint32;
 begin
+  UpdateAllScreen;
+  //显示场景名
+  scencename := PCharToUnicode(pchar(@Rscence[snum].Name[0]), 5);
+  //c:=sdl_maprgba(screen.format,0,255,0,0);
+  DrawTextWithRect(@scencename[1], CENTER_X - DrawLength(scencename) * 5 - 23, 100,
+    DrawLength(scencename) * 10 + 7, 0, $202020);
+  SDL_Delay(500);
   if LastShowScene <> snum then
   begin
-    UpdateAllScreen;
-    //显示场景名
-    scencename := PCharToUnicode(pchar(@Rscence[snum].Name[0]), 5);
-    //c:=sdl_maprgba(screen.format,0,255,0,0);
-    DrawTextWithRect(@scencename[1], CENTER_X - DrawLength(scencename) * 5 - 23, 100,
-      DrawLength(scencename) * 10 + 7, 0, $202020);
-    SDL_Delay(500);
     LastShowScene := snum; //改变音乐
     if Rscence[snum].EntranceMusic >= 0 then
     begin
@@ -8385,6 +8385,7 @@ begin
   Redraw;
   UpdateAllScreen;
   ShowMessage(str);
+  Result := false;
 end;
 
 end.

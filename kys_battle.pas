@@ -1713,7 +1713,7 @@ begin
   Ay := By;
   DrawBFieldWithCursor(0, step, 0);
   if (BField[2, Ax, Ay] >= 0) then
-    ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 320, CENTER_Y * 2 - 160);
+    ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 130);
   UpdateAllScreen;
   while (SDL_WaitEvent(@event) >= 0) do
   begin
@@ -1793,7 +1793,7 @@ begin
     end;
     DrawBFieldWithCursor(0, step, 0);
     if BField[2, Ax, Ay] >= 0 then
-      ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 320, CENTER_Y * 2 - 160);
+      ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 130);
     UpdateAllScreen;
   end;
   //SDL_EnableKeyRepeat(30, 30);
@@ -1854,7 +1854,7 @@ begin
   Ay := By;
   DrawBFieldWithCursor(AttAreaType, step, range);
   if (BField[2, Ax, Ay] >= 0) then
-    ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 320, CENTER_Y * 2 - 160);
+    ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 130);
   UpdateAllScreen;
   while (SDL_WaitEvent(@event) >= 0) do
   begin
@@ -1900,7 +1900,7 @@ begin
         end;
         DrawBFieldWithCursor(AttAreaType, step, range);
         if (BField[2, Ax, Ay] >= 0) then
-          ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 320, CENTER_Y * 2 - 160);
+          ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 130);
         UpdateAllScreen;
       end;
       SDL_MOUSEBUTTONUP:
@@ -1929,7 +1929,7 @@ begin
           Ay := Ayp;
           DrawBFieldWithCursor(AttAreaType, step, range);
           if (BField[2, Ax, Ay] >= 0) then
-            ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 320, CENTER_Y * 2 - 160);
+            ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 130);
           UpdateAllScreen;
         end;
       end;
@@ -2243,7 +2243,7 @@ var
   Xinc, Yinc: array[1..4] of integer;
   curX, curY, curstep, nextX, nextY, nextnextX, nextnextY: integer;
   i, j, t: integer;
-  layer: integer = 3;  //用来寻人使用第8层, 默认第三层
+  layer: integer = 3;  //用来寻人使用第8层, 默认第3层
   findAim: boolean = False;  //寻人成功, 准备跳出
 begin
   Xinc[1] := 1;
@@ -2307,7 +2307,7 @@ begin
         //寻人成功则跳出, 节省计算量
         if (BField[2, nextX, nextY] = bnum) and (mode = 3) then
         begin
-          exit;
+          //exit;
         end;
         if mode = 0 then
           for j := 1 to 4 do
@@ -6069,7 +6069,7 @@ var
   str: WideString;
 begin
   rnum := Brole[bnum].rnum;
-  ShowSimpleStatus(rnum, 50, CENTER_Y * 2 - 160);
+  ShowSimpleStatus(rnum, 80, CENTER_Y * 2 - 130);
   UpdateAllScreen;
   SDL_Delay(450);
   if Brole[bnum].AutoMode = 3 then

@@ -1732,8 +1732,9 @@ begin
 
     for i := 0 to 5 do
       SDL_DestroyTexture(SimpleStatusTex[i]);
-    for i := 0 to High(FreshScreenTex) do
+    for i := 0 to FreshScreen.Count - 1 do
       FreeFreshScreen;
+    FreshScreen.Destroy();
     if TEXT_LAYER <> 0 then
       for i := 0 to 5 do
       begin
@@ -1830,6 +1831,8 @@ begin
       CENTER_X * 2, CENTER_Y * 2);
     SDL_SetTextureBlendMode(screenTex, SDL_BLENDMODE_NONE);
   end;
+  //FreshScreenTex:=TList.Create();
+  FreshScreen:=TList.Create();
 end;
 
 procedure ResizeWindow(w, h: integer);
@@ -3538,6 +3541,8 @@ procedure RecordFreshScreen(x, y, w, h: integer); overload;
 var
   i: integer;
   dest: TSDL_Rect;
+  tex: psdl_texture;
+  sur: psdl_surface;
 begin
   dest.x := x;
   dest.y := y;
@@ -3545,22 +3550,20 @@ begin
   dest.h := h;
   if SW_SURFACE = 0 then
   begin
-    i := length(FreshScreenTex);
-    setlength(FreshScreenTex, i + 1);
-    FreshScreenTex[i] := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, w, h);
-    SDL_SetRenderTarget(render, FreshScreenTex[i]);
+    tex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, w, h);
+    SDL_SetRenderTarget(render, tex);
     SDL_RenderCopy(render, screenTex, @dest, nil);
     SDL_SetRenderTarget(render, screenTex);
+    FreshScreen.Add(tex);
   end
   else
   begin
-    i := length(FreshScreen);
-    setlength(FreshScreen, i + 1);
-    FreshScreen[i] := SDL_CreateRGBSurface(0, w, h, 32, RMASK, GMASK, BMASK, AMASK);
-    SDL_UpperBlit(screen, @dest, FreshScreen[i], nil);
+    sur := SDL_CreateRGBSurface(0, w, h, 32, RMASK, GMASK, BMASK, AMASK);
+    SDL_UpperBlit(screen, @dest, sur, nil);
+    FreshScreen.Add(sur);
   end;
   //CleanTextScreenRect(x, y, w, h);
-  writeln('Now the amount of fresh screens is ', i + 1, '.');
+  writeln('Now the amount of fresh screens is ', FreshScreen.Count, '.');
 
 end;
 
@@ -3573,30 +3576,34 @@ procedure LoadFreshScreen(x, y: integer); overload;
 var
   i: integer;
   dest: TSDL_Rect;
+  tex: psdl_texture;
+  sur: psdl_surface;
 begin
-  i := max(high(FreshScreenTex), high(FreshScreen));
+  i := FreshScreen.Count - 1;
   if i >= 0 then
   begin
     if SW_SURFACE = 0 then
     begin
-      if FreshScreenTex[i] <> nil then
+      if FreshScreen[i] <> nil then
       begin
+        tex := psdl_texture(FreshScreen[i]);
         dest.x := x;
         dest.y := y;
-        SDL_QueryTexture(FreshScreenTex[i], nil, nil, @dest.w, @dest.h);
+        SDL_QueryTexture(tex, nil, nil, @dest.w, @dest.h);
         CleanTextScreenRect(x, y, dest.w, dest.h);
-        SDL_RenderCopy(render, FreshScreenTex[i], nil, @dest);
+        SDL_RenderCopy(render, tex, nil, @dest);
       end;
     end
     else
     begin
       if FreshScreen[i] <> nil then
       begin
+        sur := psdl_surface(FreshScreen[i]);
         dest.x := x;
         dest.y := y;
-        dest.w := FreshScreen[i].w;
-        dest.h := FreshScreen[i].h;
-        SDL_UpperBlit(freshscreen[i], nil, screen, @dest);
+        dest.w := sur.w;
+        dest.h := sur.h;
+        SDL_UpperBlit(sur, nil, screen, @dest);
         CleanTextScreenRect(x, y, dest.w, dest.h);
       end;
     end;
@@ -3612,20 +3619,20 @@ procedure FreeFreshScreen;
 var
   i: integer;
 begin
-  i := max(high(FreshScreenTex), high(FreshScreen));
+  i := FreshScreen.Count - 1;
   if i >= 0 then
   begin
     if SW_SURFACE = 0 then
     begin
-      SDL_DestroyTexture(FreshScreenTex[i]);
-      FreshScreenTex[i] := nil;
-      setlength(FreshScreenTex, i);
+      SDL_DestroyTexture(psdl_texture(FreshScreen[i]));
+      FreshScreen[i] := nil;
+      FreshScreen.Delete(i);
     end
     else
     begin
-      SDL_FreeSurface(FreshScreen[i]);
+      SDL_FreeSurface(psdl_surface(FreshScreen[i]));
       FreshScreen[i] := nil;
-      setlength(FreshScreen, i);
+      FreshScreen.Delete(i);
     end;
   end;
   {if i > 0 then

@@ -856,9 +856,9 @@ var
   x, y, i, n, alpha, color1, color2, incolor, framecolor: integer;
   str: WideString;
 begin
-  alpha := 50;
-  color1 := ColColor(5);
-  color2 := ColColor(7);
+  alpha := 0;
+  color1 := 0;
+  color2 := $202020;
   incolor := 0;
   framecolor := ColColor(255);
   n := Lua_gettop(L);
@@ -876,8 +876,8 @@ begin
     incolor := lua_tointeger(L, -n + 6);
   if n >= 8 then
     framecolor := lua_tointeger(L, -n + 7);
-  DrawRectangle(x, y - 2, DrawLength(str) * 10 + 8, 26, incolor, framecolor, alpha);
-  DrawShadowText(@str[1], x + 3, y, color1, color2);
+  DrawTextFrame(x, y, (DrawLength(str) + 1) div 2, alpha, framecolor, 0);
+  DrawShadowText(@str[1], x + 19, y + 3, color1, color2);
   UpdateAllScreen;
   Result := 0;
 
@@ -980,18 +980,10 @@ end;
 
 function HaveItemAmount(L: Plua_state): integer; cdecl;
 var
-  inum, n, i: integer;
+  inum: integer;
 begin
   inum := lua_tointeger(L, -1);
-  for i := 0 to MAX_ITEM_AMOUNT do
-  begin
-    if RItemlist[i].Number = inum then
-    begin
-      n := RItemlist[i].Amount;
-      break;
-    end;
-  end;
-  lua_pushinteger(L, n);
+  lua_pushinteger(L, GetItemAmount(inum));
   Result := 1;
 
 end;
