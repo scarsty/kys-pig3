@@ -4869,8 +4869,8 @@ var
   missionTip: array[0..2] of WideString;
   menuString: array of WideString;
 begin
-  x := 70;
-  y := 15;
+  x := 150;
+  y := 30;
   n := 0;
   menu := 0;
   setlength(menuString, MISSION_AMOUNT);
@@ -4885,7 +4885,7 @@ begin
     begin
       if (mode = 0) or (tip = mode) then
       begin
-        menuString[n] := ' ' + missiontip[tip] + '  ' + MissionStr[i];
+        menuString[n] := ' ' + missiontip[tip] + ' ' + MissionStr[i]+'  ';
         MissionList[n] := i;
         n := n + 1;
       end;

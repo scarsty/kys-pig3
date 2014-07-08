@@ -51,7 +51,7 @@ procedure PlaySound(filename: pchar; times: integer); overload;
 function GetPixel(surface: PSDL_Surface; x: integer; y: integer): uint32;
 procedure PutPixel(surface: PSDL_Surface; x: integer; y: integer; pixel: uint32);
 function ColColor(num: integer): uint32;
-procedure DrawRectangle(x, y, w, h: integer; colorin, colorframe: uint32; alpha: integer; trans:integer = 1);
+procedure DrawRectangle(x, y, w, h: integer; colorin, colorframe: uint32; alpha: integer; trans: integer = 1);
 procedure DrawRectangleWithoutFrame(x, y, w, h: integer; colorin: uint32; alpha: integer);
 procedure DrawItemFrame(x, y: integer; realcoord: integer = 0);
 
@@ -1070,7 +1070,7 @@ end;
 
 //画带边框矩形, (x坐标, y坐标, 宽度, 高度, 内部颜色, 边框颜色, 透明度, 可能转为单行框）
 
-procedure DrawRectangle(x, y, w, h: integer; colorin, colorframe: uint32; alpha: integer; trans:integer = 1);
+procedure DrawRectangle(x, y, w, h: integer; colorin, colorframe: uint32; alpha: integer; trans: integer = 1);
 var
   i1, i2, l1, l2, l3, l4, x1, y1, w1, h1: integer;
   tempscr, tempsur1: PSDL_Surface;
@@ -1079,7 +1079,7 @@ var
   tex, ptex: PSDL_Texture;
   color: TSDL_Color;
 begin
-  if (h <= 35) and (trans<>0) then
+  if (h <= 35) and (trans <> 0) then
   begin
     DrawTextFrame(x - 12, y + 1, w div 20);
     exit;
@@ -3680,6 +3680,7 @@ begin
     end
     else
       SDL_RenderCopy(render, screenTex, nil, nil);
+    SDL_SetTextureColorMod(screenTex, 255, 255, 255);
     if (TEXT_LAYER = 1) and (HaveText = 1) then
     begin
       destfull.x := 0;
@@ -3688,6 +3689,7 @@ begin
       destfull.h := RESOLUTIONY;
       SDL_SetTextureColorMod(TextScreenTex, r, g, b);
       SDL_RenderCopy(render, TextScreenTex, nil, @destfull);
+      SDL_SetTextureColorMod(TextScreenTex, 255, 255, 255);
     end;
     SDL_RenderPresent(render);
     SDL_SetRenderTarget(render, screenTex);
@@ -3707,11 +3709,13 @@ begin
         SDL_RenderClear(render);
         SDL_SetTextureColorMod(screenTex, r, g, b);
         SDL_RenderCopy(render, screenTex, nil, @dest);
+        SDL_SetTextureColorMod(screenTex, 255, 255, 255);
         if (TEXT_LAYER = 1) and (HaveText = 1) then
         begin
           SDL_UpdateTexture(TextScreenTex, nil, TextScreen.pixels, TextScreen.pitch);
           SDL_SetTextureColorMod(TextScreenTex, r, g, b);
           SDL_RenderCopy(render, TextScreenTex, nil, nil);
+          SDL_SetTextureColorMod(TextScreenTex, 255, 255, 255);
         end;
         SDL_RenderPresent(render);
       end

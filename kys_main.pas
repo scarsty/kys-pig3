@@ -487,10 +487,11 @@ begin
   alphastep := -2;
   LoadR(0);
   menu := 0;
+  //ScreenBlendMode := 1;
   while (SDL_PollEvent(@event) >= 0) do
   begin
     Redraw;
-    DrawHeadPic(headnum, CENTER_X - 250, CENTER_Y-30, 0, alpha, 0, 0);
+    DrawHeadPic(headnum, CENTER_X - 250, CENTER_Y - 30, 0, alpha, 0, 0);
     if alpha >= 100 then
       alphastep := -2;
     if alpha <= 0 then
@@ -651,7 +652,7 @@ begin
       CheckBasicEvent;
     end;
   end;
-  writeln(x, y);
+  //writeln(x, y);
   src.x := 0;
   src.y := 0;
   src.w := TitlePNGIndex[12].w;
@@ -3145,17 +3146,17 @@ begin
   //测试长度
   for i := 0 to high(menuString) do
   begin
-    len1 := length(menuString[i]);
+    len1 := DrawLength(menuString[i]);
     if len1 > len then
       len := len1;
     if p = 1 then
     begin
-      len1 := length(menuEngString[i]) + 2;
+      len1 := DrawLength(menuEngString[i]) + 2;
       if len1 > lene then
         lene := len1;
     end;
   end;
-  len1 := (len + lene) div 2 - 1;
+  len1 := (len + lene) div 2 + 1;
   h := 28;
   for i := 0 to min(max, length(menuString) - 1) do
   begin
@@ -3175,7 +3176,7 @@ begin
     DrawTextFrame(x, y + i * h, len1, alpha);
     DrawShadowText(@menuString[i][1], x + 19, y + 3 + h * i, c1, c2);
     if p = 1 then
-      DrawEngShadowText(@menuEngString[i][1], x + 19 + (len - 1) * 10, y + 3 + h * i, c1, c2);
+      DrawEngShadowText(@menuEngString[i][1], x + 19 + (len + 2) * 10, y + 3 + h * i, c1, c2);
   end;
 
 end;
@@ -3209,6 +3210,7 @@ begin
   lene := 0;
   for i := 0 to high(menuString) do
   begin
+    writeln(menuString[i]);
     len1 := DrawLength(menuString[i]);
     if len1 > len then
       len := len1;
@@ -4080,7 +4082,7 @@ var
           item := RItemlist[listnum].Number;
           if (item >= 0) then
           begin
-            DrawIPic(item, i2 * d + 5 + xp, i1 * d + 35 + yp, 0, 30, 0, 20);
+            DrawIPic(item, i2 * d + 5 + xp, i1 * d + 35 + yp, 0, 10, 0, 10);
           end;
         end;
       end;

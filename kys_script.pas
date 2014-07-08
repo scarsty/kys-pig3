@@ -337,7 +337,7 @@ begin
   lua_register(Lua_script, 'instruct_33', OldLearnMagic);
   lua_register(Lua_script, 'learnmagic2', OldLearnMagic);
   lua_register(Lua_script, 'instruct_17', OldSetScenceMapPro);
-  lua_register(Lua_script, 'setscencemappro', OldSetScenceMapPro);
+  lua_register(Lua_script, 'setscencemappro2', OldSetScenceMapPro);
   lua_register(Lua_script, 'setscencemap', OldSetScenceMapPro);
   lua_register(Lua_script, 'instruct_19', OldSetScencePosition);
   lua_register(Lua_script, 'setscenceposition2', OldSetScencePosition);
@@ -1393,7 +1393,7 @@ end;
 
 function GetScenceMapPro(L: Plua_state): integer; cdecl;
 begin
-  lua_pushinteger(L, sdata[lua_tointeger(L, -4), lua_tointeger(L, -3), lua_tointeger(L, -2), lua_tointeger(L, -1)]);
+  lua_pushinteger(L, sdata[lua_tointeger(L, -4), lua_tointeger(L, -3), lua_tointeger(L, -1), lua_tointeger(L, -2)]);
   Result := 1;
 
 end;
@@ -1402,8 +1402,8 @@ end;
 
 function SetScenceMapPro(L: Plua_state): integer; cdecl;
 begin
-  sdata[lua_tointeger(L, -4), lua_tointeger(L, -3), lua_tointeger(L, -2),
-    lua_tointeger(L, -1)] := lua_tointeger(L, -5);
+  sdata[lua_tointeger(L, -4), lua_tointeger(L, -3), lua_tointeger(L, -1),
+    lua_tointeger(L, -2)] := lua_tointeger(L, -5);
   Result := 0;
 
 end;
@@ -2172,7 +2172,7 @@ var
   a: integer;
 begin
   a := lua_tointeger(L, -1);
-  ShowMR := a = 0;
+  ShowMR := a <> 0;
   Result := 0;
 end;
 

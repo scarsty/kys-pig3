@@ -386,8 +386,8 @@ begin
         //num := num + FightFrame[i, j];
       end;
       LoadFreshScreen(CENTER_X - 140, CENTER_Y);
-      str := UTF8Decode('載入戰鬥人物貼圖 ') + format('%2d/%2d', [i + 1, BRoleAmount]);
-      DrawTextWithRect(@str[1], CENTER_X - 120, CENTER_Y,250 ,$ffffff, ColColor(7));
+      str := UTF8Decode('載入戰鬥人物貼圖 ') + UTF8Decode(format('%2d/%2d', [i + 1, BRoleAmount]));
+      DrawTextWithRect(@str[1], CENTER_X - 120, CENTER_Y, 250, ColColor(5), ColColor(7), 30);
       UpdateAllScreen;
       //DrawRectangleWithoutFrame(screen, CENTER_X- 100+i*10, 30, 10, 10, $FFFFFFFF, 50);
       //SDL_UpdateRect2(screen, CENTER_X- 100+i*10, 30, 10, 10);
@@ -545,7 +545,7 @@ var
       begin
         DrawShadowText(@menuString[i][1], x + 33, y + 3 + h * i, ColColor($64), ColColor($66));
         if ((Result and (1 shl (i - 1))) > 0) and (i > 0) and (i < max) then
-          DrawShadowText(@str1[1], x + 133, y + 3 + h * i,ColColor($64), ColColor($66));
+          DrawShadowText(@str1[1], x + 133, y + 3 + h * i, ColColor($64), ColColor($66));
       end
       else
       begin
@@ -2862,13 +2862,17 @@ begin
   if (str = '') and (mnum >= 0) then
   begin
     str := pWideChar(@Rmagic[mnum].Name);
-    mode := 0;
+    color1 := ColColor($14);
+    color2 := ColColor($16);
   end
   else
+  begin
     mode := mnum;
-  SelectColor(mode, color1, color2, str0);
+    SelectColor(mode, color1, color2, str0);
+  end;
+
   l := DrawLength(str);
-  DrawTextWithRect(@str[1], CENTER_X - l * 5 - 24, CENTER_Y - 150, l * 10 + 7, color1, color2);
+  DrawTextWithRect(@str[1], CENTER_X - l * 5 - 24, CENTER_Y - 150, l * 10 + 7, color1, color2, 10);
   UpdateAllScreen;
   SDL_Delay(400);
   event.key.keysym.sym := 0;
@@ -3739,8 +3743,8 @@ begin
   case mode of
     0, 6: //伤血
     begin
-      color1 := ColColor($14);
-      color2 := ColColor($16);
+      color1 := ColColor($10);
+      color2 := ColColor($13);
       formatstr := '-%d';
     end;
     1: //伤内
@@ -4148,8 +4152,8 @@ begin
       //DrawRectangle(screen, x + 100, y+83, 145, 25, 0, colcolor(255), 25);
       //str := '得經驗';
       //Drawshadowtext(@str[1], x + 100 - 17, y+85, colcolor($21), colcolor($23));
-      str := utf8decode(format('經驗+%d', [basicvalue]));
-      DrawTextWithRect(@str[1], x, y + 70, 100,ColColor($64), ColColor($66), 40, 0);
+      str := UTF8Decode(format('經驗+%d', [basicvalue]));
+      DrawTextWithRect(@str[1], x, y + 70, 100, ColColor($64), ColColor($66), 40, 0);
       p := p + 1;
     end;
 
@@ -4322,7 +4326,7 @@ begin
             TransBlackScreen;
             ShowSimpleStatus(rnum, CENTER_X - 150, CENTER_Y - 240 + 70);
             //DrawRectangle(CENTER_X - 150 + 30, CENTER_Y - 240 + 170,{115, 63,} 90, 25, 0, ColColor(255), 25);
-            DrawTextFrame(CENTER_X - 150, CENTER_Y - 240 + 170,4);
+            DrawTextFrame(CENTER_X - 150, CENTER_Y - 240 + 170, 4);
             str := '製得物品';
             DrawShadowText(@str[1], CENTER_X - 150 + 19, CENTER_Y - 240 + 173, 0, $202020);
             instruct_2(Ritem[inum].GetItem[p], 30 + random(25));
