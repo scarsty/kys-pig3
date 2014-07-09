@@ -8021,6 +8021,7 @@ begin
   words.Add('bttt');
   words.Add('小小猪');
   words.Add('真正的强强');
+  words.Add('无酒肆屋');
   words.Add('');
 
   words.Add('事件');
@@ -8028,7 +8029,12 @@ begin
   words.Add('凶神恶煞');
   words.Add('凯哥');
   words.Add('KA');
+  words.Add('');
+
+  words.Add('腳本');
+  words.Add('柳无色');
   words.Add('bttt');
+  words.Add('先锋厂公');
   words.Add('');
 
   words.Add('劇本');
@@ -8385,7 +8391,7 @@ begin
   Redraw;
   UpdateAllScreen;
   ShowMessage(str);
-  Result := false;
+  Result := False;
 end;
 
 end.
