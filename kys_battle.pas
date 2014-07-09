@@ -7566,7 +7566,7 @@ end;
 
 procedure TSpecialAbility.SA_18(bnum, mnum, level: integer);
 var
-  i, res, newlife, amount, k, k1, i1, i2, rnum, hurt, rnum2: integer;
+  i, res, newlife, amount, k, k1, i1, i2, rnum, hurt, rnum2, bnum2: integer;
   bnumarray: array of smallint;
   str: WideString;
   menuString: array of WideString;
@@ -7613,18 +7613,21 @@ begin
         res := 0
       else
         res := CommonMenu(300, 200, 105, amount - 1, 0, menuString);
-      rnum2 := Brole[bnumarray[res]].rnum;
+      bnum2:=  bnumarray[res];
+      rnum2 := Brole[bnum2].rnum;
       newlife := min(Rrole[rnum].CurrentHP - 1, Rrole[rnum].MaxHP * level div 10);
       Rrole[rnum].CurrentHP := Rrole[rnum].CurrentHP - newlife;
       if Rrole[rnum].CurrentHP < 1 then
         Rrole[rnum].CurrentHP := 1;
-      Brole[bnumarray[res]].Dead := 0;
+      Brole[bnum2].Dead := 0;
       Rrole[rnum2].CurrentHP := newlife;
       if Rrole[rnum2].CurrentHP > Rrole[rnum2].MaxHP then
         Rrole[rnum2].CurrentHP := Rrole[rnum2].MaxHP;
-      Brole[bnumarray[res]].X := Ax;
-      Brole[bnumarray[res]].Y := Ay;
-      BField[2, Ax, Ay] := bnumarray[res];
+      Brole[bnum2].X := Ax;
+      Brole[bnum2].Y := Ay;
+      Brole[bnum2].alpha:=0;
+      Brole[bnum2].mixAlpha:=0;
+      BField[2, Ax, Ay] := bnum2;
     end
     else
     begin
@@ -8997,7 +9000,7 @@ var
   str: WideString;
   i, rnum, hurt: integer;
 begin
-  if random(100) < 0 then
+  if random(100) < 30 then
   begin
     if (mnum = 254) then
     begin
