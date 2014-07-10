@@ -1447,6 +1447,7 @@ begin
   StrDispose(p);
 
   ScreenBlendMode := 0;
+  ShowMR := True;
   //blackscreen := 0;
   //callevent(290);
   //callevent(319);
@@ -8034,7 +8035,7 @@ begin
   words.Add('腳本');
   words.Add('柳无色');
   words.Add('bttt');
-  words.Add('先锋厂公');
+  words.Add('无酒肆屋');
   words.Add('');
 
   words.Add('劇本');
@@ -8086,9 +8087,10 @@ begin
   words.Add('张贝克');
   words.Add('Chopsticks');
   words.Add('天真木頭人');
+  words.Add('叶墨');
   words.Add('柳无色');
   words.Add('路人甲');
-  words.Add('叶墨');
+  words.Add('南窗寄傲生');
   words.Add('');
 
   words.Add('校對');

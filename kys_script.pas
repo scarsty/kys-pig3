@@ -1041,12 +1041,18 @@ end;
 
 function TryBattle(L: Plua_state): integer; cdecl;
 var
-  t, n: integer;
+  battlenum, getexp, single, n: integer;
 begin
   n := lua_gettop(L);
-  t := lua_tointeger(L, -n);
+  getexp := 1;
+  single := 0;
+  battlenum := lua_tointeger(L, -n);
+  if n = 2 then
+    getexp := lua_tointeger(L, -n + 1);
+  if n = 3 then
+    single := lua_tointeger(L, -n + 2);
   if ForceBattleWin = 0 then
-    lua_pushboolean(L, Battle(t, lua_tointeger(L, -1)))
+    lua_pushboolean(L, Battle(battlenum, getexp, single))
   else
     lua_pushboolean(L, True);
   Result := 1;

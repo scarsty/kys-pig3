@@ -14,12 +14,12 @@ uses
 //战斗
 //从游戏文件的命名来看, 应是'war'这个词的缩写,
 //但实际上战斗的规模很小, 使用'battle'显然更合适
-function Battle(battlenum, getexp: integer): boolean;
+function Battle(battlenum, getexp: integer; forceSingle: integer = 0): boolean;
 procedure LoadBattleTiles();
 procedure FreeBattleTiles();
 function InitialBField: boolean;
 procedure InitialBRole(i, rnum, team, x, y: integer);
-function SelectTeamMembers: integer;
+function SelectTeamMembers(forceSingle: integer = 0): integer;
 function CalFace(x1, y1, x2, y2: integer): integer; overload;
 function CalFace(bnum1, bnum2: integer): integer; overload;
 function CalBroleDistance(bnum1, bnum2: integer): integer;
@@ -189,7 +189,7 @@ uses
 //Battle.
 //战斗, 返回值为是否胜利
 
-function Battle(battlenum, getexp: integer): boolean;
+function Battle(battlenum, getexp: integer; forceSingle: integer = 0): boolean;
 var
   i, j, k, SelectTeamList, x, y, num, prewhere, i1, i2, dis, mindis: integer;
   //path: string;
@@ -218,7 +218,7 @@ begin
   if autoselect then
   begin
     //如果未发现自动战斗设定, 则选择人物
-    SelectTeamList := SelectTeamMembers;
+    SelectTeamList := SelectTeamMembers(forceSingle);
     for i := 0 to length(warsta.TeamMate) - 1 do
     begin
       x := warsta.TeamX[i];
@@ -522,9 +522,9 @@ end;
 
 //选择人物, 返回值为整型, 按bit表示人物是否参战
 
-function SelectTeamMembers: integer;
+function SelectTeamMembers(forceSingle: integer = 0): integer;
 var
-  i, menu, max, menup, xm, ym, x, y, h: integer;
+  i, menu, max, menup, xm, ym, x, y, h, forall: integer;
   menuString: array[0..8] of WideString;
   str, str1: WideString;
   //显示选择参战人物选单
@@ -579,9 +579,12 @@ begin
     end;
   end;
   menuString[0] := ('   全員參戰');
+  if forceSingle <> 0 then
+    menuString[0] := ('   限選一人');
   menuString[max] := ('   開始戰鬥');
   ShowMultiMenu;
   ////SDL_EnableKeyRepeat(50, 30);
+  forall := round(power(2, (max - 1)) - 1);
   while (SDL_WaitEvent(@event) >= 0) do
   begin
     CheckBasicEvent;
@@ -591,13 +594,26 @@ begin
         if ((event.key.keysym.sym = SDLK_RETURN) or (event.key.keysym.sym = SDLK_SPACE)) and (menu <> max) then
         begin
           //选中人物则反转对应bit
-          if menu > 0 then
-            Result := Result xor (1 shl (menu - 1))
+          //选中人物则反转对应bit
+          if forceSingle = 0 then
+          begin
+            if menu > 0 then
+            begin
+              Result := Result xor (1 shl (menu - 1));
+            end
+            else
+            begin
+              if Result < forall then
+                Result := forall
+              else
+                Result := 0;
+            end;
+          end
           else
-          if Result < round(power(2, (max - 1)) - 1) then
-            Result := round(power(2, (max - 1)) - 1)
-          else
-            Result := 0;
+          begin
+            if menu > 0 then
+              Result := 1 shl (menu - 1);
+          end;
           ShowMultiMenu;
         end;
         if ((event.key.keysym.sym = SDLK_RETURN) or (event.key.keysym.sym = SDLK_SPACE)) and (menu = max) then
@@ -624,13 +640,26 @@ begin
       begin
         if (event.button.button = SDL_BUTTON_LEFT) and (menu <> max) then
         begin
-          if menu > 0 then
-            Result := Result xor (1 shl (menu - 1))
+          //选中人物则反转对应bit
+          if forceSingle = 0 then
+          begin
+            if menu > 0 then
+            begin
+              Result := Result xor (1 shl (menu - 1));
+            end
+            else
+            begin
+              if Result < forall then
+                Result := forall
+              else
+                Result := 0;
+            end;
+          end
           else
-          if Result < round(power(2, (max - 1)) - 1) then
-            Result := round(power(2, (max - 1)) - 1)
-          else
-            Result := 0;
+          begin
+            if menu > 0 then
+              Result := 1 shl (menu - 1);
+          end;
           ShowMultiMenu;
         end;
         if (event.button.button = SDL_BUTTON_LEFT) and (menu = max) and
@@ -645,7 +674,7 @@ begin
         if MouseInRegion(x, y, 150, (max + 1) * h, xm, ym) then
         begin
           menup := menu;
-          menu := (ym - 152) div h;
+          menu := (ym - 150) div h;
           if menup <> menu then
             ShowMultiMenu;
         end;
@@ -6622,28 +6651,28 @@ var
   f, i: integer;
 begin
   f := Rrole[Brole[bnum].rnum].AmiFrameNum[0];
-  if (f>=0) and (f<100)then
+  if (f >= 0) and (f < 100) then
   begin
-  Funcname := Format('SA2_%d', [f]);
-  TMethod(pFunc).Code := TSpecialAbility2.MethodAddress(Funcname);
-  if Assigned(TMethod(pFunc).Code) then
-  begin
-    pFunc(bnum, mnum, level);
-  end;
+    Funcname := Format('SA2_%d', [f]);
+    TMethod(pFunc).Code := TSpecialAbility2.MethodAddress(Funcname);
+    if Assigned(TMethod(pFunc).Code) then
+    begin
+      pFunc(bnum, mnum, level);
+    end;
   end;
   for i := 0 to BRoleAmount - 1 do
   begin
     if (Brole[bnum].Team <> Brole[i].Team) and (Brole[i].Dead = 0) and (BField[4, Brole[i].X, Brole[i].Y] > 0) then
     begin
       f := Rrole[Brole[i].rnum].AmiFrameNum[0];
-      if (f>=100) then
+      if (f >= 100) then
       begin
-      Funcname := Format('SA2_%d', [f]);
-      TMethod(pFunc).Code := TSpecialAbility2.MethodAddress(Funcname);
-      if Assigned(TMethod(pFunc).Code) then
-      begin
-        pFunc(i, mnum, level);
-      end;
+        Funcname := Format('SA2_%d', [f]);
+        TMethod(pFunc).Code := TSpecialAbility2.MethodAddress(Funcname);
+        if Assigned(TMethod(pFunc).Code) then
+        begin
+          pFunc(i, mnum, level);
+        end;
       end;
     end;
   end;
@@ -7613,7 +7642,7 @@ begin
         res := 0
       else
         res := CommonMenu(300, 200, 105, amount - 1, 0, menuString);
-      bnum2:=  bnumarray[res];
+      bnum2 := bnumarray[res];
       rnum2 := Brole[bnum2].rnum;
       newlife := min(Rrole[rnum].CurrentHP - 1, Rrole[rnum].MaxHP * level div 10);
       Rrole[rnum].CurrentHP := Rrole[rnum].CurrentHP - newlife;
@@ -7625,8 +7654,9 @@ begin
         Rrole[rnum2].CurrentHP := Rrole[rnum2].MaxHP;
       Brole[bnum2].X := Ax;
       Brole[bnum2].Y := Ay;
-      Brole[bnum2].alpha:=0;
-      Brole[bnum2].mixAlpha:=0;
+      Brole[bnum2].alpha := 0;
+      Brole[bnum2].mixAlpha := 0;
+
       BField[2, Ax, Ay] := bnum2;
     end
     else
