@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="9"/>
+    <PathDelim Value="\"/>
+    <General>
+      <Flags>
+        <MainUnitHasUsesSectionForAllUnits Value="False"/>
+        <MainUnitHasCreateFormStatements Value="False"/>
+        <MainUnitHasTitleStatement Value="False"/>
+      </Flags>
+      <SessionStorage Value="InProjectDir"/>
+      <MainUnit Value="0"/>
+      <Title Value="kys_pig3"/>
+      <UseAppBundle Value="False"/>
+      <ResourceType Value="res"/>
+      <Icon Value="0"/>
+    </General>
+    <i18n>
+      <EnableI18N LFM="False"/>
+    </i18n>
+    <VersionInfo>
+      <UseVersionInfo Value="True"/>
+      <MajorVersionNr Value="3"/>
+      <MinorVersionNr Value="3"/>
+      <Language Value="0804"/>
+      <StringTable Comments="108 Brothers and Sisters" CompanyName="http://www.txdx.net" LegalCopyright="no" ProductName="kys_pig3.exe" ProductVersion="3.2"/>
+    </VersionInfo>
+    <BuildModes Count="2">
+      <Item1 Name="Debug" Default="True"/>
+      <Item2 Name="Release">
+        <CompilerOptions>
+          <Version Value="11"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="kys_pig3"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <Libraries Value="lib;.;\usr\local\lib;\usr\X11R6\lib"/>
+            <UnitOutputDirectory Value="lib"/>
+            <SrcPath Value="lib"/>
+          </SearchPaths>
+          <Parsing>
+            <SyntaxOptions>
+              <SyntaxMode Value="Delphi"/>
+            </SyntaxOptions>
+          </Parsing>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+              <UseValgrind Value="True"/>
+              <StripSymbols Value="True"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+          <Other>
+            <CompilerPath Value="$(CompPath)"/>
+          </Other>
+        </CompilerOptions>
+      </Item2>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
+      <ExcludeFileFilter Value="*.(bak|ppu|o|so);*~;backup"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+      </local>
+    </RunParams>
+    <RequiredPackages Count="2">
+      <Item1>
+        <PackageName Value="LCL"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="LazUtils"/>
+      </Item2>
+    </RequiredPackages>
+    <Units Count="9">
+      <Unit0>
+        <Filename Value="kys_pig3.lpr"/>
+        <IsPartOfProject Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="kys_main.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="kys_main"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="kys_event.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="kys_event"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="kys_battle.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="kys_battle"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="kys_engine.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="kys_engine"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="kys_script.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="kys_script"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="kys_draw.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="kys_draw"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="kys_type.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="kys_type"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="macro.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit8>
+    </Units>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <PathDelim Value="\"/>
+    <Target>
+      <Filename Value="kys_pig3-console"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <Libraries Value="lib;.;\usr\local\lib;\usr\X11R6\lib"/>
+      <UnitOutputDirectory Value="lib"/>
+      <SrcPath Value="lib"/>
+    </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <SyntaxMode Value="Delphi"/>
+        <IncludeAssertionCode Value="True"/>
+      </SyntaxOptions>
+    </Parsing>
+    <CodeGeneration>
+      <Checks>
+        <IOChecks Value="True"/>
+        <StackChecks Value="True"/>
+      </Checks>
+    </CodeGeneration>
+    <Linking>
+      <Debugging>
+        <DebugInfoType Value="dsDwarf2Set"/>
+        <UseHeaptrc Value="True"/>
+        <UseValgrind Value="True"/>
+        <StripSymbols Value="True"/>
+        <UseExternalDbgSyms Value="True"/>
+      </Debugging>
+    </Linking>
+    <Other>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="4">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+      <Item4>
+        <Name Value="EThread"/>
+      </Item4>
+    </Exceptions>
+  </Debugging>
+</CONFIG>
