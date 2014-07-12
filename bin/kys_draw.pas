@@ -1475,6 +1475,7 @@ var
 begin
   //DrawRectangle(x, y, w, 26, 0, ColColor(255), alpha);
   len := (DrawLength(pWideChar(word)) + 1) div 2;
+  len := max((w + 19) div 20, len);
   DrawTextFrame(x, y, len, alpha);
   DrawShadowText(word, x + 19, y + 3, color1, color2);
   if Refresh <> 0 then

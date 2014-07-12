@@ -209,7 +209,7 @@ begin
     str := BattleNames[battlenum]
   else
     str := pWideChar(@warsta.Name[0]);
-  DrawTextWithRect(puint16(str), CENTER_X - DrawLength(str) * 5 - 24, CENTER_Y - 150, DrawLength(str) * 10 + 8,
+  DrawTextWithRect(puint16(str), CENTER_X - DrawLength(str) * 5 - 24, CENTER_Y - 150, 0,
     ColColor($14), ColColor($16));
   UpdateAllScreen;
 
@@ -305,7 +305,7 @@ begin
     str := BattleNames[battlenum]
   else
     str := pWideChar(@warsta.Name[0]);
-  DrawTextWithRect(puint16(str), CENTER_X - DrawLength(str) * 5 - 24, CENTER_Y - 150, DrawLength(str) * 10 + 8,
+  DrawTextWithRect(puint16(str), CENTER_X - DrawLength(str) * 5 - 24, CENTER_Y - 150, 0,
     ColColor($14), ColColor($16));
   //DrawTitlePic(8, CENTER_X - 30, TitlePosition.y + 20);
   UpdateAllScreen;
@@ -385,7 +385,7 @@ begin
       end;
       LoadFreshScreen(CENTER_X - 140, CENTER_Y);
       str := UTF8Decode('載入戰鬥人物貼圖 ') + UTF8Decode(format('%2d/%2d', [i + 1, BRoleAmount]));
-      DrawTextWithRect(@str[1], CENTER_X - 120, CENTER_Y, 250, ColColor(5), ColColor(7), 30);
+      DrawTextWithRect(@str[1], CENTER_X - 120, CENTER_Y, 0, ColColor(5), ColColor(7), 30);
       UpdateAllScreen;
       //DrawRectangleWithoutFrame(screen, CENTER_X- 100+i*10, 30, 10, 10, $FFFFFFFF, 50);
       //SDL_UpdateRect2(screen, CENTER_X- 100+i*10, 30, 10, 10);
@@ -2899,7 +2899,7 @@ begin
   end;
 
   l := DrawLength(str);
-  DrawTextWithRect(@str[1], CENTER_X - l * 5 - 24, CENTER_Y - 150, l * 10 + 7, color1, color2, 10);
+  DrawTextWithRect(@str[1], CENTER_X - l * 5 - 24, CENTER_Y - 150, 0, color1, color2, 10);
   UpdateAllScreen;
   SDL_Delay(400);
   event.key.keysym.sym := 0;
@@ -2978,7 +2978,7 @@ begin
   begin
     Result := -1;
     str := '內力不足以發動任何武學！';
-    DrawTextWithRect(@str[1], 100, 50, 245, ColColor($21), ColColor($23));
+    DrawTextWithRect(@str[1], 100, 50, 245, 0, ColColor($23), $202020);
     UpdateAllScreen;
     WaitAnyKey;
     exit;
@@ -4180,7 +4180,7 @@ begin
       //str := '得經驗';
       //Drawshadowtext(@str[1], x + 100 - 17, y+85, colcolor($21), colcolor($23));
       str := UTF8Decode(format('經驗+%d', [basicvalue]));
-      DrawTextWithRect(@str[1], x, y + 70, 100, ColColor($64), ColColor($66), 40, 0);
+      DrawTextWithRect(@str[1], x, y + 70, 0, ColColor($64), ColColor($66), 40, 0);
       p := p + 1;
     end;
 
@@ -4275,7 +4275,7 @@ begin
   if (bnum >= 0) and (Brole[bnum].Team = 0) then
   begin
     ShowStatus(rnum, -2);
-    ShowSimpleStatus(rnum, CENTER_X - 150, CENTER_Y - 240 + 25);
+    ShowSimpleStatus(rnum, CENTER_X - 150, CENTER_Y - 240 + 10);
     //str := '升級';
     //Drawtextwithrect(@str[1], 50, CENTER_Y - 150, 46, colcolor($21), colcolor($23));
     UpdateAllScreen;

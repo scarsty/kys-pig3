@@ -2804,7 +2804,7 @@ begin
   scencename := PCharToUnicode(pchar(@Rscence[snum].Name[0]), 5);
   //c:=sdl_maprgba(screen.format,0,255,0,0);
   DrawTextWithRect(@scencename[1], CENTER_X - DrawLength(scencename) * 5 - 23, 100,
-    DrawLength(scencename) * 10 + 7, 0, $202020);
+    0, 0, $202020);
   SDL_Delay(500);
   if LastShowScene <> snum then
   begin
@@ -3969,6 +3969,7 @@ var
     DrawTextFrame(xp - 8, yp, 20, 10);
     //DrawRectangle(xp, yp, d * col + 7, 26, 0, ColColor(255), 30);
     //DrawRectangle(xp, 30 + yp, d * col + 7, d * row + 10, 0, ColColor(255), 30);
+    DrawMPic(2006, xp - 3, 27 + yp, 0, 0, 30);
     DrawTextFrame(xp - 8, 45 + dt + yp, 20, 10, 0, 20);
     //DrawRectangle(xp, 45 + dt + yp, d * col + 7, 26, 0, ColColor(255), 30);
     //i:=0;
@@ -4252,7 +4253,7 @@ begin
   canuse := 0;
   curitem := -1;
   Redraw;
-  DrawMPic(2006, CENTER_X - 384 + 283, CENTER_Y - 240);
+  //DrawMPic(2006, CENTER_X - 384 + 283, CENTER_Y - 240);
   //DrawTitleMenu;
   TransBlackScreen;
   DrawTitleMenu(2);
@@ -5338,7 +5339,7 @@ begin
   xp := CENTER_X - 384 + 260;
   yp := CENTER_Y - 240 + 5;
   w := 560;
-  h := 21;
+  h := 26;
   item1x := CENTER_X - 384 + 340;
   item2x := CENTER_X - 384 + 540;
   item1y := CENTER_Y - 240 + 360;
@@ -5355,21 +5356,22 @@ begin
   if bnum >= 0 then
   begin
     //显示头像
-    DrawHeadPic(Rrole[rnum].HeadNum, xp + 60, yp + 20);
+    DrawHeadPic(Rrole[rnum].HeadNum, xp + 60, yp + 10);
     x := xp + 60;
     y := yp - 15;
 
     //显示姓名
     Name := pWideChar(@Rrole[rnum].Name);
-    DrawShadowText(@Name[1], x + 76 - DrawLength(pchar(@Rrole[rnum].Name)) * 5, y + 200, ColColor($64), ColColor($66));
+    DrawTextWithRect(@Name[1], x + 68 - DrawLength(pchar(@Rrole[rnum].Name)) * 5, y + 180, 0,
+      ColColor($64), ColColor($66), 0, 0);
 
     //显示所需字符
     for i := 0 to 5 do
-      DrawShadowText(@strs[i, 1], x + 10, y + 225 + 21 * i, ColColor($21), ColColor($23));
+      DrawTextWithRect(@strs[i, 1], x, y + 208 + h * i, 140, 0, $202020, 30, 0);
 
     //等级
     str := format('%4d', [Rrole[rnum].Level]);
-    DrawEngShadowText(@str[1], x + 110, y + 225, ColColor(5), ColColor(7));
+    DrawEngShadowText(@str[1], x + 110, y + 211 + h * 0, ColColor($64), ColColor($66));
 
     //生命值, 在受伤和中毒值不同时使用不同颜色
     case Rrole[rnum].Hurt of
@@ -5390,10 +5392,10 @@ begin
       end;
     end;
     str := format('%4d', [Rrole[rnum].CurrentHP]);
-    DrawEngShadowText(@str[1], x + 60, y + 246, color1, color2);
+    DrawEngShadowText(@str[1], x + 60, y + 211 + h * 1, color1, color2);
 
     str := '/';
-    DrawEngShadowText(@str[1], x + 100, y + 246, ColColor($64), ColColor($66));
+    DrawEngShadowText(@str[1], x + 100, y + 211 + h * 1, ColColor($64), ColColor($66));
 
     case Rrole[rnum].Poison of
       1..66:
@@ -5413,7 +5415,7 @@ begin
       end;
     end;
     str := format('%4d', [Rrole[rnum].MaxHP]);
-    DrawEngShadowText(@str[1], x + 110, y + 246, color1, color2);
+    DrawEngShadowText(@str[1], x + 110, y + 211 + h * 1, color1, color2);
     //内力, 依据内力性质使用颜色
     if Rrole[rnum].MPType = 0 then
     begin
@@ -5431,15 +5433,15 @@ begin
       color2 := ColColor($66);
     end;
     str := format('%4d/%4d', [Rrole[rnum].CurrentMP, Rrole[rnum].MaxMP]);
-    DrawEngShadowText(@str[1], x + 60, y + 267, color1, color2);
+    DrawEngShadowText(@str[1], x + 60, y + 211 + h * 2, color1, color2);
     //体力
     str := format('%4d/%4d', [Rrole[rnum].PhyPower, MAX_PHYSICAL_POWER]);
-    DrawEngShadowText(@str[1], x + 60, y + 288, ColColor(5), ColColor(7));
+    DrawEngShadowText(@str[1], x + 60, y + 211 + h * 3, ColColor($64), ColColor($66));
     //经验
     str := format('%5d', [uint16(Rrole[rnum].Exp)]);
-    DrawEngShadowText(@str[1], x + 100, y + 309, ColColor(5), ColColor(7));
+    DrawEngShadowText(@str[1], x + 100, y + 211 + h * 4, ColColor($64), ColColor($66));
     str := format('%5d', [uint16(Leveluplist[Rrole[rnum].Level - 1])]);
-    DrawEngShadowText(@str[1], x + 100, y + 330, ColColor(5), ColColor(7));
+    DrawEngShadowText(@str[1], x + 100, y + 211 + h * 5, ColColor($64), ColColor($66));
 
     //str:=format('%5d', [Rrole[rnum,21]]);
     //drawengshadowtext(@str[1],150,295,colcolor($7),colcolor($5));
@@ -5459,29 +5461,31 @@ begin
       x := xp + 85;
       y := yp;
       //装备, 秘笈
-      DrawShadowText(@strs[18, 1], item1x + 85, item1y + 5, ColColor($21), ColColor($23));
-      DrawShadowText(@strs[19, 1], item2x + 85, item2y + 5, ColColor($21), ColColor($23));
+      DrawTextWithRect(@strs[18, 1], item1x + 85, item1y, 0, 0, $202020, 0, 0);
+      DrawTextWithRect(@strs[19, 1], item2x + 85, item2y, 0, 0, $202020, 0, 0);
       if Rrole[rnum].Equip[0] >= 0 then
       begin
-        DrawU16ShadowText(@Ritem[Rrole[rnum].Equip[0]].Name, item1x + 85, item1y + 30, ColColor(5), ColColor(7));
+        DrawTextWithRect(@Ritem[Rrole[rnum].Equip[0]].Name, item1x + 85, item1y + 30,
+          0, ColColor($64), ColColor($66), 30, 1);
         DrawIPic(Rrole[rnum].Equip[0], item1x, item1y, 0, 0, 0, 0);
       end;
       if Rrole[rnum].Equip[1] >= 0 then
       begin
-        DrawU16ShadowText(@Ritem[Rrole[rnum].Equip[1]].Name, item2x + 85, item2y + 30, ColColor(5), ColColor(7));
+        DrawTextWithRect(@Ritem[Rrole[rnum].Equip[1]].Name, item2x + 85, item2y + 30, 0,
+          ColColor($64), ColColor($66), 30, 1);
         DrawIPic(Rrole[rnum].Equip[1], item2x, item2y, 0, 0, 0, 0);
       end;
     end;
 
   end;
 
-  x := xp;
-  y := yp + 79;
+  x := xp - 20;
+  y := yp + 35;
   if bnum < 0 then
   begin
     x := CENTER_X - 390;
-    y := CENTER_Y - 240 + 110;
-    h := 21;
+    y := CENTER_Y - 240 + 80;
+    h := 26;
     if bnum = -2 then
     begin
       x := x + 100;
@@ -5494,11 +5498,11 @@ begin
   begin
     if bnum = -1 then
     begin
-      DrawRectangle(x + 270, y, 260, 325, 0, ColColor(255), 50);
+      //DrawRectangle(x + 270, y, 260, 325, 0, ColColor(255), 50);
       //display_img(PChar(AppPath + 'resource/lu.png'), x + 270 - 10, y - 38);
       for i := 0 to 2 do
       begin
-        DrawShadowText(@strs[i, 1], x + 180 + 100, y + 5 + h * i, ColColor($64), ColColor($66));
+        DrawTextWithRect(@strs[i, 1], x + 180 + 100, y + 2 + h * i, 240, 0, $202020, 30, 0);
       end;
       for i := 0 to 14 do
       begin
@@ -5513,14 +5517,6 @@ begin
     str := format('%4d', [Rrole[rnum].MaxMP]);
     DrawEngShadowText(@str[1], x + 280 + 100, y + 5 + h * 2, ColColor($64), ColColor($66));
     y := y + 3 * h;
-  end;
-
-  for i := 6 to 17 do
-  begin
-    if bnum <> -2 then
-    begin
-      DrawShadowText(@strs[i, 1], x + 180 + 100, y + 5 + h * (i - 6), ColColor($64), ColColor($66));
-    end;
   end;
 
   for i := 0 to 3 do
@@ -5553,6 +5549,21 @@ begin
     addnum[2] := addnum[2] + Brole[bnum].loverlevel[9] * Rrole[rnum].Speed div 100;
     addnum[3] := addnum[3] + Brole[bnum].loverlevel[2];
   end;
+
+  for i := 6 to 17 do
+  begin
+    w := 120;
+    if i <= 9 then
+      if addnum[i - 6] <> 0 then
+        w := 180;
+    if bnum = -1 then
+      w := 240;
+    if bnum <> -2 then
+    begin
+      DrawTextWithRect(@strs[i, 1], x + 180 + 100, y + 2 + h * (i - 6), w, 0, $202020, 30, 0);
+    end;
+  end;
+
   //addnum[0] := -Rrole[rnum].Attack;
   color1 := ColColor($64);
   color2 := ColColor($66);
@@ -5563,10 +5574,10 @@ begin
       if addnum[i] <> 0 then
       begin
         if addnum[i] > 0 then
-          str := format('(+%d)', [addnum[i]])
+          str := format(' (+%d)', [addnum[i]])
         else
-          str := format('(%d)', [addnum[i]]);
-        DrawEngShadowText(@str[1], x + 280 + 150, y + 5 + i * 21, color1, color2);
+          str := format(' (%d)', [addnum[i]]);
+        DrawEngShadowText(@str[1], x + 280 + 140, y + 5 + i * h, color1, color2);
       end;
     end;
   end;
@@ -5669,11 +5680,12 @@ begin
           color1 := ColColor($50);
           color2 := ColColor($4e);
         end;
-        DrawTextWithRect(@statestrs[i, 1], xp + 50 + 50 * (k mod 8), yp + 350 + 30 * (k div 8), 47, color1, color2);
+        DrawTextWithRect(@statestrs[i, 1], xp + 50 + 65 * (k mod 7), yp + 350 + h * (k div 7),
+          0, color1, color2, 30, 0);
         if IsConsole then
         begin
           str := IntToStr(Brole[bnum].StateRound[i]);
-          DrawEngShadowText(@str[1], xp + 90 + 50 * (k mod 8), yp + 352 + 30 * (k div 8), color1, color2);
+          DrawEngShadowText(@str[1], xp + 90 + 65 * (k mod 7), yp + 353 + h * (k div 7), color1, color2);
         end;
         k := k + 1;
       end;
@@ -6209,49 +6221,52 @@ begin
   itemx := x + 230;
   itemy := y + 380;
 
-  DrawShadowText(@strs[0, 1], x + 70, y + 20, ColColor($21), ColColor($23));
+  DrawTextWithRect(@strs[0, 1], x + 70, y + 20, 10, 0, $202020, 0, 0);
 
   if Rrole[rnum].Medcine > 0 then
   begin
-    color1 := ColColor(5);
-    color2 := ColColor(7);
+    color1 := 0;
+    color2 := $202020;
     if select = 0 then
     begin
       color1 := ColColor($64);
       color2 := ColColor($66);
     end;
-    str := format('%4d', [Rrole[rnum].Medcine]);
-    DrawEngShadowText(@str[1], x + 100, y + 50, ColColor($64), ColColor($66));
-    DrawMPic(2009, x + 160, y + 56);
+    //str := format('%4d', [Rrole[rnum].Medcine]);
+    //DrawEngShadowText(@str[1], x + 100, y + 50, ColColor($64), ColColor($66));
+    //DrawMPic(2009, x + 160, y + 56);
   end
   else
   begin
     color1 := ColColor($68);
     color2 := ColColor($6F);
-    DrawMPic(2012, x + 160, y + 56);
+    //DrawMPic(2012, x + 160, y + 56);
   end;
-  DrawShadowText(@strs1[0, 1], x + 70, y + 50, color1, color2);
+  str := strs1[0] + format('%4d', [Rrole[rnum].Medcine]);
+  DrawTextWithRect(@str[1], x + 70, y + 50, 0, color1, color2, 20, 0);
 
   if Rrole[rnum].MedPoi > 0 then
   begin
-    color1 := ColColor(5);
-    color2 := ColColor(7);
+    color1 := 0;
+    color2 := $202020;
     if select = 1 then
     begin
       color1 := ColColor($64);
       color2 := ColColor($66);
     end;
-    str := format('%4d', [Rrole[rnum].MedPoi]);
-    DrawEngShadowText(@str[1], x + 250, y + 50, ColColor($64), ColColor($66));
-    DrawMPic(2010, x + 310, y + 56);
+    //str := format('%4d', [Rrole[rnum].MedPoi]);
+    //DrawEngShadowText(@str[1], x + 250, y + 50, ColColor($64), ColColor($66));
+    //DrawMPic(2010, x + 310, y + 56);
   end
   else
   begin
     color1 := ColColor($68);
     color2 := ColColor($6F);
-    DrawMPic(2012, x + 310, y + 56);
+    //DrawMPic(2012, x + 310, y + 56);
   end;
-  DrawShadowText(@strs1[1, 1], x + 220, y + 50, color1, color2);
+  str := strs1[1] + format('%4d', [Rrole[rnum].MedPoi]);
+  DrawTextWithRect(@str[1], x + 220, y + 50, 0, color1, color2, 20, 0);
+  //DrawShadowText(@strs1[1, 1], x + 220, y + 50, color1, color2);
 
   if (showLeave <> 0) then
   begin
@@ -6267,13 +6282,15 @@ begin
       color1 := ColColor($68);
       color2 := ColColor($6F);
     end;
-    DrawShadowText(@strs1[2, 1], x + 370, y + 50, color1, color2);
+    //str:=strs1[0]+format('%4d', [Rrole[rnum].MedPoi]);
+    DrawTextWithRect(@strs1[2, 1], x + 370, y + 50, 0, color1, color2, 20, 0);
+    //DrawShadowText(@strs1[2, 1], x + 370, y + 50, color1, color2);
   end;
 
   //武功
-  DrawShadowText(@strs[1, 1], x + 70, y + 100, ColColor($21), ColColor($23));
-  color1 := ColColor(5);
-  color2 := ColColor(7);
+  DrawTextWithRect(@strs[1, 1], x + 70, y + 90, 0, 0, $202020, 0, 0);
+  color1 := 0;
+  color2 := $202020;
   for i := 0 to 9 do
   begin
     magicnum := Rrole[rnum].magic[i];
@@ -6326,28 +6343,32 @@ begin
           end;
         end;
       end;}
-      DrawU16ShadowText(@Rmagic[magicnum].Name, x + 70, y + 126 + 21 * i, color1, color2);
-      str := format('%3d', [Rrole[rnum].MagLevel[i] div 100 + 1]);
-      DrawEngShadowText(@str[1], x + 210, y + 126 + 21 * i, ColColor($64), ColColor($66));
-    end;
+      str := format('%-10s%2d', [pWideChar(@Rmagic[magicnum].Name), Rrole[rnum].MagLevel[i] div 100 + 1]);
+      //DrawEngShadowText(@str[1], x + 210 + i mod 2 * 120, y + 126 + 21 * (i div 2), ColColor($64), ColColor($66));
+    end
+    else
+      str := format('%12s', ['']);
+    DrawTextWithRect(puint16(str), x + 70 + i mod 2 * 180, y + 120 + 28 * (i div 2), 0, color1, color2, 20, 0);
   end;
 
   //内功
-  DrawShadowText(@strs[2, 1], x + 270, y + 100, ColColor($21), ColColor($23));
-  color1 := ColColor(5);
-  color2 := ColColor(7);
+  DrawTextWithRect(@strs[2, 1], x + 70, y + 270, 10, 0, $202020, 0, 0);
+  color1 := 0;
+  color2 := $202020;
   for i := 0 to 3 do
   begin
     magicnum := Rrole[rnum].neigong[i];
     if magicnum > 0 then
     begin
-      DrawU16ShadowText(@Rmagic[magicnum].Name, x + 270, y + 126 + 21 * i, color1, color2);
-      str := format('%3d', [Rrole[rnum].NGLevel[i] div 100 + 1]);
-      DrawEngShadowText(@str[1], x + 410, y + 126 + 21 * i, ColColor($64), ColColor($66));
-    end;
+      str := format('%-10s%2d', [pWideChar(@Rmagic[magicnum].Name), Rrole[rnum].MagLevel[i] div 100 + 1]);
+      //DrawEngShadowText(@str[1], x + 210+i mod 2 * 120, y + 256 + 21 * (i div 2), ColColor($64), ColColor($66));
+    end
+    else
+      str := format('%12s', ['']);
+    DrawTextWithRect(puint16(str), x + 70 + i mod 2 * 180, y + 300 + 28 * (i div 2), 0, color1, color2, 20, 0);
   end;
 
-  DrawShadowText(@strs[3, 1], x + 70, y + 370, ColColor($21), ColColor($23));
+  DrawTextWithRect(@strs[3, 1], x + 70, y + 370, 0, 0, $202020, 0, 0);
 
   //计算秘笈需要经验
   if Rrole[rnum].PracticeBook >= 0 then
@@ -6370,17 +6391,18 @@ begin
     needexp := trunc((1 + (mlevel - 1) * 0.5) * Ritem[Rrole[rnum].PracticeBook].NeedExp *
       (1 + (7 - Rrole[rnum].Aptitude / 15) * 0.5));
 
-    DrawU16ShadowText(@Ritem[Rrole[rnum].PracticeBook].Name, x + 80, y + 400, ColColor(5), ColColor(7));
-    str := format('%5d/%5d', [uint16(Rrole[rnum].ExpForBook), needexp]);
+    DrawTextWithRect(@Ritem[Rrole[rnum].PracticeBook].Name, x + 70, y + 400, 0, 0, $202020, 20, 0);
+    str := format('%d/%d', [uint16(Rrole[rnum].ExpForBook), needexp]);
     if mlevel = 10 then
-      str := format('%5d/=', [uint16(Rrole[rnum].ExpForBook)]);
-    DrawEngShadowText(@str[1], x + 80, y + 422, ColColor($64), ColColor($66));
+      str := format('%d/=', [uint16(Rrole[rnum].ExpForBook)]);
+    DrawTextWithRect(@str[1], x + 70, y + 428, 0, ColColor($64), ColColor($66), 20, 0);
     DrawIPic(Rrole[rnum].PracticeBook, itemx, itemy, 0, 0, 0, 0);
-    DrawMPic(2011, x + 170, y + 370);
+    //DrawMPic(2011, x + 170, y + 370);
   end
   else
   begin
-    DrawMPic(2013, x + 170, y + 370);
+    DrawTextFrame(x + 70, y + 400, 1, 20, 0);
+    //DrawMPic(2013, x + 170, y + 370);
   end;
   if select = 2 then
     DrawItemFrame(itemx, itemy, 1);
