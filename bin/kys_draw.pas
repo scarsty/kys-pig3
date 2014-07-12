@@ -1,7 +1,5 @@
 unit kys_draw;
 
-{$i macro.inc}
-
 interface
 
 uses

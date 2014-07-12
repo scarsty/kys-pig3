@@ -57,6 +57,7 @@
               <GenerateDebugInfo Value="False"/>
               <UseValgrind Value="True"/>
               <StripSymbols Value="True"/>
+              <UseExternalDbgSyms Value="True"/>
             </Debugging>
             <LinkSmart Value="True"/>
             <Options>
@@ -151,6 +152,7 @@
       <SyntaxOptions>
         <SyntaxMode Value="Delphi"/>
         <IncludeAssertionCode Value="True"/>
+        <CStyleMacros Value="True"/>
       </SyntaxOptions>
     </Parsing>
     <CodeGeneration>
@@ -173,7 +175,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="4">
+    <Exceptions Count="5">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -186,6 +188,9 @@
       <Item4>
         <Name Value="EThread"/>
       </Item4>
+      <Item5>
+        <Name Value="EInOutError"/>
+      </Item5>
     </Exceptions>
   </Debugging>
 </CONFIG>

@@ -13,6 +13,6 @@
 {$endif}
 
 {$ifdef nowrite}
-{$define writeln := ;//}
-{$define write := ;//}
+//{$define writeln := ;//}
+//{$define write := ;//}
 {$endif}

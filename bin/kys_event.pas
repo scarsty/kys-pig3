@@ -1,7 +1,5 @@
 unit kys_event;
 
-{$i macro.inc}
-
 interface
 
 uses
@@ -2969,7 +2967,7 @@ begin
       if (event.key.keysym.sym = SDLK_ESCAPE) or (event.button.button = SDL_BUTTON_RIGHT) then
       begin
         skipSync := True;
-        //SkipTalk := 1;
+        SkipTalk := 1;
         break;
       end;
       if (event.key.keysym.sym = SDLK_RETURN) or (event.button.button = SDL_BUTTON_LEFT) or
@@ -4885,7 +4883,7 @@ begin
     begin
       if (mode = 0) or (tip = mode) then
       begin
-        menuString[n] := ' ' + missiontip[tip] + ' ' + MissionStr[i]+'  ';
+        menuString[n] := ' ' + missiontip[tip] + ' ' + MissionStr[i] + '  ';
         MissionList[n] := i;
         n := n + 1;
       end;

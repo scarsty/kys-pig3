@@ -1,7 +1,5 @@
 unit kys_script;
 
-{$i macro.inc}
-
 interface
 
 uses
@@ -504,7 +502,7 @@ begin
     //lua_gc(Lua_script, LUA_GCCOLLECT, 0);
     if Result <> 0 then
     begin
-      writeln(lua_tostring(Lua_script, -1));
+      ConsoleMessage(lua_tostring(Lua_script, -1));
       lua_pop(Lua_script, 1);
     end;
   except
@@ -653,7 +651,7 @@ begin
   FillChar(Ritem[itemnum].Introduction[0], sizeof(@Ritem[0].Introduction), 0);
   if (len > 15) then
   begin
-    writeln('Intro length is too long!');
+    ConsoleMessage('Intro length is too long!');
   end
   else
   begin
