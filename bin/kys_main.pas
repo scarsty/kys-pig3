@@ -1097,9 +1097,9 @@ begin
       //showmessage('');
       ShowStatus(0);
       //showmessage('');
-      DrawShadowText(@str2[1], 150, CENTER_Y + 111, ColColor($21), ColColor($23));
+      DrawTextWithRect(@str2[1], 150, CENTER_Y + 120,80, 0, $202020, 30,0);
       str0 := format('%4d', [Rrole[0].Aptitude]);
-      DrawEngShadowText(@str0[1], 200, CENTER_Y + 111, ColColor($64), ColColor($66));
+      DrawEngShadowText(@str0[1], 200, CENTER_Y + 123, ColColor($64), ColColor($66));
       str0 := '選定屬性后按Y鍵或這裡確認';
       DrawTextWithRect(@str0[1], 175, CENTER_Y + 171, 260, ColColor($64), ColColor($66));
       UpdateAllScreen;
