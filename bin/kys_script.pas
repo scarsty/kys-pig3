@@ -877,7 +877,7 @@ begin
     incolor := lua_tointeger(L, -n + 6);
   if n >= 8 then
     framecolor := lua_tointeger(L, -n + 7);
-  DrawTextFrame(x, y, (DrawLength(str) + 1) div 2, alpha, framecolor, 0);
+  DrawTextFrame(x, y, DrawLength(str), alpha, framecolor, 0);
   DrawShadowText(@str[1], x + 19, y + 3, color1, color2);
   UpdateAllScreen;
   Result := 0;

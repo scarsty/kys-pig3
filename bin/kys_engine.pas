@@ -1080,7 +1080,7 @@ var
 begin
   if (h <= 35) and (trans <> 0) then
   begin
-    DrawTextFrame(x - 12, y + 1, w div 20);
+    DrawTextFrame(x - 12, y + 1, w div 10);
     exit;
   end;
 
@@ -4032,4 +4032,4 @@ begin
 {$endif}
 end;
 
-end.
+end.

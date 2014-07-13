@@ -1314,7 +1314,7 @@ var
       else if (p <> menu) and ((MenuStatus and (1 shl i) > 0)) then
       begin
         //DrawMPic(2110 + i, x, y + h * p, SIMPLE, 0, 20);
-        DrawTextFrame(x + 5, y + h * p, 2 20);
+        DrawTextFrame(x + 5, y + h * p, 4, 20);
         DrawShadowText(@word[i][1], x + 24, y + h * p + 3, 0, $202020);
         p := p + 1;
       end;
@@ -1430,7 +1430,7 @@ begin
   //DrawMPic(2121, 160, 50);
   str := UTF8Decode(format('%d', [BattleRound]));
   l := length(str);
-  DrawTextFrame(x + 100, y, 2 + l);
+  DrawTextFrame(x + 100, y, 2 + l * 2);
   for i := 1 to l do
   begin
     DrawShadowText(puint16(num[StrToInt(str[i])]), x + 139 + i * 20, y + 3, 0, $202020);
@@ -2928,14 +2928,14 @@ var
     begin
       if (p = menu) and ((MenuStatus and (1 shl i) > 0)) then
       begin
-        DrawTextFrame(103, 50 + h * p, 8);
+        DrawTextFrame(103, 50 + h * p, 16);
         DrawShadowText(@menuString[i][1], 122, 53 + h * p, ColColor($64), ColColor($66));
         DrawEngShadowText(@menuEngString[i][1], 242, 53 + h * p, ColColor($64), ColColor($66));
         p := p + 1;
       end
       else if (p <> menu) and ((MenuStatus and (1 shl i) > 0)) then
       begin
-        DrawTextFrame(103, 50 + h * p, 8, 20);
+        DrawTextFrame(103, 50 + h * p, 16, 20);
         DrawShadowText(@menuString[i][1], 122, 53 + h * p, 0, $202020);
         DrawEngShadowText(@menuEngString[i][1], 242, 53 + h * p, 0, $202020);
         p := p + 1;
@@ -2978,7 +2978,7 @@ begin
   begin
     Result := -1;
     str := '內力不足以發動任何武學！';
-    DrawTextWithRect(@str[1], 100, 50, 245, 0, ColColor($23), $202020);
+    DrawTextWithRect(@str[1], 100, 50, 0, 0, $202020, 0, 0);
     UpdateAllScreen;
     WaitAnyKey;
     exit;
@@ -5874,20 +5874,20 @@ var
     begin
       if (i = menu) then
       begin
-        DrawTextFrame(x, y + h * i, 7);
+        DrawTextFrame(x, y + h * i, 13);
         DrawShadowText(@namestr[i][1], x + 19, y + 3 + h * i, ColColor($64), ColColor($66));
-        DrawShadowText(@modestring[Brole[a[i]].AutoMode][1], x + 119, y + 3 + h * i,
+        DrawShadowText(@modestring[Brole[a[i]].AutoMode][1], x + 109, y + 3 + h * i,
           ColColor($64), ColColor($66));
       end
       else
       begin
-        DrawTextFrame(x, y + h * i, 7, 20);
+        DrawTextFrame(x, y + h * i, 13, 20);
         DrawShadowText(@namestr[i][1], x + 19, y + 3 + h * i, 0, $202020);
-        DrawShadowText(@modestring[Brole[a[i]].AutoMode][1], x + 119, y + 3 + h * i,
+        DrawShadowText(@modestring[Brole[a[i]].AutoMode][1], x + 109, y + 3 + h * i,
           0, $202020);
       end;
     end;
-    DrawTextFrame(x, y + h * amount, 2);
+    DrawTextFrame(x, y + h * amount, 4);
     if menu = -2 then
       DrawShadowText(@str[1], x + 19, y + 3 + h * amount, ColColor($64), ColColor($66))
     else
@@ -9271,4 +9271,4 @@ begin
   end;
 end;
 
-end.
+end.

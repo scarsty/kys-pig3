@@ -1097,7 +1097,7 @@ begin
       //showmessage('');
       ShowStatus(0);
       //showmessage('');
-      DrawTextWithRect(@str2[1], 150, CENTER_Y + 120,80, 0, $202020, 30,0);
+      DrawTextWithRect(@str2[1], 150, CENTER_Y + 120, 80, 0, $202020, 30, 0);
       str0 := format('%4d', [Rrole[0].Aptitude]);
       DrawEngShadowText(@str0[1], 200, CENTER_Y + 123, ColColor($64), ColColor($66));
       str0 := '選定屬性后按Y鍵或這裡確認';
@@ -2975,7 +2975,7 @@ var
       DrawTextFrame(x, y + i * h, len1, alpha);
       DrawShadowText(@menuString[i][1], x + 19, y + 3 + h * i, c1, c2);
       if p = 1 then
-        DrawEngShadowText(@menuEngString[i][1], x + 19 + len * 10 +20, y + 3 + h * i, c1, c2);
+        DrawEngShadowText(@menuEngString[i][1], x + 19 + len * 10 + 20, y + 3 + h * i, c1, c2);
     end;
 
   end;
@@ -5466,13 +5466,13 @@ begin
       if Rrole[rnum].Equip[0] >= 0 then
       begin
         DrawTextWithRect(@Ritem[Rrole[rnum].Equip[0]].Name, item1x + 85, item1y + 30,
-          0, ColColor($64), ColColor($66), 30, 1);
+          0, ColColor($64), ColColor($66), 30, 0);
         DrawIPic(Rrole[rnum].Equip[0], item1x, item1y, 0, 0, 0, 0);
       end;
       if Rrole[rnum].Equip[1] >= 0 then
       begin
         DrawTextWithRect(@Ritem[Rrole[rnum].Equip[1]].Name, item2x + 85, item2y + 30, 0,
-          ColColor($64), ColColor($66), 30, 1);
+          ColColor($64), ColColor($66), 30, 0);
         DrawIPic(Rrole[rnum].Equip[1], item2x, item2y, 0, 0, 0, 0);
       end;
     end;
@@ -6294,9 +6294,9 @@ begin
   for i := 0 to 9 do
   begin
     magicnum := Rrole[rnum].magic[i];
-    x1:=    x + 70 + i mod 2 * 180;
-    y1:=        y + 120 + 28 * (i div 2);
-    DrawTextFrame(x1, y1, 12,20);
+    x1 := x + 70 + i mod 2 * 180;
+    y1 := y + 120 + 28 * (i div 2);
+    DrawTextFrame(x1, y1, 12, 20);
     if magicnum > 0 then
     begin
       {case Rmagic[magicnum].HurtType of
@@ -6346,9 +6346,9 @@ begin
           end;
         end;
       end;}
-      DrawShadowText((@Rmagic[magicnum].Name),x1+19, y1+3,0,$202020);
+      DrawShadowText((@Rmagic[magicnum].Name), x1 + 19, y1 + 3, 0, $202020);
       str := format('%2d', [Rrole[rnum].MagLevel[i] div 100 + 1]);
-      DrawEngShadowText(@str[1], x1 + 119, y1 +3, 0, $202020);
+      DrawEngShadowText(@str[1], x1 + 119, y1 + 3, 0, $202020);
     end;
   end;
 
@@ -6359,15 +6359,15 @@ begin
   for i := 0 to 3 do
   begin
     magicnum := Rrole[rnum].neigong[i];
-        x1:=    x + 70 + i mod 2 * 180;
-    y1:=        y + 300 + 28 * (i div 2);
-    DrawTextFrame(x1, y1, 12,20);
+    x1 := x + 70 + i mod 2 * 180;
+    y1 := y + 300 + 28 * (i div 2);
+    DrawTextFrame(x1, y1, 12, 20);
     if magicnum > 0 then
     begin
-      str := format('%-10s', [pWideChar(@Rmagic[magicnum].Name)]);
-          DrawShadowText((@Rmagic[magicnum].Name),x1+19, y1+3,0,$202020);
+      //str := format('%-10s', [pWideChar(@Rmagic[magicnum].Name)]);
+      DrawShadowText((@Rmagic[magicnum].Name), x1 + 19, y1 + 3, 0, $202020);
       str := format('%2d', [Rrole[rnum].NGLevel[i] div 100 + 1]);
-      DrawEngShadowText(@str[1], x1 + 119, y1 +3, 0, $202020);
+      DrawEngShadowText(@str[1], x1 + 119, y1 + 3, 0, $202020);
       //DrawEngShadowText(@str[1], x + 210+i mod 2 * 120, y + 256 + 21 * (i div 2), ColColor($64), ColColor($66));
     end;
   end;
@@ -8418,4 +8418,4 @@ begin
   Result := False;
 end;
 
-end.
+end.

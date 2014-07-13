@@ -313,11 +313,11 @@ begin
 
   //DrawRectangle(x - 85, y, 170, 76, 0, ColColor(255), 30);
   word := UTF8Decode(format('%d', [amount]));
-  l1 := length(pWideChar(@Ritem[inum].Name));
-  l2 := (length(word) + 1) div 2;
-  DrawTextFrame(CENTER_X - (3 + l1 + l2) * 10 - 20, y, 3 + l1 + l2);
-  x := CENTER_X - (3 + l1 + l2) * 10 + 1;
-  DrawEngShadowText(@word[1], x + 40 + 20 + l1 * 20, 3 + y, 0, $202020);
+  l1 := DrawLength(pWideChar(@Ritem[inum].Name));
+  l2 := DrawLength(word);
+  DrawTextFrame(CENTER_X - (6 + l1 + l2) * 5 - 20, y, 6 + l1 + l2);
+  x := CENTER_X - (6 + l1 + l2) * 5 + 1;
+  DrawEngShadowText(@word[1], x + 40 + 20 + l1 * 10, 3 + y, 0, $202020);
   if amount >= 0 then
     word := '得到'
   else
@@ -325,7 +325,7 @@ begin
     word := '失去';
     amount := -amount;
   end;
-  DrawShadowText(@word[1], x, 3 + y, 0, ColColor($23));
+  DrawShadowText(@word[1], x, 3 + y, 0, $202020);
   //word := '數量';
   //DrawShadowText(@word[1], x - 60, 3 + y, ColColor($64), ColColor($66));
   DrawIPic(inum, CENTER_X - 40, y - 90, 0, 0, 0, 0);
@@ -485,7 +485,7 @@ begin
   menuString[0] := '取消';
   menuString[1] := '戰鬥';
   menuString[2] := '是否與之戰鬥？';
-  DrawTextWithRect(@menuString[2][1], CENTER_X - 75, CENTER_Y - 85, 150, ColColor(5), ColColor(7));
+  DrawTextWithRect(@menuString[2][1], CENTER_X - 75, CENTER_Y - 85, 0, 0, $202020);
   menu := CommonMenu2(CENTER_X - 49, CENTER_Y - 50, 48, menuString);
   if menu = 1 then
     Result := jump1
@@ -521,7 +521,7 @@ begin
   menuString[0] := '取消';
   menuString[1] := '要求';
   menuString[2] := '是否要求加入？';
-  DrawTextWithRect(@menuString[2][1], CENTER_X - 75, CENTER_Y - 85, 150, ColColor(5), ColColor(7));
+  DrawTextWithRect(@menuString[2][1], CENTER_X - 75, CENTER_Y - 85, 0, 0, $202020);
   menu := CommonMenu2(CENTER_X - 49, CENTER_Y - 50, 48, menuString);
   if menu = 1 then
     Result := jump1
@@ -569,7 +569,7 @@ begin
   menuString[0] := '取消';
   menuString[1] := '住宿';
   menuString[2] := '是否需要住宿？';
-  DrawTextWithRect(@menuString[2][1], CENTER_X - 75, CENTER_Y - 85, 147, ColColor(5), ColColor(7));
+  DrawTextWithRect(@menuString[2][1], CENTER_X - 75, CENTER_Y - 85, 0, 0, $202020);
   menu := CommonMenu2(CENTER_X - 49, CENTER_Y - 50, 48, menuString);
   if menu = 1 then
     Result := jump1
@@ -1247,19 +1247,19 @@ procedure Show3HintString(str1, str2, str3: pWideChar);
 var
   l, l1, l2, l3, x: integer;
 begin
-  l1 := (DrawLength(str1) + 1) div 2;
-  l2 := (DrawLength(str2) + 1) div 2;
-  l3 := (DrawLength(str3) + 1) div 2;
+  l1 := DrawLength(str1);
+  l2 := DrawLength(str2);
+  l3 := DrawLength(str3);
   l := l1 + l2 + l3;
-  x := CENTER_X - l * 10;
+  x := CENTER_X - l * 5;
   DrawTextFrame(x - 19, 150, l);
   //DrawRectangle(CENTER_X - 75, 98, 150, 51, 0, ColColor(255), 30);
   if l1 > 0 then
     DrawShadowText(puint16(str1), x, 153, ColColor($64), ColColor($66));
   if l2 > 0 then
-    DrawShadowText(puint16(str2), x + l1 * 20, 153, 0, $202020);
+    DrawShadowText(puint16(str2), x + l1 * 10, 153, 0, $202020);
   if l3 > 0 then
-    DrawShadowText(puint16(str3), x + l1 * 20 + l2 * 20, 153, ColColor($64), ColColor($66));
+    DrawShadowText(puint16(str3), x + l1 * 10 + l2 * 10, 153, ColColor($64), ColColor($66));
   UpdateAllScreen;
   WaitAnyKey;
   Redraw;
@@ -2250,7 +2250,7 @@ begin
       x50[$7101] := e4;
       x50[$7102] := e5;
       x50[$7103] := e6;
-      ConsoleMessage('Call another event or special process, the code is %d-%d %d %d %d', [e2,  e3, e4,  e5,  e6]);
+      ConsoleMessage('Call another event or special process, the code is %d-%d %d %d %d', [e2, e3, e4, e5, e6]);
 
       case e2 of
         201: NewTalk(e3, e4, e5, e6 mod 100, (e6 mod 100) div 10, e6 div 100, 0);
@@ -3603,10 +3603,10 @@ begin
       //DrawRectangle(xStar, yStar, 200, show * h + 8, 0, ColColor(255), 50);
       for i := 0 to Show - 1 do
       begin
-        DrawTextFrame(xStar - 16, yStar + h * i, 9, 10);
+        DrawTextFrame(xStar - 16, yStar + h * i, 18, 10);
         if (i = numStar) and (menuid = 0) then
         begin
-          DrawTextFrame(xStar - 16, yStar + h * i, 9);
+          DrawTextFrame(xStar - 16, yStar + h * i, 18);
           DrawShadowText(@StarMenu[i][1], xStar + 3, yStar + 3 + h * i, ColColor($64), ColColor($66));
         end
         else if StateList[i] = 2 then
@@ -3622,19 +3622,19 @@ begin
       end;
 
       //DrawRectangle(xTeam, yTeam, 200, 28, 0, ColColor(255), 50);
-      DrawTextFrame(xTeam - 16, yTeam, 8);
+      DrawTextFrame(xTeam - 16, yTeam, 16);
       DrawShadowText(@TeamMenu[0][1], xTeam + 3, yTeam + 3, 0, $202020);
 
       DrawRectangle(xTeam, yTeam + 38, 200, 4 * 22 + 28, 0, ColColor(255), 50);
       for i := 1 to 5 do
         if (i = CurrentTeam) and (menuid = 1) then
         begin
-          DrawTextFrame(xTeam - 16, yTeam + 37 + h * (i - 1), 8);
+          DrawTextFrame(xTeam - 16, yTeam + 37 + h * (i - 1), 16);
           DrawShadowText(@TeamMenu[i][1], xTeam + 3, yTeam + 40 + h * (i - 1), ColColor($64), ColColor($66));
         end
         else
         begin
-          DrawTextFrame(xTeam - 16, yTeam + 37 + h * (i - 1), 8, 10);
+          DrawTextFrame(xTeam - 16, yTeam + 37 + h * (i - 1), 16, 10);
           DrawShadowText(@TeamMenu[i][1], xTeam + 3, yTeam + 40 + h * (i - 1), 0, $202020);
         end;
 
@@ -4008,12 +4008,12 @@ var
     for i := menutop to menutop + maxshow - 1 do
       if i = menu then
       begin
-        DrawTextFrame(x - 16, y + h * (i - menutop), 8);
+        DrawTextFrame(x - 16, y + h * (i - menutop), 16);
         DrawShadowText(@menuString[i][1], x + 3, y + 3 + h * (i - menutop), ColColor($64), ColColor($66));
       end
       else
       begin
-        DrawTextFrame(x - 16, y + h * (i - menutop), 8, 10);
+        DrawTextFrame(x - 16, y + h * (i - menutop), 16, 10);
         DrawShadowText(@menuString[i][1], x + 3, y + 3 + h * (i - menutop), 0, $202020);
       end;
 
