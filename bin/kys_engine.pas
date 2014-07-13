@@ -186,8 +186,8 @@ procedure QuickSortB(var a: array of TBuildInfo; l, r: integer);
 procedure tic;
 procedure toc;
 
-procedure ConsoleMessage(formatstring: string; content: array of const; cr: boolean = True); overload; inline;
-procedure ConsoleMessage(formatstring: string = ''; cr: boolean = True); overload; inline;
+procedure Message(formatstring: string; content: array of const; cr: boolean = True); overload; inline;
+procedure Message(formatstring: string = ''; cr: boolean = True); overload; inline;
 //function Myth_VideoPlay(window: integer; filename: string): integer; cdecl; external 'myth-simpleplayer.dll';
 
 
@@ -755,7 +755,7 @@ begin
     try
       SDL_FreeSurface(tempsur);
     except
-      ConsoleMessage('Free font surface %s %d failed', [widechar(num), size0]);
+      Message('Free font surface %s %d failed', [widechar(num), size0]);
     end;
 
     if usesur = 0 then
@@ -766,7 +766,7 @@ begin
       //检查是否需要保存
       if size = size0 then
       begin
-        ConsoleMessage(widechar(num), False);
+        Message(widechar(num), False);
         if CharSize[num] > 0 then
           SDL_DestroyTexture(CharTex[num]);
         CharTex[num] := tex;
@@ -779,7 +779,7 @@ begin
       p := pointer(Sur);
       if size = size0 then
       begin
-        ConsoleMessage(widechar(num), False);
+        Message(widechar(num), False);
         if CharSize[num] > 0 then
           SDL_FreeSurface(CharSur[num]);
         CharSur[num] := sur;
@@ -2300,7 +2300,7 @@ begin
 
   if PNG_TILE = 2 then
   begin
-    ConsoleMessage('Searching imz file %s', [path]);
+    Message('Searching imz file %s', [path]);
     p := ReadFileToBuffer(nil, AppPath + path + '.imz', -1, 1);
     if p <> nil then
     begin
@@ -2335,13 +2335,13 @@ begin
       end;
     end
     else
-      ConsoleMessage('Can''t find imz file');
+      Message('Can''t find imz file');
   end;
 
 
   if (PNG_TILE = 1) or (p = nil) then
   begin
-    ConsoleMessage('Searching index of png files %s/index.ka', [path]);
+    Message('Searching index of png files %s/index.ka', [path]);
     path := path + '/';
     p := ReadFileToBuffer(nil, AppPath + path + '/index.ka', -1, 1);
     size := StrBufSize(p);
@@ -2396,7 +2396,7 @@ begin
     end;
   end;
 
-  ConsoleMessage('%d index, %d real tiles', [Result, Count]);
+  Message('%d index, %d real tiles', [Result, Count]);
 
   if SW_SURFACE = 0 then
   begin
@@ -2418,7 +2418,7 @@ begin
 
   if LoadPic = 1 then
   begin
-    ConsoleMessage('Now loading...');
+    Message('Now loading...');
     for i := 0 to Result - 1 do
     begin
       LoadOnePNGTexture(path, p, PNGIndexArray[i], 1);
@@ -2932,7 +2932,7 @@ begin
     if newsur then
       SDL_FreeSurface(sur);
   except
-    ConsoleMessage('Bad PNGINDEX, filenum %d, width %d, height %d', [PNGIndex.FileNum, PNGIndex.w, PNGIndex.h]);
+    Message('Bad PNGINDEX, filenum %d, width %d, height %d', [PNGIndex.FileNum, PNGIndex.w, PNGIndex.h]);
   end;
 end;
 
@@ -3569,7 +3569,7 @@ begin
     FreshScreen.Add(sur);
   end;
   //CleanTextScreenRect(x, y, w, h);
-  ConsoleMessage('Now the amount of fresh screens is %d', [FreshScreen.Count]);
+  Message('Now the amount of fresh screens is %d', [FreshScreen.Count]);
 
 end;
 
@@ -3997,7 +3997,7 @@ end;
 procedure toc;
 begin
   QueryPerformanceCounter(cccc2);
-  ConsoleMessage(' %3.2f us', [(cccc2 - cccc1) / tttt * 1e6]);
+  Message(' %3.2f us', [(cccc2 - cccc1) / tttt * 1e6]);
 end;
 
 {$else}
@@ -4014,7 +4014,7 @@ end;
 
 {$endif}
 
-procedure ConsoleMessage(formatstring: string; content: array of const; cr: boolean = True); inline;
+procedure Message(formatstring: string; content: array of const; cr: boolean = True); inline;
 begin
 {$ifdef console}
   Write(format(formatstring, content));
@@ -4023,7 +4023,7 @@ begin
 {$endif}
 end;
 
-procedure ConsoleMessage(formatstring: string = ''; cr: boolean = True); overload; inline;
+procedure Message(formatstring: string = ''; cr: boolean = True); overload; inline;
 begin
 {$ifdef console}
   Write(format(formatstring, []));

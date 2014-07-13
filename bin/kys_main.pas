@@ -208,19 +208,20 @@ begin
   rendernum := -1;
   for i := 0 to SDL_GetNumRenderDrivers() - 1 do
   begin
+    message();
     SDL_GetRenderDriverInfo(i, @info);
-    ConsoleMessage('Renderer %d is %s.', [i, info.Name]);
-    ConsoleMessage(' Support software fallback: %d', [sign(info.flags and SDL_RENDERER_SOFTWARE)]);
-    ConsoleMessage(' Support hardware acceleration: %d', [sign(info.flags and SDL_RENDERER_ACCELERATED)]);
-    ConsoleMessage(' Support synchronizing with the refresh rate: %d',
+    Message('Renderer %d is %s.', [i, info.Name]);
+    Message(' Support software fallback: %d', [sign(info.flags and SDL_RENDERER_SOFTWARE)]);
+    Message(' Support hardware acceleration: %d', [sign(info.flags and SDL_RENDERER_ACCELERATED)]);
+    Message(' Support synchronizing with the refresh rate: %d',
       [sign(info.flags and SDL_RENDERER_PRESENTVSYNC)]);
-    ConsoleMessage(' Support rendering to textures: %d', [sign(info.flags and SDL_RENDERER_TARGETTEXTURE)]);
+    Message(' Support rendering to textures: %d', [sign(info.flags and SDL_RENDERER_TARGETTEXTURE)]);
     if info.Name = 'opengl' then
     begin
       if (RENDERER = 1) then
       begin
         rendernum := i;
-        ConsoleMessage('Select OPENGL renderer');
+        Message('Select OPENGL renderer');
       end;
     end;
     if info.Name = 'direct3d' then
@@ -228,7 +229,7 @@ begin
       if (RENDERER = 0) then
       begin
         rendernum := i;
-        ConsoleMessage('Select Direct3D renderer');
+        Message('Select Direct3D renderer');
       end;
     end;
     if info.Name = 'software' then
@@ -236,15 +237,15 @@ begin
       if (RENDERER = 2) then
       begin
         rendernum := i;
-        ConsoleMessage('Select software renderer');
+        Message('Select software renderer');
       end;
     end;
   end;
   if rendernum = -1 then
     RENDERER := 0;
 
-  ConsoleMessage('All pictures will be loaded as textures: %d', [SW_SURFACE]);
-  ConsoleMessage('Text will be draw on single layer: %d', [TEXT_LAYER]);
+  Message('All pictures will be loaded as textures: %d', [SW_SURFACE]);
+  Message('Text will be draw on single layer: %d', [TEXT_LAYER]);
 
   if RENDERER = 2 then
   begin
@@ -293,7 +294,7 @@ begin
   SDL_InitSubSystem(SDL_INIT_JOYSTICK);
   if SDL_NumJoysticks() > 0 then
   begin
-    ConsoleMessage('Found Joystick');
+    Message('Found Joystick');
     joy := SDL_JoystickOpen(0);
     if SDL_JoystickNumAxes(joy) > 0 then
     begin
@@ -462,7 +463,7 @@ begin
   {now1:=sdl_getticks;
   for i:=1 to 10000 do
   DrawTPic(0, 0, 0, 0, 0, 0, 0, 0, 0);
-  ConsoleMessage(sdl_getticks-now1);}
+  Message(sdl_getticks-now1);}
 
   //x := TitlePosition.x;
   //y := TitlePosition.y;
@@ -756,7 +757,7 @@ var
 begin
   iniFilename := AppPath + iniFilename;
   Kys_ini := TIniFile.Create(iniFilename);
-  ConsoleMessage('Find ini file: %s', [iniFilename]);
+  Message('Find ini file: %s', [iniFilename]);
   try
     SIMPLE := Kys_ini.ReadInteger('system', 'SIMPLE', 0);
     //FULLSCREEN := Kys_ini.ReadInteger('system', 'FULLSCREEN', 0);
@@ -1067,7 +1068,7 @@ begin
       Inc(p1);
     end;
     DivideName(pWideChar(@Rrole[0].Name[0]), str2, str0);
-    ConsoleMessage('%s, %s, %s', [WideString(pWideChar(@Rrole[0].Name[0])), str2, str0]);
+    Message('%s, %s, %s', [WideString(pWideChar(@Rrole[0].Name[0])), str2, str0]);
     Redraw;
     str2 := '資質';
     repeat
@@ -7567,7 +7568,7 @@ begin
     end;
     setlength(e, len div 2 + 1);
     move(KDef[offset], e[0], len);
-    ConsoleMessage('Event %d', [num]);
+    Message('Event %d', [num]);
     i := 0;
     //普通事件写成子程, 需跳转事件写成函数
     len := length(e);
@@ -7965,7 +7966,7 @@ begin
   begin
     if KDEF_SCRIPT = 1 then
     begin
-      ConsoleMessage('Enter script %d', [num]);
+      Message('Enter script %d', [num]);
       ExecScript(AppPath + EventScriptPath + IntToStr(num) + '.lua', '');
       //writeln('Exit from script ', num);
     end

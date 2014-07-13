@@ -6637,7 +6637,7 @@ begin
       begin
         pFunc(bnum, mnum, level);
         Result := True;
-        ConsoleMessage('Use Special Ability %d, level %d', [mnum, level]);
+        Message('Use Special Ability %d, level %d', [mnum, level]);
       end;
     end;
 end;
@@ -8422,7 +8422,7 @@ begin
               @Rmagic[Rrole[Brole[i].rnum].magic[i1]].Name);
             //menustring[amount] := pwidechar(@namemagic);
             menuString[amount] := namemagic;
-            ConsoleMessage(menuString[amount]);
+            Message(menuString[amount]);
             amount := amount + 1;
           end;
         end;
@@ -8447,7 +8447,7 @@ begin
             namemagic := pWideChar(@Rrole[rnum].Name) + StringOfChar(' ', 10 - 2 *
               length(pWideChar(@Rrole[rnum].Name))) + pWideChar(@Rmagic[Rrole[rnum].magic[0]].Name);
             menuString[amount] := namemagic;
-            ConsoleMessage(menuString[amount]);
+            Message(menuString[amount]);
             amount := amount + 1;
           end;
         end;

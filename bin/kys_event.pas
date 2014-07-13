@@ -2250,7 +2250,7 @@ begin
       x50[$7101] := e4;
       x50[$7102] := e5;
       x50[$7103] := e6;
-      ConsoleMessage('Call another event or special process, the code is %d-%d %d %d %d', [e2, e3, e4, e5, e6]);
+      Message('Call another event or special process, the code is %d-%d %d %d %d', [e2, e3, e4, e5, e6]);
 
       case e2 of
         201: NewTalk(e3, e4, e5, e6 mod 100, (e6 mod 100) div 10, e6 div 100, 0);
