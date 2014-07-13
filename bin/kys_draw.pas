@@ -23,7 +23,7 @@ procedure DrawTPic(imgnum, px, py: integer; region: psdl_rect = nil; shadow: int
   Alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0; angle: real = 0);
 procedure DrawMPic(num, px, py: integer; Framenum: integer = -1; shadow: integer = 0;
   alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0; scalex: real = 1;
-  scaley: real = 1; angle: real = 0); overload;
+  scaley: real = 1; angle: real = 0;region: psdl_rect = nil); overload;
 procedure DrawSPic(num, px, py: integer); overload;
 procedure DrawSPic(num, px, py: integer; region: psdl_rect; shadow, alpha: integer; mixColor: uint32;
   mixAlpha: integer); overload;
@@ -157,7 +157,7 @@ end;
 
 procedure DrawMPic(num, px, py: integer; Framenum: integer = -1; shadow: integer = 0;
   alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0; scalex: real = 1;
-  scaley: real = 1; angle: real = 0); overload;
+  scaley: real = 1; angle: real = 0;region: psdl_rect = nil); overload;
 var
   NeedGRP: integer;
 begin
@@ -175,7 +175,7 @@ begin
         begin
           LoadOnePNGTexture('resource/mmap/', pMPic, MPNGIndex[num]);
         end;
-      DrawPNGTile(render, MPNGIndex[num], Framenum, px, py, nil, shadow, alpha, mixColor, mixAlpha,
+      DrawPNGTile(render, MPNGIndex[num], Framenum, px, py, region, shadow, alpha, mixColor, mixAlpha,
         scalex, scaley, angle, nil);
     end;
     if (PNG_TILE = 0) then
@@ -1453,14 +1453,23 @@ end;
 function DrawTextFrame(x, y: integer; len: integer; alpha: integer = 0; mixColor: uint32 = 0;
   mixAlpha: integer = 0): integer;
 var
-  j: integer;
+  i: integer;
+  rect: TSDL_rect;
 begin
   DrawMPic(2141, x, y, 0, 0, alpha, mixColor, mixAlpha);
-  for j := 0 to len - 1 do
+  for i := 0 to len div 2 -1 do
   begin
-    DrawMPic(2142, x + 19 + j * 20, y, 0, 0, alpha, mixColor, mixAlpha);
+    DrawMPic(2142, x + 19 + i * 20, y, 0, 0, alpha, mixColor, mixAlpha);
   end;
-  DrawMPic(2143, x + 19 + len * 20, y, 0, 0, alpha, mixColor, mixAlpha);
+  if len mod 2 = 1 then
+  begin
+    rect.x:=0;
+    rect.y:=0;
+    rect.h:=MPNGIndex[2142].h;
+    rect.w:=10;
+    DrawMPic(2142, x + 19 + (len - 1) * 10, y, 0, 0, alpha, mixColor, mixAlpha, 1,1,0,@rect);
+  end;
+  DrawMPic(2143, x + 19 + len * 10, y, 0, 0, alpha, mixColor, mixAlpha);
   Result := 19;
 end;
 
@@ -1474,8 +1483,8 @@ var
   p: pchar;
 begin
   //DrawRectangle(x, y, w, 26, 0, ColColor(255), alpha);
-  len := (DrawLength(pWideChar(word)) + 1) div 2;
-  len := max((w + 19) div 20, len);
+  len := DrawLength(pWideChar(word));
+  len := max((w + 9) div 10, len);
   DrawTextFrame(x, y, len, alpha);
   DrawShadowText(word, x + 19, y + 3, color1, color2);
   if Refresh <> 0 then
@@ -1484,4 +1493,4 @@ begin
 
 end;
 
-end.
+end.

@@ -2975,7 +2975,7 @@ var
       DrawTextFrame(x, y + i * h, len1, alpha);
       DrawShadowText(@menuString[i][1], x + 19, y + 3 + h * i, c1, c2);
       if p = 1 then
-        DrawEngShadowText(@menuEngString[i][1], x + 19 + (len + 1) * 20, y + 3 + h * i, c1, c2);
+        DrawEngShadowText(@menuEngString[i][1], x + 19 + len * 10 +20, y + 3 + h * i, c1, c2);
     end;
 
   end;
@@ -2993,12 +2993,12 @@ begin
   //测试长度
   for i := 0 to high(menuString) do
   begin
-    len1 := (DrawLength(menuString[i]) + 1) div 2;
+    len1 := DrawLength(menuString[i]);
     if len1 > len then
       len := len1;
     if p = 1 then
     begin
-      len1 := (DrawLength(menuEngString[i]) + 1) div 2 + 1;
+      len1 := DrawLength(menuEngString[i]) + 2;
       if len1 > lene then
         lene := len1;
     end;
@@ -3145,18 +3145,18 @@ begin
   lene := 0;
   for i := 0 to high(menuString) do
   begin
-    len1 := (DrawLength(menuString[i]) + 1) div 2;
+    len1 := DrawLength(menuString[i]);
     if len1 > len then
       len := len1;
     if p = 1 then
     begin
-      len1 := (DrawLength(menuEngString[i]) + 1) div 2 + 1;
+      len1 := DrawLength(menuEngString[i]) + 2;
       if len1 > lene then
         lene := len1;
     end;
   end;
   len1 := len + lene;
-  w := len1 * 20 + 40;
+  w := len1 * 10 + 40;
   h := 28;
   RecordFreshScreen(x, y, w + 1, maxshow * h + 32);
   ShowCommonScrollMenu;
@@ -3366,7 +3366,7 @@ begin
   len := 0;
   for i := 0 to high(menuString) do
   begin
-    len1 := (DrawLength(menuString[i]) + 1) div 2;
+    len1 := DrawLength(menuString[i]);
     if len1 > len then
       len := len1;
   end;
@@ -3966,11 +3966,11 @@ var
     w := 90; //介绍每列宽度
 
     //DrawMPic(2006, xp - 13, yp - 33);
-    DrawTextFrame(xp - 8, yp, 20, 10);
+    DrawTextFrame(xp - 8, yp, 40, 10);
     //DrawRectangle(xp, yp, d * col + 7, 26, 0, ColColor(255), 30);
     //DrawRectangle(xp, 30 + yp, d * col + 7, d * row + 10, 0, ColColor(255), 30);
     DrawMPic(2006, xp - 3, 27 + yp, 0, 0, 30);
-    DrawTextFrame(xp - 8, 45 + dt + yp, 20, 10, 0, 20);
+    DrawTextFrame(xp - 8, 45 + dt + yp, 40, 10, 0, 20);
     //DrawRectangle(xp, 45 + dt + yp, d * col + 7, 26, 0, ColColor(255), 30);
     //i:=0;
     for i1 := 0 to row - 1 do
@@ -4078,7 +4078,7 @@ var
       if len2 + len3 > 0 then
       begin
         for i := 0 to (len2 + l1) div l + (len3 + l1) div l - 1 do
-          DrawTextFrame(xp - 8, 75 + dt + yp + i * 28, 20, 20, 0, 50);
+          DrawTextFrame(xp - 8, 75 + dt + yp + i * 28, 40, 20, 0, 50);
         //DrawRectangle(xp, 75 + dt + yp, d * col + 7, 20 * ((len2 + l1) div l + (len3 + l1) div l) + 7,
         //0, ColColor(255), 30);
       end;
@@ -4332,7 +4332,7 @@ begin
           end;
         end;
       end;
-      DrawTextFrame(titlex1 - 8, titley1 - 3, 20);
+      DrawTextFrame(titlex1 - 8, titley1 - 3, 40);
       //DrawRectangle(titlex1, titley1 - 1, d * col + 7, 25, 0, ColColor(255), 40);
       str := '·';
       for i := 0 to titlemax do
@@ -6200,7 +6200,7 @@ end;
 
 procedure ShowAbility(rnum, select: integer; showLeave: integer = 0);
 var
-  i, magicnum, mlevel, needexp, x, y, w, itemx, itemy: integer;
+  i, magicnum, mlevel, needexp, x, y, w, itemx, itemy, x1, y1: integer;
   str: WideString;
   strs: array[0..23] of WideString;
   strs1: array[0..2] of WideString;
@@ -6294,6 +6294,9 @@ begin
   for i := 0 to 9 do
   begin
     magicnum := Rrole[rnum].magic[i];
+    x1:=    x + 70 + i mod 2 * 180;
+    y1:=        y + 120 + 28 * (i div 2);
+    DrawTextFrame(x1, y1, 12,20);
     if magicnum > 0 then
     begin
       {case Rmagic[magicnum].HurtType of
@@ -6343,12 +6346,10 @@ begin
           end;
         end;
       end;}
-      str := format('%-10s%2d', [pWideChar(@Rmagic[magicnum].Name), Rrole[rnum].MagLevel[i] div 100 + 1]);
-      //DrawEngShadowText(@str[1], x + 210 + i mod 2 * 120, y + 126 + 21 * (i div 2), ColColor($64), ColColor($66));
-    end
-    else
-      str := format('%12s', ['']);
-    DrawTextWithRect(puint16(str), x + 70 + i mod 2 * 180, y + 120 + 28 * (i div 2), 0, color1, color2, 20, 0);
+      DrawShadowText((@Rmagic[magicnum].Name),x1+19, y1+3,0,$202020);
+      str := format('%2d', [Rrole[rnum].MagLevel[i] div 100 + 1]);
+      DrawEngShadowText(@str[1], x1 + 119, y1 +3, 0, $202020);
+    end;
   end;
 
   //内功
@@ -6358,14 +6359,17 @@ begin
   for i := 0 to 3 do
   begin
     magicnum := Rrole[rnum].neigong[i];
+        x1:=    x + 70 + i mod 2 * 180;
+    y1:=        y + 300 + 28 * (i div 2);
+    DrawTextFrame(x1, y1, 12,20);
     if magicnum > 0 then
     begin
-      str := format('%-10s%2d', [pWideChar(@Rmagic[magicnum].Name), Rrole[rnum].NGLevel[i] div 100 + 1]);
+      str := format('%-10s', [pWideChar(@Rmagic[magicnum].Name)]);
+          DrawShadowText((@Rmagic[magicnum].Name),x1+19, y1+3,0,$202020);
+      str := format('%2d', [Rrole[rnum].NGLevel[i] div 100 + 1]);
+      DrawEngShadowText(@str[1], x1 + 119, y1 +3, 0, $202020);
       //DrawEngShadowText(@str[1], x + 210+i mod 2 * 120, y + 256 + 21 * (i div 2), ColColor($64), ColColor($66));
-    end
-    else
-      str := format('%12s', ['']);
-    DrawTextWithRect(puint16(str), x + 70 + i mod 2 * 180, y + 300 + 28 * (i div 2), 0, color1, color2, 20, 0);
+    end;
   end;
 
   DrawTextWithRect(@strs[3, 1], x + 70, y + 370, 0, 0, $202020, 0, 0);
@@ -6493,7 +6497,7 @@ begin
         end;
       end;
       //DrawMPic(2007, titlex1 - 45, titley1 - 15);
-      DrawTextFrame(titlex1 - 20, titley1 - 3, 16, 0);
+      DrawTextFrame(titlex1 - 20, titley1 - 3, 32, 0);
       //DrawRectangle(screen, titlex1, titley1 - 1, 55 * 8 - 115, 25, 0, ColColor(255), 40);
       for i := 0 to max do
       begin
@@ -8414,4 +8418,4 @@ begin
   Result := False;
 end;
 
-end.
+end.

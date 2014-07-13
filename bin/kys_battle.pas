@@ -536,9 +536,9 @@ var
     for i := 0 to max do
     begin
       if (i = 0) or (i = max) then
-        DrawTextFrame(x + 44, y + h * i, 4)
+        DrawTextFrame(x + 44, y + h * i, 8)
       else
-        DrawTextFrame(x + 14, y + h * i, 7);
+        DrawTextFrame(x + 14, y + h * i, 14);
       if i = menu then
       begin
         DrawShadowText(@menuString[i][1], x + 33, y + 3 + h * i, ColColor($64), ColColor($66));
@@ -1307,14 +1307,14 @@ var
       if (p = menu) and ((MenuStatus and (1 shl i) > 0)) then
       begin
         //DrawMPic(2110 + i, x + 5, y + h * p, SIMPLE);
-        DrawTextFrame(x, y + h * p, 2);
+        DrawTextFrame(x, y + h * p, 4);
         DrawShadowText(@word[i][1], x + 19, y + h * p + 3, ColColor($64), ColColor($66));
         p := p + 1;
       end
       else if (p <> menu) and ((MenuStatus and (1 shl i) > 0)) then
       begin
         //DrawMPic(2110 + i, x, y + h * p, SIMPLE, 0, 20);
-        DrawTextFrame(x + 5, y + h * p, 2, 20);
+        DrawTextFrame(x + 5, y + h * p, 2 20);
         DrawShadowText(@word[i][1], x + 24, y + h * p + 3, 0, $202020);
         p := p + 1;
       end;
@@ -9271,4 +9271,4 @@ begin
   end;
 end;
 
-end.
+end.
