@@ -3481,7 +3481,7 @@ begin
   //TransBlackScreen;
   if str <> '' then
   begin
-    DrawTextWithRect(@str[1], CENTER_X - 275, CENTER_Y - 193, DrawLength(str) * 10 + 5, ColColor($23), ColColor($21));
+    DrawTextWithRect(@str[1], CENTER_X - 275, CENTER_Y - 193, 0, 0, $202020);
   end;
   //tempsur := SDL_DisplayFormat(screen);
   RecordFreshScreen(CENTER_X - 275, CENTER_Y - 160, 551, 310);
@@ -3520,7 +3520,7 @@ begin
         end
         else
         begin
-          DrawSimpleStatusByTeam(i, pos[i].x, pos[i].y, 0, 70);
+          DrawSimpleStatusByTeam(i, pos[i].x, pos[i].y, 0, 30);
         end;
       end;
       UpdateAllScreen;
