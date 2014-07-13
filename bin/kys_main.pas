@@ -4311,7 +4311,7 @@ begin
           begin
             //setfontsize(12, 19);
             str := '使用中';
-            DrawTextWithRect(@str[1], CENTER_X - 384 + 15, CENTER_Y - 240 + 80 * i + 50, 67,
+            DrawTextWithRect(@str[1], CENTER_X - 384 + 15, CENTER_Y - 240 + 80 * i + 50, 0,
               ColColor($64), ColColor($66), 50, 0);
             //DrawMPic(2020, CENTER_X - 384 + 15, CENTER_Y - 240 + 80 * i + 50, 0, 0, 30);
           end;
@@ -6360,7 +6360,7 @@ begin
     magicnum := Rrole[rnum].neigong[i];
     if magicnum > 0 then
     begin
-      str := format('%-10s%2d', [pWideChar(@Rmagic[magicnum].Name), Rrole[rnum].MagLevel[i] div 100 + 1]);
+      str := format('%-10s%2d', [pWideChar(@Rmagic[magicnum].Name), Rrole[rnum].NGLevel[i] div 100 + 1]);
       //DrawEngShadowText(@str[1], x + 210+i mod 2 * 120, y + 256 + 21 * (i div 2), ColColor($64), ColColor($66));
     end
     else
