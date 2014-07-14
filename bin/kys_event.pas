@@ -2863,7 +2863,7 @@ begin
     begin
       for I := 0 to length(Rrole) - 1 do
       begin
-        if Rrole[i].HeadNum = HeadNumR then
+        if (Rrole[i].HeadNum = HeadNumR) or ((i = 0) and (HeadNumR = 0)) then
         begin
           len := 10;
           setlength(Name, len + 1);
@@ -2883,6 +2883,7 @@ begin
   end
   else
     NameStr := disname;
+
   //if Length(NameStr) > 10 then
   //begin
   //NameStr := '';
