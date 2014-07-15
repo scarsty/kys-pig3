@@ -207,7 +207,6 @@ begin
   rendernum := -1;
   for i := 0 to SDL_GetNumRenderDrivers() - 1 do
   begin
-    message();
     SDL_GetRenderDriverInfo(i, @info);
     Message('Renderer %d is %s.', [i, info.Name]);
     Message(' Support software fallback: %d', [sign(info.flags and SDL_RENDERER_SOFTWARE)]);
@@ -5502,7 +5501,7 @@ begin
       //display_img(PChar(AppPath + 'resource/lu.png'), x + 270 - 10, y - 38);
       for i := 0 to 2 do
       begin
-        DrawTextWithRect(@strs[i, 1], x + 180 + 100, y + 2 + h * i, 240, 0, $202020, 30, 0);
+        DrawTextWithRect(@strs[i, 1], x + 180 + 100, y + 2 + h * i, 240, 0, $202020, 40, 0);
       end;
       for i := 0 to 14 do
       begin
@@ -5560,7 +5559,7 @@ begin
       w := 240;
     if bnum <> -2 then
     begin
-      DrawTextWithRect(@strs[i, 1], x + 180 + 100, y + 2 + h * (i - 6), w, 0, $202020, 30, 0);
+      DrawTextWithRect(@strs[i, 1], x + 180 + 100, y + 2 + h * (i - 6), w, 0, $202020, 40, 0);
     end;
   end;
 
@@ -5680,12 +5679,11 @@ begin
           color1 := ColColor($50);
           color2 := ColColor($4e);
         end;
-        DrawTextWithRect(@statestrs[i, 1], xp + 50 + 65 * (k mod 7), yp + 350 + h * (k div 7),
-          0, color1, color2, 30, 0);
+        DrawShadowText(@statestrs[i, 1], xp + 70 + 50 * (k mod 8), yp + 350 + h * (k div 8),color1, color2);
         if IsConsole then
         begin
           str := IntToStr(Brole[bnum].StateRound[i]);
-          DrawEngShadowText(@str[1], xp + 90 + 65 * (k mod 7), yp + 353 + h * (k div 7), color1, color2);
+          DrawEngShadowText(@str[1], xp + 110 + 50 * (k mod 8), yp + 353 + h * (k div 8), color1, color2);
         end;
         k := k + 1;
       end;
@@ -7446,7 +7444,7 @@ begin
   yp := CENTER_Y - 240 + 70;
 
   //DrawRectangle(30 + xp, 100 + yp, 200, 25, 0, ColColor(255), 25);
-  DrawTextFrame(14 + xp, 99 + yp, 2 + length(pWideChar(@Ritem[inum].Name)));
+  DrawTextFrame(14 + xp, 99 + yp, 4 + drawlength(pWideChar(@Ritem[inum].Name)));
   str := '服用';
   if Ritem[inum].ItemType = 2 then
     str := '練成';
@@ -7489,8 +7487,8 @@ begin
     begin
       if i <> 24 then
         Rrole[rnum].Data[rolelist[i]] := Rrole[rnum].Data[rolelist[i]] + addvalue[i];
-      DrawTextFrame(14 + xp, 127 + yp + y + p * 28, 9, 10, 0, 25);
-      DrawShadowText(@word[i, 1], 33 + xp + x, 130 + yp + y + p * 28, 0, ColColor(7));
+      DrawTextFrame(14 + xp, 127 + yp + y + p * 28, 18, 10, 0, 25);
+      DrawShadowText(@word[i, 1], 33 + xp + x, 130 + yp + y + p * 28, 0, $202020);
       if i <> 21 then
         str := format('%5d', [addvalue[i]])
       else
@@ -7504,8 +7502,8 @@ begin
       if Rrole[rnum].Data[rolelist[i]] <> 2 then
       begin
         Rrole[rnum].Data[rolelist[i]] := 2;
-        DrawTextFrame(14 + xp, 127 + yp + y + p * 28, 9, 10, 0, 25);
-        DrawShadowText(@word[i, 1], 33 + xp + x, 130 + yp + y + p * 28, ColColor(5), ColColor(7));
+        DrawTextFrame(14 + xp, 127 + yp + y + p * 28, 18, 10, 0, 25);
+        DrawShadowText(@word[i, 1], 33 + xp + x, 130 + yp + y + p * 28, 0, $202020);
         p := p + 1;
       end;
     end;
