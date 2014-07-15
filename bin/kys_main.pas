@@ -175,7 +175,6 @@ begin
 {$ELSE}
   AppPath := '../game/';
 {$ENDIF}
-
   //test;
   ReadFiles;
 

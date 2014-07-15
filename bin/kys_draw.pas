@@ -19,13 +19,13 @@ uses
 //画单个图片的子程
 procedure DrawPic(sur: PSDL_Surface; Pictype, num, px, py, shadow, alpha: integer; mixColor: uint32;
   mixAlpha: integer);
-procedure DrawTPic(imgnum, px, py: integer; region: psdl_rect = nil; shadow: integer = 0;
+procedure DrawTPic(imgnum, px, py: integer; region: PSDL_Rect = nil; shadow: integer = 0;
   Alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0; angle: real = 0);
 procedure DrawMPic(num, px, py: integer; Framenum: integer = -1; shadow: integer = 0;
   alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0; scalex: real = 1;
-  scaley: real = 1; angle: real = 0;region: psdl_rect = nil); overload;
+  scaley: real = 1; angle: real = 0; region: PSDL_Rect = nil); overload;
 procedure DrawSPic(num, px, py: integer); overload;
-procedure DrawSPic(num, px, py: integer; region: psdl_rect; shadow, alpha: integer; mixColor: uint32;
+procedure DrawSPic(num, px, py: integer; region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32;
   mixAlpha: integer); overload;
 procedure DrawHeadPic(num, px, py: integer; shadow: integer = 0; alpha: integer = 0;
   mixColor: uint32 = 0; mixAlpha: integer = 0; scalex: real = 1; scaley: real = 1); overload;
@@ -136,7 +136,7 @@ end;
 
 //显示title.grp的内容(即开始的选单)
 
-procedure DrawTPic(imgnum, px, py: integer; region: psdl_rect = nil; shadow: integer = 0;
+procedure DrawTPic(imgnum, px, py: integer; region: PSDL_Rect = nil; shadow: integer = 0;
   Alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0; angle: real = 0);
 var
   len, grp, idx: integer;
@@ -157,7 +157,7 @@ end;
 
 procedure DrawMPic(num, px, py: integer; Framenum: integer = -1; shadow: integer = 0;
   alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0; scalex: real = 1;
-  scaley: real = 1; angle: real = 0;region: psdl_rect = nil); overload;
+  scaley: real = 1; angle: real = 0; region: PSDL_Rect = nil); overload;
 var
   NeedGRP: integer;
 begin
@@ -212,7 +212,7 @@ end;
 
 //画考虑遮挡的内场景
 
-procedure DrawSPic(num, px, py: integer; region: psdl_rect; shadow, alpha: integer; mixColor: uint32;
+procedure DrawSPic(num, px, py: integer; region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32;
   mixAlpha: integer); overload;
 begin
   if (num >= 0) and (num < SPicAmount) then
@@ -1454,20 +1454,20 @@ function DrawTextFrame(x, y: integer; len: integer; alpha: integer = 0; mixColor
   mixAlpha: integer = 0): integer;
 var
   i: integer;
-  rect: TSDL_rect;
+  rect: TSDL_Rect;
 begin
   DrawMPic(2141, x, y, 0, 0, alpha, mixColor, mixAlpha);
-  for i := 0 to len div 2 -1 do
+  for i := 0 to len div 2 - 1 do
   begin
     DrawMPic(2142, x + 19 + i * 20, y, 0, 0, alpha, mixColor, mixAlpha);
   end;
   if len mod 2 = 1 then
   begin
-    rect.x:=0;
-    rect.y:=0;
-    rect.h:=MPNGIndex[2142].h;
-    rect.w:=10;
-    DrawMPic(2142, x + 19 + (len - 1) * 10, y, 0, 0, alpha, mixColor, mixAlpha, 1,1,0,@rect);
+    rect.x := 0;
+    rect.y := 0;
+    rect.h := MPNGIndex[2142].h;
+    rect.w := 10;
+    DrawMPic(2142, x + 19 + (len - 1) * 10, y, 0, 0, alpha, mixColor, mixAlpha, 1, 1, 0, @rect);
   end;
   DrawMPic(2143, x + 19 + len * 10, y, 0, 0, alpha, mixColor, mixAlpha);
   Result := 19;
@@ -1493,4 +1493,4 @@ begin
 
 end;
 
-end.
+end.

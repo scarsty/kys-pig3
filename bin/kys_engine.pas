@@ -120,10 +120,10 @@ procedure DestroyFontTextures();
 
 procedure DrawPNGTile(render: PSDL_Renderer; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer); overload;
 procedure DrawPNGTile(render: PSDL_Renderer; PNGIndex: TPNGIndex; FrameNum: integer;
-  px, py: integer; region: psdl_rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer;
+  px, py: integer; region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer;
   scalex, scaley, angle: real; center: PSDL_Point); overload;
 procedure DrawPNGTileS(scr: PSDL_Surface; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer;
-  region: psdl_rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer;
+  region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer;
   scalex, scaley, angle: real); overload;
 
 function CopyIndexSurface(PNGIndexArray: TPNGIndexArray; i: integer): PSDL_Surface;
@@ -2015,7 +2015,7 @@ begin
     SDL_JOYHATMOTION:
     begin
       event.type_ := SDL_KEYDOWN;
-      case event.jhat.value of
+      case event.jhat.Value of
         SDL_HAT_UP: event.key.keysym.sym := SDLK_UP;
         SDL_HAT_DOWN: event.key.keysym.sym := SDLK_DOWN;
         SDL_HAT_LEFT: event.key.keysym.sym := SDLK_LEFT;
@@ -2724,7 +2724,7 @@ end;
 
 
 procedure DrawPNGTile(render: PSDL_Renderer; PNGIndex: TPNGIndex; FrameNum: integer;
-  px, py: integer; region: psdl_rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer;
+  px, py: integer; region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer;
   scalex, scaley, angle: real; center: PSDL_Point); overload;
 var
   rect: TSDL_Rect;
@@ -2833,7 +2833,7 @@ begin
 end;
 
 procedure DrawPNGTileS(scr: PSDL_Surface; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer;
-  region: psdl_rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer;
+  region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer;
   scalex, scaley, angle: real); overload;
 var
   rect: TSDL_Rect;
