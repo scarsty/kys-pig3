@@ -3092,7 +3092,7 @@ begin
         Inc(iy);
         if iy >= Talk_H then
         begin
-          if I <= len then
+          if I - 1 <= len then
           begin
             UpdateAllScreen;
             WaitAnyKey;

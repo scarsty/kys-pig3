@@ -4813,7 +4813,7 @@ begin
           UpdateAllScreen;
           str := '誰要裝備';
           str1 := pWideChar(@Ritem[inum].Name);
-          off := DrawTextFrame(CENTER_X - 275, CENTER_Y - 193, 4 + length(str1));
+          off := DrawTextFrame(CENTER_X - 275, CENTER_Y - 193, 8 + DrawLength(str1));
           //DrawTextWithRect(@str[1], CENTER_X - 275, CENTER_Y - 193, length(str1) * 22 + 80, 0, $202020);
           DrawShadowText(@str[1], CENTER_X - 275 + off, CENTER_Y - 193 + 3,{160, 32,} 0, $202020);
           DrawShadowText(@str1[1], CENTER_X - 275 + 80 + off, CENTER_Y - 193 + 3,{160, 32,} ColColor($64),
@@ -6380,19 +6380,7 @@ begin
   begin
     mlevel := 1;
     magicnum := Ritem[Rrole[rnum].PracticeBook].Magic;
-    if magicnum > 0 then
-      for i := 0 to 9 do
-        if Rrole[rnum].Magic[i] = magicnum then
-        begin
-          mlevel := Rrole[rnum].MagLevel[i] div 100 + 1;
-          break;
-        end;
-    for i := 0 to 3 do
-      if Rrole[rnum].NeiGong[i] = magicnum then
-      begin
-        mlevel := Rrole[rnum].NGLevel[i] div 100 + 1;
-        break;
-      end;
+    mlevel := GetMagicLevel(rnum, magicnum);
     needexp := trunc((1 + (mlevel - 1) * 0.5) * Ritem[Rrole[rnum].PracticeBook].NeedExp *
       (1 + (7 - Rrole[rnum].Aptitude / 15) * 0.5));
 
@@ -8044,10 +8032,6 @@ begin
   words.Add('无酒肆屋');
   words.Add('');
 
-  words.Add('架構');
-  words.Add('bttt');
-  words.Add('');
-
   words.Add('事件');
   words.Add('小小猪');
   words.Add('凶神恶煞');
@@ -8119,12 +8103,17 @@ begin
   words.Add('校對');
   words.Add('天一水');
   words.Add('天下有敌');
+  words.Add('南窗寄傲生');
 
   //words.Add('協調');
   //words.Add('bt');
   //words.Add('xuantianxi');
   //words.Add('风神无名');
   //words.Add('KA');
+  words.Add('');
+
+  words.Add('架構');
+  words.Add('bttt');
   words.Add('');
 
   words.Add('特別感謝');
