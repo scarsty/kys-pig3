@@ -282,6 +282,7 @@ var
   // 2 0
   // 3 1
   //ShipX1用来保存当前场景, 如果为-1表示处于大地图
+  //ShipY1用来保存钱的高位.
   TeamList: array[0..5] of smallint;
   RItemList: array of TItemList;
   Rrole: array[-1..1000] of TRole;

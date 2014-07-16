@@ -4014,7 +4014,7 @@ end;
 
 {$endif}
 
-procedure Message(formatstring: string; content: array of const; cr: boolean = True); inline;
+procedure Message(formatstring: string; content: array of const; cr: boolean = True); overload; inline;
 begin
 {$ifdef console}
   Write(format(formatstring, content));

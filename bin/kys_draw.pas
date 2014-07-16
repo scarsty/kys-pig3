@@ -23,7 +23,7 @@ procedure DrawTPic(imgnum, px, py: integer; region: PSDL_Rect = nil; shadow: int
   Alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0; angle: real = 0);
 procedure DrawMPic(num, px, py: integer; Framenum: integer = -1; shadow: integer = 0;
   alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0; scalex: real = 1;
-  scaley: real = 1; angle: real = 0; region: PSDL_Rect = nil); overload;
+  scaley: real = 1; angle: real = 0); overload;
 procedure DrawSPic(num, px, py: integer); overload;
 procedure DrawSPic(num, px, py: integer; region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32;
   mixAlpha: integer); overload;
@@ -157,7 +157,7 @@ end;
 
 procedure DrawMPic(num, px, py: integer; Framenum: integer = -1; shadow: integer = 0;
   alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0; scalex: real = 1;
-  scaley: real = 1; angle: real = 0; region: PSDL_Rect = nil); overload;
+  scaley: real = 1; angle: real = 0); overload;
 var
   NeedGRP: integer;
 begin
@@ -175,7 +175,7 @@ begin
         begin
           LoadOnePNGTexture('resource/mmap/', pMPic, MPNGIndex[num]);
         end;
-      DrawPNGTile(render, MPNGIndex[num], Framenum, px, py, region, shadow, alpha, mixColor, mixAlpha,
+      DrawPNGTile(render, MPNGIndex[num], Framenum, px, py, nil, shadow, alpha, mixColor, mixAlpha,
         scalex, scaley, angle, nil);
     end;
     if (PNG_TILE = 0) then
@@ -1455,21 +1455,25 @@ function DrawTextFrame(x, y: integer; len: integer; alpha: integer = 0; mixColor
 var
   i: integer;
   rect: TSDL_Rect;
+const
+  l: integer = 19;
+  m: integer = 20;
+  r: integer = 21;
 begin
-  DrawMPic(2141, x, y, 0, 0, alpha, mixColor, mixAlpha);
+  DrawTPic(l, x, y, nil, 0, alpha, mixColor, mixAlpha);
   for i := 0 to len div 2 - 1 do
   begin
-    DrawMPic(2142, x + 19 + i * 20, y, 0, 0, alpha, mixColor, mixAlpha);
+    DrawTPic(m, x + 19 + i * 20, y, nil, 0, alpha, mixColor, mixAlpha);
   end;
   if len mod 2 = 1 then
   begin
     rect.x := 0;
     rect.y := 0;
-    rect.h := MPNGIndex[2142].h;
+    rect.h := TitlePNGIndex[20].h;
     rect.w := 10;
-    DrawMPic(2142, x + 19 + (len - 1) * 10, y, 0, 0, alpha, mixColor, mixAlpha, 1, 1, 0, @rect);
+    DrawTPic(m, x + 19 + (len - 1) * 10, y, @rect, 0, alpha, mixColor, mixAlpha);
   end;
-  DrawMPic(2143, x + 19 + len * 10, y, 0, 0, alpha, mixColor, mixAlpha);
+  DrawTPic(r, x + 19 + len * 10, y, nil, 0, alpha, mixColor, mixAlpha);
   Result := 19;
 end;
 

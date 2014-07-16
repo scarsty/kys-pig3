@@ -3952,7 +3952,7 @@ var
 
   procedure ShowMenuItem(lostfocus: integer);
   var
-    item, i, i1, i2, len, len2, len3, listnum, Alpha, dt, l, l1, w: integer;
+    item, i, i1, i2, len, len2, len3, listnum, Alpha, dt, l, l1, w, amount: integer;
     str: WideString;
     p2: array[0..22] of integer;
     p3: array[0..12] of integer;
@@ -4003,8 +4003,9 @@ var
     curitem := item;
     if (RItemlist[listnum].Amount > 0) and (listnum < MAX_ITEM_AMOUNT) and (listnum >= 0) and (item >= 0) then
     begin
-      str := format('%5d', [RItemlist[listnum].Amount]);
-      DrawShadowText(@str[1], 330 + xp, 3 + yp, ColColor($64), ColColor($66));
+      amount := RItemlist[listnum].Amount;
+      str := format('%10d', [amount]);
+      DrawShadowText(@str[1], 280 + xp, 3 + yp, ColColor($64), ColColor($66));
       len := DrawLength(pchar(@Ritem[item].Name));
       DrawU16ShadowText(@Ritem[item].Name, 215 - len * 5 + xp, 3 + yp, 0, $202020);
       //drawshadowtext(@words[Ritem[item].ItemType, 1], 252, 115 + row * 50, colcolor($21), colcolor($23));
@@ -5679,7 +5680,7 @@ begin
           color1 := ColColor($50);
           color2 := ColColor($4e);
         end;
-        DrawShadowText(@statestrs[i, 1], xp + 70 + 50 * (k mod 8), yp + 350 + h * (k div 8),color1, color2);
+        DrawShadowText(@statestrs[i, 1], xp + 70 + 50 * (k mod 8), yp + 350 + h * (k div 8), color1, color2);
         if IsConsole then
         begin
           str := IntToStr(Brole[bnum].StateRound[i]);
@@ -6268,8 +6269,8 @@ begin
 
   if (showLeave <> 0) then
   begin
-    color1 := ColColor(5);
-    color2 := ColColor(7);
+    color1 := 0;
+    color2 := $202020;
     if (select = 3) and (where = 0) then
     begin
       color1 := ColColor($64);
@@ -6616,7 +6617,7 @@ var
   filename: string;
   str, str2: array[0..7] of WideString;
   menuString: array[0..1] of WideString;
-  value: array [0..8] of integer;
+  Value: array [0..8] of integer;
   Kys_ini: TIniFile;
   tempsur: PSDL_Surface;
   dest: TSDL_Rect;
@@ -6635,15 +6636,15 @@ begin
   str[5] := '戰鬥文字顯示';
   str[6] := '顯示模式';
   str[7] := '文字設置';
-  value[0] := volume;
-  value[1] := volumewav;
-  value[2] := walk_speed;
-  value[3] := walk_speed2;
-  value[4] := BATTLE_SPEED;
-  value[5] := EFFECT_STRING;
-  value[6] := FULLSCREEN;
-  value[7] := SIMPLE;
-  value[maxmenu] := 0;
+  Value[0] := volume;
+  Value[1] := volumewav;
+  Value[2] := walk_speed;
+  Value[3] := walk_speed2;
+  Value[4] := BATTLE_SPEED;
+  Value[5] := EFFECT_STRING;
+  Value[6] := FULLSCREEN;
+  Value[7] := SIMPLE;
+  Value[maxmenu] := 0;
   menuString[0] := '取消';
   menuString[1] := '確定';
   x := CENTER_X - 384 + 440;
@@ -6678,17 +6679,17 @@ begin
         begin
           color1 := ColColor($64);
           color2 := ColColor($66);
-          DrawTextFrame(x + 10 - 29, y + 5 + i * h0 - 3, 13);
+          DrawTextFrame(x + 10 - 29, y + 5 + i * h0 - 3, 26);
         end
         else
         begin
           color1 := 0;
           color2 := $202020;
-          DrawTextFrame(x + 10 - 29, y + 5 + i * h0 - 3, 13, 10);
+          DrawTextFrame(x + 10 - 29, y + 5 + i * h0 - 3, 26, 10);
         end;
         if i < 5 then
         begin
-          str2[i] := format('%5d', [value[i]]);
+          str2[i] := format('%5d', [Value[i]]);
           mixalphal := 0;
           mixalphar := 0;
           mixcolorl := $FFFFFFFF;
@@ -6700,12 +6701,12 @@ begin
             if leftright > 0 then
               mixalphar := 25;
           end;
-          if value[i] <= 0 then
+          if Value[i] <= 0 then
           begin
             mixcolorl := 0;
             mixalphal := 50;
           end;
-          if value[i] >= 100 then
+          if Value[i] >= 100 then
           begin
             mixcolorr := 0;
             mixalphar := 50;
@@ -6717,21 +6718,21 @@ begin
         begin
           if i = 5 then
           begin
-            if value[i] = 0 then
+            if Value[i] = 0 then
               str2[i] := '關閉'
             else
               str2[i] := '打開';
           end;
           if i = 6 then
           begin
-            if value[i] = 0 then
+            if Value[i] = 0 then
               str2[i] := '窗口'
             else
               str2[i] := '全屏';
           end;
           if i = 7 then
           begin
-            if value[i] = 0 then
+            if Value[i] = 0 then
               str2[i] := '繁體'
             else
               str2[i] := '簡體';
@@ -6742,7 +6743,7 @@ begin
       end;
       for i := 0 to 1 do
       begin
-        if (i = value[maxmenu]) and (menu = maxmenu) then
+        if (i = Value[maxmenu]) and (menu = maxmenu) then
         begin
           color1 := ColColor($64);
           color2 := ColColor($66);
@@ -6752,7 +6753,7 @@ begin
           color1 := 0;
           color2 := $202020;
         end;
-        DrawTextFrame(x + 140 + 80 * i - 19, y + 5 + maxmenu * h0 - 3, 2);
+        DrawTextFrame(x + 140 + 80 * i - 19, y + 5 + maxmenu * h0 - 3, 4);
         DrawShadowText(puint16(menuString[i]), x + 140 + 80 * i, y + 5 + maxmenu * h0, color1, color2);
       end;
       UpdateAllScreen;
@@ -6784,12 +6785,12 @@ begin
             if menu < 5 then
             begin
               //writeln(leftright,'before l down');
-              value[menu] := max(value[menu] - 1, 0);
+              Value[menu] := max(Value[menu] - 1, 0);
               leftright := leftright - 1;
             end
             else
             begin
-              value[menu] := 1 - value[menu];
+              Value[menu] := 1 - Value[menu];
             end;
             valuechanged := 1;
           end;
@@ -6797,12 +6798,12 @@ begin
           begin
             if menu < 5 then
             begin
-              value[menu] := min(value[menu] + 1, 100);
+              Value[menu] := min(Value[menu] + 1, 100);
               leftright := leftright + 1;
             end
             else
             begin
-              value[menu] := 1 - value[menu];
+              Value[menu] := 1 - Value[menu];
             end;
             valuechanged := 1;
           end;
@@ -6820,7 +6821,7 @@ begin
           begin
             if menu = maxmenu then
             begin
-              pressed := value[maxmenu];
+              pressed := Value[maxmenu];
               break;
             end;
           end;
@@ -6839,12 +6840,12 @@ begin
           begin
             if MouseInRegion(arrowlx, y + 5, 20, h0 * 5) then
             begin
-              value[menu] := max(value[menu] - 1, 0);
+              Value[menu] := max(Value[menu] - 1, 0);
               leftright := leftright - 1;
             end
             else if MouseInRegion(arrowrx, y + 5, 20, h0 * 5) then
             begin
-              value[menu] := min(value[menu] + 1, 100);
+              Value[menu] := min(Value[menu] + 1, 100);
               leftright := leftright + 1;
             end
             else
@@ -6864,23 +6865,23 @@ begin
               if MouseInRegion(x + 160 + 13, y + 5 + maxmenu * h0, 50, h0) or
                 MouseInRegion(x + 210 + 13, y + 5 + maxmenu * h0, 50, h0) then
               begin
-                pressed := value[maxmenu];
+                pressed := Value[maxmenu];
                 //writeln(pressed);
                 break;
               end;
               if MouseInRegion(x + 160 + 13, y + 5 + 5 * h0, 50, h0) then
               begin
-                value[5] := 1 - value[5];
+                Value[5] := 1 - Value[5];
                 //valuechanged := 1;
               end;
               if MouseInRegion(x + 160 + 13, y + 5 + 6 * h0, 50, h0) then
               begin
-                value[6] := 1 - value[6];
+                Value[6] := 1 - Value[6];
                 //valuechanged := 1;
               end;
               if MouseInRegion(x + 160 + 13, y + 5 + 7 * h0, 50, h0) then
               begin
-                value[7] := 1 - value[7];
+                Value[7] := 1 - Value[7];
                 //valuechanged := 1;
               end;
               leftright := 0;
@@ -6902,12 +6903,12 @@ begin
           begin
             if MouseInRegion(x + 160 + 13, y + 5 + maxmenu * h0, 50, h0) then
             begin
-              value[maxmenu] := 0;
+              Value[maxmenu] := 0;
               valuechanged := 1;
             end;
             if MouseInRegion(x + 210 + 13, y + 5 + maxmenu * h0, 50, h0) then
             begin
-              value[maxmenu] := 1;
+              Value[maxmenu] := 1;
               valuechanged := 1;
             end;
           end;
@@ -6924,18 +6925,18 @@ begin
   CleanKeyValue;
   if pressed = 1 then
   begin
-    volume := value[0];
+    volume := Value[0];
     StopMP3(0);
     PlayMP3(nowmusic, -1, 0);
 
-    volumewav := value[1];
-    walk_speed := value[2];
-    walk_speed2 := value[3];
-    BATTLE_SPEED := value[4];
-    EFFECT_STRING := value[5];
-    if FULLSCREEN <> value[6] then
+    volumewav := Value[1];
+    walk_speed := Value[2];
+    walk_speed2 := Value[3];
+    BATTLE_SPEED := Value[4];
+    EFFECT_STRING := Value[5];
+    if FULLSCREEN <> Value[6] then
     begin
-      FULLSCREEN := value[6];
+      FULLSCREEN := Value[6];
       SDL_SetRenderTarget(render, nil);
       SDL_RenderClear(render);
       if FULLSCREEN = 0 then
@@ -6948,7 +6949,7 @@ begin
       MenuEscType := -1;
     end;
 
-    SIMPLE := value[7];
+    SIMPLE := Value[7];
 
     filename := iniFilename;
     Kys_ini := TIniFile.Create(filename);
@@ -7444,7 +7445,7 @@ begin
   yp := CENTER_Y - 240 + 70;
 
   //DrawRectangle(30 + xp, 100 + yp, 200, 25, 0, ColColor(255), 25);
-  DrawTextFrame(14 + xp, 99 + yp, 4 + drawlength(pWideChar(@Ritem[inum].Name)));
+  DrawTextFrame(14 + xp, 99 + yp, 4 + DrawLength(pWideChar(@Ritem[inum].Name)));
   str := '服用';
   if Ritem[inum].ItemType = 2 then
     str := '練成';

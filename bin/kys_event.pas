@@ -65,7 +65,7 @@ function instruct_43(inum, jump1, jump2: integer): integer;
 procedure instruct_44(enum1, beginpic1, endpic1, enum2, beginpic2, endpic2: integer);
 procedure instruct_44e(enum1, beginpic1, endpic1, enum2, beginpic2, enum3, beginpic3: integer);
 procedure Show3HintString(str1, str2, str3: pWideChar);
-procedure AddRoleProWithHint(rnum, datalist, value: integer; word: WideString = '');
+procedure AddRoleProWithHint(rnum, datalist, num: integer; word: WideString = '');
 procedure instruct_45(rnum, speed: integer);
 procedure instruct_46(rnum, mp: integer);
 procedure instruct_47(rnum, Attack: integer);
@@ -77,7 +77,7 @@ procedure ShowRolePro(rnum, datalist: integer; word: WideString);
 procedure instruct_52;
 procedure instruct_53;
 procedure instruct_54;
-function instruct_55(enum, value, jump1, jump2: integer): integer;
+function instruct_55(enum, num, jump1, jump2: integer): integer;
 procedure instruct_56(Repute: integer);
 procedure instruct_57;
 procedure instruct_58;
@@ -108,7 +108,7 @@ procedure TeammateList;
 function StarToRole(Starnum: integer): integer;
 procedure NewTeammateList;
 function GetStarState(position: integer): integer;
-procedure SetStarState(position, value: integer);
+procedure SetStarState(position, state: integer);
 procedure ShowTeamMate(position, headnum, Count: integer);
 function ReSetName(t, inum, newnamenum: integer): integer;
 procedure JumpScence(snum, y, x: integer);
@@ -119,7 +119,7 @@ function Lamp(c, beginpic, whitecount, chance: integer): boolean;
 function GetItemAmount(inum: integer): integer;
 procedure MissionList(mode: integer);
 function GetMissionState(position: integer): integer;
-procedure SetMissionState(position, value: integer);
+procedure SetMissionState(position, state: integer);
 procedure RoleEnding(starnum, headnum, talknum: integer);
 function WoodMan(Chamber: integer): boolean;
 procedure ShowManWalk(face, Eface1, Eface2: integer);
@@ -1265,12 +1265,12 @@ begin
   Redraw;
 end;
 
-procedure AddRoleProWithHint(rnum, datalist, value: integer; word: WideString = '');
+procedure AddRoleProWithHint(rnum, datalist, num: integer; word: WideString = '');
 begin
-  Rrole[rnum].Data[datalist] := Rrole[rnum].Data[datalist] + value;
+  Rrole[rnum].Data[datalist] := Rrole[rnum].Data[datalist] + num;
   if word <> '' then
   begin
-    Show3HintString((@Rrole[rnum].Name), @word[1], pWideChar(UTF8Decode(format('%d', [value]))));
+    Show3HintString((@Rrole[rnum].Name), @word[1], pWideChar(UTF8Decode(format('%d', [num]))));
   end;
 end;
 
@@ -1366,10 +1366,10 @@ end;
 
 //Judge the event number.
 
-function instruct_55(enum, value, jump1, jump2: integer): integer;
+function instruct_55(enum, num, jump1, jump2: integer): integer;
 begin
   Result := jump2;
-  if DData[CurScence, enum, 2] = value then
+  if DData[CurScence, enum, 2] = num then
     Result := jump1;
 end;
 
@@ -3869,7 +3869,7 @@ begin
   //SDL_EnableKeyRepeat(30, 30);
 end;
 
-procedure SetStarState(position, value: integer);
+procedure SetStarState(position, state: integer);
 var
   i, n: integer;
 begin
@@ -3882,11 +3882,11 @@ begin
   position := position + 30;
   if (position mod 2) = 0 then
   begin
-    Rrole[n].Data[position div 2] := (Rrole[n].Data[position div 2] and $FF00) or value;
+    Rrole[n].Data[position div 2] := (Rrole[n].Data[position div 2] and $FF00) or state;
   end
   else
   begin
-    Rrole[n].Data[position div 2] := (Rrole[n].Data[position div 2] and $FF) or (value shl 8);
+    Rrole[n].Data[position div 2] := (Rrole[n].Data[position div 2] and $FF) or (state shl 8);
   end;
 
 end;
@@ -4900,7 +4900,7 @@ begin
   end;
 end;
 
-procedure SetMissionState(position, value: integer);
+procedure SetMissionState(position, state: integer);
 var
   i, n, p: integer;
 begin
@@ -4909,11 +4909,11 @@ begin
   p := position div 2 + 18;
   if (position mod 2) = 0 then
   begin
-    Rrole[n].Data[p] := (Rrole[n].Data[p] and $FF00) or value;
+    Rrole[n].Data[p] := (Rrole[n].Data[p] and $FF00) or state;
   end
   else
   begin
-    Rrole[n].Data[p] := (Rrole[n].Data[p] and $FF) or (value shl 8);
+    Rrole[n].Data[p] := (Rrole[n].Data[p] and $FF) or (state shl 8);
   end;
 
 end;
@@ -6097,10 +6097,10 @@ var
 
     //畫現有銀兩以及花費估算
     word1 := '現有銀兩：' + UTF8Decode(format('%5d', [money]));
-    DrawTextWithRect(@word1[1], x, y2, 160, ColColor(49), ColColor(47), 50, 0);
+    DrawTextWithRect(@word1[1], x, y2, 160, 0, $202020, 50, 0);
     //str(totalprice, temp);
     word2 := '花費估算：' + UTF8Decode(format('%5d', [totalprice]));
-    DrawTextWithRect(@word2[1], x, y2 + 40, 160, ColColor(49), ColColor(47), 50, 0);
+    DrawTextWithRect(@word2[1], x, y2 + 40, 160, 0, $202020, 50, 0);
     //畫確定選單
     word[0] := '購買';
     word[1] := '反悔';
@@ -6113,7 +6113,7 @@ var
       end
       else
       begin
-        DrawShadowText(@word[i][1], x2 + 9 + i * 60, y2 + 2, ColColor($7), ColColor($5));
+        DrawShadowText(@word[i][1], x2 + 9 + i * 60, y2 + 2, 0, $202020);
       end;
     //SDL_UpdateRect2(screen, x, y, 421, 117);
     UpdateAllScreen;
@@ -6147,7 +6147,7 @@ begin
   DrawShadowText(@Shop_Str[1], CENTER_X - 70, 55, ColColor($FF), ColColor($0));
 
   word := '品名         價格    存貨  持有     交易';
-  DrawTextWithRect(@word[1], CENTER_X - 190, 155, 420, ColColor(49), ColColor(47));
+  DrawTextWithRect(@word[1], CENTER_X - 170, 155, 420, 0, $202020);
   RecordFreshScreen(x, y, 421, CENTER_Y * 2 - y);
 
   refresh := True;
@@ -6534,7 +6534,7 @@ end;
 
 function EnterNumber(MinValue, MaxValue, x, y: integer; Default: integer = 0): smallint;
 var
-  value, i, menu, sure, pvalue, pmenu, highButton: integer;
+  Value, i, menu, sure, pvalue, pmenu, highButton: integer;
   str: array[0..13] of WideString;
   color: uint32;
   strv, strr: WideString;
@@ -6542,7 +6542,7 @@ var
   Button: array[0..13] of TSDL_Rect;
 begin
   CleanKeyValue;
-  value := Default;
+  Value := Default;
   MinValue := max(-32768, MinValue);
   MaxValue := min(32767, MaxValue);
   //13个按钮的位置和大小
@@ -6643,10 +6643,10 @@ begin
       end;
     end;
     //画界面
-    if (value <> pvalue) or (menu <> pmenu) then
+    if (Value <> pvalue) or (menu <> pmenu) then
     begin
       LoadFreshScreen(x, y);
-      strv := format('%6d', [value]);
+      strv := format('%6d', [Value]);
       DrawShadowText(@strv[1], x + 80, y + 10, ColColor($64), ColColor($66));
       if (menu >= 0) and (menu <= highButton) then
       begin
@@ -6658,7 +6658,7 @@ begin
         DrawShadowText(@str[i][1], Button[i].x + 8, Button[i].y + Button[i].h div 2 - 11, ColColor(5), ColColor(7));
       end;
       UpdateAllScreen;
-      pvalue := value;
+      pvalue := Value;
       pmenu := menu;
     end;
     CleanKeyValue;
@@ -6667,11 +6667,11 @@ begin
     begin
       case menu of
         0.. 9:
-          if value * 10 < 1e5 then
-            value := 10 * value + menu;
-        10: value := -value;
-        11: value := value div 10;
-        12: value := 0;
+          if Value * 10 < 1e5 then
+            Value := 10 * Value + menu;
+        10: Value := -Value;
+        11: Value := Value div 10;
+        12: Value := 0;
         else
           if menu = highButton then
             break;
@@ -6682,9 +6682,9 @@ begin
     sure := 0;
     SDL_Delay(25);
   end;
-  Result := RegionParameter(value, MinValue, MaxValue);
+  Result := RegionParameter(Value, MinValue, MaxValue);
   //Redraw;
-  if Result <> value then
+  if Result <> Value then
   begin
     Redraw;
     UpdateAllScreen;
