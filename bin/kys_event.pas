@@ -993,7 +993,7 @@ begin
       begin
         RItemList[i].Amount := RItemList[i].Amount + amount;
         if (RItemList[i].Amount < 0) and (amount >= 0) then
-          RItemList[i].Amount := 32767;
+          RItemList[i].Amount := $7fffffff;
         if (RItemList[i].Amount < 0) and (amount < 0) then
           RItemList[i].Amount := 0;
         break;
@@ -6097,23 +6097,23 @@ var
 
     //畫現有銀兩以及花費估算
     word1 := '現有銀兩：' + UTF8Decode(format('%5d', [money]));
-    DrawTextWithRect(@word1[1], x, y2, 160, 0, $202020, 50, 0);
+    DrawTextWithRect(@word1[1], x, y2, 160, 0, $202020, 0, 0);
     //str(totalprice, temp);
     word2 := '花費估算：' + UTF8Decode(format('%5d', [totalprice]));
-    DrawTextWithRect(@word2[1], x, y2 + 40, 160, 0, $202020, 50, 0);
+    DrawTextWithRect(@word2[1], x, y2 + 40, 160, 0, $202020, 0, 0);
     //畫確定選單
     word[0] := '購買';
     word[1] := '反悔';
     word[2] := '離開';
-    DrawRectangle(x2, y2, w2, 26, 0, ColColor(255), 50);
+    DrawTextFrame(x2, y2, 16);
     for i := 0 to 2 do
       if (i = select) and (menu = 5) then
       begin
-        DrawShadowText(@word[i][1], x2 + 9 + i * 60, y2 + 2, ColColor($66), ColColor($64));
+        DrawShadowText(@word[i][1], x2 + 19 + i * 60, y2 + 3, ColColor($66), ColColor($64));
       end
       else
       begin
-        DrawShadowText(@word[i][1], x2 + 9 + i * 60, y2 + 2, 0, $202020);
+        DrawShadowText(@word[i][1], x2 + 19 + i * 60, y2 + 3, 0, $202020);
       end;
     //SDL_UpdateRect2(screen, x, y, 421, 117);
     UpdateAllScreen;
@@ -6147,7 +6147,7 @@ begin
   DrawShadowText(@Shop_Str[1], CENTER_X - 70, 55, ColColor($FF), ColColor($0));
 
   word := '品名         價格    存貨  持有     交易';
-  DrawTextWithRect(@word[1], CENTER_X - 170, 155, 420, 0, $202020);
+  DrawTextWithRect(@word[1], CENTER_X - 210, 155, 420, 0, $202020);
   RecordFreshScreen(x, y, 421, CENTER_Y * 2 - y);
 
   refresh := True;

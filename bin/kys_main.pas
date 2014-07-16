@@ -1292,6 +1292,7 @@ var
   zfile: unzfile;
   file_info: unz_file_info;
   talkarray: array of byte;
+  temp:array[0..1000]of smallint;
 begin
   Result := True;
 
@@ -1471,6 +1472,23 @@ begin
       if Rrole[i].Equip[1] >= 0 then
         Ritem[Rrole[i].Equip[1]].User := i;
     end;
+
+  //物品修正, 判断标准为罗盘数是否大于1
+  if getitemamount(COMPASS_ID) <> 1 then
+  begin
+    move(Ritemlist[0],temp[0], sizeof(Titemlist) * MAX_ITEM_AMOUNT);
+    for i := 0 to MAX_ITEM_AMOUNT-1 do
+    begin
+      Ritemlist[i].Number:=-1;
+      Ritemlist[i].Amount:=0;
+      if temp[i*2]>=0 then
+      begin
+      Ritemlist[i].Number:=  temp[i*2] ;
+      Ritemlist[i].Amount:=  temp[i*2+1] ;
+      end;
+    end;
+  end;
+
 
   {for i1 := 900 downto 00 do
   begin

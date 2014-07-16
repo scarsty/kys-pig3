@@ -28,8 +28,9 @@ type
     b, x, y: smallint;
   end;
 
-  TItemList = record
-    Number, Amount: smallint;
+  TItemList = packed record
+    Number: smallint;
+    Amount: integer;
   end;
 
   TCloud = record
@@ -256,7 +257,7 @@ var
   MAX_LOVER: integer = 23; //情侣加成数量
   MAX_LOVER_STATE: integer = 10;
   MIN_KNOWLEDGE: integer = 80; //最低有效武学常识
-  MAX_ITEM_AMOUNT: integer = 456; //最大物品数量
+  MAX_ITEM_AMOUNT: integer = 304; //最大物品数量
   MAX_HP: integer = 9999; //最大生命
   MAX_MP: integer = 9999; //最大内功
   MaxProList: array[43..58] of integer = (100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
