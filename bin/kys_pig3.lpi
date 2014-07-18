@@ -23,7 +23,7 @@
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="3"/>
       <MinorVersionNr Value="3"/>
-      <BuildNr Value="3"/>
+      <BuildNr Value="4"/>
       <Language Value="0804"/>
       <StringTable Comments="108 Brothers and Sisters" CompanyName="http://www.txdx.net" LegalCopyright="no" ProductName="kys_pig3.exe" ProductVersion="3.2"/>
     </VersionInfo>
@@ -106,6 +106,7 @@
       <Unit3>
         <Filename Value="kys_battle.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="kys_battle"/>
       </Unit3>
       <Unit4>
         <Filename Value="kys_engine.pas"/>

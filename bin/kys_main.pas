@@ -1292,7 +1292,7 @@ var
   zfile: unzfile;
   file_info: unz_file_info;
   talkarray: array of byte;
-  temp:array[0..1000]of smallint;
+  temp: array[0..1000] of smallint;
 begin
   Result := True;
 
@@ -1473,18 +1473,19 @@ begin
         Ritem[Rrole[i].Equip[1]].User := i;
     end;
 
-  //物品修正, 判断标准为罗盘数是否大于1
-  if getitemamount(COMPASS_ID) <> 1 then
+  //物品修正, 判断标准为最后一个物品的数量
+  if Ritemlist[MAX_ITEM_AMOUNT - 1].Amount <> 0 then
   begin
-    move(Ritemlist[0],temp[0], sizeof(Titemlist) * MAX_ITEM_AMOUNT);
-    for i := 0 to MAX_ITEM_AMOUNT-1 do
+    Message('Item list format is old, now converting...');
+    move(Ritemlist[0], temp[0], sizeof(Titemlist) * MAX_ITEM_AMOUNT);
+    for i := 0 to MAX_ITEM_AMOUNT - 1 do
     begin
-      Ritemlist[i].Number:=-1;
-      Ritemlist[i].Amount:=0;
-      if temp[i*2]>=0 then
+      Ritemlist[i].Number := -1;
+      Ritemlist[i].Amount := 0;
+      if temp[i * 2] >= 0 then
       begin
-      Ritemlist[i].Number:=  temp[i*2] ;
-      Ritemlist[i].Amount:=  temp[i*2+1] ;
+        Ritemlist[i].Number := temp[i * 2];
+        Ritemlist[i].Amount := temp[i * 2 + 1];
       end;
     end;
   end;
@@ -4050,7 +4051,7 @@ var
         begin
           str := '使用';
           DrawShadowText(@str[1], 18 + length(pchar(@Rrole[Ritem[item].User].Name)) * 10 +
-            len * 20 + xp, 48 + dt + yp, ColColor($64), ColColor($66));
+            len * 20 + xp, 47 + dt + yp, ColColor($64), ColColor($66));
           DrawU16ShadowText(@Rrole[Ritem[item].User].Name, 18 + len * 20 + xp, 48 + dt + yp,
             ColColor($64), ColColor($66));
         end;
@@ -4897,7 +4898,7 @@ begin
           str := '誰要修煉';
           str1 := pWideChar(@Ritem[inum].Name);
           //DrawTextWithRect(@str[1], CENTER_X - 275, CENTER_Y - 193, length(str1) * 22 + 80, 0, $202020);
-          off := DrawTextFrame(CENTER_X - 275, CENTER_Y - 193, 4 + length(str1));
+          off := DrawTextFrame(CENTER_X - 275, CENTER_Y - 193, 8 + DrawLength(str1));
           //DrawTextWithRect(@str[1], CENTER_X - 275, CENTER_Y - 193, length(str1) * 22 + 80, 0, $202020);
           DrawShadowText(@str[1], CENTER_X - 275 + off, CENTER_Y - 193 + 3,{160, 32,} 0, $202020);
           DrawShadowText(@str1[1], CENTER_X - 275 + 80 + off, CENTER_Y - 193 + 3,{160, 32,} ColColor($64),
@@ -4956,9 +4957,9 @@ begin
         begin
           str := '誰要服用';
           str1 := pWideChar(@Ritem[inum].Name);
-          DrawTextWithRect(@str[1], CENTER_X - 275, CENTER_Y - 193, length(str1) * 22 + 80,
-            ColColor($21), ColColor($23));
-          DrawShadowText(@str1[1], CENTER_X - 275 + 80, CENTER_Y - 193 + 2,{160, 32,} ColColor($64), ColColor($66));
+          DrawTextWithRect(@str[1], CENTER_X - 275, CENTER_Y - 193, DrawLength(str1) * 10 + 80,
+            0, $202020);
+          DrawShadowText(@str1[1], CENTER_X - 275 + 99, CENTER_Y - 193 + 2,{160, 32,} ColColor($64), ColColor($66));
           UpdateAllScreen;
           menu := SelectOneTeamMember(80, 65, '', 0, 0);
         end
@@ -5072,7 +5073,7 @@ begin
       menuString[0] := ('取消');
       menuString[1] := ('繼續');
       str := ('是否要自宮？');
-      DrawTextWithRect(@str[1], CENTER_X - 63, CENTER_Y, 125, ColColor(7), ColColor(5));
+      DrawTextWithRect(@str[1], CENTER_X - 63, CENTER_Y, 0, 0, $202020);
       if CommonMenu2(CENTER_X - 49, CENTER_Y + 40, 48, menuString) = 1 then
         Rrole[rnum].Sexual := 2
       else
@@ -5380,12 +5381,12 @@ begin
 
     //显示姓名
     Name := pWideChar(@Rrole[rnum].Name);
-    DrawTextWithRect(@Name[1], x + 68 - DrawLength(pchar(@Rrole[rnum].Name)) * 5, y + 180, 0,
+    DrawTextWithRect(@Name[1], x + 58 - DrawLength(pchar(@Rrole[rnum].Name)) * 5, y + 180, 0,
       ColColor($64), ColColor($66), 0, 0);
 
     //显示所需字符
     for i := 0 to 5 do
-      DrawTextWithRect(@strs[i, 1], x, y + 208 + h * i, 140, 0, $202020, 30, 0);
+      DrawTextWithRect(@strs[i, 1], x - 10, y + 208 + h * i, 140, 0, $202020, 30, 0);
 
     //等级
     str := format('%4d', [Rrole[rnum].Level]);
@@ -5698,11 +5699,11 @@ begin
           color1 := ColColor($50);
           color2 := ColColor($4e);
         end;
-        DrawShadowText(@statestrs[i, 1], xp + 70 + 50 * (k mod 8), yp + 350 + h * (k div 8), color1, color2);
+        DrawShadowText(@statestrs[i, 1], xp + 70 + 50 * (k mod 8), yp + 360 + h * (k div 8), color1, color2);
         if IsConsole then
         begin
           str := IntToStr(Brole[bnum].StateRound[i]);
-          DrawEngShadowText(@str[1], xp + 110 + 50 * (k mod 8), yp + 353 + h * (k div 8), color1, color2);
+          DrawEngShadowText(@str[1], xp + 110 + 50 * (k mod 8), yp + 360 + h * (k div 8), color1, color2);
         end;
         k := k + 1;
       end;
