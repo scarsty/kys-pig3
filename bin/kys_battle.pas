@@ -9191,7 +9191,6 @@ var
   i, rnum, hurt: integer;
 begin
   rnum := Brole[bnum].rnum;
-  writeln(rnum, mnum2);
   if HaveMagic(rnum, 301, 0) then
   begin
     ShowMagicName(mnum2);
