@@ -6397,7 +6397,7 @@ begin
   begin
     mlevel := 1;
     magicnum := Ritem[Rrole[rnum].PracticeBook].Magic;
-    mlevel := GetMagicLevel(rnum, magicnum);
+    mlevel := max(1, GetMagicLevel(rnum, magicnum));
     needexp := trunc((1 + (mlevel - 1) * 0.5) * Ritem[Rrole[rnum].PracticeBook].NeedExp *
       (1 + (7 - Rrole[rnum].Aptitude / 15) * 0.5));
 

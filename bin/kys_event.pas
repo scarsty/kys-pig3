@@ -5058,7 +5058,7 @@ begin
   eface2 := 0;
   roleface := 0;
   i := sizeof(woodmansta);
-  sta := FileOpen('binlist/woodman.bin', fmopenread);
+  sta := FileOpen(AppPath + 'binlist/woodman.bin', fmopenread);
   offset := Chamber * i;
   FileSeek(sta, offset, 0);
   FileRead(sta, Woodmansta, i);

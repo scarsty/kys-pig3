@@ -1431,7 +1431,7 @@ begin
   //DrawMPic(2121, 160, 50);
   str := UTF8Decode(format('%d', [BattleRound]));
   l := length(str);
-  DrawTextFrame(x + 100, y, 2 + l * 2);
+  DrawTextFrame(x + 100, y, 4 + l * 2);
   for i := 1 to l do
   begin
     DrawShadowText(puint16(num[StrToInt(str[i])]), x + 139 + i * 20, y + 3, 0, $202020);
