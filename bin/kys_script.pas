@@ -18,6 +18,12 @@ uses
   kys_battle,
   Classes;
 
+type
+  TScriptRegister = record
+name: pchar;
+    f: lua_CFunction;
+  end;
+
 //初始化脚本配置,运行脚本
 procedure InitialScript;
 procedure DestroyScript;
@@ -201,6 +207,9 @@ uses
   kys_draw;
 
 procedure InitialScript;
+var
+  i: integer;
+  list: array [0..300] of TScriptRegister;
 begin
   //LoadLua;
   //LoadLuaLib;
@@ -211,6 +220,15 @@ begin
   luaopen_table(Lua_script);
   luaopen_math(Lua_script);
   luaopen_string(Lua_script);
+
+  {list[0].name:='talk';
+  list[0].f:=Talk;
+
+  for i:=0 to 0 do
+  begin
+    lua_register(Lua_script, list[i].name, list[i].f);
+  end;}
+
 
   lua_register(Lua_script, 'add3eventnum', Add3EventNum);
   lua_register(Lua_script, 'instruct_26', Add3EventNum);
@@ -424,6 +442,7 @@ begin
   lua_register(Lua_script, 'instruct_22', ZeroAllMP);
   lua_register(Lua_script, 'zeroallmp', ZeroAllMP);
   lua_register(Lua_script, 'getx50', GetX50);
+  lua_register(Lua_script, 'setx50', SetX50);
   lua_register(Lua_script, 'putx50', SetX50);
 
   lua_register(Lua_script, 'showtitle', ShowTitleScript);
