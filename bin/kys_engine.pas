@@ -4009,7 +4009,7 @@ end;
 
 procedure toc;
 begin
-  ConsoleMessage(' %d ms', [SDL_GetTicks - tttt]);
+  Message(' %d ms', [SDL_GetTicks - tttt]);
 end;
 
 {$endif}
@@ -4032,4 +4032,4 @@ begin
 {$endif}
 end;
 
-end.
+end.
