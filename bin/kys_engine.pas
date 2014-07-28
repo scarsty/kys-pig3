@@ -176,7 +176,7 @@ procedure swap(var x, y: byte); overload;
 procedure swap(var x, y: uint32); overload;
 
 //几个数学函数
-function round(x: real): integer;
+function round(x: real): integer; inline;
 function RegionParameter(x, x1, x2: integer): integer;
 function LinearInsert(x, x1, x2: real; y1, y2: integer): integer;
 procedure QuickSort(var a: array of integer; l, r: Integer);
@@ -4014,7 +4014,7 @@ end;
 
 {$endif}
 
-procedure Message(formatstring: string; content: array of const; cr: boolean = True); overload; inline;
+procedure Message(formatstring: string; content: array of const; cr: boolean = True); overload;
 begin
 {$ifdef console}
   Write(format(formatstring, content));
@@ -4023,7 +4023,7 @@ begin
 {$endif}
 end;
 
-procedure Message(formatstring: string = ''; cr: boolean = True); overload; inline;
+procedure Message(formatstring: string = ''; cr: boolean = True); overload;
 begin
 {$ifdef console}
   Write(format(formatstring, []));
@@ -4032,4 +4032,4 @@ begin
 {$endif}
 end;
 
-end.
+end.

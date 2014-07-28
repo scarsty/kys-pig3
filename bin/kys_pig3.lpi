@@ -21,6 +21,7 @@
     </i18n>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
+      <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="3"/>
       <MinorVersionNr Value="3"/>
       <BuildNr Value="6"/>
@@ -43,8 +44,10 @@
             <SrcPath Value="lib"/>
           </SearchPaths>
           <Parsing>
+            <Style Value="2"/>
             <SyntaxOptions>
               <SyntaxMode Value="Delphi"/>
+              <StaticKeyword Value="True"/>
             </SyntaxOptions>
           </Parsing>
           <CodeGeneration>
@@ -55,7 +58,6 @@
           </CodeGeneration>
           <Linking>
             <Debugging>
-              <GenerateDebugInfo Value="False"/>
               <UseValgrind Value="True"/>
               <StripSymbols Value="True"/>
               <UseExternalDbgSyms Value="True"/>
@@ -67,6 +69,11 @@
               </Win32>
             </Options>
           </Linking>
+          <Other>
+            <CustomOptions Value="-OoLOOPUNROLL
+-OoREMOVEEMPTYPROCS"/>
+            <CompilerPath Value="$(CompPath)"/>
+          </Other>
         </CompilerOptions>
       </Item2>
     </BuildModes>
@@ -168,6 +175,9 @@
         <UseExternalDbgSyms Value="True"/>
       </Debugging>
     </Linking>
+    <Other>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="5">
