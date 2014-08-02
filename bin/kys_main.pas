@@ -44,10 +44,11 @@ uses
   unzip,
   ziputils;
 
+//function main(paracount: integer; paras: PPChar): integer; stdcall; export;
 
 //程序重要子程
 procedure Run0;
-procedure Run;
+procedure Run; stdcall; export;
 procedure Quit;
 procedure SetMODVersion;
 
@@ -144,6 +145,12 @@ uses
   kys_battle,
   kys_draw;
 
+{function main(paracount: integer; paras: PPChar): integer;
+begin
+  Run;
+  result := 0;
+end;}
+
 procedure Run0;
 var
   th: PSDL_Thread;
@@ -162,7 +169,7 @@ var
   filestat: stat;
 {$ENDIF}
 begin
-{$IFDEF UNIX}
+{$IFDEF Darwin}
   AppPath := ParamStr(0);
   fpLStat(AppPath, filestat);
   if fpS_IsLnk(filestat.st_mode) then
@@ -171,9 +178,14 @@ begin
     if AppPath[1] = '.' then
       AppPath := ExtractFilePath(ParamStr(0)) + AppPath;
   end;
-  AppPath := ExtractFilePath(AppPath) + '../game/';
-{$ELSE}
+  AppPath := ExtractFileDir(ExtractFileDir(AppPath)) + '/game/';
+{$ENDIF}
+{$IFDEF mswindows}
   AppPath := '../game/';
+{$ENDIF}
+{$IFDEF android}
+  AppPath := '/sdcard/Download/game/';
+  CellPhone := 1;
 {$ENDIF}
   //test;
   ReadFiles;
@@ -256,12 +268,19 @@ begin
     WindowFlag := SDL_WINDOW_OPENGL;
   {if (SW_SURFACE <> 0) or (RENDERER = 1) then }
   WindowFlag := WindowFlag or SDL_WINDOW_RESIZABLE;
-
+  if CellPhone = 1 then
+  begin
+    WindowFlag := WindowFlag or SDL_WINDOW_FULLSCREEN_DESKTOP;
+    Text_Layer:=0;
+  end;
   RenderFlag := SDL_RENDERER_ACCELERATED or SDL_RENDERER_TARGETTEXTURE;
   if PRESENT_SYNC <> 0 then
     RenderFlag := RenderFlag or SDL_RENDERER_PRESENTVSYNC;
   window := SDL_CreateWindow(pchar(TitleString), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
     RESOLUTIONX, RESOLUTIONY, WindowFlag);
+  SDL_GetWindowSize(window, @RESOLUTIONX, @RESOLUTIONY);
+  if (RESOLUTIONY>RESOLUTIONX) and (CellPhone = 1) then
+  ScreenRotate := 1;
   //writeln('The size of the canvas is ', CENTER_X * 2, ' * ', CENTER_Y * 2, '.');
   //writeln('The size of the window is ', RESOLUTIONX, ' * ', RESOLUTIONY, '.');
 
@@ -1038,6 +1057,8 @@ begin
     str := '请输入主角之姓名';
   end;
 
+  {$ifndef android}
+
   if FULLSCREEN = 0 then
     Result := inputquery('Enter name', str, Name)
   else
@@ -1049,9 +1070,9 @@ begin
     Redraw;
     UpdateAllScreen;
   end;
+  {$endif}
 
-  if Name = '' then
-    Result := False;
+  Result := Name <> '';
   if Result then
   begin
     Name := CP936ToUTF8(Simplified2Traditional(UTF8ToCP936(Name)));

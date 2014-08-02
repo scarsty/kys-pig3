@@ -3,8 +3,8 @@ unit kys_type;
 interface
 
 uses
-  SDL2_TTF,
-  SDL2,
+SDL2,
+SDL2_TTF,
   bass,
   lua52,
   Classes;
@@ -585,6 +585,9 @@ var
   joy: PSDL_Joystick;
   JOY_RETURN, JOY_ESCAPE, JOY_LEFT, JOY_RIGHT, JOY_UP, JOY_DOWN, JOY_MOUSE_LEFT: uint32;
   JOY_AXIS_DELAY: uint32;
+
+  CellPhone: integer = 0;
+  ScreenRotate: integer = 0;
 
   //指针图片
   //CursorSurface: array[0..6] of PSDL_Cursor;

@@ -23,7 +23,6 @@ uses
   SDL2,
   kys_type,
   kys_main,
-  gl,
   Dialogs,
   bassmidi,
   bass,
@@ -200,7 +199,8 @@ uses
 function EventFilter(p: pointer; e: PSDL_Event): longint; cdecl;
 begin
   Result := 1;
-  if (e.type_ >= $700) and (e.type_ <= $702) then
+  if (e.type_ = SDL_FINGERDOWN) or (e.type_ = SDL_FINGERUP) or  (e.type_ = SDL_FINGERMOTION)
+    or (e.type_ = SDL_CONTROLLERAXISMOTION) then
     Result := 0;
 end;
 
@@ -1531,14 +1531,14 @@ end;
 
 
 procedure SDL_UpdateRect2(scr1: PSDL_Surface; x, y, w, h: integer);
-var
+{var
   realx, realy, realw, realh, ZoomType, i1, i2: integer;
   tempscr: PSDL_Surface;
   now, Next: uint32;
   destsrc, dest: TSDL_Rect;
   TextureID, TextureIDText: GLUint;
   r, g, b, r1, g1, b1: byte;
-  xcoord, ycoord, scale, x1, y1, x2, y2, rx1, ry1, rx2, ry2: real;
+  xcoord, ycoord, scale, x1, y1, x2, y2, rx1, ry1, rx2, ry2: real;}
 begin
   {dest.x := x;
   dest.y := y;
@@ -1700,11 +1700,17 @@ end;
 
 procedure SDL_GetMouseState2(var x, y: integer);
 var
-  tempx, tempy: integer;
-  px, py: integer;
+  tempx, tempy, temp: integer;
+  px, py, w, h: integer;
   s: TStretchInfo;
 begin
   SDL_GetMouseState(@tempx, @tempy);
+  if ScreenRotate = 1 then
+  begin
+    x := round(tempy / RESOLUTIONY * CENTER_X * 2);
+    y := CENTER_Y * 2 - round(tempx / RESOLUTIONX * CENTER_Y * 2);
+    exit;
+  end;
   if KEEP_SCREEN_RATIO = 1 then
   begin
     s := KeepRatioScale(CENTER_X * 2, CENTER_Y * 2, RESOLUTIONX, RESOLUTIONY);
@@ -1976,6 +1982,8 @@ begin
   //if not ((LoadingTiles) or (LoadingScence)) then
   SDL_FlushEvent(SDL_MOUSEWHEEL);
   SDL_FlushEvent(SDL_JOYAXISMOTION);
+  //if CellPhone = 1 then
+  //SDL_FlushEvent(SDL_MOUSEMOTION);
   //writeln(inttohex(event.type_, 4));
   //JoyAxisMouse;
   case event.type_ of
@@ -2024,8 +2032,11 @@ begin
     end;
     SDL_MULTIGESTURE:
     begin
+      if event.mgesture.numFingers>=2 then
+      begin
       event.type_ := SDL_KEYUP;
       event.key.keysym.sym := SDLK_ESCAPE;
+      end;
     end;
     SDL_QUITEV:
       QuitConfirm;
@@ -2975,7 +2986,6 @@ var
   p2: puint16;
   p: ppbyte;
   time1, time2, xcoord, ycoord: real;
-  textureid: gluint;
   f: integer;
   LoadAudio: PSDL_Thread;
   s: TStretchInfo;
@@ -3654,6 +3664,8 @@ var
   src, dest, destfull: TSDL_Rect;
   scr: PSDL_Texture;
   r, g, b: byte;
+  degree: float;
+  mid: TSDL_Point;
 begin
   case ScreenBlendMode of
     0:
@@ -3692,7 +3704,22 @@ begin
       SDL_RenderCopy(render, screenTex, nil, @dest);
     end
     else
-      SDL_RenderCopy(render, screenTex, nil, nil);
+    begin
+      if ScreenRotate = 0 then
+      begin
+        SDL_RenderCopy(render, screenTex, nil, nil);
+      end
+      else
+      begin
+              dest.x := RESOLUTIONX;
+      dest.y := 0;
+                dest.w := RESOLUTIONY;
+        dest.h := RESOLUTIONX;
+        mid.x:=0;
+        mid.y:=0;
+      SDL_RenderCopyEx(render, screenTex, nil, @dest, 90, @mid, 0);
+      end;
+    end;
     SDL_SetTextureColorMod(screenTex, 255, 255, 255);
     if (TEXT_LAYER = 1) and (HaveText = 1) then
     begin
@@ -4016,7 +4043,7 @@ end;
 
 procedure Message(formatstring: string; content: array of const; cr: boolean = True); overload;
 begin
-{$ifdef console}
+{$ifdef console or android}
   Write(format(formatstring, content));
   if cr then
     writeln();
@@ -4025,7 +4052,7 @@ end;
 
 procedure Message(formatstring: string = ''; cr: boolean = True); overload;
 begin
-{$ifdef console}
+{$ifdef console or android}
   Write(format(formatstring, []));
   if cr then
     writeln();

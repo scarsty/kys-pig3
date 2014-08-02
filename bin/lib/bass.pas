@@ -729,7 +729,9 @@ const
 {$ENDIF}
 {$IFDEF DARWIN}
   bassdll = 'libbass.dylib';
-
+{$ENDIF}
+{$IFDEF ANDROID}
+  bassdll = 'libbass.so';
 {$ENDIF}
 
 function BASS_SetConfig(option, Value: DWORD): BOOL; {$IFDEF MSWINDOWS} stdcall{$ELSE} cdecl{$ENDIF}; external bassdll;

@@ -87,8 +87,9 @@ const
 {$ELSE}
 {$IFDEF DARWIN}
   LUA_LIB_NAME = 'liblua.a';
-{$ELSE}
-  LUA_LIB_NAME = 'liblua5.2.so';
+{$ENDIF}
+{$IFDEF ANDROID}
+  LUA_LIB_NAME = 'liblua.so';
 {$ENDIF}
 {$ENDIF}
 

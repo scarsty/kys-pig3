@@ -21,30 +21,25 @@
     </i18n>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
-      <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="3"/>
       <MinorVersionNr Value="3"/>
-      <BuildNr Value="6"/>
+      <BuildNr Value="11"/>
       <Language Value="0804"/>
       <StringTable Comments="108 Brothers and Sisters" CompanyName="http://www.txdx.net" LegalCopyright="no" ProductName="kys_pig3.exe" ProductVersion="3.2"/>
     </VersionInfo>
-    <BuildModes Count="2">
+    <BuildModes Count="3">
       <Item1 Name="Debug" Default="True"/>
       <Item2 Name="Release">
         <CompilerOptions>
           <Version Value="11"/>
           <PathDelim Value="\"/>
-          <Target>
-            <Filename Value="kys_pig3"/>
-          </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <Libraries Value="lib;.;\usr\local\lib;\usr\X11R6\lib"/>
+            <Libraries Value="lib;.;\usr\local\lib;\usr\X11R6\lib;D:\soft\develop_adt\ndk\platforms\android-12\arch-arm\usr\lib\"/>
+            <OtherUnitFiles Value="lib"/>
             <UnitOutputDirectory Value="lib"/>
-            <SrcPath Value="lib"/>
           </SearchPaths>
           <Parsing>
-            <Style Value="2"/>
             <SyntaxOptions>
               <SyntaxMode Value="Delphi"/>
               <StaticKeyword Value="True"/>
@@ -58,6 +53,7 @@
           </CodeGeneration>
           <Linking>
             <Debugging>
+              <GenerateDebugInfo Value="False"/>
               <UseValgrind Value="True"/>
               <StripSymbols Value="True"/>
               <UseExternalDbgSyms Value="True"/>
@@ -67,15 +63,71 @@
               <Win32>
                 <GraphicApplication Value="True"/>
               </Win32>
+              <ExecutableType Value="Library"/>
             </Options>
           </Linking>
           <Other>
-            <CustomOptions Value="-OoLOOPUNROLL
--OoREMOVEEMPTYPROCS"/>
-            <CompilerPath Value="$(CompPath)"/>
+            <ExecuteAfter>
+              <CompileReasons Compile="False" Build="False" Run="False"/>
+            </ExecuteAfter>
           </Other>
         </CompilerOptions>
       </Item2>
+      <Item3 Name="Android">
+        <MacroValues Count="1">
+          <Macro1 Name="LCLWidgetType" Value="customdrawn"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="libkys_pig3.so"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <Libraries Value="lib;.;\usr\local\lib;\usr\X11R6\lib;D:\soft\develop_adt\ndk\platforms\android-12\arch-arm\usr\lib\"/>
+            <OtherUnitFiles Value="lib"/>
+            <UnitOutputDirectory Value="lib"/>
+          </SearchPaths>
+          <Parsing>
+            <SyntaxOptions>
+              <SyntaxMode Value="Delphi"/>
+              <StaticKeyword Value="True"/>
+            </SyntaxOptions>
+          </Parsing>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <TargetCPU Value="arm"/>
+            <TargetOS Value="android"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+              <UseValgrind Value="True"/>
+              <StripSymbols Value="True"/>
+              <UseExternalDbgSyms Value="True"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+              <ExecutableType Value="Library"/>
+            </Options>
+          </Linking>
+          <Other>
+            <ExecuteAfter>
+              <CompileReasons Compile="False" Build="False" Run="False"/>
+            </ExecuteAfter>
+          </Other>
+        </CompilerOptions>
+      </Item3>
+      <SharedMatrixOptions Count="1">
+        <Item1 ID="593265247306" Modes="Android" Type="IDEMacro" MacroName="LCLWidgetType" Value="customdrawn"/>
+      </SharedMatrixOptions>
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
@@ -113,7 +165,6 @@
       <Unit3>
         <Filename Value="kys_battle.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="kys_battle"/>
       </Unit3>
       <Unit4>
         <Filename Value="kys_engine.pas"/>
@@ -149,9 +200,9 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <Libraries Value="lib;.;\usr\local\lib;\usr\X11R6\lib"/>
+      <Libraries Value="lib;.;\usr\local\lib;\usr\X11R6\lib;D:\soft\adt-bundle-windows-x86_64-20140321\android-ndk-r9d\platforms\android-8\arch-arm\usr\lib\"/>
+      <OtherUnitFiles Value="lib"/>
       <UnitOutputDirectory Value="lib"/>
-      <SrcPath Value="lib"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
@@ -174,10 +225,10 @@
         <StripSymbols Value="True"/>
         <UseExternalDbgSyms Value="True"/>
       </Debugging>
+      <Options>
+        <ExecutableType Value="Library"/>
+      </Options>
     </Linking>
-    <Other>
-      <CompilerPath Value="$(CompPath)"/>
-    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="5">
