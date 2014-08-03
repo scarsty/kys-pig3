@@ -20,7 +20,7 @@ uses
 
 type
   TScriptRegister = record
-name: pchar;
+    Name: pchar;
     f: lua_CFunction;
   end;
 

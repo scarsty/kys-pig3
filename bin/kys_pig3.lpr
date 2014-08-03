@@ -1,5 +1,6 @@
 {$IFDEF android}
 library kys_pig3;
+
 {$ELSE}
 program kys_pig3;
 {$ENDIF}
@@ -26,6 +27,8 @@ exports
 {$endif}
 
 begin
+{$IFNDEF android}
   Application.Initialize;
-  //Run;
+  Run;
+{$ENDIF}
 end.

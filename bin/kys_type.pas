@@ -3,8 +3,8 @@ unit kys_type;
 interface
 
 uses
-SDL2,
-SDL2_TTF,
+  SDL2,
+  SDL2_TTF,
   bass,
   lua52,
   Classes;

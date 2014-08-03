@@ -6534,7 +6534,7 @@ end;
 
 function EnterNumber(MinValue, MaxValue, x, y: integer; Default: integer = 0): smallint;
 var
-  Value, i, menu, sure, pvalue, pmenu, highButton: integer;
+  value, i, menu, sure, pvalue, pmenu, highButton: integer;
   str: array[0..13] of WideString;
   color: uint32;
   strv, strr: WideString;
@@ -6542,7 +6542,7 @@ var
   Button: array[0..13] of TSDL_Rect;
 begin
   CleanKeyValue;
-  Value := Default;
+  value := Default;
   MinValue := max(-32768, MinValue);
   MaxValue := min(32767, MaxValue);
   //13个按钮的位置和大小
@@ -6643,10 +6643,10 @@ begin
       end;
     end;
     //画界面
-    if (Value <> pvalue) or (menu <> pmenu) then
+    if (value <> pvalue) or (menu <> pmenu) then
     begin
       LoadFreshScreen(x, y);
-      strv := format('%6d', [Value]);
+      strv := format('%6d', [value]);
       DrawShadowText(@strv[1], x + 80, y + 10, ColColor($64), ColColor($66));
       if (menu >= 0) and (menu <= highButton) then
       begin
@@ -6658,7 +6658,7 @@ begin
         DrawShadowText(@str[i][1], Button[i].x + 8, Button[i].y + Button[i].h div 2 - 11, ColColor(5), ColColor(7));
       end;
       UpdateAllScreen;
-      pvalue := Value;
+      pvalue := value;
       pmenu := menu;
     end;
     CleanKeyValue;
@@ -6667,11 +6667,11 @@ begin
     begin
       case menu of
         0.. 9:
-          if Value * 10 < 1e5 then
-            Value := 10 * Value + menu;
-        10: Value := -Value;
-        11: Value := Value div 10;
-        12: Value := 0;
+          if value * 10 < 1e5 then
+            value := 10 * value + menu;
+        10: value := -value;
+        11: value := value div 10;
+        12: value := 0;
         else
           if menu = highButton then
             break;
@@ -6682,9 +6682,9 @@ begin
     sure := 0;
     SDL_Delay(25);
   end;
-  Result := RegionParameter(Value, MinValue, MaxValue);
+  Result := RegionParameter(value, MinValue, MaxValue);
   //Redraw;
-  if Result <> Value then
+  if Result <> value then
   begin
     Redraw;
     UpdateAllScreen;

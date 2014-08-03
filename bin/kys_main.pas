@@ -271,7 +271,8 @@ begin
   if CellPhone = 1 then
   begin
     WindowFlag := WindowFlag or SDL_WINDOW_FULLSCREEN_DESKTOP;
-    Text_Layer:=0;
+    KEEP_SCREEN_RATIO := 0;
+    TEXT_LAYER := 0;
   end;
   RenderFlag := SDL_RENDERER_ACCELERATED or SDL_RENDERER_TARGETTEXTURE;
   if PRESENT_SYNC <> 0 then
@@ -279,10 +280,13 @@ begin
   window := SDL_CreateWindow(pchar(TitleString), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
     RESOLUTIONX, RESOLUTIONY, WindowFlag);
   SDL_GetWindowSize(window, @RESOLUTIONX, @RESOLUTIONY);
-  if (RESOLUTIONY>RESOLUTIONX) and (CellPhone = 1) then
-  ScreenRotate := 1;
-  //writeln('The size of the canvas is ', CENTER_X * 2, ' * ', CENTER_Y * 2, '.');
-  //writeln('The size of the window is ', RESOLUTIONX, ' * ', RESOLUTIONY, '.');
+
+  if (CellPhone = 1) then
+  begin
+    if (RESOLUTIONY > RESOLUTIONX) then
+      ScreenRotate := 1;
+    //SDL_WarpMouseInWindow(window, RESOLUTIONX, RESOLUTIONY);
+  end;
 
   if SW_OUTPUT <> 0 then
     RealScreen := SDL_GetWindowSurface(window);
@@ -308,6 +312,8 @@ begin
   keyleft := puint8(keystate + sdl_SCANCODE_left);
   keyright := puint8(keystate + sdl_SCANCODE_right);
 
+  if CellPhone = 0 then
+  begin
   SDL_InitSubSystem(SDL_INIT_JOYSTICK);
   if SDL_NumJoysticks() > 0 then
   begin
@@ -319,6 +325,7 @@ begin
       SDL_AddTimer(JOY_AXIS_DELAY, JoyAxisMouse, nil);
     end;
   end;
+   end;
 
   Start;
 
@@ -2041,7 +2048,7 @@ end;
 
 function CanWalk(x, y: integer): boolean;
 begin
-  if MODVersion = 13 then
+  if (MODVersion = 13) and (CellPhone = 0) then
   begin
     Result := False;
     if (x >= 0) and (y >= 0) and (x < 480) and (y < 480) then
@@ -2159,9 +2166,13 @@ var
   Bgrid: array[1..4] of integer; //0空位, 1可过, 2已走过 ,3越界
   Xinc, Yinc: array[1..4] of integer;
   curX, curY, curstep, nextX, nextY: integer;
-  i, i1, i2, i3: integer;
+  i, mode: integer;
   CanWalk: boolean;
 begin
+
+  mode := MODVersion;
+  if Cellphone = 1 then
+    mode := 0;
   Result := False;
   Xinc[1] := 0;
   Xinc[2] := 1;
@@ -2240,7 +2251,7 @@ begin
     end;
     for i := 1 to 4 do
     begin
-      case MODVersion of
+      case mode of
         13://where = 1 必定有 inship = 0, 严格吗?
           if ((inship = 1) and (Bgrid[i] = 5)) or (((Bgrid[i] = 0) or (Bgrid[i] = 4)) and (inship = 0)) then
           begin
@@ -6657,7 +6668,7 @@ var
   filename: string;
   str, str2: array[0..7] of WideString;
   menuString: array[0..1] of WideString;
-  Value: array [0..8] of integer;
+  value: array [0..8] of integer;
   Kys_ini: TIniFile;
   tempsur: PSDL_Surface;
   dest: TSDL_Rect;
@@ -6676,15 +6687,15 @@ begin
   str[5] := '戰鬥文字顯示';
   str[6] := '顯示模式';
   str[7] := '文字設置';
-  Value[0] := volume;
-  Value[1] := volumewav;
-  Value[2] := walk_speed;
-  Value[3] := walk_speed2;
-  Value[4] := BATTLE_SPEED;
-  Value[5] := EFFECT_STRING;
-  Value[6] := FULLSCREEN;
-  Value[7] := SIMPLE;
-  Value[maxmenu] := 0;
+  value[0] := volume;
+  value[1] := volumewav;
+  value[2] := walk_speed;
+  value[3] := walk_speed2;
+  value[4] := BATTLE_SPEED;
+  value[5] := EFFECT_STRING;
+  value[6] := FULLSCREEN;
+  value[7] := SIMPLE;
+  value[maxmenu] := 0;
   menuString[0] := '取消';
   menuString[1] := '確定';
   x := CENTER_X - 384 + 440;
@@ -6729,7 +6740,7 @@ begin
         end;
         if i < 5 then
         begin
-          str2[i] := format('%5d', [Value[i]]);
+          str2[i] := format('%5d', [value[i]]);
           mixalphal := 0;
           mixalphar := 0;
           mixcolorl := $FFFFFFFF;
@@ -6741,12 +6752,12 @@ begin
             if leftright > 0 then
               mixalphar := 25;
           end;
-          if Value[i] <= 0 then
+          if value[i] <= 0 then
           begin
             mixcolorl := 0;
             mixalphal := 50;
           end;
-          if Value[i] >= 100 then
+          if value[i] >= 100 then
           begin
             mixcolorr := 0;
             mixalphar := 50;
@@ -6758,21 +6769,21 @@ begin
         begin
           if i = 5 then
           begin
-            if Value[i] = 0 then
+            if value[i] = 0 then
               str2[i] := '關閉'
             else
               str2[i] := '打開';
           end;
           if i = 6 then
           begin
-            if Value[i] = 0 then
+            if value[i] = 0 then
               str2[i] := '窗口'
             else
               str2[i] := '全屏';
           end;
           if i = 7 then
           begin
-            if Value[i] = 0 then
+            if value[i] = 0 then
               str2[i] := '繁體'
             else
               str2[i] := '簡體';
@@ -6783,7 +6794,7 @@ begin
       end;
       for i := 0 to 1 do
       begin
-        if (i = Value[maxmenu]) and (menu = maxmenu) then
+        if (i = value[maxmenu]) and (menu = maxmenu) then
         begin
           color1 := ColColor($64);
           color2 := ColColor($66);
@@ -6825,12 +6836,12 @@ begin
             if menu < 5 then
             begin
               //writeln(leftright,'before l down');
-              Value[menu] := max(Value[menu] - 1, 0);
+              value[menu] := max(value[menu] - 1, 0);
               leftright := leftright - 1;
             end
             else
             begin
-              Value[menu] := 1 - Value[menu];
+              value[menu] := 1 - value[menu];
             end;
             valuechanged := 1;
           end;
@@ -6838,12 +6849,12 @@ begin
           begin
             if menu < 5 then
             begin
-              Value[menu] := min(Value[menu] + 1, 100);
+              value[menu] := min(value[menu] + 1, 100);
               leftright := leftright + 1;
             end
             else
             begin
-              Value[menu] := 1 - Value[menu];
+              value[menu] := 1 - value[menu];
             end;
             valuechanged := 1;
           end;
@@ -6861,7 +6872,7 @@ begin
           begin
             if menu = maxmenu then
             begin
-              pressed := Value[maxmenu];
+              pressed := value[maxmenu];
               break;
             end;
           end;
@@ -6880,12 +6891,12 @@ begin
           begin
             if MouseInRegion(arrowlx, y + 5, 20, h0 * 5) then
             begin
-              Value[menu] := max(Value[menu] - 1, 0);
+              value[menu] := max(value[menu] - 1, 0);
               leftright := leftright - 1;
             end
             else if MouseInRegion(arrowrx, y + 5, 20, h0 * 5) then
             begin
-              Value[menu] := min(Value[menu] + 1, 100);
+              value[menu] := min(value[menu] + 1, 100);
               leftright := leftright + 1;
             end
             else
@@ -6905,23 +6916,23 @@ begin
               if MouseInRegion(x + 160 + 13, y + 5 + maxmenu * h0, 50, h0) or
                 MouseInRegion(x + 210 + 13, y + 5 + maxmenu * h0, 50, h0) then
               begin
-                pressed := Value[maxmenu];
+                pressed := value[maxmenu];
                 //writeln(pressed);
                 break;
               end;
               if MouseInRegion(x + 160 + 13, y + 5 + 5 * h0, 50, h0) then
               begin
-                Value[5] := 1 - Value[5];
+                value[5] := 1 - value[5];
                 //valuechanged := 1;
               end;
               if MouseInRegion(x + 160 + 13, y + 5 + 6 * h0, 50, h0) then
               begin
-                Value[6] := 1 - Value[6];
+                value[6] := 1 - value[6];
                 //valuechanged := 1;
               end;
               if MouseInRegion(x + 160 + 13, y + 5 + 7 * h0, 50, h0) then
               begin
-                Value[7] := 1 - Value[7];
+                value[7] := 1 - value[7];
                 //valuechanged := 1;
               end;
               leftright := 0;
@@ -6943,12 +6954,12 @@ begin
           begin
             if MouseInRegion(x + 160 + 13, y + 5 + maxmenu * h0, 50, h0) then
             begin
-              Value[maxmenu] := 0;
+              value[maxmenu] := 0;
               valuechanged := 1;
             end;
             if MouseInRegion(x + 210 + 13, y + 5 + maxmenu * h0, 50, h0) then
             begin
-              Value[maxmenu] := 1;
+              value[maxmenu] := 1;
               valuechanged := 1;
             end;
           end;
@@ -6965,18 +6976,18 @@ begin
   CleanKeyValue;
   if pressed = 1 then
   begin
-    volume := Value[0];
+    volume := value[0];
     StopMP3(0);
     PlayMP3(nowmusic, -1, 0);
 
-    volumewav := Value[1];
-    walk_speed := Value[2];
-    walk_speed2 := Value[3];
-    BATTLE_SPEED := Value[4];
-    EFFECT_STRING := Value[5];
-    if FULLSCREEN <> Value[6] then
+    volumewav := value[1];
+    walk_speed := value[2];
+    walk_speed2 := value[3];
+    BATTLE_SPEED := value[4];
+    EFFECT_STRING := value[5];
+    if FULLSCREEN <> value[6] then
     begin
-      FULLSCREEN := Value[6];
+      FULLSCREEN := value[6];
       SDL_SetRenderTarget(render, nil);
       SDL_RenderClear(render);
       if FULLSCREEN = 0 then
@@ -6989,7 +7000,7 @@ begin
       MenuEscType := -1;
     end;
 
-    SIMPLE := Value[7];
+    SIMPLE := value[7];
 
     filename := iniFilename;
     Kys_ini := TIniFile.Create(filename);

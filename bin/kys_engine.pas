@@ -199,8 +199,9 @@ uses
 function EventFilter(p: pointer; e: PSDL_Event): longint; cdecl;
 begin
   Result := 1;
-  if (e.type_ = SDL_FINGERDOWN) or (e.type_ = SDL_FINGERUP) or  (e.type_ = SDL_FINGERMOTION)
-    or (e.type_ = SDL_CONTROLLERAXISMOTION) then
+  if (e.type_ = SDL_FINGERDOWN) or (e.type_ = SDL_FINGERUP) or (e.type_ = SDL_FINGERMOTION) or
+    (e.type_ = SDL_CONTROLLERAXISMOTION) or (e.type_ = SDL_CONTROLLERBUTTONDOWN) or
+    (e.type_ = SDL_CONTROLLERBUTTONUP) then
     Result := 0;
 end;
 
@@ -1982,10 +1983,11 @@ begin
   //if not ((LoadingTiles) or (LoadingScence)) then
   SDL_FlushEvent(SDL_MOUSEWHEEL);
   SDL_FlushEvent(SDL_JOYAXISMOTION);
-  //if CellPhone = 1 then
-  //SDL_FlushEvent(SDL_MOUSEMOTION);
+  if CellPhone = 1 then
+    SDL_FlushEvent(SDL_MOUSEMOTION);
   //writeln(inttohex(event.type_, 4));
   //JoyAxisMouse;
+  Result := event.type_;
   case event.type_ of
     SDL_JOYBUTTONUP:
     begin
@@ -2023,7 +2025,7 @@ begin
     SDL_JOYHATMOTION:
     begin
       event.type_ := SDL_KEYDOWN;
-      case event.jhat.Value of
+      case event.jhat.value of
         SDL_HAT_UP: event.key.keysym.sym := SDLK_UP;
         SDL_HAT_DOWN: event.key.keysym.sym := SDLK_DOWN;
         SDL_HAT_LEFT: event.key.keysym.sym := SDLK_LEFT;
@@ -2032,21 +2034,33 @@ begin
     end;
     SDL_MULTIGESTURE:
     begin
-      if event.mgesture.numFingers>=2 then
+      if (event.mgesture.numFingers >= 2) then
       begin
-      event.type_ := SDL_KEYUP;
-      event.key.keysym.sym := SDLK_ESCAPE;
+        event.type_ := SDL_KEYUP;
+        event.key.keysym.sym := SDLK_ESCAPE;
       end;
     end;
     SDL_QUITEV:
       QuitConfirm;
     SDL_WindowEvent:
+    begin
       if event.window.event = SDL_WINDOWEVENT_RESIZED then
       begin
         ResizeWindow(event.window.data1, event.window.data2);
       end;
+    end;
+    SDL_APP_DIDENTERFOREGROUND:
+      PlayMP3(nowmusic, -1);
+    SDL_APP_DIDENTERBACKGROUND:
+      StopMP3();
     SDL_KEYUP, SDL_MOUSEBUTTONUP:
     begin
+      if (CellPhone = 1) and (event.button.x < 100) and (event.button.y < 100) then
+      begin
+        event.button.button := SDL_BUTTON_RIGHT;
+        event.button.x := 100;
+        event.button.y := 100;
+      end;
       if (where = 2) and ((event.key.keysym.sym = SDLK_ESCAPE) or (event.button.button = SDL_BUTTON_RIGHT)) then
       begin
         for i := 0 to BRoleAmount - 1 do
@@ -3711,13 +3725,13 @@ begin
       end
       else
       begin
-              dest.x := RESOLUTIONX;
-      dest.y := 0;
-                dest.w := RESOLUTIONY;
+        dest.x := RESOLUTIONX;
+        dest.y := 0;
+        dest.w := RESOLUTIONY;
         dest.h := RESOLUTIONX;
-        mid.x:=0;
-        mid.y:=0;
-      SDL_RenderCopyEx(render, screenTex, nil, @dest, 90, @mid, 0);
+        mid.x := 0;
+        mid.y := 0;
+        SDL_RenderCopyEx(render, screenTex, nil, @dest, 90, @mid, 0);
       end;
     end;
     SDL_SetTextureColorMod(screenTex, 255, 255, 255);
@@ -4043,7 +4057,7 @@ end;
 
 procedure Message(formatstring: string; content: array of const; cr: boolean = True); overload;
 begin
-{$ifdef console or android}
+{$ifdef debug}
   Write(format(formatstring, content));
   if cr then
     writeln();
@@ -4052,7 +4066,7 @@ end;
 
 procedure Message(formatstring: string = ''; cr: boolean = True); overload;
 begin
-{$ifdef console or android}
+{$ifdef debug}
   Write(format(formatstring, []));
   if cr then
     writeln();

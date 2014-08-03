@@ -445,7 +445,7 @@ begin
           else
             num := 3715 + MFace * 4 + (MStep + 1) div 2;
         end;
-        if MODVersion = 13 then
+        if (MODVersion = 13) and (CellPhone = 0) then
           if (i1 = Shipy) and (i2 = Shipx) and (InShip = 0) then
           begin
             num := 3715 + ShipFace * 4;
