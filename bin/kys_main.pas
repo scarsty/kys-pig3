@@ -184,9 +184,12 @@ begin
   AppPath := '../game/';
 {$ENDIF}
 {$IFDEF android}
-  AppPath := '/sdcard/Download/game/';
+  AppPath := SDL_AndroidGetExternalStoragePath() + '/game/';
+  //for i := 1 to 4 do
+    //AppPath:= ExtractFileDir(AppPath);
   CellPhone := 1;
 {$ENDIF}
+  //versionstr :=  SDL_AndroidGetExternalStoragePath();
   //test;
   ReadFiles;
 
