@@ -1575,7 +1575,7 @@ begin
   words := TStringList.Create;
   words.LoadFromFile(AppPath + 'txt/end.txt');
   PlayMP3(startmusic, -1);
-  ScrollTextAmi(words, 26, 25, 33, 1, 40, 0, 30, -1, 0);
+  ScrollTextAmi(words, 22, 21, 25, 1, 40, 0, 30, -1, 0);
   words.Free;
   for i := CENTER_Y * 2 - TitlePNGIndex[1].h to 0 do
   begin
