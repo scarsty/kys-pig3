@@ -2056,11 +2056,15 @@ begin
       StopMP3();
     SDL_KEYUP, SDL_MOUSEBUTTONUP:
     begin
-      if (CellPhone = 1) and (event.button.x < 100) and (event.button.y < 100) then
+      if (CellPhone = 1) then
       begin
-        event.button.button := SDL_BUTTON_RIGHT;
-        event.button.x := 100;
-        event.button.y := 100;
+        if ((ScreenRotate = 1) and (event.button.x < 100) and (event.button.y < 100)) or
+          ((ScreenRotate = 0) and (event.button.x < 100) and (event.button.y > CENTER_Y * 2 - 100)) then
+        begin
+          event.button.button := SDL_BUTTON_RIGHT;
+          event.button.x := 100;
+          event.button.y := 100;
+        end;
       end;
       if (where = 2) and ((event.key.keysym.sym = SDLK_ESCAPE) or (event.button.button = SDL_BUTTON_RIGHT)) then
       begin

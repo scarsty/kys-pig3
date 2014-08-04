@@ -227,7 +227,7 @@ begin
     Message(' Support synchronizing with the refresh rate: %d',
       [sign(info.flags and SDL_RENDERER_PRESENTVSYNC)]);
     Message(' Support rendering to textures: %d', [sign(info.flags and SDL_RENDERER_TARGETTEXTURE)]);
-    if (info.Name = 'opengl') or (info.Name = 'openglES2') then
+    if (info.Name = 'opengl') or (info.Name = 'opengles2') then
     begin
       if (RENDERER = 1) then
       begin
@@ -266,12 +266,14 @@ begin
     WindowFlag := SDL_WINDOW_OPENGL;
   {if (SW_SURFACE <> 0) or (RENDERER = 1) then }
   WindowFlag := WindowFlag or SDL_WINDOW_RESIZABLE;
+
   if CellPhone = 1 then
   begin
     WindowFlag := WindowFlag or SDL_WINDOW_FULLSCREEN_DESKTOP;
     KEEP_SCREEN_RATIO := 0;
     TEXT_LAYER := 0;
   end;
+
   RenderFlag := SDL_RENDERER_ACCELERATED or SDL_RENDERER_TARGETTEXTURE;
   if PRESENT_SYNC <> 0 then
     RenderFlag := RenderFlag or SDL_RENDERER_PRESENTVSYNC;
