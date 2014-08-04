@@ -165,6 +165,7 @@ var
   i: integer;
   rendernum: integer;
   info: TSDL_RendererInfo;
+  str: string;
 {$IFDEF UNIX}
   filestat: stat;
 {$ENDIF}
@@ -186,23 +187,20 @@ begin
 {$IFDEF android}
   AppPath := SDL_AndroidGetExternalStoragePath() + '/game/';
   //for i := 1 to 4 do
-    //AppPath:= ExtractFileDir(AppPath);
+  //AppPath:= ExtractFileDir(AppPath);
+  str := SDL_AndroidGetExternalStoragePath() + '/pig3_place_game_here';
+  //if not fileexists(str) then
+  FileClose(filecreate(str));
   CellPhone := 1;
 {$ENDIF}
   //versionstr :=  SDL_AndroidGetExternalStoragePath();
   //test;
   ReadFiles;
 
+  Message('Read ini and data files ended');
+
   SetMODVersion;
 
-  TTF_Init();
-
-  SetFontSize(20, 18, -1);
-  if font = nil then
-  begin
-    MessageBox(0, pchar(Format('Error:%s!', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
-    exit;
-  end;
   //初始化音频系统
   //SDL_Init(SDL_INIT_AUDIO);
   //Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 16384);
@@ -229,7 +227,7 @@ begin
     Message(' Support synchronizing with the refresh rate: %d',
       [sign(info.flags and SDL_RENDERER_PRESENTVSYNC)]);
     Message(' Support rendering to textures: %d', [sign(info.flags and SDL_RENDERER_TARGETTEXTURE)]);
-    if info.Name = 'opengl' then
+    if (info.Name = 'opengl') or (info.Name = 'openglES2') then
     begin
       if (RENDERER = 1) then
       begin
@@ -257,9 +255,6 @@ begin
   if rendernum = -1 then
     RENDERER := 0;
 
-  Message('All pictures will be loaded as textures: %d', [SW_SURFACE]);
-  Message('Text will be draw on single layer: %d', [TEXT_LAYER]);
-
   if RENDERER = 2 then
   begin
     SMOOTH := 0;
@@ -280,6 +275,8 @@ begin
   RenderFlag := SDL_RENDERER_ACCELERATED or SDL_RENDERER_TARGETTEXTURE;
   if PRESENT_SYNC <> 0 then
     RenderFlag := RenderFlag or SDL_RENDERER_PRESENTVSYNC;
+
+  Message('Creating window');
   window := SDL_CreateWindow(pchar(TitleString), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
     RESOLUTIONX, RESOLUTIONY, WindowFlag);
   SDL_GetWindowSize(window, @RESOLUTIONX, @RESOLUTIONY);
@@ -294,7 +291,11 @@ begin
   if SW_OUTPUT <> 0 then
     RealScreen := SDL_GetWindowSurface(window);
 
+  Message('Creating renderer');
   render := SDL_CreateRenderer(window, rendernum, RenderFlag);
+
+  Message('All pictures will be loaded as surface: %d', [SW_SURFACE]);
+  Message('Text will be draw on single layer: %d', [TEXT_LAYER]);
 
   ImageWidth := (36 * 32 + CENTER_X) * 2;
   ImageHeight := (18 * 32 + CENTER_Y) * 2;
@@ -305,10 +306,16 @@ begin
   CreateMainRenderTextures;
   CreateAssistantRenderTextures;
 
+  TTF_Init();
+  SetFontSize(20, 18, -1);
+
+  if (font = nil) or (engfont = nil) then
+    Message('Read fonts failed');
+
   InitialScript;
   InitialMusic;
 
-  mutex := SDL_CreateMutex();
+  //mutex := SDL_CreateMutex();
   keystate := pchar(SDL_GetKeyboardState(nil));
   keyup := puint8(keystate + sdl_SCANCODE_up);
   keydown := puint8(keystate + sdl_SCANCODE_down);
@@ -317,19 +324,20 @@ begin
 
   if CellPhone = 0 then
   begin
-  SDL_InitSubSystem(SDL_INIT_JOYSTICK);
-  if SDL_NumJoysticks() > 0 then
-  begin
-    Message('Found Joystick');
-    joy := SDL_JoystickOpen(0);
-    if SDL_JoystickNumAxes(joy) > 0 then
+    SDL_InitSubSystem(SDL_INIT_JOYSTICK);
+    if SDL_NumJoysticks() > 0 then
     begin
-      SDL_InitSubSystem(SDL_INIT_TIMER);
-      SDL_AddTimer(JOY_AXIS_DELAY, JoyAxisMouse, nil);
+      Message('Found Joystick');
+      joy := SDL_JoystickOpen(0);
+      if SDL_JoystickNumAxes(joy) > 0 then
+      begin
+        SDL_InitSubSystem(SDL_INIT_TIMER);
+        SDL_AddTimer(JOY_AXIS_DELAY, JoyAxisMouse, nil);
+      end;
     end;
   end;
-   end;
 
+  Message('Initial ended, start game');
   Start;
 
   Quit;
@@ -390,19 +398,6 @@ begin
       EventScriptPath := 'script/oldevent/oldevent_';
       EventScriptExt := '.lua';
     end;
-    81:
-    begin
-      versionstr := '龍之覺醒';
-      BEGIN_EVENT := 691;
-      BEGIN_SCENCE := 70;
-      MONEY_ID := 174;
-      COMPASS_ID := 182;
-      BEGIN_LEAVE_EVENT := 100;
-      BEGIN_NAME_IN_TALK := 2977;
-      MAX_LOVER := 0;
-      EventScriptPath := 'script/oldevent/oldevent_';
-      EventScriptExt := '.lua';
-    end;
   end;
 
   Kys_ini := TIniFile.Create(iniFilename);
@@ -448,9 +443,11 @@ begin
       ScreenBlendMode := 1;
   end;}
 
+  Message('Play movie and start music');
   if (OPEN_MOVIE = 1) then
     PlayMovie('open.wmv', 1);
   PlayMP3(StartMusic, -1);
+  Message('Begin.....');
   Redraw;
   UpdateAllScreen;
   //i := 0;
@@ -759,7 +756,7 @@ begin
   end;
   PlayMP3(60, 0);
   //DrawRectangleWithoutFrame(0, 0, CENTER_X * 2, CENTER_Y * 2, 0, 100);
-  ScrollTextAmi(words, 20, 18, 50, 0, RESOLUTIONX div 2 - 270, 1, 200, 18, 0);
+  ScrollTextAmi(words, 20, 18, 25, 0, RESOLUTIONX div 2 - 270, 1, 200, 18, 0);
   PlayMP3(StartMusic, -1);
   words.Free;
   CleanTextScreen;
@@ -807,7 +804,7 @@ begin
     KDEF_SCRIPT := Kys_ini.ReadInteger('system', 'KDEF_SCRIPT', 0);
     NIGHT_EFFECT := Kys_ini.ReadInteger('system', 'NIGHT_EFFECT', 0);
     EXIT_GAME := Kys_ini.ReadInteger('system', 'EXIT_GAME', 0);
-    PNG_TILE := Kys_ini.ReadInteger('system', 'PNG_TILE', 0);
+    PNG_TILE := Kys_ini.ReadInteger('system', 'PNG_TILE', 2);
     TRY_FIND_GRP := Kys_ini.ReadInteger('system', 'TRY_FIND_GRP', 0);
     PNG_LOAD_ALL := Kys_ini.ReadInteger('system', 'PNG_LOAD_ALL', 0);
     KEEP_SCREEN_RATIO := Kys_ini.ReadInteger('system', 'KEEP_SCREEN_RATIO', 1);
@@ -1036,9 +1033,6 @@ begin
   end;
 
 end;
-
-
-
 
 //初始化主角属性
 
@@ -8150,12 +8144,14 @@ begin
   words.Add('柳无色');
   words.Add('路人甲');
   words.Add('南窗寄傲生');
+  words.Add('杨裕彪');
   words.Add('');
 
   words.Add('校對');
   words.Add('天一水');
   words.Add('天下有敌');
   words.Add('南窗寄傲生');
+  words.Add('');
 
   //words.Add('協調');
   //words.Add('bt');
@@ -8165,6 +8161,11 @@ begin
   words.Add('');
 
   words.Add('架構');
+  words.Add('bttt');
+  words.Add('');
+
+  words.Add('Android移植');
+  words.Add('KA');
   words.Add('bttt');
   words.Add('');
 
@@ -8189,17 +8190,17 @@ begin
   words.Add('ice');
   words.Add('黑天鹅');
   words.Add('');
-  words.Add('');
 
-  words.Add('遊戲使用的開發庫');
-  words.Add('Free Pascal Compiler / Lazarus');
+  words.Add('開發工具以及開發庫');
+  words.Add('Free Pascal Compiler');
+  words.Add('Lazarus / CodeTyphon');
+  words.Add('ADT / NDK');
   words.Add('SDL & TTF & Image & gfx & Mixer');
   words.Add('OpenGL');
   words.Add('bass & bassmidi');
   words.Add('FFmpeg / Libav');
   words.Add('zlib / minizip');
   words.Add('lua');
-  words.Add('');
   words.Add('');
 
   words.Add('致謝以下開源項目');
@@ -8216,13 +8217,6 @@ begin
   words.Add('論壇無數版友');
   words.Add('以及網絡上的諸多素材');
   words.Add('');
-  words.Add('');
-  words.Add('');
-  words.Add('');
-  words.Add('');
-  words.Add('');
-  words.Add('');
-  words.Add('');
   words.Add('铁血丹心论坛');
   words.Add('做中国人自己的武侠单机游戏');
   words.Add('http://www.txdx.net');
@@ -8231,7 +8225,7 @@ begin
     PlayMP3(startmusic, -1);
     Redraw;
   end;
-  ScrollTextAmi(words, 32, 30, 33, 0, 0, 0, 15, -1, 0);
+  ScrollTextAmi(words, 22, 20, 23, 0, 0, 0, 15, -1, 0);
   words.Free;
 end;
 
@@ -8269,6 +8263,7 @@ begin
   if SW_SURFACE = 0 then
   begin
     tex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, texw, texh);
+    Message('Big texture, the width and height are %d and %d', [texw, texh]);
     SDL_SetRenderTarget(render, tex);
     SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_NONE);
     SDL_SetRenderDrawColor(render, 0, 0, 0, 255);
@@ -8389,7 +8384,7 @@ begin
       end;
     end;
     UpdateAllScreen;
-    i := i - 2;
+    i := i - 1;
     if i <= -texh + texh0 then
     begin
       WaitAnyKey;

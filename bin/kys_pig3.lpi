@@ -149,7 +149,7 @@
         <PackageName Value="LazUtils"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="9">
+    <Units Count="10">
       <Unit0>
         <Filename Value="kys_pig3.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -176,6 +176,7 @@
       <Unit5>
         <Filename Value="kys_script.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="kys_script"/>
       </Unit5>
       <Unit6>
         <Filename Value="kys_draw.pas"/>
@@ -191,6 +192,11 @@
         <Filename Value="macro.inc"/>
         <IsPartOfProject Value="True"/>
       </Unit8>
+      <Unit9>
+        <Filename Value="lib\mythoutput.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="mythoutput"/>
+      </Unit9>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

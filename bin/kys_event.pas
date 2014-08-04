@@ -2968,7 +2968,7 @@ begin
       if (event.key.keysym.sym = SDLK_ESCAPE) or (event.button.button = SDL_BUTTON_RIGHT) then
       begin
         skipSync := True;
-        SkipTalk := 1;
+        SkipTalk := 1 - SkipTalk;
         break;
       end;
       if (event.key.keysym.sym = SDLK_RETURN) or (event.button.button = SDL_BUTTON_LEFT) or

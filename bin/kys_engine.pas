@@ -28,7 +28,8 @@ uses
   bass,
   Math,
   unzip,
-  ziputils;
+  ziputils,
+  mythoutput;
 
 function EventFilter(p: pointer; e: PSDL_Event): longint; cdecl;
 
@@ -2137,8 +2138,8 @@ begin
     MPicAmount := LoadPNGTiles('resource/mmap', MPNGIndex, MPNGTex, MPNGTile, PNG_LOAD_ALL);
     SPicAmount := LoadPNGTiles('resource/smap', SPNGIndex, SPNGTex, SPNGTile, PNG_LOAD_ALL);
     HPicAmount := LoadPNGTiles('resource/head', HPNGIndex, HPNGTex, HPNGTile, PNG_LOAD_ALL);
-    CPicAmount := LoadPNGTiles('resource/cloud', CPNGIndex, CPNGTex, CPNGTile, 1);
     IPicAmount := LoadPNGTiles('resource/item', IPNGIndex, IPNGTex, IPNGTile, PNG_LOAD_ALL);
+    CPicAmount := LoadPNGTiles('resource/cloud', CPNGIndex, CPNGTex, CPNGTile, 1);
 
     pMPic := nil;
     pSPic := nil;
@@ -2443,11 +2444,12 @@ begin
 
   if LoadPic = 1 then
   begin
-    Message('Now loading...');
+    Message('Now loading...', False);
     for i := 0 to Result - 1 do
     begin
       LoadOnePNGTexture(path, p, PNGIndexArray[i], 1);
     end;
+    Message('end');
   end;
   FreeFileBuffer(p);
 
@@ -4056,20 +4058,42 @@ end;
 {$endif}
 
 procedure Message(formatstring: string; content: array of const; cr: boolean = True); overload;
+var
+  i: integer;
+  str: string;
 begin
-{$ifdef debug}
+{$ifdef console}
   Write(format(formatstring, content));
   if cr then
     writeln();
 {$endif}
+{$ifdef android}
+  str := format(formatstring, content);
+  mythoutput.mythoutput(pchar(str));
+  {i := fileopen(SDL_AndroidGetExternalStoragePath()+'/pig3_place_game_here',fmopenwrite);
+  fileseek(i, 0, 2);
+  filewrite(i, str[1], length(str));
+  fileclose(i);}
+{$endif}
 end;
 
 procedure Message(formatstring: string = ''; cr: boolean = True); overload;
+var
+  i: integer;
+  str: string;
 begin
-{$ifdef debug}
+{$ifdef console}
   Write(format(formatstring, []));
   if cr then
     writeln();
+{$endif}
+{$ifdef android}
+  str := format(formatstring, []);
+  mythoutput.mythoutput(pchar(str));
+  {i := fileopen(SDL_AndroidGetExternalStoragePath()+'/pig3_place_game_here',fmopenwrite);
+  fileseek(i, 0, 2);
+  filewrite(i, str[1], length(str));
+  fileclose(i);}
 {$endif}
 end;
 
