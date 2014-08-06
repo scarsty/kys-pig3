@@ -1692,23 +1692,26 @@ begin
 
   if event.button.button = SDL_BUTTON_LEFT then
   begin
-    Result := SDLK_RETURN;
-    SDL_GetMouseState2(x, y);
-    if (x < 100) then
-      Result := SDLK_LEFT;
-    if (x > CENTER_X * 2 - 100) then
-      Result := SDLK_RIGHT;
-    if (y < 100) then
-      Result := SDLK_UP;
-    if (y > CENTER_Y * 2 - 100) then
-      Result := SDLK_DOWN;
-    if (x > CENTER_X * 2 - 100) and ((y > CENTER_Y * 2 - 100)) then
-      Result := SDLK_SPACE;
+    Result := SDLK_SPACE;
+    if CellPhone = 1 then
+    begin
+      SDL_GetMouseState2(x, y);
+      if (y < 100) then
+        Result := SDLK_UP;
+      if (x < 100) then
+        Result := SDLK_LEFT;
+      if (x > CENTER_X * 2 - 100) then
+        Result := SDLK_RIGHT;
+      if (y > CENTER_Y * 2 - 100) then
+        Result := SDLK_DOWN;
+      if (x < 100) and ((y > CENTER_Y * 2 - 100)) then
+        Result := SDLK_RETURN;
+      if (x > CENTER_X * 2 - 100) and ((y > CENTER_Y * 2 - 100)) then
+        Result := SDLK_RETURN;
+    end;
   end;
   if event.button.button = SDL_BUTTON_RIGHT then
     Result := SDLK_ESCAPE;
-
-
 
   event.key.keysym.sym := 0;
   event.button.button := 0;
