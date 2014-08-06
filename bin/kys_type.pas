@@ -481,8 +481,6 @@ var
 
   MissionStr: array of WideString;
 
-  RMask, GMask, BMask, AMask: uint32; //色值蒙版, 注意透明蒙版在创建表面时需设为0而不应用此值
-
   LoadingTiles: boolean = True; //表示正在载入贴图
   ReadingTiles: boolean = False;
   LoadingBattleTiles: boolean = False;
@@ -592,9 +590,18 @@ var
   //指针图片
   //CursorSurface: array[0..6] of PSDL_Cursor;
 
+  //其他
+  //显示数字: 0-红色负, 1-紫色负, 2-绿色正, 3-黄色正, 4-蓝色负
   tttt, cccc1, cccc2: int64;
-//其他
-//显示数字: 0-红色负, 1-紫色负, 2-绿色正, 3-黄色正, 4-蓝色负
+
+
+const
+  //色值蒙版, 注意透明蒙版在创建表面时需设为0而不应用此值
+  RMask: uint32 = $FF0000;
+  GMask: uint32 = $FF00;
+  BMask: uint32 = $FF;
+  AMask: uint32 = $FF000000;
+
 
 implementation
 

@@ -301,10 +301,7 @@ begin
 
   ImageWidth := (36 * 32 + CENTER_X) * 2;
   ImageHeight := (18 * 32 + CENTER_Y) * 2;
-  RMask := $FF0000;
-  GMask := $FF00;
-  BMask := $FF;
-  AMask := $FF000000;
+
   CreateMainRenderTextures;
   CreateAssistantRenderTextures;
 
@@ -5983,7 +5980,7 @@ begin
     else
     begin
       CurTargetSurface := screen;
-      SDL_UpperBlit(SimpleState, nil, screen, @dest2);
+      SDL_BlitSurface(SimpleState, nil, screen, @dest2);
     end;
     {if Text_Layer = 1 then
     begin
@@ -8344,7 +8341,7 @@ begin
         SDL_RenderCopy(render, tex, @dest, nil);
       end
       else
-        SDL_UpperBlit(sur, @dest, target, nil);
+        SDL_BlitSurface(sur, @dest, target, nil);
     end
     else
     begin
@@ -8381,7 +8378,7 @@ begin
         begin
           if TEXT_LAYER = 0 then
             SDL_SetSurfaceAlphaMod(sur, 255);
-          SDL_UpperBlit(sur, @tempdest, target, @dest);
+          SDL_BlitSurface(sur, @tempdest, target, @dest);
         end;
       end;
     end;

@@ -8406,7 +8406,7 @@ procedure TSpecialAbility.SA_31(bnum, mnum, level: integer);
 var
   i, i1, amount, res, rnum, eachamount: integer;
   mnumarray: array of smallint;
-  namemagic: string;
+  namemagic: WideString;
   menuString: array of WideString;
   ss: shortint;
   AI: boolean;
@@ -8440,7 +8440,7 @@ begin
           begin
             mnumarray[amount] := Rrole[Brole[i].rnum].magic[i1];
             namemagic := pWideChar(@Rrole[Brole[i].rnum].Name) + StringOfChar(' ', 10 -
-              length(pchar(@Rrole[Brole[i].rnum].Name))) + pWideChar(
+              DrawLength(pchar(@Rrole[Brole[i].rnum].Name))) + pWideChar(
               @Rmagic[Rrole[Brole[i].rnum].magic[i1]].Name);
             //menustring[amount] := pwidechar(@namemagic);
             menuString[amount] := namemagic;
@@ -8466,8 +8466,8 @@ begin
           if Rmagic[Rrole[rnum].magic[0]].HurtType = 2 then
           begin
             mnumarray[amount] := Rrole[rnum].magic[0];
-            namemagic := pWideChar(@Rrole[rnum].Name) + StringOfChar(' ', 10 - 2 *
-              length(pWideChar(@Rrole[rnum].Name))) + pWideChar(@Rmagic[Rrole[rnum].magic[0]].Name);
+            namemagic := pWideChar(@Rrole[rnum].Name) + StringOfChar(' ', 10 -
+              DrawLength(pWideChar(@Rrole[rnum].Name))) + pWideChar(@Rmagic[Rrole[rnum].magic[0]].Name);
             menuString[amount] := namemagic;
             Message(menuString[amount]);
             amount := amount + 1;

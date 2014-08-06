@@ -2938,6 +2938,7 @@ begin
   begin
     //显示背景
     //display_img('resource/talk.png', Frame_X, Frame_Y);
+    LoadFreshScreen;
     DrawRectangleWithoutFrame(0, Frame_Y, CENTER_X * 2, 170, 0, 50);
     //显示头像
     if (showhead = 0) and (HeadNum >= 0) then
@@ -3051,7 +3052,9 @@ begin
             break;
           end;
         if Changed = True then
+        begin
           continue;
+        end;
       end;
       //检查是否换回默认颜色
       setlength(TempStr, Length(ChangeColorCode) * 2);
@@ -3101,7 +3104,7 @@ begin
             skipSync := False;
           end;
           UpdateAllScreen;
-          LoadFreshScreen;
+          //LoadFreshScreen;
           break;
         end;
       end;

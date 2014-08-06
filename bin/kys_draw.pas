@@ -645,64 +645,49 @@ begin
 end;
 
 procedure DrawBlackScreen;
-var
+  //这里画点应该用CPU
+  procedure CreateBlackScreenSur;
+  var
   i1, i2, x, y: integer;
   distance: real;
   alpha: byte;
-  //这里画点应该用CPU
+  begin
+    BlackScreenSur := SDL_CreateRGBSurface(0, CENTER_X * 2, CENTER_Y * 2, 32, RMASK, GMASK, BMASK, AMASK);
+    SDL_FillRect(BlackScreenSur, nil, MapRGBA(0, 0, 0, 255));
+    for i1 := 0 to CENTER_X * 2 - 1 do
+      for i2 := 0 to CENTER_Y * 2 - 1 do
+      begin
+        x := i1 - CENTER_X;
+        y := i2 - CENTER_Y + 20;
+        distance := (x * x + y * y) / 15625;
+        if distance > 1 then
+          alpha := 255
+        else
+        begin
+          alpha := round(distance * 255);
+          PutPixel(BlackScreenSur, i1, i2, MapRGBA(0, 0, 0, alpha));
+        end;
+      end;
+  end;
+
 begin
   if SW_SURFACE = 0 then
   begin
     if BlackScreenTex = nil then
     begin
-      BlackScreenTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET,
-        CENTER_X * 2, CENTER_Y * 2);
-      SDL_SetRenderTarget(render, BlackScreenTex);
-      SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_NONE);
-      SDL_SetRenderDrawColor(render, 0, 0, 0, 255);
-      SDL_RenderFillRect(render, 0);
-      for i1 := 0 to CENTER_X * 2 - 1 do
-        for i2 := 0 to CENTER_Y * 2 - 1 do
-        begin
-          x := i1 - CENTER_X;
-          y := i2 - CENTER_Y + 20;
-          distance := (x * x + y * y) / 15625;
-          if distance > 1 then
-            alpha := 255
-          else
-          begin
-            alpha := round(distance * 255);
-            SDL_SetRenderDrawColor(render, 0, 0, 0, alpha);
-            SDL_RenderDrawPoint(render, i1, i2);
-          end;
-          SDL_SetTextureBlendMode(BlackScreenTex, SDL_BLENDMODE_BLEND);
-        end;
-      SDL_SetRenderTarget(render, screenTex);
+      CreateBlackScreenSur;
+      BlackScreenTex := SDL_CreateTextureFromSurface(render, BlackScreenSur);
+      SDL_SetTextureBlendMode(BlackScreenTex, SDL_BLENDMODE_BLEND);
+      SDL_FreeSurface(BlackScreenSur);
     end;
+    SDL_SetRenderTarget(render, ScreenTex);
     SDL_RenderCopy(render, BlackScreenTex, nil, nil);
   end
   else
   begin
     if BlackScreenSur = nil then
-    begin
-      BlackScreenSur := SDL_CreateRGBSurface(0, CENTER_X * 2, CENTER_Y * 2, 32, RMASK, GMASK, BMASK, AMASK);
-      SDL_FillRect(BlackScreenSur, nil, MapRGBA(0, 0, 0, 255));
-      for i1 := 0 to CENTER_X * 2 - 1 do
-        for i2 := 0 to CENTER_Y * 2 - 1 do
-        begin
-          x := i1 - CENTER_X;
-          y := i2 - CENTER_Y + 20;
-          distance := (x * x + y * y) / 15625;
-          if distance > 1 then
-            alpha := 255
-          else
-          begin
-            alpha := round(distance * 255);
-            PutPixel(BlackScreenSur, i1, i2, MapRGBA(0, 0, 0, alpha));
-          end;
-        end;
-    end;
-    SDL_UpperBlit(BlackScreenSur, nil, screen, nil);
+      CreateBlackScreenSur;
+    SDL_BlitSurface(BlackScreenSur, nil, screen, nil);
   end;
 
 end;
@@ -1444,8 +1429,8 @@ begin
   else
   begin
     case where of
-      1: SDL_UpperBlit(ImgSGround, @dest, screen, nil);
-      2: SDL_UpperBlit(ImgBGround, @dest, screen, nil);
+      1: SDL_BlitSurface(ImgSGround, @dest, screen, nil);
+      2: SDL_BlitSurface(ImgBGround, @dest, screen, nil);
     end;
   end;
 end;

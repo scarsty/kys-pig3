@@ -753,7 +753,7 @@ begin
     h := src.h;
     sur := SDL_CreateRGBSurface(0, dst.w, dst.h, 32, RMASK, GMASK, BMASK, AMASK);
     SDL_SetSurfaceBlendMode(tempsur, SDL_BLENDMODE_NONE);
-    SDL_UpperBlit(tempsur, @src, sur, @dst);
+    SDL_BlitSurface(tempsur, @src, sur, @dst);
     try
       SDL_FreeSurface(tempsur);
     except
@@ -905,10 +905,10 @@ begin
         if TEXT_LAYER = 1 then
         begin
           SDL_SetSurfaceBlendMode(sur, SDL_BLENDMODE_MOD);
-          SDL_UpperBlit(sur, nil, CurTargetSurface, @dest);
+          SDL_BlitSurface(sur, nil, CurTargetSurface, @dest);
         end;
         SDL_SetSurfaceBlendMode(sur, SDL_BLENDMODE_BLEND);
-        SDL_UpperBlit(sur, nil, CurTargetSurface, @dest);
+        SDL_BlitSurface(sur, nil, CurTargetSurface, @dest);
       end;
     end;
     if i >= $1000 then
@@ -1206,7 +1206,7 @@ begin
           end;}
       end;
 
-    SDL_UpperBlit(tempscr, nil, CurTargetSurface, @dest);
+    SDL_BlitSurface(tempscr, nil, CurTargetSurface, @dest);
     SDL_FreeSurface(tempscr);
 
     if (TEXT_LAYER = 1) and (CurTargetSurface = screen) then
@@ -1238,7 +1238,7 @@ begin
       dest.y := y;
       dest.w := 0;
       dest.h := 0;
-      SDL_UpperBlit(tempscr, nil, TextScreen, @dest);
+      SDL_BlitSurface(tempscr, nil, TextScreen, @dest);
       SDL_FreeSurface(tempscr);
     end;
   end;
@@ -1297,7 +1297,7 @@ begin
       dest.x := x;
       dest.y := y;
       if alpha >= 0 then
-        SDL_UpperBlit(tempscr, nil, CurTargetSurface, @dest);
+        SDL_BlitSurface(tempscr, nil, CurTargetSurface, @dest);
       if alpha = -1 then
       begin
         //SDL_FillRect(tempscr, nil, MapRGBA(r, g, b, 255 - alpha * 255 div 100));
@@ -1309,7 +1309,7 @@ begin
           end;
         //if CurTargetSurface<> screen then
         //SDL_SetSurfaceBlendMode(tempscr, SDL_BLENDMODE_NONE);
-        SDL_UpperBlit(tempscr, nil, CurTargetSurface, @dest);
+        SDL_BlitSurface(tempscr, nil, CurTargetSurface, @dest);
       end;
       SDL_FreeSurface(tempscr);
     end;
@@ -1468,7 +1468,7 @@ begin
     if SW_SURFACE = 0 then
       SDL_RenderCopy(render, PSDL_Texture(pic), @dest1, @dest)
     else
-      SDL_UpperBlit(PSDL_Surface(pic), @dest1, screen, @dest);
+      SDL_BlitSurface(PSDL_Surface(pic), @dest1, screen, @dest);
 end;
 
 procedure PlayBeginningMovie;
@@ -1979,7 +1979,7 @@ end;
 
 function CheckBasicEvent: uint32;
 var
-  i: integer;
+  i, x, y: integer;
 begin
   //if not ((LoadingTiles) or (LoadingScence)) then
   SDL_FlushEvent(SDL_MOUSEWHEEL);
@@ -2054,16 +2054,22 @@ begin
       PlayMP3(nowmusic, -1);
     SDL_APP_DIDENTERBACKGROUND:
       StopMP3();
+    {SDL_MOUSEBUTTONDOWN:
+    if (CellPhone = 1) and (event.button.button = SDL_BUTTON_LEFT) then
+    begin
+      SDL_GetMouseState(@x, @y);
+    end;}
     SDL_KEYUP, SDL_MOUSEBUTTONUP:
     begin
-      if (CellPhone = 1) then
+      if (CellPhone = 1) and (event.button.button = SDL_BUTTON_LEFT) then
       begin
-        if ((ScreenRotate = 1) and (event.button.x < 100) and (event.button.y < 100)) or
-          ((ScreenRotate = 0) and (event.button.x < 100) and (event.button.y > CENTER_Y * 2 - 100)) then
+        SDL_GetMouseState(@x, @y);
+        if ((ScreenRotate = 1) and (x < 100) and (y < 100)) or ((ScreenRotate = 0) and
+          (x < 100) and (y > RESOLUTIONY - 100)) then
         begin
           event.button.button := SDL_BUTTON_RIGHT;
           event.button.x := 100;
-          event.button.y := 100;
+          event.button.y := RESOLUTIONY div 2;
         end;
       end;
       if (where = 2) and ((event.key.keysym.sym = SDLK_ESCAPE) or (event.button.button = SDL_BUTTON_RIGHT)) then
@@ -2944,7 +2950,7 @@ begin
       SDL_SetSurfaceColorMod(sur2, r, g, b);
       SDL_SetSurfaceAlphaMod(sur2, 255 * mixAlpha div 100);
       SDL_SetSurfaceBlendMode(sur2, SDL_BLENDMODE_ADD);
-      SDL_UpperBlit(sur2, nil, sur, nil);
+      SDL_BlitSurface(sur2, nil, sur, nil);
       SDL_FreeSurface(sur2);
     end;
     if alpha > 0 then
@@ -2957,9 +2963,9 @@ begin
     end;
 
     if (rect.w = PNGIndex.w) and (rect.h = PNGIndex.h) then
-      SDL_UpperBlit(sur, region, scr, @rect)
+      SDL_BlitSurface(sur, region, scr, @rect)
     else
-      SDL_UpperBlitScaled(sur, region, scr, @rect);
+      SDL_BlitScaled(sur, region, scr, @rect);
     if newsur then
       SDL_FreeSurface(sur);
   except
@@ -3516,7 +3522,7 @@ begin
     begin
       SDL_SetSurfaceColorMod(SimpleStatus[i], 255, 255, 255);
     end;
-    SDL_UpperBlit(SimpleStatus[i], nil, screen, @dest);
+    SDL_BlitSurface(SimpleStatus[i], nil, screen, @dest);
 
     if (TEXT_LAYER = 1) then
     begin
@@ -3526,7 +3532,7 @@ begin
       end
       else
         SDL_SetSurfaceColorMod(SimpleText[i], 255, 255, 255);
-      SDL_UpperBlit(SimpleText[i], @rectcut, TextScreen, @dest2);
+      SDL_BlitSurface(SimpleText[i], @rectcut, TextScreen, @dest2);
     end;
   end;
 end;
@@ -3595,7 +3601,7 @@ begin
   else
   begin
     sur := SDL_CreateRGBSurface(0, w, h, 32, RMASK, GMASK, BMASK, AMASK);
-    SDL_UpperBlit(screen, @dest, sur, nil);
+    SDL_BlitSurface(screen, @dest, sur, nil);
     FreshScreen.Add(sur);
   end;
   //CleanTextScreenRect(x, y, w, h);
@@ -3639,7 +3645,7 @@ begin
         dest.y := y;
         dest.w := sur.w;
         dest.h := sur.h;
-        SDL_UpperBlit(sur, nil, screen, @dest);
+        SDL_BlitSurface(sur, nil, screen, @dest);
         CleanTextScreenRect(x, y, dest.w, dest.h);
       end;
     end;
@@ -3781,7 +3787,7 @@ begin
       end
       else
       begin
-        SDL_UpperBlit(screen, nil, RealScreen, @dest);
+        SDL_BlitSurface(screen, nil, RealScreen, @dest);
         SDL_UpdateWindowSurface(window);
       end;
     end;

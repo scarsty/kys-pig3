@@ -167,6 +167,7 @@
       <Unit3>
         <Filename Value="kys_battle.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="kys_battle"/>
       </Unit3>
       <Unit4>
         <Filename Value="kys_engine.pas"/>
@@ -176,7 +177,6 @@
       <Unit5>
         <Filename Value="kys_script.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="kys_script"/>
       </Unit5>
       <Unit6>
         <Filename Value="kys_draw.pas"/>
@@ -195,7 +195,6 @@
       <Unit9>
         <Filename Value="lib\mythoutput.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="mythoutput"/>
       </Unit9>
     </Units>
   </ProjectOptions>
