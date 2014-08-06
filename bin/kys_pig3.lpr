@@ -5,6 +5,12 @@ library kys_pig3;
 program kys_pig3;
 {$ENDIF}
 
+{$ifdef darwin}
+{$linklib bass}
+{$linklib bassmidi}
+{$linklib lua}
+{$endif}
+
 //{$APPTYPE CONSOLE}
 
 uses
@@ -31,4 +37,4 @@ begin
   Application.Initialize;
   Run;
 {$ENDIF}
-end.
+end.
