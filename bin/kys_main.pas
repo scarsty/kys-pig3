@@ -527,7 +527,6 @@ begin
     DrawTPic(13, CENTER_X - 320, CENTER_Y - 90, nil, 0, 25 + alpha div 2, 0, 0);
     UpdateAllScreen;
     CheckBasicEvent;
-
     case event.type_ of //键盘事件
       SDL_KEYUP:
       begin
@@ -1671,6 +1670,8 @@ end;
 //等待任意按键
 
 function WaitAnyKey: integer;
+var
+  x, y: integer;
 begin
   //event.type_ := SDL_NOEVENT;
   //SDL_EventState(SDL_KEYDOWN, SDL_ENABLE);
@@ -1685,13 +1686,30 @@ begin
     if (event.type_ = SDL_KEYUP) or (event.type_ = SDL_MOUSEBUTTONUP) then
       if (event.key.keysym.sym <> 0) or (event.button.button <> 0) then
         break;
-    SDL_Delay(40);
+    SDL_Delay(20);
   end;
   Result := event.key.keysym.sym;
+
   if event.button.button = SDL_BUTTON_LEFT then
+  begin
     Result := SDLK_RETURN;
+    SDL_GetMouseState2(x, y);
+    if (x < 100) then
+      Result := SDLK_LEFT;
+    if (x > CENTER_X * 2 - 100) then
+      Result := SDLK_RIGHT;
+    if (y < 100) then
+      Result := SDLK_UP;
+    if (y > CENTER_Y * 2 - 100) then
+      Result := SDLK_DOWN;
+    if (x > CENTER_X * 2 - 100) and ((y > CENTER_Y * 2 - 100)) then
+      Result := SDLK_SPACE;
+  end;
   if event.button.button = SDL_BUTTON_RIGHT then
     Result := SDLK_ESCAPE;
+
+
+
   event.key.keysym.sym := 0;
   event.button.button := 0;
 end;
@@ -2632,6 +2650,19 @@ begin
               FillChar(Fway[0, 0], sizeof(Fway), -1);
               FindWay(Sx, Sy);
               gotoevent := -1;
+              //在手机中放宽要求
+              if (CellPhone = 1) and (SData[CurScence, 3, axp, ayp] < 0) then
+              begin
+                for i1 := 1 downto 0 do
+                  for i2 := 1 downto 0 do
+                  begin
+                    if (SData[CurScence, 3, axp + i1, ayp + i2] > 0) then
+                    begin
+                      axp := axp + i1;
+                      ayp := ayp + i2;
+                    end;
+                  end;
+              end;
               if (SData[CurScence, 3, axp, ayp] >= 0) then
               begin
                 if abs(Axp - Sx) + Abs(Ayp - Sy) = 1 then
@@ -3058,7 +3089,7 @@ begin
   begin
     CheckBasicEvent;
     case event.type_ of
-      SDL_KEYUP:
+      SDL_KEYDOWN:
       begin
         if (event.key.keysym.sym = SDLK_DOWN) then
         begin
@@ -3076,6 +3107,9 @@ begin
           ShowCommonMenu;
           UpdateAllScreen;
         end;
+      end;
+      SDL_KEYUP:
+      begin
         if ((event.key.keysym.sym = SDLK_ESCAPE)) {and (where <= 2)} then
         begin
           Result := -1;

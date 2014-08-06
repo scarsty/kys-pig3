@@ -93,6 +93,7 @@ procedure QuitConfirm;
 function JoyAxisMouse(interval: uint32; param: pointer): uint32;
 
 function CheckBasicEvent: uint32;
+function AngleToDirection(y, x: real): integer;
 
 procedure ChangeCol;
 
@@ -194,16 +195,19 @@ procedure Message(formatstring: string = ''; cr: boolean = True); overload; inli
 implementation
 
 uses
-  kys_battle,
   kys_draw;
 
 function EventFilter(p: pointer; e: PSDL_Event): longint; cdecl;
 begin
   Result := 1;
-  if (e.type_ = SDL_FINGERDOWN) or (e.type_ = SDL_FINGERUP) or (e.type_ = SDL_FINGERMOTION) or
-    (e.type_ = SDL_CONTROLLERAXISMOTION) or (e.type_ = SDL_CONTROLLERBUTTONDOWN) or
-    (e.type_ = SDL_CONTROLLERBUTTONUP) then
-    Result := 0;
+  {or (e.type_ = SDL_FINGERMOTION)}
+  case e.type_ of
+    SDL_FINGERUP, SDL_FINGERDOWN, SDL_CONTROLLERAXISMOTION, SDL_CONTROLLERBUTTONDOWN, SDL_CONTROLLERBUTTONUP:
+      Result := 0;
+    SDL_FINGERMOTION:
+      if CellPhone = 0 then
+        Result := 0;
+  end;
 end;
 
 procedure InitialMusic;
@@ -1980,10 +1984,14 @@ end;
 function CheckBasicEvent: uint32;
 var
   i, x, y: integer;
+  angle: real;
 begin
   //if not ((LoadingTiles) or (LoadingScence)) then
   SDL_FlushEvent(SDL_MOUSEWHEEL);
   SDL_FlushEvent(SDL_JOYAXISMOTION);
+  SDL_FlushEvent(SDL_FINGERMOTION);
+  //SDL_FlushEvent(SDL_FINGERDOWN);
+  //SDL_FlushEvent(SDL_FINGERUP);
   if CellPhone = 1 then
     SDL_FlushEvent(SDL_MOUSEMOTION);
   //writeln(inttohex(event.type_, 4));
@@ -2033,14 +2041,19 @@ begin
         SDL_HAT_RIGHT: event.key.keysym.sym := SDLK_RIGHT;
       end;
     end;
-    SDL_MULTIGESTURE:
-    begin
-      if (event.mgesture.numFingers >= 2) then
+    SDL_FINGERMOTION:
+      if CellPhone = 1 then
       begin
-        event.type_ := SDL_KEYUP;
-        event.key.keysym.sym := SDLK_ESCAPE;
+        if event.tfinger.fingerId = 1 then
+        begin
+          event.type_ := SDL_KEYDOWN;
+          event.key.keysym.sym := AngleToDirection(event.tfinger.dy, event.tfinger.dx);
+        end;
       end;
-    end;
+    SDL_FINGERUP:
+      ;
+    SDL_MULTIGESTURE:
+      ;
     SDL_QUITEV:
       QuitConfirm;
     SDL_WindowEvent:
@@ -2061,15 +2074,24 @@ begin
     end;}
     SDL_KEYUP, SDL_MOUSEBUTTONUP:
     begin
-      if (CellPhone = 1) and (event.button.button = SDL_BUTTON_LEFT) then
+      if (CellPhone = 1) and (event.type_ = SDL_MOUSEBUTTONUP) and (event.button.button = SDL_BUTTON_LEFT) then
       begin
-        SDL_GetMouseState(@x, @y);
-        if ((ScreenRotate = 1) and (x < 100) and (y < 100)) or ((ScreenRotate = 0) and
-          (x < 100) and (y > RESOLUTIONY - 100)) then
+        SDL_GetMouseState2(x, y);
+        if (x < 100) and (y > CENTER_Y * 2 - 100) then
         begin
+          //event.button.x := RESOLUTIONX div 2;
+          //event.button.y := RESOLUTIONY div 2;
           event.button.button := SDL_BUTTON_RIGHT;
-          event.button.x := 100;
-          event.button.y := RESOLUTIONY div 2;
+          event.key.keysym.sym := SDLK_ESCAPE;
+          message('Change to escape');
+        end;
+        if (x > CENTER_X * 2 - 100) and (y > CENTER_Y * 2 - 100) then
+        begin
+          //event.button.x := RESOLUTIONX div 2;
+          //event.button.y := RESOLUTIONY div 2;
+          event.type_ := SDL_KEYUP;
+          event.key.keysym.sym := SDLK_RETURN;
+          message('Change to return');
         end;
       end;
       if (where = 2) and ((event.key.keysym.sym = SDLK_ESCAPE) or (event.button.button = SDL_BUTTON_RIGHT)) then
@@ -2085,6 +2107,29 @@ begin
     end;
   end;
   //CheckRenderTextures;
+end;
+
+function AngleToDirection(y, x: real): integer;
+var
+  angle: real;
+begin
+  angle := arctan2(-y, x);
+  Result := 0;
+  if (abs(angle) < 0.25) or (abs(angle + PI / 4) < 0.25) then
+    Result := SDLK_RIGHT;
+  if (abs(angle - PI / 2) < 0.25) or (abs(angle - PI / 4) < 0.25) then
+    Result := SDLK_UP;
+  if (abs(angle - PI) < 0.25) or (abs(angle + PI) < 0.25) or (abs(angle - PI * 3 / 4) < 0.25) then
+    Result := SDLK_LEFT;
+  if (abs(angle + PI / 2) < 0.25) or (abs(angle + PI * 3 / 4) < 0.25) then
+    Result := SDLK_DOWN;
+  if ScreenRotate = 1 then
+    case Result of
+      SDLK_UP: Result := SDLK_LEFT;
+      SDLK_DOWN: Result := SDLK_RIGHT;
+      SDLK_LEFT: Result := SDLK_DOWN;
+      SDLK_RIGHT: Result := SDLK_UP;
+    end;
 end;
 
 procedure ChangeCol;

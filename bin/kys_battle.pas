@@ -88,7 +88,7 @@ procedure TryMoveCure(var Mx1, My1, Ax1, Ay1: integer; bnum: integer);
 procedure CureAction(bnum: integer);
 procedure RoundOver; overload;
 procedure RoundOver(bnum: integer); overload;
-function TeamModeMenu: boolean;
+function SelectAutoMode: boolean;
 procedure Auto(bnum: integer);
 procedure SetEnemyAttribute;
 function IFinbattle(num: integer): integer;
@@ -593,7 +593,6 @@ begin
         if ((event.key.keysym.sym = SDLK_RETURN) or (event.key.keysym.sym = SDLK_SPACE)) and (menu <> max) then
         begin
           //选中人物则反转对应bit
-          //选中人物则反转对应bit
           if forceSingle = 0 then
           begin
             if menu > 0 then
@@ -620,6 +619,9 @@ begin
           if Result <> 0 then
             break;
         end;
+      end;
+      sdl_keydown:
+      begin
         if (event.key.keysym.sym = SDLK_UP) then
         begin
           menu := menu - 1;
@@ -636,38 +638,38 @@ begin
         end;
       end;
       SDL_MOUSEBUTTONUP:
-      begin
-        if (event.button.button = SDL_BUTTON_LEFT) and (menu <> max) then
+        if MouseInRegion(x, y, 150, (max + 1) * h) then
         begin
-          //选中人物则反转对应bit
-          if forceSingle = 0 then
+          if (event.button.button = SDL_BUTTON_LEFT) and (menu <> max) then
           begin
-            if menu > 0 then
+            //选中人物则反转对应bit
+            if forceSingle = 0 then
             begin
-              Result := Result xor (1 shl (menu - 1));
+              if menu > 0 then
+              begin
+                Result := Result xor (1 shl (menu - 1));
+              end
+              else
+              begin
+                if Result < forall then
+                  Result := forall
+                else
+                  Result := 0;
+              end;
             end
             else
             begin
-              if Result < forall then
-                Result := forall
-              else
-                Result := 0;
+              if menu > 0 then
+                Result := 1 shl (menu - 1);
             end;
-          end
-          else
-          begin
-            if menu > 0 then
-              Result := 1 shl (menu - 1);
+            ShowMultiMenu;
           end;
-          ShowMultiMenu;
+          if (event.button.button = SDL_BUTTON_LEFT) and (menu = max) then
+          begin
+            if Result <> 0 then
+              break;
+          end;
         end;
-        if (event.button.button = SDL_BUTTON_LEFT) and (menu = max) and
-          MouseInRegion(x, y, 150, (max + 1) * h) then
-        begin
-          if Result <> 0 then
-            break;
-        end;
-      end;
       SDL_MOUSEMOTION:
       begin
         if MouseInRegion(x, y, 150, (max + 1) * h, xm, ym) then
@@ -1471,6 +1473,7 @@ begin
       begin
         if (event.key.keysym.sym = SDLK_RETURN) or (event.key.keysym.sym = SDLK_SPACE) then
         begin
+          message('%d/%d/%d', [event.type_, event.key.keysym.sym, menu]);
           break;
         end;
         if (event.key.keysym.sym = SDLK_ESCAPE) then
@@ -1484,7 +1487,7 @@ begin
         if (event.button.button = SDL_BUTTON_LEFT) and (menu <> -1) and
           MouseInRegion(x, y, 120, (max + 1) * h, xm, ym) then
           break;
-        if (event.button.button = SDL_BUTTON_RIGHT) and (menu <> -1) then
+        if (event.button.button = SDL_BUTTON_RIGHT) {and (menu <> -1)} then
         begin
           menu := -1;
           break;
@@ -1502,9 +1505,9 @@ begin
             menu := 0;
           if menup <> menu then
             ShowBMenu(MenuStatus, menu, max);
-        end
-        else
-          menu := -1;
+        end;
+        //else
+        //menu := -1;
       end;
     end;
   end;
@@ -5856,7 +5859,7 @@ begin
   end;
 end;
 
-function TeamModeMenu: boolean;
+function SelectAutoMode: boolean;
 var
   menup, x, y, w, h, menu, i, amount, xm, ym: integer;
   a: array of smallint;
@@ -5947,9 +5950,23 @@ begin
           Result := False;
           break;
         end;
-        //end;
-        //SDL_KEYDOWN:
-        //begin
+        if (event.key.keysym.sym = SDLK_LEFT) then
+        begin
+          Brole[a[menu]].AutoMode := Brole[a[menu]].AutoMode - 1;
+          if Brole[a[menu]].AutoMode < 0 then
+            Brole[a[menu]].AutoMode := 3;
+          ShowTeamModeMenu;
+        end;
+        if (event.key.keysym.sym = SDLK_RIGHT) then
+        begin
+          Brole[a[menu]].AutoMode := Brole[a[menu]].AutoMode + 1;
+          if Brole[a[menu]].AutoMode > 3 then
+            Brole[a[menu]].AutoMode := 0;
+          ShowTeamModeMenu;
+        end;
+      end;
+      SDL_KEYDOWN:
+      begin
         if (event.key.keysym.sym = SDLK_UP) then
         begin
           menu := menu - 1;
@@ -5968,24 +5985,10 @@ begin
             menu := 0;
           ShowTeamModeMenu;
         end;
-        if (event.key.keysym.sym = SDLK_LEFT) then
-        begin
-          Brole[a[menu]].AutoMode := Brole[a[menu]].AutoMode - 1;
-          if Brole[a[menu]].AutoMode < 0 then
-            Brole[a[menu]].AutoMode := 3;
-          ShowTeamModeMenu;
-        end;
-        if (event.key.keysym.sym = SDLK_RIGHT) then
-        begin
-          Brole[a[menu]].AutoMode := Brole[a[menu]].AutoMode + 1;
-          if Brole[a[menu]].AutoMode > 3 then
-            Brole[a[menu]].AutoMode := 0;
-          ShowTeamModeMenu;
-        end;
       end;
       SDL_MOUSEBUTTONUP:
       begin
-        if (event.button.button = SDL_BUTTON_LEFT) then
+        if (event.button.button = SDL_BUTTON_LEFT) and MouseInRegion(x, y, w, amount * h + 32) then
         begin
           if (menu > -1) then
           begin
@@ -6054,7 +6057,7 @@ begin
 
   //if menu=1 then AutoMode[bnum]:= SelectAutoMode ;
   //if menu=0 then
-  if not TeamModeMenu then
+  if not SelectAutoMode then
     exit;
 
   //if AutoMode[bnum]=-1 then
