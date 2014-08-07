@@ -96,6 +96,7 @@ const
 {$IFDEF fpc}
 
 {$ELSE}
+
 type
   PtrInt = longint;
   PtrUInt = longword;
@@ -146,7 +147,7 @@ type
   lua_CFunction = function(L: Plua_State): integer; cdecl;
 
   // functions that read/write blocks when loading/dumping Lua chunks
-  lua_Reader = function(L: Plua_State; ud: Pointer; sz: Psize_t): pchar; cdecl;
+  lua_Reader = function(L: Plua_State; ud: Pointer; sz: Psize_t): PChar; cdecl;
   lua_Writer = function(L: Plua_State; const p: Pointer; sz: size_t; ud: Pointer): integer; cdecl;
 
   // prototype for memory-allocation functions
@@ -199,12 +200,12 @@ function lua_isstring(L: Plua_State; idx: integer): longbool; cdecl;
 function lua_iscfunction(L: Plua_State; idx: integer): longbool; cdecl;
 function lua_isuserdata(L: Plua_State; idx: integer): longbool; cdecl;
 function lua_type(L: Plua_State; idx: integer): integer; cdecl;
-function lua_typename(L: Plua_State; tp: integer): pchar; cdecl;
+function lua_typename(L: Plua_State; tp: integer): PChar; cdecl;
 function lua_tonumberx(L: Plua_State; idx: integer; isnum: PLongBool): lua_Number; cdecl;
 function lua_tointegerx(L: Plua_State; idx: integer; isnum: PLongBool): lua_Integer; cdecl;
 function lua_tounsignedx(L: Plua_State; idx: integer; isnum: PLongBool): lua_Unsigned; cdecl;
 function lua_toboolean(L: Plua_State; idx: integer): longbool; cdecl;
-function lua_tolstring(L: Plua_State; idx: integer; len: Psize_t): pchar; cdecl;
+function lua_tolstring(L: Plua_State; idx: integer; len: Psize_t): PChar; cdecl;
 function lua_rawlen(L: Plua_State; idx: integer): size_t; cdecl;
 function lua_tocfunction(L: Plua_State; idx: integer): lua_CFunction; cdecl;
 function lua_touserdata(L: Plua_State; idx: integer): Pointer; cdecl;
@@ -237,20 +238,20 @@ procedure lua_pushnil(L: Plua_State); cdecl;
 procedure lua_pushnumber(L: Plua_State; n: lua_Number); cdecl;
 procedure lua_pushinteger(L: Plua_State; n: lua_Integer); cdecl;
 procedure lua_pushunsigned(L: Plua_State; n: lua_Unsigned); cdecl;
-procedure lua_pushlstring(L: Plua_State; const s: pchar; l_: size_t); cdecl;
-procedure lua_pushstring(L: Plua_State; const s: pchar); cdecl; overload;
+procedure lua_pushlstring(L: Plua_State; const s: PChar; l_: size_t); cdecl;
+procedure lua_pushstring(L: Plua_State; const s: PChar); cdecl; overload;
 procedure lua_pushstring(L: Plua_State; const s: string); overload; // added for Pascal
-function lua_pushvfstring(L: Plua_State; const fmt: pchar; argp: Pointer): pchar; cdecl;
-function lua_pushfstring(L: Plua_State; const fmt: pchar): pchar; cdecl; varargs;
+function lua_pushvfstring(L: Plua_State; const fmt: PChar; argp: Pointer): PChar; cdecl;
+function lua_pushfstring(L: Plua_State; const fmt: PChar): PChar; cdecl; varargs;
 procedure lua_pushcclosure(L: Plua_State; fn: lua_CFunction; n: integer); cdecl;
 procedure lua_pushboolean(L: Plua_State; b: longbool); cdecl;
 procedure lua_pushlightuserdata(L: Plua_State; p: Pointer); cdecl;
 procedure lua_pushthread(L: Plua_State); cdecl;
 
 // get functions (Lua -> stack)
-procedure lua_getglobal(L: Plua_State; const var_: pchar); cdecl;
+procedure lua_getglobal(L: Plua_State; const var_: PChar); cdecl;
 procedure lua_gettable(L: Plua_State; idx: integer); cdecl;
-procedure lua_getfield(L: Plua_state; idx: integer; k: pchar); cdecl;
+procedure lua_getfield(L: Plua_state; idx: integer; k: PChar); cdecl;
 procedure lua_rawget(L: Plua_State; idx: integer); cdecl;
 procedure lua_rawgeti(L: Plua_State; idx, n: integer); cdecl;
 procedure lua_rawgetp(L: Plua_State; idx: integer; p: Pointer); cdecl;
@@ -260,9 +261,9 @@ function lua_getmetatable(L: Plua_State; objindex: integer): integer; cdecl;
 procedure lua_getuservalue(L: Plua_State; idx: integer); cdecl;
 
 // set functions (stack -> Lua)
-procedure lua_setglobal(L: Plua_State; const var_: pchar); cdecl;
+procedure lua_setglobal(L: Plua_State; const var_: PChar); cdecl;
 procedure lua_settable(L: Plua_State; idx: integer); cdecl;
-procedure lua_setfield(L: Plua_State; idx: integer; k: pchar); cdecl;
+procedure lua_setfield(L: Plua_State; idx: integer; k: PChar); cdecl;
 procedure lua_rawset(L: Plua_State; idx: integer); cdecl;
 procedure lua_rawseti(L: Plua_State; idx, n: integer); cdecl;
 procedure lua_rawsetp(L: Plua_State; idx: integer; p: Pointer); cdecl;
@@ -275,7 +276,7 @@ procedure lua_call(L: Plua_State; nargs, nresults: integer);
 function lua_getctx(L: Plua_State; ctx: PInteger): integer; cdecl;
 function lua_pcallk(L: Plua_State; nargs, nresults, errfunc, ctx: integer; k: lua_CFunction): integer; cdecl;
 function lua_pcall(L: Plua_State; nargs, nresults, errf: integer): integer;
-function lua_load(L: Plua_State; reader: lua_Reader; dt: Pointer; const chunkname, mode: pchar): integer; cdecl;
+function lua_load(L: Plua_State; reader: lua_Reader; dt: Pointer; const chunkname, mode: PChar): integer; cdecl;
 function lua_dump(L: Plua_State; writer: lua_Writer; Data: Pointer): integer; cdecl;
 
 // coroutine functions
@@ -315,7 +316,7 @@ function lua_tointeger(L: Plua_State; idx: integer): lua_Integer;
 function lua_tounsigned(L: Plua_State; idx: integer): lua_Unsigned;
 procedure lua_pop(L: Plua_State; n: integer);
 procedure lua_newtable(L: Plua_state);
-procedure lua_register(L: Plua_State; const n: pchar; f: lua_CFunction);
+procedure lua_register(L: Plua_State; const n: PChar; f: lua_CFunction);
 procedure lua_pushcfunction(L: Plua_State; f: lua_CFunction);
 function lua_isfunction(L: Plua_State; n: integer): boolean;
 function lua_istable(L: Plua_State; n: integer): boolean;
@@ -325,9 +326,9 @@ function lua_isboolean(L: Plua_State; n: integer): boolean;
 function lua_isthread(L: Plua_State; n: integer): boolean;
 function lua_isnone(L: Plua_State; n: integer): boolean;
 function lua_isnoneornil(L: Plua_State; n: integer): boolean;
-procedure lua_pushliteral(L: Plua_State; s: pchar);
+procedure lua_pushliteral(L: Plua_State; s: PChar);
 procedure lua_pushglobaltable(L: Plua_State);
-function lua_tostring(L: Plua_State; i: integer): pchar;
+function lua_tostring(L: Plua_State; i: integer): PChar;
 
 // Debug API
 const
@@ -349,10 +350,10 @@ const
 type
   lua_Debug = record (* activation record *)
     event: integer;
-    Name: pchar; (* (n) *)
-    namewhat: pchar; (* (n) `global', `local', `field', `method' *)
-    what: pchar; (* (S) `Lua', `C', `main', `tail'*)
-    Source: pchar; (* (S) *)
+    Name: PChar; (* (n) *)
+    namewhat: PChar; (* (n) `global', `local', `field', `method' *)
+    what: PChar; (* (S) `Lua', `C', `main', `tail'*)
+    Source: PChar; (* (S) *)
     currentline: integer; (* (l) *)
     linedefined: integer; (* (S) *)
     lastlinedefined: integer; (* (S) *)
@@ -370,11 +371,11 @@ type
   lua_Hook = procedure(L: Plua_State; ar: Plua_Debug); cdecl;
 
 function lua_getstack(L: Plua_State; level: integer; ar: Plua_Debug): integer; cdecl;
-function lua_getinfo(L: Plua_State; const what: pchar; ar: Plua_Debug): integer; cdecl;
-function lua_getlocal(L: Plua_State; const ar: Plua_Debug; n: integer): pchar; cdecl;
-function lua_setlocal(L: Plua_State; const ar: Plua_Debug; n: integer): pchar; cdecl;
-function lua_getupvalue(L: Plua_State; funcindex, n: integer): pchar; cdecl;
-function lua_setupvalue(L: Plua_State; funcindex, n: integer): pchar; cdecl;
+function lua_getinfo(L: Plua_State; const what: PChar; ar: Plua_Debug): integer; cdecl;
+function lua_getlocal(L: Plua_State; const ar: Plua_Debug; n: integer): PChar; cdecl;
+function lua_setlocal(L: Plua_State; const ar: Plua_Debug; n: integer): PChar; cdecl;
+function lua_getupvalue(L: Plua_State; funcindex, n: integer): PChar; cdecl;
+function lua_setupvalue(L: Plua_State; funcindex, n: integer): PChar; cdecl;
 function lua_upvalueid(L: Plua_State; funcindex, n: integer): Pointer; cdecl;
 procedure lua_upvaluejoin(L: Plua_State; funcindex1, n1, funcindex2, n2: integer); cdecl;
 function lua_sethook(L: Plua_State; func: lua_Hook; mask: integer; Count: integer): integer; cdecl;
@@ -393,70 +394,70 @@ procedure lua_getref(L: Plua_State; ref: integer);
 
 type
   luaL_Reg = record
-    Name: pchar;
+    Name: PChar;
     func: lua_CFunction;
   end;
   PluaL_Reg = ^luaL_Reg;
 
 procedure luaL_checkversion_(L: Plua_State; ver: lua_Number); cdecl;
 procedure luaL_checkversion(L: Plua_State);
-function luaL_getmetafield(L: Plua_State; obj: integer; const e: pchar): integer; cdecl;
-function luaL_callmeta(L: Plua_State; obj: integer; const e: pchar): integer; cdecl;
-function luaL_tolstring(L: Plua_State; idx: integer; len: Psize_t): pchar; cdecl;
-function luaL_argerror(L: Plua_State; numarg: integer; const extramsg: pchar): integer; cdecl;
-function luaL_checklstring(L: Plua_State; numArg: integer; l_: Psize_t): pchar; cdecl;
-function luaL_optlstring(L: Plua_State; numArg: integer; const def: pchar; l_: Psize_t): pchar; cdecl;
+function luaL_getmetafield(L: Plua_State; obj: integer; const e: PChar): integer; cdecl;
+function luaL_callmeta(L: Plua_State; obj: integer; const e: PChar): integer; cdecl;
+function luaL_tolstring(L: Plua_State; idx: integer; len: Psize_t): PChar; cdecl;
+function luaL_argerror(L: Plua_State; numarg: integer; const extramsg: PChar): integer; cdecl;
+function luaL_checklstring(L: Plua_State; numArg: integer; l_: Psize_t): PChar; cdecl;
+function luaL_optlstring(L: Plua_State; numArg: integer; const def: PChar; l_: Psize_t): PChar; cdecl;
 function luaL_checknumber(L: Plua_State; numArg: integer): lua_Number; cdecl;
 function luaL_optnumber(L: Plua_State; nArg: integer; def: lua_Number): lua_Number; cdecl;
 function luaL_checkinteger(L: Plua_State; numArg: integer): lua_Integer; cdecl;
 function luaL_optinteger(L: Plua_State; nArg: integer; def: lua_Integer): lua_Integer; cdecl;
 function luaL_checkunsigned(L: Plua_State; numArg: integer): lua_Unsigned; cdecl;
 function luaL_optunsigned(L: Plua_State; numArg: integer; def: lua_Unsigned): lua_Unsigned; cdecl;
-procedure luaL_checkstack(L: Plua_State; sz: integer; const msg: pchar); cdecl;
+procedure luaL_checkstack(L: Plua_State; sz: integer; const msg: PChar); cdecl;
 procedure luaL_checktype(L: Plua_State; narg, t: integer); cdecl;
 procedure luaL_checkany(L: Plua_State; narg: integer); cdecl;
-function luaL_newmetatable(L: Plua_State; const tname: pchar): integer; cdecl;
-procedure luaL_setmetatable(L: Plua_State; const tname: pchar); cdecl;
-function luaL_testudata(L: Plua_State; ud: integer; const tname: pchar): Pointer; cdecl;
-function luaL_checkudata(L: Plua_State; ud: integer; const tname: pchar): Pointer; cdecl;
+function luaL_newmetatable(L: Plua_State; const tname: PChar): integer; cdecl;
+procedure luaL_setmetatable(L: Plua_State; const tname: PChar); cdecl;
+function luaL_testudata(L: Plua_State; ud: integer; const tname: PChar): Pointer; cdecl;
+function luaL_checkudata(L: Plua_State; ud: integer; const tname: PChar): Pointer; cdecl;
 procedure luaL_where(L: Plua_State; lvl: integer); cdecl;
-function luaL_error(L: Plua_State; const fmt: pchar; args: array of const): integer;
+function luaL_error(L: Plua_State; const fmt: PChar; args: array of const): integer;
   cdecl; external LUA_LIB_NAME; // note: C's ... to array of const conversion is not portable to Delphi
-function luaL_checkoption(L: Plua_State; narg: integer; def: pchar; lst: PPChar): integer; cdecl;
-function luaL_fileresult(L: Plua_State; stat: integer; const fname: pchar): integer; cdecl;
+function luaL_checkoption(L: Plua_State; narg: integer; def: PChar; lst: PPChar): integer; cdecl;
+function luaL_fileresult(L: Plua_State; stat: integer; const fname: PChar): integer; cdecl;
 function luaL_execresult(L: Plua_State; stat: integer): integer; cdecl;
 function luaL_ref(L: Plua_State; t: integer): integer; cdecl;
 procedure luaL_unref(L: Plua_State; t, ref: integer); cdecl;
-function luaL_loadfilex(L: Plua_State; const filename, mode: pchar): integer; cdecl;
-function luaL_loadfile(L: Plua_State; const filename: pchar): integer;
-function luaL_loadbufferx(L: Plua_State; const buff: pchar; sz: size_t; const Name, mode: pchar): integer; cdecl;
-function luaL_loadstring(L: Plua_State; const s: pchar): integer; cdecl;
+function luaL_loadfilex(L: Plua_State; const filename, mode: PChar): integer; cdecl;
+function luaL_loadfile(L: Plua_State; const filename: PChar): integer;
+function luaL_loadbufferx(L: Plua_State; const buff: PChar; sz: size_t; const Name, mode: PChar): integer; cdecl;
+function luaL_loadstring(L: Plua_State; const s: PChar): integer; cdecl;
 function luaL_newstate: Plua_State; cdecl;
 function luaL_len(L: Plua_State; idx: integer): integer; cdecl;
-function luaL_gsub(L: Plua_State; const s, p, r: pchar): pchar; cdecl;
+function luaL_gsub(L: Plua_State; const s, p, r: PChar): PChar; cdecl;
 procedure luaL_setfuncs(L: Plua_State; lr: array of luaL_Reg; nup: integer); overload;
 procedure luaL_setfuncs(L: Plua_State; lr: PluaL_Reg; nup: integer); cdecl; overload;
-function luaL_getsubtable(L: Plua_State; idx: integer; const fname: pchar): integer; cdecl;
-procedure luaL_traceback(L, L1: Plua_State; msg: pchar; level: integer); cdecl;
-procedure luaL_requiref(L: Plua_State; const modname: pchar; openf: lua_CFunction; glb: longbool); cdecl;
+function luaL_getsubtable(L: Plua_State; idx: integer; const fname: PChar): integer; cdecl;
+procedure luaL_traceback(L, L1: Plua_State; msg: PChar; level: integer); cdecl;
+procedure luaL_requiref(L: Plua_State; const modname: PChar; openf: lua_CFunction; glb: longbool); cdecl;
 
 // some useful macros
 procedure luaL_newlibtable(L: Plua_State; lr: array of luaL_Reg); overload;
 procedure luaL_newlibtable(L: Plua_State; lr: PluaL_Reg); overload;
 procedure luaL_newlib(L: Plua_State; lr: array of luaL_Reg); overload;
 procedure luaL_newlib(L: Plua_State; lr: PluaL_Reg); overload;
-procedure luaL_argcheck(L: Plua_State; cond: boolean; numarg: integer; extramsg: pchar);
-function luaL_checkstring(L: Plua_State; n: integer): pchar;
-function luaL_optstring(L: Plua_State; n: integer; d: pchar): pchar;
+procedure luaL_argcheck(L: Plua_State; cond: boolean; numarg: integer; extramsg: PChar);
+function luaL_checkstring(L: Plua_State; n: integer): PChar;
+function luaL_optstring(L: Plua_State; n: integer; d: PChar): PChar;
 function luaL_checkint(L: Plua_State; n: integer): integer;
 function luaL_optint(L: Plua_State; n, d: integer): integer;
 function luaL_checklong(L: Plua_State; n: integer): longint;
 function luaL_optlong(L: Plua_State; n: integer; d: longint): longint;
-function luaL_typename(L: Plua_State; i: integer): pchar;
-function luaL_dofile(L: Plua_State; const filename: pchar): integer;
-function luaL_dostring(L: Plua_State; const str: pchar): integer;
-procedure luaL_getmetatable(L: Plua_State; tname: pchar);
-function luaL_loadbuffer(L: Plua_State; const buff: pchar; size: size_t; const Name: pchar): integer;
+function luaL_typename(L: Plua_State; i: integer): PChar;
+function luaL_dofile(L: Plua_State; const filename: PChar): integer;
+function luaL_dostring(L: Plua_State; const str: PChar): integer;
+procedure luaL_getmetatable(L: Plua_State; tname: PChar);
+function luaL_loadbuffer(L: Plua_State; const buff: PChar; size: size_t; const Name: PChar): integer;
 
 const
   LUA_COLIBNAME = 'coroutine';
@@ -566,7 +567,7 @@ function lua_isuserdata(L: Plua_State; idx: integer): longbool; cdecl; external 
 
 function lua_type(L: Plua_State; idx: integer): integer; cdecl; external LUA_LIB_NAME;
 
-function lua_typename(L: Plua_State; tp: integer): pchar; cdecl; external LUA_LIB_NAME;
+function lua_typename(L: Plua_State; tp: integer): PChar; cdecl; external LUA_LIB_NAME;
 
 function lua_tonumberx(L: Plua_State; idx: integer; isnum: PLongBool): lua_Number; cdecl; external LUA_LIB_NAME;
 
@@ -597,7 +598,7 @@ end;
 
 function lua_toboolean(L: Plua_State; idx: integer): longbool; cdecl; external LUA_LIB_NAME;
 
-function lua_tolstring(L: Plua_State; idx: integer; len: Psize_t): pchar; cdecl; external LUA_LIB_NAME;
+function lua_tolstring(L: Plua_State; idx: integer; len: Psize_t): PChar; cdecl; external LUA_LIB_NAME;
 
 function lua_rawlen(L: Plua_State; idx: integer): size_t; cdecl; external LUA_LIB_NAME;
 
@@ -617,18 +618,18 @@ procedure lua_pushinteger(L: Plua_State; n: lua_Integer); cdecl; external LUA_LI
 
 procedure lua_pushunsigned(L: Plua_State; n: lua_Unsigned); cdecl; external LUA_LIB_NAME;
 
-procedure lua_pushlstring(L: Plua_State; const s: pchar; l_: size_t); cdecl; external LUA_LIB_NAME;
+procedure lua_pushlstring(L: Plua_State; const s: PChar; l_: size_t); cdecl; external LUA_LIB_NAME;
 
-procedure lua_pushstring(L: Plua_State; const s: pchar); cdecl; external LUA_LIB_NAME;
+procedure lua_pushstring(L: Plua_State; const s: PChar); cdecl; external LUA_LIB_NAME;
 
 procedure lua_pushstring(L: Plua_State; const s: string);
 begin
-  lua_pushlstring(L, pchar(s), Length(s));
+  lua_pushlstring(L, PChar(s), Length(s));
 end;
 
-function lua_pushvfstring(L: Plua_State; const fmt: pchar; argp: Pointer): pchar; cdecl; external LUA_LIB_NAME;
+function lua_pushvfstring(L: Plua_State; const fmt: PChar; argp: Pointer): PChar; cdecl; external LUA_LIB_NAME;
 
-function lua_pushfstring(L: Plua_State; const fmt: pchar): pchar; cdecl; varargs; external LUA_LIB_NAME;
+function lua_pushfstring(L: Plua_State; const fmt: PChar): PChar; cdecl; varargs; external LUA_LIB_NAME;
 
 procedure lua_pushcclosure(L: Plua_State; fn: lua_CFunction; n: integer); cdecl; external LUA_LIB_NAME;
 
@@ -638,11 +639,11 @@ procedure lua_pushlightuserdata(L: Plua_State; p: Pointer); cdecl; external LUA_
 
 procedure lua_pushthread(L: Plua_State); cdecl; external LUA_LIB_NAME;
 
-procedure lua_getglobal(L: Plua_State; const var_: pchar); cdecl; external LUA_LIB_NAME;
+procedure lua_getglobal(L: Plua_State; const var_: PChar); cdecl; external LUA_LIB_NAME;
 
 procedure lua_gettable(L: Plua_State; idx: integer); cdecl; external LUA_LIB_NAME;
 
-procedure lua_getfield(L: Plua_state; idx: integer; k: pchar); cdecl; external LUA_LIB_NAME;
+procedure lua_getfield(L: Plua_state; idx: integer; k: PChar); cdecl; external LUA_LIB_NAME;
 
 procedure lua_rawget(L: Plua_State; idx: integer); cdecl; external LUA_LIB_NAME;
 
@@ -658,11 +659,11 @@ function lua_getmetatable(L: Plua_State; objindex: integer): integer; cdecl; ext
 
 procedure lua_getuservalue(L: Plua_State; idx: integer); cdecl; external LUA_LIB_NAME;
 
-procedure lua_setglobal(L: Plua_State; const var_: pchar); cdecl; external LUA_LIB_NAME;
+procedure lua_setglobal(L: Plua_State; const var_: PChar); cdecl; external LUA_LIB_NAME;
 
 procedure lua_settable(L: Plua_State; idx: integer); cdecl; external LUA_LIB_NAME;
 
-procedure lua_setfield(L: Plua_State; idx: integer; k: pchar); cdecl; external LUA_LIB_NAME;
+procedure lua_setfield(L: Plua_State; idx: integer; k: PChar); cdecl; external LUA_LIB_NAME;
 
 procedure lua_rawset(L: Plua_State; idx: integer); cdecl; external LUA_LIB_NAME;
 
@@ -681,7 +682,7 @@ function lua_getctx(L: Plua_State; ctx: PInteger): integer; cdecl; external LUA_
 function lua_pcallk(L: Plua_State; nargs, nresults, errfunc, ctx: integer; k: lua_CFunction): integer;
   cdecl; external LUA_LIB_NAME;
 
-function lua_load(L: Plua_State; reader: lua_Reader; dt: Pointer; const chunkname, mode: pchar): integer;
+function lua_load(L: Plua_State; reader: lua_Reader; dt: Pointer; const chunkname, mode: PChar): integer;
   cdecl; external LUA_LIB_NAME;
 
 function lua_dump(L: Plua_State; writer: lua_Writer; Data: Pointer): integer; cdecl; external LUA_LIB_NAME;
@@ -731,7 +732,7 @@ begin
   lua_createtable(L, 0, 0);
 end;
 
-procedure lua_register(L: Plua_State; const n: pchar; f: lua_CFunction);
+procedure lua_register(L: Plua_State; const n: PChar; f: lua_CFunction);
 begin
   lua_pushcfunction(L, f);
   lua_setglobal(L, n);
@@ -782,7 +783,7 @@ begin
   Result := lua_type(L, n) <= 0;
 end;
 
-procedure lua_pushliteral(L: Plua_State; s: pchar);
+procedure lua_pushliteral(L: Plua_State; s: PChar);
 begin
   lua_pushlstring(L, s, Length(s));
 end;
@@ -792,22 +793,22 @@ begin
   lua_rawgeti(L, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS);
 end;
 
-function lua_tostring(L: Plua_State; i: integer): pchar;
+function lua_tostring(L: Plua_State; i: integer): PChar;
 begin
   Result := lua_tolstring(L, i, nil);
 end;
 
 function lua_getstack(L: Plua_State; level: integer; ar: Plua_Debug): integer; cdecl; external LUA_LIB_NAME;
 
-function lua_getinfo(L: Plua_State; const what: pchar; ar: Plua_Debug): integer; cdecl; external LUA_LIB_NAME;
+function lua_getinfo(L: Plua_State; const what: PChar; ar: Plua_Debug): integer; cdecl; external LUA_LIB_NAME;
 
-function lua_getlocal(L: Plua_State; const ar: Plua_Debug; n: integer): pchar; cdecl; external LUA_LIB_NAME;
+function lua_getlocal(L: Plua_State; const ar: Plua_Debug; n: integer): PChar; cdecl; external LUA_LIB_NAME;
 
-function lua_setlocal(L: Plua_State; const ar: Plua_Debug; n: integer): pchar; cdecl; external LUA_LIB_NAME;
+function lua_setlocal(L: Plua_State; const ar: Plua_Debug; n: integer): PChar; cdecl; external LUA_LIB_NAME;
 
-function lua_getupvalue(L: Plua_State; funcindex, n: integer): pchar; cdecl; external LUA_LIB_NAME;
+function lua_getupvalue(L: Plua_State; funcindex, n: integer): PChar; cdecl; external LUA_LIB_NAME;
 
-function lua_setupvalue(L: Plua_State; funcindex, n: integer): pchar; cdecl; external LUA_LIB_NAME;
+function lua_setupvalue(L: Plua_State; funcindex, n: integer): PChar; cdecl; external LUA_LIB_NAME;
 
 function lua_upvalueid(L: Plua_State; funcindex, n: integer): Pointer; cdecl; external LUA_LIB_NAME;
 
@@ -832,32 +833,32 @@ begin
   lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
 end;
 
-procedure luaL_traceback(L, L1: Plua_State; msg: pchar; level: integer); cdecl; external LUA_LIB_NAME;
+procedure luaL_traceback(L, L1: Plua_State; msg: PChar; level: integer); cdecl; external LUA_LIB_NAME;
 
-function luaL_argerror(L: Plua_State; numarg: integer; const extramsg: pchar): integer; cdecl; external LUA_LIB_NAME;
+function luaL_argerror(L: Plua_State; numarg: integer; const extramsg: PChar): integer; cdecl; external LUA_LIB_NAME;
 
 procedure luaL_where(L: Plua_State; lvl: integer); cdecl; external LUA_LIB_NAME;
 
-function luaL_newmetatable(L: Plua_State; const tname: pchar): integer; cdecl; external LUA_LIB_NAME;
+function luaL_newmetatable(L: Plua_State; const tname: PChar): integer; cdecl; external LUA_LIB_NAME;
 
-procedure luaL_setmetatable(L: Plua_State; const tname: pchar); cdecl; external LUA_LIB_NAME;
+procedure luaL_setmetatable(L: Plua_State; const tname: PChar); cdecl; external LUA_LIB_NAME;
 
-function luaL_testudata(L: Plua_State; ud: integer; const tname: pchar): Pointer; cdecl; external LUA_LIB_NAME;
+function luaL_testudata(L: Plua_State; ud: integer; const tname: PChar): Pointer; cdecl; external LUA_LIB_NAME;
 
-function luaL_checkudata(L: Plua_State; ud: integer; const tname: pchar): Pointer; cdecl; external LUA_LIB_NAME;
+function luaL_checkudata(L: Plua_State; ud: integer; const tname: PChar): Pointer; cdecl; external LUA_LIB_NAME;
 
-function luaL_checkoption(L: Plua_State; narg: integer; def: pchar; lst: PPChar): integer;
+function luaL_checkoption(L: Plua_State; narg: integer; def: PChar; lst: PPChar): integer;
   cdecl; external LUA_LIB_NAME;
 
-procedure luaL_checkstack(L: Plua_State; sz: integer; const msg: pchar); cdecl; external LUA_LIB_NAME;
+procedure luaL_checkstack(L: Plua_State; sz: integer; const msg: PChar); cdecl; external LUA_LIB_NAME;
 
 procedure luaL_checktype(L: Plua_State; narg, t: integer); cdecl; external LUA_LIB_NAME;
 
 procedure luaL_checkany(L: Plua_State; narg: integer); cdecl; external LUA_LIB_NAME;
 
-function luaL_checklstring(L: Plua_State; numArg: integer; l_: Psize_t): pchar; cdecl; external LUA_LIB_NAME;
+function luaL_checklstring(L: Plua_State; numArg: integer; l_: Psize_t): PChar; cdecl; external LUA_LIB_NAME;
 
-function luaL_optlstring(L: Plua_State; numArg: integer; const def: pchar; l_: Psize_t): pchar;
+function luaL_optlstring(L: Plua_State; numArg: integer; const def: PChar; l_: Psize_t): PChar;
   cdecl; external LUA_LIB_NAME;
 
 function luaL_checknumber(L: Plua_State; numArg: integer): lua_Number; cdecl; external LUA_LIB_NAME;
@@ -873,18 +874,18 @@ function luaL_checkunsigned(L: Plua_State; numArg: integer): lua_Unsigned; cdecl
 function luaL_optunsigned(L: Plua_State; numArg: integer; def: lua_Unsigned): lua_Unsigned;
   cdecl; external LUA_LIB_NAME;
 
-procedure luaL_argcheck(L: Plua_State; cond: boolean; numarg: integer; extramsg: pchar);
+procedure luaL_argcheck(L: Plua_State; cond: boolean; numarg: integer; extramsg: PChar);
 begin
   if not cond then
     luaL_argerror(L, numarg, extramsg);
 end;
 
-function luaL_checkstring(L: Plua_State; n: integer): pchar;
+function luaL_checkstring(L: Plua_State; n: integer): PChar;
 begin
   Result := luaL_checklstring(L, n, nil);
 end;
 
-function luaL_optstring(L: Plua_State; n: integer; d: pchar): pchar;
+function luaL_optstring(L: Plua_State; n: integer; d: PChar): PChar;
 begin
   Result := luaL_optlstring(L, n, d, nil);
 end;
@@ -909,31 +910,31 @@ begin
   Result := luaL_optinteger(L, n, d);
 end;
 
-function luaL_typename(L: Plua_State; i: integer): pchar;
+function luaL_typename(L: Plua_State; i: integer): PChar;
 begin
   Result := lua_typename(L, lua_type(L, i));
 end;
 
-function luaL_dofile(L: Plua_State; const filename: pchar): integer;
+function luaL_dofile(L: Plua_State; const filename: PChar): integer;
 begin
   Result := luaL_loadfile(L, filename);
   if Result = 0 then
     Result := lua_pcall(L, 0, LUA_MULTRET, 0);
 end;
 
-function luaL_dostring(L: Plua_State; const str: pchar): integer;
+function luaL_dostring(L: Plua_State; const str: PChar): integer;
 begin
   Result := luaL_loadstring(L, str);
   if Result = 0 then
     Result := lua_pcall(L, 0, LUA_MULTRET, 0);
 end;
 
-procedure luaL_getmetatable(L: Plua_State; tname: pchar);
+procedure luaL_getmetatable(L: Plua_State; tname: PChar);
 begin
   lua_getfield(L, LUA_REGISTRYINDEX, tname);
 end;
 
-function luaL_fileresult(L: Plua_State; stat: integer; const fname: pchar): integer; cdecl; external LUA_LIB_NAME;
+function luaL_fileresult(L: Plua_State; stat: integer; const fname: PChar): integer; cdecl; external LUA_LIB_NAME;
 
 function luaL_execresult(L: Plua_State; stat: integer): integer; cdecl; external LUA_LIB_NAME;
 
@@ -941,30 +942,30 @@ function luaL_ref(L: Plua_State; t: integer): integer; cdecl; external LUA_LIB_N
 
 procedure luaL_unref(L: Plua_State; t, ref: integer); cdecl; external LUA_LIB_NAME;
 
-function luaL_loadfilex(L: Plua_State; const filename, mode: pchar): integer; cdecl; external LUA_LIB_NAME;
+function luaL_loadfilex(L: Plua_State; const filename, mode: PChar): integer; cdecl; external LUA_LIB_NAME;
 
-function luaL_loadbufferx(L: Plua_State; const buff: pchar; sz: size_t; const Name, mode: pchar): integer;
+function luaL_loadbufferx(L: Plua_State; const buff: PChar; sz: size_t; const Name, mode: PChar): integer;
   cdecl; external LUA_LIB_NAME;
 
-function luaL_loadfile(L: Plua_State; const filename: pchar): integer;
+function luaL_loadfile(L: Plua_State; const filename: PChar): integer;
 begin
   Result := luaL_loadfilex(L, filename, nil);
 end;
 
-function luaL_loadbuffer(L: Plua_State; const buff: pchar; size: size_t; const Name: pchar): integer;
+function luaL_loadbuffer(L: Plua_State; const buff: PChar; size: size_t; const Name: PChar): integer;
 begin
   Result := luaL_loadbufferx(L, buff, size, Name, nil);
 end;
 
-function luaL_loadstring(L: Plua_State; const s: pchar): integer; cdecl; external LUA_LIB_NAME;
+function luaL_loadstring(L: Plua_State; const s: PChar): integer; cdecl; external LUA_LIB_NAME;
 
-function luaL_getmetafield(L: Plua_State; obj: integer; const e: pchar): integer; cdecl; external LUA_LIB_NAME;
+function luaL_getmetafield(L: Plua_State; obj: integer; const e: PChar): integer; cdecl; external LUA_LIB_NAME;
 
-function luaL_callmeta(L: Plua_State; obj: integer; const e: pchar): integer; cdecl; external LUA_LIB_NAME;
+function luaL_callmeta(L: Plua_State; obj: integer; const e: PChar): integer; cdecl; external LUA_LIB_NAME;
 
-function luaL_tolstring(L: Plua_State; idx: integer; len: Psize_t): pchar; cdecl; external LUA_LIB_NAME;
+function luaL_tolstring(L: Plua_State; idx: integer; len: Psize_t): PChar; cdecl; external LUA_LIB_NAME;
 
-procedure luaL_requiref(L: Plua_State; const modname: pchar; openf: lua_CFunction; glb: longbool);
+procedure luaL_requiref(L: Plua_State; const modname: PChar; openf: lua_CFunction; glb: longbool);
   cdecl; external LUA_LIB_NAME;
 
 procedure luaL_setfuncs(L: Plua_State; lr: PluaL_Reg; nup: integer); cdecl; external LUA_LIB_NAME;
@@ -1004,9 +1005,9 @@ begin
   luaL_setfuncs(L, lr, 0);
 end;
 
-function luaL_gsub(L: Plua_State; const s, p, r: pchar): pchar; cdecl; external LUA_LIB_NAME;
+function luaL_gsub(L: Plua_State; const s, p, r: PChar): PChar; cdecl; external LUA_LIB_NAME;
 
-function luaL_getsubtable(L: Plua_State; idx: integer; const fname: pchar): integer; cdecl; external LUA_LIB_NAME;
+function luaL_getsubtable(L: Plua_State; idx: integer; const fname: PChar): integer; cdecl; external LUA_LIB_NAME;
 
 function luaL_newstate: Plua_State; cdecl; external LUA_LIB_NAME;
 

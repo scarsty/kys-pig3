@@ -645,12 +645,12 @@ begin
 end;
 
 procedure DrawBlackScreen;
-  //这里画点应该用CPU
+//这里画点应该用CPU
   procedure CreateBlackScreenSur;
   var
-  i1, i2, x, y: integer;
-  distance: real;
-  alpha: byte;
+    i1, i2, x, y: integer;
+    distance: real;
+    alpha: byte;
   begin
     BlackScreenSur := SDL_CreateRGBSurface(0, CENTER_X * 2, CENTER_Y * 2, 32, RMASK, GMASK, BMASK, AMASK);
     SDL_FillRect(BlackScreenSur, nil, MapRGBA(0, 0, 0, 255));
@@ -680,7 +680,7 @@ begin
       SDL_SetTextureBlendMode(BlackScreenTex, SDL_BLENDMODE_BLEND);
       SDL_FreeSurface(BlackScreenSur);
     end;
-    SDL_SetRenderTarget(render, ScreenTex);
+    SDL_SetRenderTarget(render, screenTex);
     SDL_RenderCopy(render, BlackScreenTex, nil, nil);
   end
   else
