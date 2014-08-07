@@ -3732,6 +3732,9 @@ begin
                 CurrentTeam := CurrentTeam - 1;
             end;
           end;
+        end;
+        SDL_KEYUP:
+        begin
           if (event.key.keysym.sym = SDLK_LEFT) then
           begin
             menuid := 0;
@@ -3740,9 +3743,6 @@ begin
           begin
             menuid := 1;
           end;
-        end;
-        SDL_KEYUP:
-        begin
           if ((event.key.keysym.sym = SDLK_ESCAPE)) then
           begin
             escape := True;
@@ -5167,7 +5167,7 @@ begin
         if MouseInRegion(x, y, 480, 300, xm, ym) then
           position := (xm - x) div 48 * 10 + (ym - y) div 30;
       end;
-      SDL_KeyUP:
+      SDL_KEYUP:
       begin
         if event.key.keysym.sym = SDLK_ESCAPE then
         begin
@@ -6171,7 +6171,7 @@ begin
     SDL_Delay(20);
     pbuy := buy;
     case event.type_ of
-      SDL_KeyDown:
+      SDL_KEYDOWN:
       begin
         if (menu >= 0) and (menu < 5) then
         begin
@@ -6191,7 +6191,7 @@ begin
           refresh := pvalue <> buy.BuyAmount[menu];
         end;
       end;
-      SDL_KeyUp:
+      SDL_KEYUP:
       begin
         lr := 0;
         case event.key.keysym.sym of
@@ -6599,7 +6599,7 @@ begin
   begin
     CheckBasicEvent;
     case event.type_ of
-      SDL_KeyUp:
+      SDL_KEYUP:
       begin
         menu := -1;
         case event.key.keysym.sym of

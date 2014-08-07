@@ -5959,9 +5959,6 @@ begin
           Result := False;
           break;
         end;
-      end;
-      SDL_KEYDOWN:
-      begin
         if (event.key.keysym.sym = SDLK_LEFT) then
         begin
           Brole[a[menu]].AutoMode := Brole[a[menu]].AutoMode - 1;
@@ -5976,6 +5973,9 @@ begin
             Brole[a[menu]].AutoMode := 0;
           ShowTeamModeMenu;
         end;
+      end;
+      SDL_KEYDOWN:
+      begin
         if (event.key.keysym.sym = SDLK_UP) then
         begin
           menu := menu - 1;
