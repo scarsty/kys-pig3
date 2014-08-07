@@ -620,7 +620,7 @@ begin
             break;
         end;
       end;
-      sdl_keydown:
+      SDL_KEYDOWN:
       begin
         if (event.key.keysym.sym = SDLK_UP) then
         begin
@@ -1905,6 +1905,9 @@ begin
           x50[28927] := 0;
           break;
         end;
+      end;
+      SDL_KEYDOWN:
+      begin
         if (event.key.keysym.sym = SDLK_LEFT) then
         begin
           Ay := Ay - 1;
@@ -2005,6 +2008,9 @@ begin
           x50[28927] := 0;
           break;
         end;
+      end;
+      SDL_KEYDOWN:
+      begin
         if (event.key.keysym.sym = SDLK_LEFT) then
         begin
           Ay := Ay - 1;
@@ -2121,6 +2127,9 @@ begin
             Result := True;
           break;
         end;
+      end;
+      SDL_KEYDOWN:
+      begin
         if (event.key.keysym.sym = SDLK_LEFT) then
         begin
           Ay := By - 1;

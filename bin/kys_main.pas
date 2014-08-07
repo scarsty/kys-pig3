@@ -534,6 +534,9 @@ begin
         begin
           Selected := True;
         end;
+      end;
+      SDL_KEYDOWN:
+      begin
         if event.key.keysym.sym = SDLK_UP then
         begin
           menu := menu - 1;
@@ -5318,7 +5321,7 @@ begin
       premenu := -1;
     end;
     if ((event.type_ = SDL_MOUSEBUTTONUP) and (event.button.button = SDL_BUTTON_LEFT) and
-      MouseInRegion(item2x, item2y, d, d)) or ((event.type_ = Sdl_keyup) and (equip = 1) and
+      MouseInRegion(item2x, item2y, d, d)) or ((event.type_ = SDL_KEYUP) and (equip = 1) and
       ((event.key.keysym.sym = SDLK_RETURN) or (event.key.keysym.sym = SDLK_SPACE))) then
     begin
       case CommonMenu2(item2x - 40, item2y + d, 45, menuString, 2) of
@@ -6848,7 +6851,7 @@ begin
     end;
     CheckBasicEvent;
     case event.type_ of
-      SDL_KeyDown:
+      SDL_KEYDOWN:
       begin
         //writeln(leftright,'before down');
         case event.key.keysym.sym of
@@ -6894,7 +6897,7 @@ begin
         end;
         //writeln(leftright,'down');
       end;
-      SDL_KeyUp:
+      SDL_KEYUP:
       begin
         case event.key.keysym.sym of
           SDLK_ESCAPE:

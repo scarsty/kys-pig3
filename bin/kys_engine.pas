@@ -671,10 +671,10 @@ function Traditional2Simplified(mTraditional: string): string; //返回繁体字
 var
   L: integer;
 begin
+{$IFDEF windows}
   L := Length(mTraditional);
   SetLength(Result, L + 1);
   Result[L + 1] := char(0);
-{$IFDEF windows}
   if L > 0 then
     LCMapString(GetUserDefaultLCID,
       $02000000, pchar(mTraditional), L, @Result[1], L);
@@ -1442,10 +1442,10 @@ function Simplified2Traditional(mSimplified: ansistring): ansistring; //返回�
 var
   L: integer;
 begin
+{$IFDEF windows}
   L := Length(mSimplified);
   SetLength(Result, L + 1);
   Result[L + 1] := char(0);
-{$IFDEF windows}
   if L > 0 then
     LCMapString(GetUserDefaultLCID,
       $04000000, pchar(mSimplified), L, @Result[1], L);
