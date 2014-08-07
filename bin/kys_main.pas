@@ -27,6 +27,9 @@ uses
 {$IFDEF UNIX}
   baseUnix,
 {$ENDIF}
+{$IFDEF ANDROID}
+  jni,
+{$ENDIF}
   LCLIntf,
   LCLType,
   LConvEncoding,
@@ -269,7 +272,7 @@ begin
 
   if CellPhone = 1 then
   begin
-    WindowFlag := WindowFlag or SDL_WINDOW_FULLSCREEN_DESKTOP;
+    WindowFlag := WindowFlag {or SDL_WINDOW_FULLSCREEN_DESKTOP};
     KEEP_SCREEN_RATIO := 0;
     TEXT_LAYER := 0;
   end;
@@ -278,15 +281,16 @@ begin
   if PRESENT_SYNC <> 0 then
     RenderFlag := RenderFlag or SDL_RENDERER_PRESENTVSYNC;
 
-  Message('Creating window');
+  Message('Creating window with width and height %d anf %d',[RESOLUTIONX, RESOLUTIONY]);
   window := SDL_CreateWindow(pchar(TitleString), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
     RESOLUTIONX, RESOLUTIONY, WindowFlag);
   SDL_GetWindowSize(window, @RESOLUTIONX, @RESOLUTIONY);
 
   if (CellPhone = 1) then
   begin
+    Message('Width and height of the window is %d, %d',[RESOLUTIONX, RESOLUTIONY]);
     if (RESOLUTIONY > RESOLUTIONX) then
-      ScreenRotate := 1;
+      ScreenRotate := 0;
     //SDL_WarpMouseInWindow(window, RESOLUTIONX, RESOLUTIONY);
   end;
 
@@ -1045,6 +1049,14 @@ var
   str, str1, Name: string;
   str3: string;
   p0, p1: pWideChar;
+{$ifdef android}
+  env: PJNIEnv;
+  jstr: jstring;
+  cstr: pchar;
+  activity: jobject;
+  clazz: jclass;
+  method_id: jmethodID;
+{$endif}
 begin
   LoadR(0);
   //显示输入姓名的对话框
@@ -1062,8 +1074,17 @@ begin
     str := '请输入主角之姓名';
   end;
 
-  {$ifndef android}
+{$ifdef android}
+  env := SDL_AndroidGetJNIEnv();
+  activity := SDL_AndroidGetActivity();
+  clazz := env^.GetObjectClass(env, activity);
+  method_id := env^.GetMethodID(env, clazz, 'mythSetName', '()Ljava/lang/String;');
+  jstr:=jstring(env^.CallObjectMethod(env, activity, method_id));
+  cstr := env^.GetStringUTFChars(env, jstr, 0);
+  Name := strpas(cstr);
+  env^.ReleaseStringUTFChars(env, jstr, cstr);
 
+{$else}
   if FULLSCREEN = 0 then
     Result := inputquery('Enter name', str, Name)
   else
@@ -1075,7 +1096,7 @@ begin
     Redraw;
     UpdateAllScreen;
   end;
-  {$endif}
+{$endif}
 
   Result := Name <> '';
   if Result then
@@ -1125,7 +1146,7 @@ begin
       DrawTextWithRect(@str2[1], 150, CENTER_Y + 120, 80, 0, $202020, 30, 0);
       str0 := format('%4d', [Rrole[0].Aptitude]);
       DrawEngShadowText(@str0[1], 200, CENTER_Y + 123, ColColor($64), ColColor($66));
-      str0 := '選定屬性后按Y鍵或這裡確認';
+      str0 := '選定屬性后按回車或這裡確認';
       DrawTextWithRect(@str0[1], 175, CENTER_Y + 171, 260, ColColor($64), ColColor($66));
       UpdateAllScreen;
 
@@ -1134,19 +1155,17 @@ begin
 
       end;}
       i := WaitAnyKey;
-      if MouseInRegion(175, CENTER_Y + 171, 260, 22) and (i = SDLK_RETURN) then
+      if MouseInRegion(175, CENTER_Y + 171, 260, 22) and (i <> SDLK_ESCAPE) then
         break;
       if i = SDLK_ESCAPE then
       begin
         Result := False;
         exit;
       end;
-    until i = SDLK_y;
+    until (i = SDLK_y) or (i = SDLK_RETURN);
 
     //设定初始成长
     InitGrowth();
-
-
     //特殊名字
     case MODVersion of
       0, 13:
@@ -8095,7 +8114,6 @@ begin
   words := TStringList.Create;
   //words.LoadFromFile(AppPath + 'txt/group.txt');
   words.Add('');
-  words.Add('');
   words.Add('《金庸水滸傳》');
   //words.Add('Legend of Little Village III');
   words.Add('108 Brothers And Sisters');
@@ -8182,8 +8200,9 @@ begin
   words.Add('叶墨');
   words.Add('柳无色');
   words.Add('路人甲');
-  words.Add('南窗寄傲生');
+  //words.Add('南窗寄傲生');
   words.Add('杨裕彪');
+  words.Add('CLRGC');
   words.Add('');
 
   words.Add('校對');
@@ -8197,7 +8216,7 @@ begin
   //words.Add('xuantianxi');
   //words.Add('风神无名');
   //words.Add('KA');
-  words.Add('');
+  //words.Add('');
 
   words.Add('架構');
   words.Add('bttt');

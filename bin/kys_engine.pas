@@ -162,7 +162,7 @@ procedure CleanTextScreenRect(x, y, w, h: integer); overload;
 
 
 //清键值
-procedure CleanKeyValue;
+procedure CleanKeyValue; inline;
 
 //屏幕拉伸相关
 procedure GetMousePosition(var x, y: integer; x0, y0: integer; yp: integer = 0);
@@ -1980,6 +1980,18 @@ function CheckBasicEvent: uint32;
 var
   i, x, y: integer;
   angle: real;
+  msCount: uint32;
+
+  function inReturn(x, y: integer): boolean; inline;
+  begin
+    Result := (x > CENTER_X * 2 - 100) and (y > CENTER_Y * 2 - 100);
+  end;
+
+  function inEscape(x, y: integer): boolean; inline;
+  begin
+    Result := (x < 100) and (y > CENTER_Y * 2 - 100);
+  end;
+
 begin
   //if not ((LoadingTiles) or (LoadingScence)) then
   SDL_FlushEvent(SDL_MOUSEWHEEL);
@@ -2041,8 +2053,16 @@ begin
       begin
         if event.tfinger.fingerId = 1 then
         begin
-          event.type_ := SDL_KEYDOWN;
-          event.key.keysym.sym := AngleToDirection(event.tfinger.dy, event.tfinger.dx);
+          msCount := SDL_GetTicks() - fingerTick;
+          if msCount > 500 then
+            fingerCount := 1;
+          if ((fingerCount <= 2) and (msCount > 300)) or ((fingerCount > 2) and (msCount > 100)) then
+          begin
+            fingerCount := fingerCount + 1;
+            fingerTick := SDL_GetTicks();
+            event.type_ := SDL_KEYDOWN;
+            event.key.keysym.sym := AngleToDirection(event.tfinger.dy, event.tfinger.dx);
+          end;
         end;
       end;
     SDL_FINGERUP:
@@ -2067,12 +2087,22 @@ begin
     begin
       SDL_GetMouseState(@x, @y);
     end;}
+    SDL_MOUSEMOTION:
+    begin
+      if CellPhone = 1 then
+      begin
+        fingerCount := 0;
+        SDL_GetMouseState2(x, y);
+        if inEscape(x, y) or inReturn(x, y) then
+          event.type_ := 0;
+      end;
+    end;
     SDL_KEYUP, SDL_MOUSEBUTTONUP:
     begin
       if (CellPhone = 1) and (event.type_ = SDL_MOUSEBUTTONUP) and (event.button.button = SDL_BUTTON_LEFT) then
       begin
         SDL_GetMouseState2(x, y);
-        if (x < 100) and (y > CENTER_Y * 2 - 100) then
+        if inEscape(x, y) then
         begin
           //event.button.x := RESOLUTIONX div 2;
           //event.button.y := RESOLUTIONY div 2;
@@ -2080,7 +2110,7 @@ begin
           event.key.keysym.sym := SDLK_ESCAPE;
           message('Change to escape');
         end;
-        if (x > CENTER_X * 2 - 100) and (y > CENTER_Y * 2 - 100) then
+        if inReturn(x, y) then
         begin
           //event.button.x := RESOLUTIONX div 2;
           //event.button.y := RESOLUTIONY div 2;
@@ -2088,6 +2118,9 @@ begin
           event.key.keysym.sym := SDLK_RETURN;
           message('Change to return');
         end;
+        //第二指不触发事件
+        if fingerCount >= 1 then
+          event.button.button := 0;
       end;
       if (where = 2) and ((event.key.keysym.sym = SDLK_ESCAPE) or (event.button.button = SDL_BUTTON_RIGHT)) then
       begin
@@ -2107,17 +2140,33 @@ end;
 function AngleToDirection(y, x: real): integer;
 var
   angle: real;
+  angleregion: real;
 begin
-  angle := arctan2(-y, x);
   Result := 0;
-  if (abs(angle) < 0.25) or (abs(angle + PI / 4) < 0.25) then
-    Result := SDLK_RIGHT;
-  if (abs(angle - PI / 2) < 0.25) or (abs(angle - PI / 4) < 0.25) then
-    Result := SDLK_UP;
-  if (abs(angle - PI) < 0.25) or (abs(angle + PI) < 0.25) or (abs(angle - PI * 3 / 4) < 0.25) then
-    Result := SDLK_LEFT;
-  if (abs(angle + PI / 2) < 0.25) or (abs(angle + PI * 3 / 4) < 0.25) then
-    Result := SDLK_DOWN;
+  angle := arctan2(-y, x);
+  angleregion := 0.5;
+  if FreshScreen.Count = 0 then
+  begin
+    if (abs(angle + PI / 4) < angleregion) then
+      Result := SDLK_RIGHT;
+    if (abs(angle - PI / 4) < angleregion) then
+      Result := SDLK_UP;
+    if (abs(angle - PI * 3 / 4) < angleregion) then
+      Result := SDLK_LEFT;
+    if (abs(angle + PI * 3 / 4) < angleregion) then
+      Result := SDLK_DOWN;
+  end
+  else
+  begin
+    if (abs(angle) < angleregion) then
+      Result := SDLK_RIGHT;
+    if (abs(angle - PI / 2) < angleregion) then
+      Result := SDLK_UP;
+    if (abs(angle - PI) < angleregion) or (abs(angle + PI) < angleregion) then
+      Result := SDLK_LEFT;
+    if (abs(angle + PI / 2) < angleregion) then
+      Result := SDLK_DOWN;
+  end;
   if ScreenRotate = 1 then
     case Result of
       SDLK_UP: Result := SDLK_LEFT;

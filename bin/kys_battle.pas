@@ -2941,14 +2941,14 @@ var
     begin
       if (p = menu) and ((MenuStatus and (1 shl i) > 0)) then
       begin
-        DrawTextFrame(103, 50 + h * p, 16);
+        DrawTextFrame(103, 50 + h * p, 15);
         DrawShadowText(@menuString[i][1], 122, 53 + h * p, ColColor($64), ColColor($66));
         DrawEngShadowText(@menuEngString[i][1], 242, 53 + h * p, ColColor($64), ColColor($66));
         p := p + 1;
       end
       else if (p <> menu) and ((MenuStatus and (1 shl i) > 0)) then
       begin
-        DrawTextFrame(103, 50 + h * p, 16, 20);
+        DrawTextFrame(103, 50 + h * p, 15, 20);
         DrawShadowText(@menuString[i][1], 122, 53 + h * p, 0, $202020);
         DrawEngShadowText(@menuEngString[i][1], 242, 53 + h * p, 0, $202020);
         p := p + 1;
@@ -2984,6 +2984,7 @@ begin
   max := max - 1;
 
   Redraw;
+  ShowSimpleStatus(rnum, 80, CENTER_Y * 2 - 130);
   RecordFreshScreen;
   UpdateAllScreen;
   menu := 0;
@@ -3044,7 +3045,7 @@ begin
       end;
       SDL_MOUSEMOTION:
       begin
-        if MouseInRegion(100, 50, 167, max * h + 32, xm, ym) then
+        if MouseInRegion(100, 50, 190, max * h + 32, xm, ym) then
         begin
           menup := menu;
           menu := (ym - 52) div h;

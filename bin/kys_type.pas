@@ -594,7 +594,8 @@ var
   //显示数字: 0-红色负, 1-紫色负, 2-绿色正, 3-黄色正, 4-蓝色负
   tttt, cccc1, cccc2: int64;
 
-  PreAx, PreAy: integer;
+  fingerCount: integer = 0;
+  fingerTick: uint32 = 0;
 
 const
   //色值蒙版, 注意透明蒙版在创建表面时需设为0而不应用此值
