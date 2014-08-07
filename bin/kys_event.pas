@@ -2939,7 +2939,7 @@ begin
     //显示背景
     //display_img('resource/talk.png', Frame_X, Frame_Y);
     LoadFreshScreen;
-    DrawRectangleWithoutFrame(0, Frame_Y, CENTER_X * 2, 170, 0, 50);
+    DrawRectangleWithoutFrame(0, Frame_Y, CENTER_X * 2, 170, 0, 40);
     //显示头像
     if (showhead = 0) and (HeadNum >= 0) then
     begin

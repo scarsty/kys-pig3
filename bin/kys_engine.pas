@@ -1249,10 +1249,11 @@ begin
 end;
 
 //画不含边框的矩形, 用于对话, 黑屏, 血条
-
+//注意大量画点运算应交给cpu
 procedure DrawRectangleWithoutFrame(x, y, w, h: integer; colorin: uint32; alpha: integer);
 var
-  tempscr: PSDL_Surface;
+  tempsur: PSDL_Surface;
+  temptex: PSDL_Texture;
   dest: TSDL_Rect;
   i1, i2: integer;
   tran: byte;
@@ -1263,7 +1264,7 @@ begin
   //tex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, w, h);
   //SDL_SetRenderTarget(render, tex);
   GetRGBA(colorin, @r, @g, @b);
-  if SW_SURFACE = 0 then
+  if (SW_SURFACE = 0) and (alpha >= 0) then
   begin
     SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_BLEND);
     SDL_SetRenderDrawColor(render, r, g, b, 255 - 255 * alpha div 100);
@@ -1271,51 +1272,45 @@ begin
     dest.y := y;
     dest.w := w;
     dest.h := h;
-    if alpha >= 0 then
-      SDL_RenderFillRect(render, @dest);
-    if alpha = -1 then
-    begin
-      for i1 := x to x + w - 1 do
-        for i2 := y to y + h - 1 do
-        begin
-          //if (i1 < sur.w) and (i2 < sur.h) then
-          begin
-            a := round(250 - abs((i2 - y) / h - 0.5) * 150);
-            //a := round(250 - abs((i1 - x) / w + (i2 - y) / h - 1) * 150);
-            SDL_SetRenderDrawColor(render, r, g, b, a);
-            SDL_RenderDrawPoint(render, i1, i2);
-          end;
-        end;
-    end;
+    SDL_RenderFillRect(render, @dest);
   end
   else
   begin
     if (w > 0) and (h > 0) then
     begin
-      tempscr := SDL_CreateRGBSurface(0, w, h, 32, RMask, GMask, BMask, AMASK);
-      SDL_FillRect(tempscr, nil, MapRGBA(r, g, b, 255 - alpha * 255 div 100));
+      tempsur := SDL_CreateRGBSurface(0, w, h, 32, RMask, GMask, BMask, AMASK);
+      SDL_FillRect(tempsur, nil, MapRGBA(r, g, b, 255 - alpha * 255 div 100));
       //SDL_SetSurfaceAlphaMod(tempscr, 255 - alpha * 255 div 100);
-      SDL_SetSurfaceBlendMode(tempscr, SDL_BLENDMODE_BLEND);
+      SDL_SetSurfaceBlendMode(tempsur, SDL_BLENDMODE_BLEND);
       if CurTargetSurface = TextScreen then
-        SDL_SetSurfaceBlendMode(tempscr, SDL_BLENDMODE_MOD);
+        SDL_SetSurfaceBlendMode(tempsur, SDL_BLENDMODE_MOD);
       dest.x := x;
       dest.y := y;
-      if alpha >= 0 then
-        SDL_BlitSurface(tempscr, nil, CurTargetSurface, @dest);
-      if alpha = -1 then
+      dest.w := w;
+      dest.h := h;
+      if alpha < 0 then
       begin
         //SDL_FillRect(tempscr, nil, MapRGBA(r, g, b, 255 - alpha * 255 div 100));
         for i1 := 0 to w - 1 do
           for i2 := 0 to h - 1 do
           begin
-            a := round(250 - abs(i2 / h - 0.5) * 150);
-            PutPixel(tempscr, i1, i2, MapRGBA(r, g, b, a));
+            case alpha of
+              -1: a := round(250 - abs(i2 / h - 0.5) * 150);
+              -2: a := round(200 - abs((i1 + i2) / (w + h) - 0.5) * 250);
+            end;
+            PutPixel(tempsur, i1, i2, MapRGBA(r, g, b, a));
           end;
-        //if CurTargetSurface<> screen then
-        //SDL_SetSurfaceBlendMode(tempscr, SDL_BLENDMODE_NONE);
-        SDL_BlitSurface(tempscr, nil, CurTargetSurface, @dest);
       end;
-      SDL_FreeSurface(tempscr);
+      if SW_OUTPUT = 0 then
+      begin
+        temptex := SDL_CreateTextureFromSurface(render, tempsur);
+        SDL_SetTextureBlendMode(temptex, SDL_BLENDMODE_BLEND);
+        SDL_RenderCopy(render, temptex, nil, @dest);
+        SDL_DestroyTexture(temptex);
+      end
+      else
+        SDL_BlitSurface(tempsur, nil, CurTargetSurface, @dest);
+      SDL_FreeSurface(tempsur);
     end;
   end;
   //SDL_SetRenderTarget(render, ptex);
