@@ -3838,9 +3838,9 @@ begin
         end;
         SDL_MOUSEMOTION:
         begin
-          if  MouseInRegion(xStar, yStar, 200, Show * h + 32, x1, y1) then
+          if MouseInRegion(xStar, yStar, 200, Show * h + 32, x1, y1) then
           begin
-           menuid := 0;
+            menuid := 0;
             menup := CurrentStar;
             menu := (y1 - yStar - 2) div h;
             if menu > Show - 1 then

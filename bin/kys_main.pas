@@ -281,14 +281,14 @@ begin
   if PRESENT_SYNC <> 0 then
     RenderFlag := RenderFlag or SDL_RENDERER_PRESENTVSYNC;
 
-  Message('Creating window with width and height %d anf %d',[RESOLUTIONX, RESOLUTIONY]);
+  Message('Creating window with width and height %d anf %d', [RESOLUTIONX, RESOLUTIONY]);
   window := SDL_CreateWindow(pchar(TitleString), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
     RESOLUTIONX, RESOLUTIONY, WindowFlag);
   SDL_GetWindowSize(window, @RESOLUTIONX, @RESOLUTIONY);
 
   if (CellPhone = 1) then
   begin
-    Message('Width and height of the window is %d, %d',[RESOLUTIONX, RESOLUTIONY]);
+    Message('Width and height of the window is %d, %d', [RESOLUTIONX, RESOLUTIONY]);
     if (RESOLUTIONY > RESOLUTIONX) then
       ScreenRotate := 0;
     //SDL_WarpMouseInWindow(window, RESOLUTIONX, RESOLUTIONY);
@@ -1079,7 +1079,7 @@ begin
   activity := SDL_AndroidGetActivity();
   clazz := env^.GetObjectClass(env, activity);
   method_id := env^.GetMethodID(env, clazz, 'mythSetName', '()Ljava/lang/String;');
-  jstr:=jstring(env^.CallObjectMethod(env, activity, method_id));
+  jstr := jstring(env^.CallObjectMethod(env, activity, method_id));
   cstr := env^.GetStringUTFChars(env, jstr, 0);
   Name := strpas(cstr);
   env^.ReleaseStringUTFChars(env, jstr, cstr);
@@ -2678,13 +2678,13 @@ begin
               //在手机中放宽要求
               if (CellPhone = 1) and (SData[CurScence, 3, axp, ayp] < 0) then
               begin
-                for i1 := 1 downto 0 do
-                  for i2 := 1 downto 0 do
+                for i1 := axp + 1 downto axp do
+                  for i2 := ayp + 1 downto ayp do
                   begin
-                    if (SData[CurScence, 3, axp + i1, ayp + i2] > 0) then
+                    if (SData[CurScence, 3, i1, i2] > 0) and not (CanWalkInScence(i1, i2)) then
                     begin
-                      axp := axp + i1;
-                      ayp := ayp + i2;
+                      axp := i1;
+                      ayp := i2;
                     end;
                   end;
               end;

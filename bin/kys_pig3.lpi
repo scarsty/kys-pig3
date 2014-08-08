@@ -178,6 +178,7 @@
       <Unit5>
         <Filename Value="kys_script.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="kys_script"/>
       </Unit5>
       <Unit6>
         <Filename Value="kys_draw.pas"/>
