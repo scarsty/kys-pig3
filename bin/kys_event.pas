@@ -2939,6 +2939,7 @@ begin
     //显示背景
     //display_img('resource/talk.png', Frame_X, Frame_Y);
     LoadFreshScreen;
+    //DrawTPic(25, 0, Frame_Y - 60, nil, 0,30,0,0,0.75,0.75);
     DrawRectangleWithoutFrame(0, Frame_Y, CENTER_X * 2, 170, 0, 40);
     //显示头像
     if (showhead = 0) and (HeadNum >= 0) then
@@ -2961,20 +2962,25 @@ begin
     ix := 0;
     iy := 0;
     skipSync := False;
-    if SkipTalk = 1 then
-      break;
     while SDL_PollEvent(@event) >= 0 do
     begin
       CheckBasicEvent;
+      //部分功能
       if (event.key.keysym.sym = SDLK_ESCAPE) or (event.button.button = SDL_BUTTON_RIGHT) then
       begin
         skipSync := True;
-        SkipTalk := 1 - SkipTalk;
+        SkipTalk := 1;
+        //CleanKeyValue;
         break;
       end;
-      if (event.key.keysym.sym = SDLK_RETURN) or (event.button.button = SDL_BUTTON_LEFT) or
-        (event.key.keysym.sym = SDLK_SPACE) then
+      if (event.key.keysym.sym = SDLK_RETURN) or (event.key.keysym.sym = SDLK_SPACE) or
+        (event.button.button = SDL_BUTTON_LEFT) then
+      begin
         skipSync := True;
+        SkipTalk := 0;
+      end;
+      if SkipTalk = 1 then
+        break;
       if not ((ix < Talk_W) and (iy < Talk_H) and (I <= len)) then
         break;
       //检查是否等待按键
@@ -3110,6 +3116,8 @@ begin
       end;
     end;
     if I > len then
+      break;
+    if SkipTalk = 1 then
       break;
   end;
   FreeFreshScreen;

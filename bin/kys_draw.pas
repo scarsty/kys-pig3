@@ -20,7 +20,8 @@ uses
 procedure DrawPic(sur: PSDL_Surface; Pictype, num, px, py, shadow, alpha: integer; mixColor: uint32;
   mixAlpha: integer);
 procedure DrawTPic(imgnum, px, py: integer; region: PSDL_Rect = nil; shadow: integer = 0;
-  Alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0; angle: real = 0);
+  Alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0; scalex: real = 1;
+  scaley: real = 1; angle: real = 0);
 procedure DrawMPic(num, px, py: integer; Framenum: integer = -1; shadow: integer = 0;
   alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0; scalex: real = 1;
   scaley: real = 1; angle: real = 0); overload;
@@ -137,7 +138,8 @@ end;
 //显示title.grp的内容(即开始的选单)
 
 procedure DrawTPic(imgnum, px, py: integer; region: PSDL_Rect = nil; shadow: integer = 0;
-  Alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0; angle: real = 0);
+  Alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0; scalex: real = 1;
+  scaley: real = 1; angle: real = 0);
 var
   len, grp, idx: integer;
   Area: TSDL_Rect;
@@ -148,7 +150,7 @@ begin
   begin
     if imgnum <= high(TitlePNGIndex) then
       DrawPNGTile(render, TitlePNGIndex[imgnum], 0, px, py, region, shadow, alpha, mixColor,
-        mixAlpha, 1, 1, angle, nil);
+        mixAlpha, scalex, scaley, angle, nil);
   end;
 
 end;
@@ -209,8 +211,6 @@ begin
     end;
   end;
 end;
-
-//画考虑遮挡的内场景
 
 procedure DrawSPic(num, px, py: integer; region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32;
   mixAlpha: integer); overload;

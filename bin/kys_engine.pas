@@ -32,6 +32,7 @@ uses
   mythoutput;
 
 function EventFilter(p: pointer; e: PSDL_Event): longint; cdecl;
+procedure SendKeyEvent(keyvalue: integer); stdcall; export;
 
 //音频子程
 procedure InitialMusic;
@@ -208,6 +209,15 @@ begin
       if CellPhone = 0 then
         Result := 0;
   end;
+end;
+
+procedure SendKeyEvent(keyvalue: integer);
+var
+  e: tsdl_event;
+begin
+  e.type_ := SDL_KEYUP;
+  e.key.keysym.sym := keyvalue;
+  SDL_PushEvent(@e);
 end;
 
 procedure InitialMusic;
@@ -1296,7 +1306,7 @@ begin
           begin
             case alpha of
               -1: a := round(250 - abs(i2 / h - 0.5) * 150);
-              -2: a := round(200 - abs((i1 + i2) / (w + h) - 0.5) * 250);
+              -2: a := round(150 + abs(i2 / h - 0.5) * 100);
             end;
             PutPixel(tempsur, i1, i2, MapRGBA(r, g, b, a));
           end;
@@ -1979,8 +1989,8 @@ end;
 function CheckBasicEvent: uint32;
 var
   i, x, y: integer;
-  angle: real;
   msCount: uint32;
+  msWait: uint32;
 
   function inReturn(x, y: integer): boolean; inline;
   begin
@@ -2053,13 +2063,16 @@ begin
       begin
         if event.tfinger.fingerId = 1 then
         begin
-          msCount := SDL_GetTicks() - fingerTick;
+          msCount := SDL_GetTicks() - FingerTick;
+          msWait := 50;
+          if BattleSelecting then
+            msWait := 100;
           if msCount > 500 then
-            fingerCount := 1;
-          if ((fingerCount <= 2) and (msCount > 300)) or ((fingerCount > 2) and (msCount > 100)) then
+            FingerCount := 1;
+          if ((FingerCount <= 2) and (msCount > 200)) or ((FingerCount > 2) and (msCount > msWait)) then
           begin
-            fingerCount := fingerCount + 1;
-            fingerTick := SDL_GetTicks();
+            FingerCount := FingerCount + 1;
+            FingerTick := SDL_GetTicks();
             event.type_ := SDL_KEYDOWN;
             event.key.keysym.sym := AngleToDirection(event.tfinger.dy, event.tfinger.dx);
           end;
@@ -2079,9 +2092,9 @@ begin
       end;
     end;
     SDL_APP_DIDENTERFOREGROUND:
-      PlayMP3(nowmusic, -1);
+      PlayMP3(nowmusic, -1, 0);
     SDL_APP_DIDENTERBACKGROUND:
-      StopMP3();
+      StopMP3(0);
     {SDL_MOUSEBUTTONDOWN:
     if (CellPhone = 1) and (event.button.button = SDL_BUTTON_LEFT) then
     begin
@@ -2091,7 +2104,7 @@ begin
     begin
       if CellPhone = 1 then
       begin
-        fingerCount := 0;
+        FingerCount := 0;
         SDL_GetMouseState2(x, y);
         if inEscape(x, y) or inReturn(x, y) then
           event.type_ := 0;
@@ -2109,17 +2122,22 @@ begin
           event.button.button := SDL_BUTTON_RIGHT;
           event.key.keysym.sym := SDLK_ESCAPE;
           message('Change to escape');
-        end;
-        if inReturn(x, y) then
+        end
+        else if inReturn(x, y) then
         begin
           //event.button.x := RESOLUTIONX div 2;
           //event.button.y := RESOLUTIONY div 2;
           event.type_ := SDL_KEYUP;
           event.key.keysym.sym := SDLK_RETURN;
           message('Change to return');
+        end
+        //手机在战场仅有确认键有用
+        else if (where = 2) and (BattleSelecting) then
+        begin
+          event.button.button := 0;
         end;
         //第二指不触发事件
-        if fingerCount >= 1 then
+        if FingerCount >= 1 then
           event.button.button := 0;
       end;
       if (where = 2) and ((event.key.keysym.sym = SDLK_ESCAPE) or (event.button.button = SDL_BUTTON_RIGHT)) then
@@ -2144,29 +2162,17 @@ var
 begin
   Result := 0;
   angle := arctan2(-y, x);
-  angleregion := 0.5;
-  if FreshScreen.Count = 0 then
-  begin
-    if (abs(angle + PI / 4) < angleregion) then
-      Result := SDLK_RIGHT;
-    if (abs(angle - PI / 4) < angleregion) then
-      Result := SDLK_UP;
-    if (abs(angle - PI * 3 / 4) < angleregion) then
-      Result := SDLK_LEFT;
-    if (abs(angle + PI * 3 / 4) < angleregion) then
-      Result := SDLK_DOWN;
-  end
-  else
-  begin
-    if (abs(angle) < angleregion) then
-      Result := SDLK_RIGHT;
-    if (abs(angle - PI / 2) < angleregion) then
-      Result := SDLK_UP;
-    if (abs(angle - PI) < angleregion) or (abs(angle + PI) < angleregion) then
-      Result := SDLK_LEFT;
-    if (abs(angle + PI / 2) < angleregion) then
-      Result := SDLK_DOWN;
-  end;
+  angleregion := PI / 4;
+  //注意这里的判断方法可能并不准确
+
+  if (abs(angle + PI / 8) < angleregion) then
+    Result := SDLK_RIGHT;
+  if (abs(angle - PI * 3 / 8) < angleregion) then
+    Result := SDLK_UP;
+  if (abs(angle - PI * 7 / 8) < angleregion) or (angle < -PI * 7 / 8) then
+    Result := SDLK_LEFT;
+  if (abs(angle + PI * 5 / 8) < angleregion) then
+    Result := SDLK_DOWN;
   if ScreenRotate = 1 then
     case Result of
       SDLK_UP: Result := SDLK_LEFT;

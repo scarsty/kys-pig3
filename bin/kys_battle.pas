@@ -1742,6 +1742,7 @@ begin
   //SDL_EnableKeyRepeat(20, 100);
   Ax := Bx;
   Ay := By;
+  BattleSelecting := True;
   DrawBFieldWithCursor(0, step, 0);
   if (BField[2, Ax, Ay] >= 0) then
     ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 130);
@@ -1827,6 +1828,7 @@ begin
       ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 130);
     UpdateAllScreen;
   end;
+  BattleSelecting := False;
   //SDL_EnableKeyRepeat(30, 30);
 end;
 
@@ -1838,6 +1840,7 @@ var
 begin
   Ax := Bx;
   Ay := By;
+  BattleSelecting := True;
   DrawBFieldWithCursor(AttAreaType, step, range);
   UpdateAllScreen;
   while (SDL_WaitEvent(@event) >= 0) do
@@ -1872,7 +1875,7 @@ begin
       end;
     end;
   end;
-
+  BattleSelecting := False;
 end;
 
 //目标系点叉菱方型、原地系菱方型
@@ -1883,6 +1886,7 @@ var
 begin
   Ax := Bx;
   Ay := By;
+  BattleSelecting := True;
   DrawBFieldWithCursor(AttAreaType, step, range);
   if (BField[2, Ax, Ay] >= 0) then
     ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 130);
@@ -1969,7 +1973,7 @@ begin
       end;
     end;
   end;
-
+  BattleSelecting := False;
 end;
 
 //选择远程
@@ -1979,15 +1983,14 @@ var
   Axp, Ayp: integer;
   AttAreaType, step, range, minstep: integer;
 begin
-
   step := Rmagic[mnum].MoveDistance[level - 1];
   range := Rmagic[mnum].AttDistance[level - 1];
   AttAreaType := Rmagic[mnum].AttAreaType;
-
   minstep := Rmagic[mnum].MinStep;
 
   Ax := Bx - minstep - 1;
   Ay := By;
+  BattleSelecting := True;
   DrawBFieldWithCursor(AttAreaType, step, range);
   UpdateAllScreen;
   while (SDL_WaitEvent(@event) >= 0) do
@@ -2094,7 +2097,7 @@ begin
       end;
     end;
   end;
-
+  BattleSelecting := False;
 end;
 
 
@@ -2106,6 +2109,7 @@ var
 begin
   Ax := Bx - 1;
   Ay := By;
+  BattleSelecting := True;
   //str := '選擇攻擊方向';
   //Drawtextwithrect(@str[1], 280, 200, 125, colcolor($21), colcolor($23));
   DrawBFieldWithCursor(AttAreaType, step, range);
@@ -2225,10 +2229,10 @@ begin
         end;
         DrawBFieldWithCursor(AttAreaType, step, range);
         UpdateAllScreen;
-
       end;
     end;
   end;
+  BattleSelecting := False;
 end;
 
 

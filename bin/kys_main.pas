@@ -224,12 +224,16 @@ begin
   for i := 0 to SDL_GetNumRenderDrivers() - 1 do
   begin
     SDL_GetRenderDriverInfo(i, @info);
-    Message('Renderer %d is %s.', [i, info.Name]);
-    Message(' Support software fallback: %d', [sign(info.flags and SDL_RENDERER_SOFTWARE)]);
-    Message(' Support hardware acceleration: %d', [sign(info.flags and SDL_RENDERER_ACCELERATED)]);
-    Message(' Support synchronizing with the refresh rate: %d',
-      [sign(info.flags and SDL_RENDERER_PRESENTVSYNC)]);
-    Message(' Support rendering to textures: %d', [sign(info.flags and SDL_RENDERER_TARGETTEXTURE)]);
+    Message('Renderer %d is %s, support:', [i, info.Name]);
+    if info.flags and SDL_RENDERER_SOFTWARE <> 0 then
+      Message('software fallback, ', False);
+    if info.flags and SDL_RENDERER_ACCELERATED <> 0 then
+      Message('hardware acceleration, ', False);
+    if info.flags and SDL_RENDERER_PRESENTVSYNC <> 0 then
+      Message('persent synchronizing, ', False);
+    if info.flags and SDL_RENDERER_TARGETTEXTURE <> 0 then
+      Message('texture rendering, ', False);
+    message('...end');
     if (info.Name = 'opengl') or (info.Name = 'opengles2') then
     begin
       if (RENDERER = 1) then
@@ -1056,6 +1060,7 @@ var
   activity: jobject;
   clazz: jclass;
   method_id: jmethodID;
+  e: TSDL_event;
 {$endif}
 begin
   LoadR(0);
@@ -1075,6 +1080,10 @@ begin
   end;
 
 {$ifdef android}
+  ShowStatus(0);
+  UpdateAllScreen;
+  str0 := '點擊一下開始選屬性！';
+  DrawTextWithRect(@str0[1], 175, CENTER_Y + 171, 10, ColColor($64), ColColor($66));
   env := SDL_AndroidGetJNIEnv();
   activity := SDL_AndroidGetActivity();
   clazz := env^.GetObjectClass(env, activity);
@@ -1106,7 +1115,7 @@ begin
     p0 := @Rrole[0].Name;
     p1 := @str2[1];
     fillchar(Rrole[0].Name[0], 10, 0);
-    for i := 0 to length(str2) - 1 do
+    for i := 0 to min(4, length(str2)) - 1 do
     begin
       p0^ := p1^;
       Inc(p0);
@@ -2210,7 +2219,7 @@ var
 begin
 
   mode := MODVersion;
-  if Cellphone = 1 then
+  if CellPhone = 1 then
     mode := 0;
   Result := False;
   Xinc[1] := 0;
@@ -8079,7 +8088,6 @@ begin
     //InitialScence(0);
   end;
   NeedRefreshScence := 1;
-
   //if where <> 2 then CurEvent := -1;
   ////SDL_EnableKeyRepeat(30, 30);
 

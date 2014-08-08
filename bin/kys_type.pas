@@ -509,8 +509,8 @@ var
 
   KEEP_SCREEN_RATIO: integer = 1;  //保持拉伸时的长宽比
 
-  THREAD_READ_PNG: integer = 0;
-  DISABLE_MENU_AMI: integer = 0;
+  THREAD_READ_PNG: integer = 0;   //线程读取贴图
+  DISABLE_MENU_AMI: integer = 0;  //弹出菜单的速度
   //InMenuEsc: integer = 0;  //表示是否处于菜单中, 无需刷新场景
 
   openAudio: HSTREAM;
@@ -584,8 +584,8 @@ var
   JOY_RETURN, JOY_ESCAPE, JOY_LEFT, JOY_RIGHT, JOY_UP, JOY_DOWN, JOY_MOUSE_LEFT: uint32;
   JOY_AXIS_DELAY: uint32;
 
-  CellPhone: integer = 0;
-  ScreenRotate: integer = 0;
+  CellPhone: integer = 0;   //是否移动设备
+  ScreenRotate: integer = 0;   //是否正在旋转屏幕
 
   //指针图片
   //CursorSurface: array[0..6] of PSDL_Cursor;
@@ -594,8 +594,10 @@ var
   //显示数字: 0-红色负, 1-紫色负, 2-绿色正, 3-黄色正, 4-蓝色负
   tttt, cccc1, cccc2: int64;
 
-  fingerCount: integer = 0;
-  fingerTick: uint32 = 0;
+  FingerCount: integer = 0;    //双指操作计数
+  FingerTick: uint32 = 0;    //双指操作间隔
+  FreeWalking:  boolean = false;
+    BattleSelecting: boolean = false;   //是否处于战场上选择
 
 const
   //色值蒙版, 注意透明蒙版在创建表面时需设为0而不应用此值

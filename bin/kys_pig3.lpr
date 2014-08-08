@@ -29,7 +29,8 @@ uses
 
 {$IFDEF android}
 exports
-  Run;
+  Run,
+  SendKeyEvent;
 {$endif}
 
 begin
@@ -37,4 +38,4 @@ begin
   Application.Initialize;
   Run;
 {$ENDIF}
-end.
+end.
