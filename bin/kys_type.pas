@@ -579,13 +579,6 @@ var
   ForceBattleWin: integer = 0;
   SkipTalk: integer = 0;
 
-  //手柄控制相关
-  joy: PSDL_Joystick;
-  JOY_RETURN, JOY_ESCAPE, JOY_LEFT, JOY_RIGHT, JOY_UP, JOY_DOWN, JOY_MOUSE_LEFT: uint32;
-  JOY_AXIS_DELAY: uint32;
-
-  CellPhone: integer = 0;   //是否移动设备
-  ScreenRotate: integer = 0;   //是否正在旋转屏幕
 
   //指针图片
   //CursorSurface: array[0..6] of PSDL_Cursor;
@@ -594,10 +587,18 @@ var
   //显示数字: 0-红色负, 1-紫色负, 2-绿色正, 3-黄色正, 4-蓝色负
   tttt, cccc1, cccc2: int64;
 
+  //手柄控制相关
+  joy: PSDL_Joystick;
+  JOY_RETURN, JOY_ESCAPE, JOY_LEFT, JOY_RIGHT, JOY_UP, JOY_DOWN, JOY_MOUSE_LEFT: uint32;
+  JOY_AXIS_DELAY: uint32;
+
+  CellPhone: integer = 0;   //是否移动设备
+  ScreenRotate: integer = 0;   //是否正在旋转屏幕
+
   FingerCount: integer = 0;    //双指操作计数
   FingerTick: uint32 = 0;    //双指操作间隔
-  FreeWalking:  boolean = false;
-    BattleSelecting: boolean = false;   //是否处于战场上选择
+  FreeWalking: boolean = False;
+  BattleSelecting: boolean = False;   //是否处于战场上选择
 
 const
   //色值蒙版, 注意透明蒙版在创建表面时需设为0而不应用此值

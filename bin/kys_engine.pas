@@ -2914,6 +2914,8 @@ begin
   end;
 
   //注意混合色的问题, 该算法很奇怪, 若强制指定混合色用mixAlpha < 0
+  SDL_SetTextureColorMod(tex, 255, 255, 255);
+  SDL_SetTextureAlphaMod(tex, 255);
   if (mixAlpha > 0) and (shadow <= 0) then
   begin
     GetRGBA(mixColor, @r, @g, @b);
@@ -2921,10 +2923,6 @@ begin
     g1 := max(0, 255 - (255 + r + b) * mixAlpha div 100);
     b1 := max(0, 255 - (255 + r + g) * mixAlpha div 100);
     SDL_SetTextureColorMod(tex, r1, g1, b1);
-  end
-  else
-  begin
-    SDL_SetTextureColorMod(tex, 255, 255, 255);
   end;
   if mixAlpha < 0 then
   begin
@@ -2952,10 +2950,6 @@ begin
   if alpha > 0 then
   begin
     SDL_SetTextureAlphaMod(tex, 255 * (100 - alpha) div 100);
-  end
-  else
-  begin
-    SDL_SetTextureAlphaMod(tex, 255);
   end;
   SDL_RenderCopyEx(render, tex, region, @rect, angle, center, SDL_FLIP_NONE);
   //SDL_RenderCopy(render, tex, nil, nil);
@@ -3018,6 +3012,8 @@ begin
     end;
 
     //注意混合色的问题, 该算法很奇怪, 若强制指定混合色用mixAlpha < 0
+    SDL_SetSurfaceColorMod(sur, 255, 255, 255);
+    SDL_SetSurfaceAlphaMod(sur, 255);
     if (mixAlpha > 0) and (shadow <= 0) then
     begin
       GetRGBA(mixColor, @r, @g, @b);
@@ -3025,10 +3021,6 @@ begin
       g1 := max(0, 255 - (255 + r + b) * mixAlpha div 100);
       b1 := max(0, 255 - (255 + r + g) * mixAlpha div 100);
       SDL_SetSurfaceColorMod(sur, r1, g1, b1);
-    end
-    else
-    begin
-      SDL_SetSurfaceColorMod(sur, 255, 255, 255);
     end;
     if mixAlpha < 0 then
     begin
@@ -3051,10 +3043,6 @@ begin
     if alpha > 0 then
     begin
       SDL_SetSurfaceAlphaMod(sur, 255 * (100 - alpha) div 100);
-    end
-    else
-    begin
-      SDL_SetSurfaceAlphaMod(sur, 255);
     end;
 
     if (rect.w = PNGIndex.w) and (rect.h = PNGIndex.h) then

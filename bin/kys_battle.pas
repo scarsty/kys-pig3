@@ -1639,6 +1639,7 @@ begin
   //SDL_EnableKeyRepeat(20, 100);
   Ax := Bx;
   Ay := By;
+  BattleSelecting := True;
   step := 64;
   range := 0;
   AttAreaType := 0;
@@ -1724,11 +1725,14 @@ begin
     if (pAx <> Ax) or (pAy <> Ay) then
     begin
       DrawBFieldWithCursor(AttAreaType, step, range);
+      if BField[2, Ax, Ay] >= 0 then
+        ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 130);
       UpdateAllScreen;
       pAx := Ax;
       pAy := Ay;
     end;
   end;
+  BattleSelecting := False;
   //SDL_EnableKeyRepeat(30, 30);
 end;
 

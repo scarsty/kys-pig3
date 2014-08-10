@@ -217,8 +217,6 @@ begin
 
   SDL_Init(SDL_INIT_VIDEO);
 
-  SDL_SetEventFilter(@EventFilter, nil);
-
   //找渲染器
   rendernum := -1;
   for i := 0 to SDL_GetNumRenderDrivers() - 1 do
@@ -328,6 +326,8 @@ begin
   keydown := puint8(keystate + sdl_SCANCODE_down);
   keyleft := puint8(keystate + sdl_SCANCODE_left);
   keyright := puint8(keystate + sdl_SCANCODE_right);
+
+  SDL_SetEventFilter(@EventFilter, nil);
 
   if CellPhone = 0 then
   begin

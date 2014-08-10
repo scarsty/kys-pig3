@@ -14,9 +14,8 @@ program kys_pig3;
 //{$APPTYPE CONSOLE}
 
 uses
-  Forms,
   Interfaces,
-  Dialogs,
+  Forms,
   kys_type in 'kys_type.pas',
   kys_main in 'kys_main.pas',
   kys_event in 'kys_event.pas',
