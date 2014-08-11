@@ -308,14 +308,12 @@ begin
   ImageWidth := (36 * 32 + CENTER_X) * 2;
   ImageHeight := (18 * 32 + CENTER_Y) * 2;
 
-  CreateMainRenderTextures;
-  CreateAssistantRenderTextures;
-
+  //初始化字体
   TTF_Init();
   SetFontSize(20, 18, -1);
 
-  if (font = nil) or (engfont = nil) then
-    Message('Read fonts failed');
+  CreateMainRenderTextures;
+  CreateAssistantRenderTextures;
 
   InitialScript;
   InitialMusic;

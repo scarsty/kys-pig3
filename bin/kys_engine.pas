@@ -3112,6 +3112,8 @@ var
 
   bmp: PSDL_Texture;
 
+  timerid: TSDL_TimerID;
+
   //info: SDL_SysWMinfo;
 
   function LoadAudioThread(Data: pointer): longint; cdecl;
@@ -3479,7 +3481,6 @@ begin
   end
   else
   begin
-
     chnsize := round(chnsize * scale);
     engsize := round(engsize * scale);
   end;
@@ -3489,9 +3490,11 @@ begin
   CHINESE_FONT_REALSIZE := chnsize;
   ENGLISH_FONT_REALSIZE := engsize;
 
+  if (font = nil) or (engfont = nil) then
+    Message('Read fonts failed');
+
   //测试中文字体的空格宽度
   Text := TTF_RenderUNICODE_solid(font, @word[0], tempcolor);
-  //writeln(text.w);
   CHNFONT_SPACEWIDTH := Text.w;
   SDL_FreeSurface(Text);
   //writeln(chnsize, engsize);
