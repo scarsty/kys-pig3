@@ -4798,12 +4798,13 @@ end;
 //若已中毒或受伤, 不恢复血内体, 少量减轻中毒和受伤程度
 //内功, 可大量恢复血内体
 //已经移动过则使用回合结束少量恢复状态
+//被定身不能调息
 procedure Rest(bnum: integer);
 var
   rnum, i, j, curehurt, curepoison, neinum, neilevel, step: integer;
 begin
   //step := CalBroleMoveAbililty(bnum);
-  if Brole[bnum].Moved > 0 then
+  if (Brole[bnum].Moved > 0) or (Brole[i].StateLevel[26] < 0) then
   begin
     rnum := Brole[bnum].rnum;
     Rrole[rnum].PhyPower := min(Rrole[rnum].PhyPower + MAX_PHYSICAL_POWER div 15, MAX_PHYSICAL_POWER);

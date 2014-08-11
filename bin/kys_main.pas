@@ -1735,9 +1735,9 @@ begin
         Result := SDLK_RIGHT;
       if (y > CENTER_Y * 2 - 100) then
         Result := SDLK_DOWN;
-      if (x < 100) and ((y > CENTER_Y * 2 - 100)) then
+      if (x < 100) and (y > CENTER_Y * 2 - 100) then
         Result := SDLK_RETURN;
-      if (x > CENTER_X * 2 - 100) and ((y > CENTER_Y * 2 - 100)) then
+      if (x > CENTER_X * 2 - 100) and (y > CENTER_Y * 2 - 100) then
         Result := SDLK_RETURN;
     end;
   end;
