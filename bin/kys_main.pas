@@ -45,7 +45,11 @@ uses
   Classes,
   zip,
   unzip,
-  ziputils;
+  ziputils,
+  fileinfo,
+  winpeimagereader, {need this for reading exe info}
+  elfreader, {needed for reading ELF executables}
+  machoreader; {needed for reading MACH-O executables}
 
 //function main(paracount: integer; paras: PPChar): integer; stdcall; export;
 
@@ -376,11 +380,19 @@ var
   filename: string;
   Kys_ini: TIniFile;
   p, p1: pchar;
+  FileVerInfo: TFileVersionInfo;
 begin
   Setlength(Music, 99);
   Setlength(Esound, 99);
   Setlength(Asound, 99);
-
+  FileVerInfo := TFileVersionInfo.Create(nil);
+  try
+    FileVerInfo.FileName := ParamStr(1);
+    FileVerInfo.ReadFileInfo;
+    versionstr := versionstr + ' - ' + FileVerInfo.VersionStrings.Values['FileVersion'];
+  finally
+    FileVerInfo.Free;
+  end;
   StartMusic := 59;
   TitleString := 'Legend of Little Village III - 108 Brothers and Sisters';
 
@@ -787,6 +799,10 @@ var
   zfile: zipfile;
 begin
   iniFilename := AppPath + iniFilename;
+
+  if not FileExists(inifilename) then
+    Quit;
+
   Kys_ini := TIniFile.Create(iniFilename);
   Message('Find ini file: %s', [iniFilename]);
   try
@@ -3278,7 +3294,7 @@ begin
   begin
     CheckBasicEvent;
     case event.type_ of
-      SDL_KEYUP:
+      SDL_KEYDOWN:
       begin
         if (event.key.keysym.sym = SDLK_DOWN) then
         begin
@@ -3310,6 +3326,9 @@ begin
           ShowCommonScrollMenu;
           UpdateAllScreen;
         end;
+      end;
+      SDL_KEYUP:
+      begin
         if (event.key.keysym.sym = SDLK_PAGEDOWN) then
         begin
           menu := menu + maxshow;

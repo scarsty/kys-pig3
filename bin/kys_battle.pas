@@ -1726,7 +1726,7 @@ begin
     begin
       DrawBFieldWithCursor(AttAreaType, step, range);
       if BField[2, Ax, Ay] >= 0 then
-        ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 130);
+        ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, 80, CENTER_Y * 2 - 130);
       UpdateAllScreen;
       pAx := Ax;
       pAy := Ay;
@@ -2942,7 +2942,7 @@ var
   var
     i, p: integer;
   begin
-    LoadFreshScreen;
+    LoadFreshScreen(100, 50);
     //DrawRectangle(100, 50, 167, max * 22 + 28, 0, ColColor(255), 30);
     p := 0;
     for i := 0 to 9 do
@@ -2993,7 +2993,7 @@ begin
 
   Redraw;
   ShowSimpleStatus(rnum, 80, CENTER_Y * 2 - 130);
-  RecordFreshScreen;
+  RecordFreshScreen(100, 50, 200, 300);
   UpdateAllScreen;
   menu := 0;
   if max < 0 then
@@ -4804,7 +4804,7 @@ var
   rnum, i, j, curehurt, curepoison, neinum, neilevel, step: integer;
 begin
   //step := CalBroleMoveAbililty(bnum);
-  if (Brole[bnum].Moved > 0) or (Brole[i].StateLevel[26] < 0) then
+  if (Brole[bnum].Moved > 0) or (Brole[bnum].StateLevel[26] < 0) then
   begin
     rnum := Brole[bnum].rnum;
     Rrole[rnum].PhyPower := min(Rrole[rnum].PhyPower + MAX_PHYSICAL_POWER div 15, MAX_PHYSICAL_POWER);
@@ -8441,6 +8441,7 @@ begin
     exit;
   end;
   ShowMagicName(mnum);
+  RecordFreshScreen;
   amount := 0;
   if (level < 10) or (MODVersion <> 13) then
   begin
@@ -8504,16 +8505,19 @@ begin
     if AI then
       res := random(amount)
     else
-      while res = -1 do
+      while res < 0 do
+      begin
+        LoadFreshScreen;
         res := CommonScrollMenu(CENTER_X - 60 - length(menuString[0]) * 5, 130, 105 +
           length(menuString[0]) * 10, amount - 1, 12, menuString);
-    Rrole[Brole[bnum].rnum].Magic[0] := mnumarray[res];
+      end;
   end;
-  PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+  FreeFreshScreen;
+  Rrole[Brole[bnum].rnum].Magic[0] := mnumarray[res];
+  PlayMagicAmination(bnum, Rmagic[mnumarray[res]].AmiNum, Rmagic[mnumarray[res]].AddMP[0]);
   if AI then
     ShowMagicName(Rrole[Brole[bnum].rnum].Magic[0]);
   Brole[bnum].Acted := 1;
-
 end;
 
 //32众生平等

@@ -4277,7 +4277,6 @@ begin
             menutop := menu - maxshow + 1;
             if menutop < 0 then
               menutop := 0;
-
           end;
           ShowCommonScrollMenu_starlist(x, y, w, max, maxshow, menu, menutop, head[menu]);
           // SDL_UpdateRect2(screen, x, y, w + 1, maxshow * 22 + 29);
@@ -4388,9 +4387,9 @@ begin
             ShowCommonScrollMenu_starlist(x, y, w, max, maxshow, menu, menutop, head[menu]);
             //SDL_UpdateRect2(screen, x, y, w + 1, maxshow * 22 + 29);
           end;
-        end
-        else
-          menu := -1;
+        end;
+        //else
+        //  menu := -1;
       end;
     end;
   end;
