@@ -4079,6 +4079,8 @@ var
   words: array[0..10] of WideString;
   words2: array[0..22] of WideString;
   words3: array[0..12] of WideString;
+  curitem0: integer;
+  refresh: boolean;
   //显示物品选单, intitle表示有灰度
   ItemTypeList: array[0..8] of integer = (0, 1, 3, 4, 21, 22, 23, 30, 31);
 
@@ -4405,12 +4407,13 @@ begin
   intitle := 1;
   pintitle := -1;
   dragitem := -1;
+  curitem0 := -1;
   event.key.keysym.sym := 0;
   event.button.button := 0;
+  refresh := True;
   while (SDL_PollEvent(@event) >= 0) do
   begin
-    if (x <> px) or (y <> py) or (listLT <> plistLT) or (menu <> pmenu) or (intitle <> pintitle) or
-      Result or (dragitem >= 0) then
+    if refresh then
     begin
       //writeln(x, y, listLT, menu, Result, dragitem);
       //writeln(px, py, plistLT, pmenu);
@@ -4655,7 +4658,6 @@ begin
         end;
         if (event.button.button = SDL_BUTTON_LEFT) then
         begin
-          //DragSuccess := 0;
           if dragitem >= 0 then
           begin
             if MouseInRegion(CENTER_X - 384, CENTER_Y - 240, 250, 480, xm, ym) then
@@ -4664,7 +4666,7 @@ begin
               if (dragteammate > 5) then
                 dragteammate := -1;
               //writeln(dragteammate);
-              if TeamList[dragteammate] >= 0 then
+              if (where <> 2) and (TeamList[dragteammate] >= 0) then
               begin
                 //if (Ritem[dragitem].ItemType >=1)and (Ritem[dragitem].ItemType <=3) then
                 UseItem(dragitem, dragteammate);
@@ -4679,12 +4681,20 @@ begin
           end;
           if dragitem >= 0 then
           begin
-            UseItem(CurItem, -1);
-            //剧情类物品有可能改变队伍
-            if Ritem[CurItem].ItemType = 0 then
-              LoadTeamSimpleStatus(maxteam);
-            dragitem := -1;
-            Result := True;
+            begin
+              //message('%d %d',[curitem0,curitem]);
+              if CellPhone = 0 then
+              begin
+                UseItem(CurItem, -1);
+                //剧情类物品有可能改变队伍
+                if Ritem[CurItem].ItemType = 0 then
+                  LoadTeamSimpleStatus(maxteam);
+                Result := True;
+              end;
+              curitem0 := curitem;
+              dragitem := -1;
+            end;
+
             {if (Round(event.button.x / (RealScreen.w / screen.w)) >= regionx1) and
               (Round(event.button.x / (RealScreen.w / screen.w)) < regionx2) and
               (Round(event.button.y / (RealScreen.h / screen.h)) > regiony1) and
@@ -4779,6 +4789,8 @@ begin
       if MenuEscType <> 2 then
         break;
     end;
+    refresh := refresh or (x <> px) or (y <> py) or (listLT <> plistLT) or (menu <> pmenu) or
+      (intitle <> pintitle) or Result or (dragitem >= 0);
     event.key.keysym.sym := 0;
     event.button.button := 0;
     SDL_Delay(20);
