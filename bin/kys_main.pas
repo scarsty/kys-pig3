@@ -114,7 +114,8 @@ procedure MenuLeave;
 procedure MenuSystem;
 procedure MenuSet;
 function MenuLoad: integer;
-function MenuLoadAtBeginning: integer;
+function MenuLoadAtBeginning(mode: integer): integer;
+function LoadFor2nd(num: integer): boolean;
 procedure MenuSave;
 procedure MenuQuit;
 
@@ -432,7 +433,7 @@ end;
 
 procedure Start;
 var
-  menu, menup, i, col, i1, i2, x, y, k, x1, y1: integer;
+  menu, menup, i, col, i1, i2, x, y, k, x1, y1, maxm: integer;
   Selected, into: boolean;
   a, b: uint32;
   headnum, alpha, alphastep: integer;
@@ -467,22 +468,6 @@ begin
   Message('Begin.....');
   Redraw;
   UpdateAllScreen;
-  //i := 0;
-    {while (ReadingTiles) do
-    begin
-      Redraw;
-      i := i + 6;
-      DrawTPic(9, CENTER_X - TitlePNGIndex[9].w div 2, CENTER_Y - TitlePNGIndex[9].h div 2, nil, 0, 0, 0, 0, i);
-      UpdateAllScreen;
-      SDL_Delay(20);
-      SDL_PollEvent(@event);
-      CheckBasicEvent;
-    end;}
-
-  //writeln(SDL_GetTicks - now1, ' ms or less (including the length of the movie) have been spent on loading tiles.');
-
-  //begin_time := random(1440);
-  //now_time := begin_time;
 
   FillChar(Entrance[0, 0], sizeof(Entrance), -1);
 
@@ -508,9 +493,6 @@ begin
 
   //x := TitlePosition.x;
   //y := TitlePosition.y;
-  x := CENTER_X + 90;
-  y := CENTER_Y;
-
   //事件等待
   Selected := False;
   headnum := 0;
@@ -534,13 +516,17 @@ begin
       if MODVersion = 0 then
         headnum := random(HPicAmount);
     end;
-    for i := 0 to 2 do
+
+    x := CENTER_X + 90;
+    y := CENTER_Y - 30;
+    maxm := 3;
+    for i := 0 to maxm do
     begin
-      DrawTPic(16, CENTER_X + 50, CENTER_Y + i * 50, nil, 0, 25, 0, 0);
+      DrawTPic(16, CENTER_X + 50, y + i * 50, nil, 0, 25, 0, 0);
       if i <> menu then
         DrawTPic(3 + i, x, y + 50 * i)
       else
-        DrawTPic(6 + i, x, y + 50 * i);
+        DrawTPic(3 + i, x + 5, y + 50 * i, nil, 10);
     end;
     DrawTPic(13, CENTER_X - 320, CENTER_Y - 90, nil, 0, 25 + alpha div 2, 0, 0);
     UpdateAllScreen;
@@ -571,7 +557,7 @@ begin
       //按下鼠标(UP表示抬起按键才执行)
       SDL_MOUSEBUTTONUP:
       begin
-        if (event.button.button = SDL_BUTTON_LEFT) and MouseInRegion(x, y, 300, 150) then
+        if (event.button.button = SDL_BUTTON_LEFT) and MouseInRegion(x, y, 300, 200) then
         begin
           Selected := True;
         end;
@@ -579,10 +565,10 @@ begin
       //鼠标移动
       SDL_MOUSEMOTION:
       begin
-        if MouseInRegion(x, y, 300, 150, x1, y1) then
+        if MouseInRegion(x, y, 300, 200, x1, y1) then
         begin
           menup := menu;
-          menu := min(2, (y1 - y) div 50);
+          menu := min(maxm, (y1 - y) div 50);
         end;
       end;
     end;
@@ -592,10 +578,10 @@ begin
     if Selected then
     begin
       case menu of
-        2: break;
+        3: break;
         1:
         begin
-          if MenuLoadAtBeginning >= 0 then
+          if MenuLoadAtBeginning(0) >= 0 then
           begin
             CurEvent := -1; //when CurEvent=-1, Draw scence by Sx, Sy. Or by Cx, Cy.
             if where = 1 then
@@ -607,6 +593,15 @@ begin
         begin
           Selected := InitialRole;
           if Selected then
+          begin
+            CurScence := BEGIN_SCENCE;
+            WalkInScence(1);
+            Walk;
+          end;
+        end;
+        2:
+        begin
+          if MenuLoadAtBeginning(1) >= 0 then
           begin
             CurScence := BEGIN_SCENCE;
             WalkInScence(1);
@@ -715,9 +710,10 @@ begin
   for i := 0 to 2 do
   begin
     Redraw;
-    DrawTPic(14 + i, CENTER_X + 50, CENTER_Y, nil, 0, 75);
-    DrawTPic(14 + i, CENTER_X + 50, CENTER_Y + 50, nil, 0, 50);
-    DrawTPic(14 + i, CENTER_X + 50, CENTER_Y + 100, nil, 0, 25);
+    DrawTPic(14 + i, CENTER_X + 50, CENTER_Y - 30, nil, 0, 75);
+    DrawTPic(14 + i, CENTER_X + 50, CENTER_Y - 30 + 50, nil, 0, 50);
+    DrawTPic(14 + i, CENTER_X + 50, CENTER_Y - 30 + 100, nil, 0, 25);
+    DrawTPic(14 + i, CENTER_X + 50, CENTER_Y - 30 + 150, nil, 0, 0);
     UpdateAllScreen;
     SDL_Delay(20);
     if SDL_PollEvent(@event) >= 0 then
@@ -731,10 +727,10 @@ begin
   for i := 0 to 20 do
   begin
     Redraw;
-    for j := 0 to 2 do
+    for j := 0 to 3 do
     begin
-      DrawTPic(16, CENTER_X + 50, CENTER_Y + j * 50, nil, 0, 25);
-      DrawTPic(3 + j, CENTER_X + 90, CENTER_Y + j * 50, nil, 0, 100 - i * 5, 0, 0);
+      DrawTPic(16, CENTER_X + 50, CENTER_Y - 30 + j * 50, nil, 0, 25);
+      DrawTPic(3 + j, CENTER_X + 90, CENTER_Y - 30 + j * 50, nil, 0, 100 - i * 5, 0, 0);
     end;
     UpdateAllScreen;
     SDL_Delay(20);
@@ -4635,12 +4631,24 @@ begin
       begin
         if event.button.button = SDL_BUTTON_LEFT then
         begin
-          if MouseInRegion(regionx1, regiony1, regionx2 - regionx1, regiony2 - regiony1) then
+          if MouseInRegion(regionx1, regiony1, regionx2 - regionx1, regiony2 - regiony1, xm, ym) then
           begin
+            intitle := 0;
+            x := (xm - regionx1) div d;
+            y := (ym - regiony1) div d;
+            if x >= col then
+              x := col - 1;
+            if y >= row then
+              y := row - 1;
+            if x < 0 then
+              x := 0;
+            if y < 0 then
+              y := 0;
             if itemlist[(y * col + x + listLT)] >= 0 then
             begin
               CurItem := RItemlist[itemlist[(y * col + x + listLT)]].Number;
               dragitem := curItem;
+              message('%d', [curItem]);
             end;
           end;
         end;
@@ -4681,31 +4689,19 @@ begin
           end;
           if dragitem >= 0 then
           begin
+            //message('%d %d',[curitem0,curitem]);
+            if CellPhone = 0 then
             begin
-              //message('%d %d',[curitem0,curitem]);
-              if CellPhone = 0 then
-              begin
-                UseItem(CurItem, -1);
-                //剧情类物品有可能改变队伍
-                if Ritem[CurItem].ItemType = 0 then
-                  LoadTeamSimpleStatus(maxteam);
-                Result := True;
-              end;
-              curitem0 := curitem;
-              dragitem := -1;
+              UseItem(CurItem, -1);
+              //剧情类物品有可能改变队伍
+              if Ritem[CurItem].ItemType = 0 then
+                LoadTeamSimpleStatus(maxteam);
+              Result := True;
             end;
-
-            {if (Round(event.button.x / (RealScreen.w / screen.w)) >= regionx1) and
-              (Round(event.button.x / (RealScreen.w / screen.w)) < regionx2) and
-              (Round(event.button.y / (RealScreen.h / screen.h)) > regiony1) and
-              (Round(event.button.y / (RealScreen.h / screen.h)) < regiony2) then
-            begin
-              CurItem := RItemlist[itemlist[(y * col + x + listLT)]].Number;
-              if (where <> 2) and (CurItem >= 0) and (itemlist[(y * col + x + listLT)] >= 0) then
-                UseItem(CurItem);
-              //updateallscreen;
-              //break;
-            end;}
+            //curitem0 := curitem;
+            refresh := True;
+            dragitem := -1;
+            message('%d %d', [dragitem, curitem]);
           end;
         end;
       end;
@@ -7174,7 +7170,7 @@ end;
 
 //特殊的读档选单, 仅用在开始时读档
 
-function MenuLoadAtBeginning: integer;
+function MenuLoadAtBeginning(mode: integer): integer;
 var
   menu, mixAlpha, i, x, y: integer;
   color1, color2, menucolor1, menucolor2: uint32;
@@ -7231,21 +7227,95 @@ begin
   menu := CommonMenu(x, y, 300, 10, 0, menuString, menuEngString);
   if menu >= 0 then
   begin
-    if LoadR(menu + 1) then
+    if mode = 0 then
     begin
-      instruct_14;
+      if LoadR(menu + 1) then
+      begin
+        instruct_14;
+      end
+      else
+      begin
+        menu := -1;
+        str := '讀檔失敗！';
+        //DrawShadowText(@str[1], CENTER_X + 40, CENTER_Y + 200, menucolor1, menucolor2);
+        DrawTextWithRect(@str[1], x + 90, y + 310, 322, menucolor1, menucolor2);
+        UpdateAllScreen;
+        WaitAnyKey;
+      end;
     end
     else
     begin
-      menu := -1;
-      str := '讀檔失敗！';
-      //DrawShadowText(@str[1], CENTER_X + 40, CENTER_Y + 200, menucolor1, menucolor2);
-      DrawTextWithRect(@str[1], x + 90, y + 310, 322, menucolor1, menucolor2);
-      UpdateAllScreen;
-      WaitAnyKey;
+      if not LoadFor2nd(menu + 1) then
+        menu := -1;
     end;
   end;
   Result := menu;
+
+end;
+
+function LoadFor2nd(num: integer): boolean;
+var
+  i, s: integer;
+  tempRitemlist: array of TItemList;
+  tempRrole: array[-1..1000] of TRole;
+  mode, itemtype: integer;
+begin
+  Result := False;
+  if LoadR(num) then
+  begin
+    s := 0;
+    for i := 0 to 107 do
+    begin
+      if GetStarState(i) > 0 then
+        s := s + 1;
+    end;
+    //可以继承的条件
+    mode := s div 36;
+  end;
+  Result := mode > 0;
+
+  if Result then
+  begin
+    //记录现有物品和人物
+    setlength(tempRItemList, MAX_ITEM_AMOUNT);
+    move(Rrole[low(Rrole)], tempRrole[low(tempRrole)], sizeof(TRole) * length(Rrole));
+    move(RItemlist[0], tempRItemList[0], sizeof(TItemList) * MAX_ITEM_AMOUNT);
+
+    //清空主角武功
+    for i := 1 to 9 do
+    begin
+      tempRrole[0].Magic[i] := 0;
+      tempRrole[0].MagLevel[i] := 0;
+    end;
+    for i := 0 to 3 do
+    begin
+      tempRrole[0].NeiGong[i] := 0;
+      tempRrole[0].NGLevel[i] := 0;
+    end;
+    LoadR(0);
+    if mode >= 1 then
+    begin
+      for i := 0 to 107 do
+      begin
+        Rrole[StarToRole(i)] := tempRrole[StarToRole(i)];
+      end;
+    end;
+    if mode >= 2 then
+    begin
+      for i := 0 to MAX_ITEM_AMOUNT - 1 do
+      begin
+        if tempRItemList[i].Number < 0 then
+          break;
+        itemtype:= Ritem[tempRItemList[i].Number].ItemType;
+        if (tempRItemList[i].Number = MONEY_ID) or (itemType in [1, 3,4]) then
+        instruct_32(tempRItemList[i].Number, tempRItemList[i].Amount);
+      end;
+    end;
+    if mode >= 3 then
+    begin
+
+    end;
+  end;
 
 end;
 

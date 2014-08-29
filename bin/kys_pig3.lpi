@@ -173,17 +173,14 @@
       <Unit4>
         <Filename Value="kys_engine.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="kys_engine"/>
       </Unit4>
       <Unit5>
         <Filename Value="kys_script.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="kys_script"/>
       </Unit5>
       <Unit6>
         <Filename Value="kys_draw.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="kys_draw"/>
       </Unit6>
       <Unit7>
         <Filename Value="kys_type.pas"/>
