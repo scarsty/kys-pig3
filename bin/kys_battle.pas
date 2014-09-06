@@ -8432,8 +8432,10 @@ var
   menuString: array of WideString;
   ss: shortint;
   AI: boolean;
+  forall: integer;
 begin
   //level:=10;
+  forall := GetItemAmount(COMPASS_ID);
   rnum := Brole[bnum].rnum;
   AI := (Brole[bnum].Auto <> 0) or (Brole[bnum].Team <> 0);
   if Rmagic[Rrole[rnum].Magic[0]].ScriptNum <> 31 then
@@ -8481,7 +8483,7 @@ begin
     for i := 1 to 107 do
     begin
       ss := GetStarState(i);
-      if (ss = 1) or (ss > 2) then
+      if (ss = 1) or (ss > 2) or (forall >= 2) then
       begin
         rnum := StarToRole(i);
         if Rrole[rnum].magic[0] > 0 then

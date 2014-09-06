@@ -526,7 +526,7 @@ begin
       if i <> menu then
         DrawTPic(3 + i, x, y + 50 * i)
       else
-        DrawTPic(3 + i, x + 5, y + 50 * i, nil, 10);
+        DrawTPic(23 + i, x + 5, y + 50 * i, nil);
     end;
     DrawTPic(13, CENTER_X - 320, CENTER_Y - 90, nil, 0, 25 + alpha div 2, 0, 0);
     UpdateAllScreen;
@@ -1102,7 +1102,7 @@ begin
   cstr := env^.GetStringUTFChars(env, jstr, 0);
   Name := strpas(cstr);
   env^.ReleaseStringUTFChars(env, jstr, cstr);
-
+  Result := true;
 {$else}
   if FULLSCREEN = 0 then
     Result := inputquery('Enter name', str, Name)
@@ -1117,7 +1117,7 @@ begin
   end;
 {$endif}
 
-  Result := Name <> '';
+  Result := Result and (Name <> '');
   if Result then
   begin
     Name := CP936ToUTF8(Simplified2Traditional(UTF8ToCP936(Name)));
@@ -7235,32 +7235,40 @@ begin
       end
       else
       begin
-        menu := -1;
+        menu := -2;
         str := '讀檔失敗！';
-        //DrawShadowText(@str[1], CENTER_X + 40, CENTER_Y + 200, menucolor1, menucolor2);
-        DrawTextWithRect(@str[1], x + 90, y + 310, 322, menucolor1, menucolor2);
-        UpdateAllScreen;
-        WaitAnyKey;
       end;
     end
     else
     begin
       if not LoadFor2nd(menu + 1) then
-        menu := -1;
+      begin
+        menu := -2;
+        str := '繼承失敗！';
+      end;
     end;
   end;
   Result := menu;
+
+  if Result = -2 then
+  begin
+    //DrawShadowText(@str[1], CENTER_X + 40, CENTER_Y + 200, menucolor1, menucolor2);
+    DrawTextWithRect(@str[1], x + 170, y + 310, 0, menucolor1, menucolor2);
+    UpdateAllScreen;
+    WaitAnyKey;
+  end;
 
 end;
 
 function LoadFor2nd(num: integer): boolean;
 var
-  i, s: integer;
+  i, s, j: integer;
   tempRitemlist: array of TItemList;
   tempRrole: array[-1..1000] of TRole;
-  mode, itemtype: integer;
+  mode, itemtype, rnum: integer;
 begin
   Result := False;
+  mode := 0;
   if LoadR(num) then
   begin
     s := 0;
@@ -7282,7 +7290,7 @@ begin
     move(RItemlist[0], tempRItemList[0], sizeof(TItemList) * MAX_ITEM_AMOUNT);
 
     //清空主角武功
-    for i := 1 to 9 do
+    {for i := 1 to 9 do
     begin
       tempRrole[0].Magic[i] := 0;
       tempRrole[0].MagLevel[i] := 0;
@@ -7291,32 +7299,58 @@ begin
     begin
       tempRrole[0].NeiGong[i] := 0;
       tempRrole[0].NGLevel[i] := 0;
-    end;
+    end;}
     LoadR(0);
+
+    //保留人物第一个技能的等级
     if mode >= 1 then
     begin
+      Rrole[0].Name := tempRrole[0].Name;
       for i := 0 to 107 do
       begin
-        Rrole[StarToRole(i)] := tempRrole[StarToRole(i)];
+        rnum := StarToRole(i);
+        for j := 0 to 0 do
+        begin
+          if Rrole[rnum].Magic[j] > 0 then
+            Rrole[rnum].MagLevel[j] := tempRrole[rnum].MagLevel[j];
+        end;
+        for j := 0 to -1 do
+        begin
+          if Rrole[rnum].NeiGong[j] > 0 then
+            Rrole[rnum].NGLevel[j] := tempRrole[rnum].NGLevel[j];
+        end;
+        //Rrole[rnum] := tempRrole[rnum];
       end;
     end;
+    //保留除秘籍外物品
     if mode >= 2 then
     begin
       for i := 0 to MAX_ITEM_AMOUNT - 1 do
       begin
         if tempRItemList[i].Number < 0 then
           break;
-        itemtype:= Ritem[tempRItemList[i].Number].ItemType;
-        if (tempRItemList[i].Number = MONEY_ID) or (itemType in [1, 3,4]) then
-        instruct_32(tempRItemList[i].Number, tempRItemList[i].Amount);
+        itemtype := Ritem[tempRItemList[i].Number].ItemType;
+        if (tempRItemList[i].Number = MONEY_ID) or (itemType in [1, 3, 4]) then
+          instruct_32(tempRItemList[i].Number, tempRItemList[i].Amount);
       end;
     end;
+    //保留秘籍, 正式进入二周目
     if mode >= 3 then
     begin
-
+      instruct_32(COMPASS_ID, 1); //周目数即罗盘数
+      for i := 0 to MAX_ITEM_AMOUNT - 1 do
+      begin
+        if tempRItemList[i].Number < 0 then
+          break;
+        itemtype := Ritem[tempRItemList[i].Number].ItemType;
+        if itemType = 2 then
+          instruct_32(tempRItemList[i].Number, tempRItemList[i].Amount);
+      end;
     end;
-  end;
-
+  end
+  else
+    LoadR(0);
+  instruct_14;
 end;
 
 //存档选单
@@ -8353,6 +8387,7 @@ begin
   words.Add('halfrice');
   words.Add('soastao');
   words.Add('ice');
+  words.Add('DonaldHuang');
   words.Add('黑天鹅');
   words.Add('');
 
