@@ -44,23 +44,31 @@ type
 
   TPInt1 = procedure(i: integer);
 
-  PPSDL_Surface = ^PSDL_Surface;
-  PPSDL_Texture = ^PSDL_Texture;
+  //PPSDL_Surface = ^PSDL_Surface;
+  //PPSDL_Texture = ^PSDL_Texture;
 
   TPNGIndex = record
     FileNum, PointerNum, Frame, x, y, w, h, Loaded, UseGRP: integer;
     BeginPointer: Pointer;
-    CurPointer: PPSDL_Surface;
-    CurPointerT: PPSDL_Texture;
+    //CurPointer: PPSDL_Surface;
+    //CurPointerT: PPSDL_Texture;
+    Pointers: array of Pointer;
   end;
+
+  //该组用于保存效果和战斗
+  TPNGIndexes = record
+    Amount, Loaded: integer;
+    PNGIndexArray: array of TPNGIndex;
+  end;
+
   //编号, 帧数(允许为0), 偏移, 是否已经载入(用于部分载入时判断), 是否使用GRP(通常无效)
   //当前表面的指针, 如果帧数不为大于1, 指针可能会变化
 
   TPNGIndexArray = array of TPNGIndex;
 
-  TSurfaceArray = array of PSDL_Surface;
+  //TSurfaceArray = array of PSDL_Surface;
 
-  TTextureArray = array of PSDL_Texture;
+  //TTextureArray = array of PSDL_Texture;
 
   TIntArray = array of integer;
   TByteArray = array of byte;
@@ -349,25 +357,11 @@ var
   MPic, SPic, WPic, EPic, FPic, HPic, CPic, KDef, TDef, NameGrp: TByteArray;
   MIdx, SIdx, WIdx, EIdx, Fidx, HIdx, CIdx, KIdx, TIdx, NameIdx: TIntArray;
 
-  //使用
-  MPNGTile, SPNGTile, {BPNGTile, PNGTile,} HPNGTile, CPNGTile, TitlePNGTile, IPNGTile: TSurfaceArray;
-  MPNGTex, SPNGTex, {BPNGTile, PNGTile,} HPNGTex, CPNGTex, TitlePNGTex, IPNGTex: TTextureArray;
   MPNGIndex, SPNGIndex, {BPNGIndex, EPNGIndex,} HPNGIndex, CPNGIndex, TitlePNGIndex, IPNGIndex: TPNGIndexArray;
 
-  EPicAmount: array[0..200] of integer;
-  EPNGTex: array[0..200] of TTextureArray;
-  EPNGTile: array[0..200] of TSurfaceArray;
-  EPNGIndex: array[0..200] of TPNGIndexArray;
-  EPicLoaded: array[0..200] of byte;
+  EPNGIndex: array[0..200] of TPNGIndexes;
+  FPNGIndex: array[0..1000] of TPNGIndexes;
 
-  FPicAmount: array[0..1000] of integer;
-  FPNGTex: array[0..1000] of TTextureArray;
-  FPNGTile: array[0..200] of TSurfaceArray;
-  FPNGIndex: array[0..1000] of TPNGIndexArray;
-  FPicLoaded: array[0..1000] of byte;
-
-  //MSurface: PSDL_Surface;
-  //SSurface: PSDL_Surface;
   //BHead: array of PSDL_Surface; //半即时用于画头像
 
   //音频部分设置

@@ -364,11 +364,10 @@ begin
       actionnum := Rrole[Brole[i].rnum].ActionNum;
       if Brole[i].rnum = 0 then
         actionnum := 0;
-      if FPicLoaded[actionnum] = 0 then
+      if FPNGIndex[actionnum].Loaded = 0 then
       begin
-        LoadPNGTiles(formatfloat('resource/fight/fight000', actionnum), FPNGIndex[actionnum],
-          FPNGTex[actionnum], FPNGTile[actionnum], 1);
-        FPicLoaded[actionnum] := 1;
+        LoadPNGTiles(formatfloat('resource/fight/fight000', actionnum), FPNGIndex[actionnum].PNGIndexArray, 1);
+        FPNGIndex[actionnum].Loaded := 1;
       end;
       //计算人物静止时的贴图编号
       num := 0;
@@ -3275,15 +3274,15 @@ begin
   endpic := beginpic + effectlist[enum] - 1;}
   rnum := Brole[bnum].rnum;
 
-  if enum <= High(EPicAmount) then
+  if enum <= High(EPNGIndex) then
   begin
-    if EPicLoaded[enum] = 0 then
+    if EPNGIndex[enum].Loaded = 0 then
     begin
-      EPicAmount[enum] := LoadPNGTiles(formatfloat('resource/eft/eft000', enum), EPNGIndex[enum],
-        EPNGTex[enum], EPNGTile[enum], 1);
-      EPicLoaded[enum] := 1;
+      EPNGIndex[enum].Amount := LoadPNGTiles(formatfloat('resource/eft/eft000', enum), EPNGIndex[enum].PNGIndexArray,
+ 1);
+      EPNGIndex[enum].Loaded := 1;
     end;
-    endpic := EPicAmount[enum];
+    endpic := EPNGIndex[enum].Amount;
   end
   else
     endpic := 0;

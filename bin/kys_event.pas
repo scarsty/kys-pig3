@@ -5073,11 +5073,10 @@ begin
   FileSeek(sta, offset, 0);
   FileRead(sta, Woodmansta, i);
   FileClose(sta);
-  if SPNGIndex[picnum].Loaded = 0 then
+  //if SPNGIndex[picnum].Loaded = 0 then
     LoadOnePNGTexture('resource/smap', pSPic, SPNGIndex[picnum]);
-  WoodPic := SPNGIndex[picnum].CurPointerT^;
-  if WoodPic = nil then
-    WoodPic := SPNGIndex[picnum].CurPointer^;
+  WoodPic := SPNGIndex[picnum].Pointers[0];
+    if WoodPic = nil then  exit;
   for i := 0 to 99 do
   begin
     x1 := i div 10;
@@ -5663,11 +5662,10 @@ begin
   picnum := 4700 + num;
   if picnum >= SPicAmount then
     exit;
-  if SPNGIndex[picnum].Loaded = 0 then
+  //if SPNGIndex[picnum].Loaded = 0 then
     LoadOnePNGTexture('resource/smap', pSPic, SPNGIndex[picnum]);
-  Pic := SPNGIndex[picnum].CurPointerT^;
-  if Pic = nil then
-    Pic := SPNGIndex[picnum].CurPointer^;
+  Pic := SPNGIndex[picnum].Pointers[0];
+  if Pic = nil then  exit;
   //filename := 'resource/Pic' + IntToStr(num);
   //if FileExists(filename) then
   //Pic := IMG_Load(@filename[1]);

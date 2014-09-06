@@ -106,13 +106,10 @@ function LoadPNGTilesThread(Data: pointer): longint; cdecl;
 function ReadFileToBuffer(p: pchar; filename: string; size, malloc: integer): pchar;
 procedure FreeFileBuffer(var p: pchar);
 function LoadIdxGrp(stridx, strgrp: string; var idxarray: TIntArray; var grparray: TByteArray): integer;
-function LoadPNGTiles(path: string; var PNGIndexArray: TPNGIndexArray; var TextureArray: TTextureArray;
-  var SurfaceArray: TSurfaceArray; LoadPic: integer = 1): integer; overload;
+function LoadPNGTiles(path: string; var PNGIndexArray: TPNGIndexArray; LoadPic: integer = 1): integer; overload;
 procedure LoadOnePNGTexture(path: string; p: pchar; var PNGIndex: TPNGIndex; forceLoad: integer = 0); overload;
-function LoadTileFromFile(filename: string; pt: PPSDL_Texture; ps: PPSDL_Surface; usesur: integer;
-  var w, h: integer): boolean;
-function LoadTileFromMem(p: pchar; len: integer; pt: PPSDL_Texture; ps: PPSDL_Surface;
-  usesur: integer; var w, h: integer): boolean;
+function LoadTileFromFile(filename: string; var pt: Pointer; usesur: integer; var w, h: integer): boolean;
+function LoadTileFromMem(p: pchar; len: integer; var pt: Pointer; usesur: integer; var w, h: integer): boolean;
 function LoadStringFromIMZMEM(path: string; p: pchar; num: integer): string;
 function LoadStringFromZIP(zfilename, filename: string): string;
 //function LoadSurfaceFromZIPFile(zipFile: unzFile; filename: string): PSDL_Surface;
@@ -2240,11 +2237,11 @@ var
 begin
   if PNG_TILE > 0 then
   begin
-    MPicAmount := LoadPNGTiles('resource/mmap', MPNGIndex, MPNGTex, MPNGTile, PNG_LOAD_ALL);
-    SPicAmount := LoadPNGTiles('resource/smap', SPNGIndex, SPNGTex, SPNGTile, PNG_LOAD_ALL);
-    HPicAmount := LoadPNGTiles('resource/head', HPNGIndex, HPNGTex, HPNGTile, PNG_LOAD_ALL);
-    IPicAmount := LoadPNGTiles('resource/item', IPNGIndex, IPNGTex, IPNGTile, PNG_LOAD_ALL);
-    CPicAmount := LoadPNGTiles('resource/cloud', CPNGIndex, CPNGTex, CPNGTile, 1);
+    MPicAmount := LoadPNGTiles('resource/mmap', MPNGIndex, PNG_LOAD_ALL);
+    SPicAmount := LoadPNGTiles('resource/smap', SPNGIndex, PNG_LOAD_ALL);
+    HPicAmount := LoadPNGTiles('resource/head', HPNGIndex, PNG_LOAD_ALL);
+    IPicAmount := LoadPNGTiles('resource/item', IPNGIndex, PNG_LOAD_ALL);
+    CPicAmount := LoadPNGTiles('resource/cloud', CPNGIndex, 1);
 
     pMPic := nil;
     pSPic := nil;
@@ -2412,8 +2409,7 @@ end;
 
 //为了提高启动的速度, M之外的贴图均仅读入基本信息, 需要时才实际载入图, 并且游戏过程中通常不再释放资源
 
-function LoadPNGTiles(path: string; var PNGIndexArray: TPNGIndexArray; var TextureArray: TTextureArray;
-  var SurfaceArray: TSurfaceArray; LoadPic: integer = 1): integer; overload;
+function LoadPNGTiles(path: string; var PNGIndexArray: TPNGIndexArray; LoadPic: integer = 1): integer; overload;
 const
   maxCount: integer = 9999;
 var
@@ -2460,8 +2456,8 @@ begin
           y := psmallint(p + pngoff + 2)^;
           Frame := pinteger(p + pngoff + 4)^;
           Count := Count + frame;
-          CurPointer := nil;
           Loaded := 0;
+          setlength(Pointers, Frame);
         end;
       end;
     end
@@ -2500,7 +2496,7 @@ begin
         FileNum := i;
         PointerNum := -1;
         Frame := 0;
-        CurPointer := nil;
+        //CurPointer := nil;
         if FileExists(AppPath + path + IntToStr(i) + '.png') then
         begin
           PointerNum := Count;
@@ -2523,26 +2519,12 @@ begin
         y := offset[i * 2 + 1];
         Loaded := 0;
         UseGRP := 0;
+        setlength(Pointers, Frame);
       end;
     end;
   end;
 
   Message('%d index, %d real tiles', [Result, Count]);
-
-  if SW_SURFACE = 0 then
-  begin
-    setlength(TextureArray, Count);
-    po := @TextureArray[0];
-    for i := 0 to Count - 1 do
-      TextureArray[i] := nil;
-  end
-  else
-  begin
-    setlength(SurfaceArray, Count);
-    po := @SurfaceArray[0];
-    for i := 0 to Count - 1 do
-      SurfaceArray[i] := nil;
-  end;
 
   for i := 0 to Result - 1 do
     PNGIndexArray[i].BeginPointer := po;
@@ -2566,8 +2548,6 @@ end;
 procedure LoadOnePNGTexture(path: string; p: pchar; var PNGIndex: TPNGIndex; forceLoad: integer = 0); overload;
 var
   j, k, index, len, off, w1, h1: integer;
-  tempsur: PPSDL_Surface;
-  temptex: PPSDL_Texture;
   frommem: boolean;
   pb, pc: pointer;
 begin
@@ -2583,12 +2563,12 @@ begin
       Loaded := 1;
       w := 0;
       h := 0;
-      CurPointerT := BeginPointer;
-      CurPointer := BeginPointer;
-      Inc(CurPointerT, PointerNum);
-      Inc(CurPointer, PointerNum);
-      temptex := CurPointerT;
-      tempsur := CurPointer;
+      //CurPointerT := BeginPointer;
+      //CurPointer := BeginPointer;
+      //Inc(CurPointerT, PointerNum);
+      //Inc(CurPointer, PointerNum);
+      //temptex := CurPointerT;
+      //tempsur := CurPointer;
       if Frame = 1 then
       begin
         if frommem then
@@ -2596,13 +2576,13 @@ begin
           off := pinteger(p + 4 + filenum * 4)^ + 8;
           index := pinteger(p + off)^;
           len := pinteger(p + off + 4)^;
-          LoadTileFromMem(p + index, len, temptex, tempsur, SW_SURFACE, w, h);
+          LoadTileFromMem(p + index, len, Pointers[0], SW_SURFACE, w, h);
         end
         else
         begin
-          if LoadTileFromFile(AppPath + path + IntToStr(filenum) + '.png', temptex, tempsur,
+          if LoadTileFromFile(AppPath + path + IntToStr(filenum) + '.png', Pointers[0],
             SW_SURFACE, w, h) = False then
-            LoadTileFromFile(AppPath + path + IntToStr(filenum) + '_0.png', temptex, tempsur, SW_SURFACE, w, h);
+            LoadTileFromFile(AppPath + path + IntToStr(filenum) + '_0.png', Pointers[0], SW_SURFACE, w, h);
         end;
       end;
       if Frame > 1 then
@@ -2614,18 +2594,18 @@ begin
             off := pinteger(p + 4 + filenum * 4)^ + 8;
             index := pinteger(p + off + j * 8)^;
             len := pinteger(p + off + j * 8 + 4)^;
-            LoadTileFromMem(p + index, len, temptex, tempsur, SW_SURFACE, w, h);
+            LoadTileFromMem(p + index, len, Pointers[j], SW_SURFACE, w, h);
           end
           else
             LoadTileFromFile(AppPath + path + IntToStr(filenum) + '_' + IntToStr(j) +
-              '.png', temptex, tempsur, SW_SURFACE, w1, h1);
+              '.png', Pointers[j], SW_SURFACE, w1, h1);
           if (j = 0) then
           begin
             w := w1;
             h := h1;
           end;
-          Inc(temptex, 1);
-          Inc(tempsur, 1);
+          //Inc(temptex, 1);
+          //Inc(tempsur, 1);
         end;
       end;
     end;
@@ -2636,37 +2616,36 @@ end;
 
 //从文件载入表面
 
-function LoadTileFromFile(filename: string; pt: PPSDL_Texture; ps: PPSDL_Surface; usesur: integer;
-  var w, h: integer): boolean;
+function LoadTileFromFile(filename: string; var pt: Pointer; usesur: integer; var w, h: integer): boolean;
 var
   tempscr: PSDL_Surface;
 begin
   Result := False;
-  pt^ := nil;
-  ps^ := nil;
+  pt := nil;
   if FileExists(filename) then
   begin
     Result := True;
     if usesur = 0 then
     begin
-      pt^ := IMG_LoadTexture(render, pchar(filename));
-      if pt^ <> nil then
+      pt := IMG_LoadTexture(render, pchar(filename));
+      if pt <> nil then
       begin
-        SDL_SetTextureBlendMode(pt^, SDL_BLENDMODE_BLEND);
-        SDL_QueryTexture(pt^, nil, nil, @w, @h);
+        SDL_SetTextureBlendMode(pt, SDL_BLENDMODE_BLEND);
+        SDL_QueryTexture(pt, nil, nil, @w, @h);
         Result := True;
       end;
     end
     else
     begin
       tempscr := IMG_Load(pchar(filename));
-      ps^ := SDL_ConvertSurface(tempscr, screen.format, 0);
+      pt := SDL_ConvertSurface(tempscr, screen.format, 0);
       SDL_FreeSurface(tempscr);
       //SDL_SetSurfaceBlendMode(ps^, SDL_BLENDMODE_BlEND);
-      if ps^ <> nil then
+      if pt <> nil then
       begin
-        w := ps^.w;
-        h := ps^.h;
+        tempscr := PSDL_Surface(pt);
+        w := tempscr.w;
+        h := tempscr.h;
         Result := True;
       end;
     end;
@@ -2676,35 +2655,34 @@ end;
 
 //从内存载入表面
 
-function LoadTileFromMem(p: pchar; len: integer; pt: PPSDL_Texture; ps: PPSDL_Surface;
-  usesur: integer; var w, h: integer): boolean;
+function LoadTileFromMem(p: pchar; len: integer; var pt: Pointer; usesur: integer; var w, h: integer): boolean;
 var
   tempscr: PSDL_Surface;
   tempRWops: PSDL_RWops;
 begin
   Result := False;
   tempRWops := SDL_RWFromMem(p, len);
-  pt^ := nil;
-  ps^ := nil;
+  pt := nil;
   if usesur = 0 then
   begin
-    pt^ := IMG_LoadTextureTyped_RW(render, tempRWops, 0, 'png');
-    if pt^ <> nil then
+    pt := IMG_LoadTextureTyped_RW(render, tempRWops, 0, 'png');
+    if pt <> nil then
     begin
-      SDL_SetTextureBlendMode(pt^, SDL_BLENDMODE_BLEND);
-      SDL_QueryTexture(pt^, nil, nil, @w, @h);
+      SDL_SetTextureBlendMode(pt, SDL_BLENDMODE_BLEND);
+      SDL_QueryTexture(pt, nil, nil, @w, @h);
       Result := True;
     end;
   end
   else
   begin
     tempscr := IMG_LoadTyped_RW(tempRWops, 0, 'png');
-    ps^ := SDL_ConvertSurface(tempscr, screen.format, 0);
+    pt := SDL_ConvertSurface(tempscr, screen.format, 0);
     SDL_FreeSurface(tempscr);
-    if ps <> nil then
+    if pt <> nil then
     begin
-      w := ps^.w;
-      h := ps^.h;
+      tempscr := pt;
+      w := tempscr.w;
+      h := tempscr.h;
       Result := True;
     end;
   end;
@@ -2752,7 +2730,7 @@ procedure DestroyAllTextures(all: integer = 1);
 var
   i: integer;
 
-  procedure DestoryTextureArray(TextureArray: TTextureArray);
+  {procedure DestoryTextureArray(TextureArray: TTextureArray);
   var
     i: integer;
   begin
@@ -2772,11 +2750,11 @@ var
       PNGIndexArray[i].Loaded := 0;
       PNGIndexArray[i].CurPointerT := nil;
     end;
-  end;
+  end; }
 
 begin
 
-  ResetIndexArray(MPNGIndex);
+  {ResetIndexArray(MPNGIndex);
   ResetIndexArray(SPNGIndex);
   ResetIndexArray(CPNGIndex);
   ResetIndexArray(IPNGIndex);
@@ -2797,7 +2775,7 @@ begin
     DestoryTextureArray(FPNGTex[i]);
   for i := 0 to high(EPNGTex) do
     DestoryTextureArray(EPNGTex[i]);
-
+    }
   if all = 1 then
   begin
     DestroyRenderTextures;
@@ -2831,6 +2809,7 @@ end;
 procedure DrawPNGTile(render: PSDL_Renderer; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer); overload;
 var
   rect: TSDL_Rect;
+  tex: PSDL_Texture;
 begin
   if SW_SURFACE <> 0 then
   begin
@@ -2839,17 +2818,18 @@ begin
   end;
   with PNGIndex do
   begin
-    if (CurPointerT <> nil) and (CurPointerT^ <> nil) then
+    if (Frame > 0) then
     begin
+      tex := Pointers[0];
       rect.x := px - x;
       rect.y := py - y;
       rect.w := w;
       rect.h := h;
       if (Frame > 1) then
-        Inc(CurPointerT, FrameNum mod PNGIndex.Frame);
-      SDL_SetTextureAlphaMod(CurPointerT^, 255);
-      SDL_SetTextureColorMod(CurPointerT^, 255, 255, 255);
-      SDL_RenderCopy(render, CurPointerT^, nil, @rect);
+        tex := Pointers[FrameNum mod PNGIndex.Frame];
+      SDL_SetTextureAlphaMod(tex, 255);
+      SDL_SetTextureColorMod(tex, 255, 255, 255);
+      SDL_RenderCopy(render, tex, nil, @rect);
     end;
   end;
 end;
@@ -2873,11 +2853,14 @@ begin
   //shadow设置混合方式, 以及预设值等
   with PNGIndex do
   begin
-    if (CurPointerT = nil) or (CurPointerT^ = nil) then
+    //if (CurPointerT = nil) or (CurPointerT^ = nil) then
+    //exit;
+    if (Frame = 0) then
       exit;
+    tex := Pointers[0];
     if Frame > 1 then
-      Inc(CurPointerT, FrameNum mod Frame);
-    tex := CurPointerT^;
+      tex := Pointers[FrameNum mod Frame];
+    //tex := CurPointerT^;
     rect.x := px - x;
     rect.y := py - y;
     if region = nil then
@@ -2971,11 +2954,11 @@ begin
   try
     with PNGIndex do
     begin
-      if (CurPointer = nil) or (CurPointer^ = nil) then
+      if Frame = 0 then
         exit;
+      sur := Pointers[0];
       if Frame > 1 then
-        Inc(CurPointer, FrameNum mod Frame);
-      sur := CurPointer^;
+        sur := Pointers[FrameNum mod Frame];
       rect.x := px - x;
       rect.y := py - y;
       if region = nil then

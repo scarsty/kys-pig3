@@ -70,6 +70,7 @@
             </Options>
           </Linking>
           <Other>
+            <CompilerPath Value="$(CompPath)"/>
             <ExecuteAfter>
               <CompileReasons Compile="False" Build="False" Run="False"/>
             </ExecuteAfter>
@@ -122,6 +123,7 @@
             </Options>
           </Linking>
           <Other>
+            <CompilerPath Value="$(CompPath)"/>
             <ExecuteAfter>
               <CompileReasons Compile="False" Build="False" Run="False"/>
             </ExecuteAfter>
@@ -173,6 +175,7 @@
       <Unit4>
         <Filename Value="kys_engine.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="kys_engine"/>
       </Unit4>
       <Unit5>
         <Filename Value="kys_script.pas"/>
@@ -232,6 +235,9 @@
         <UseExternalDbgSyms Value="True"/>
       </Debugging>
     </Linking>
+    <Other>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="5">

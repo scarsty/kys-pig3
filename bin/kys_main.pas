@@ -389,7 +389,7 @@ begin
   FileVerInfo := TFileVersionInfo.Create(nil);
   try
     FileVerInfo.FileName := ParamStr(1);
-    FileVerInfo.ReadFileInfo;
+    //FileVerInfo.ReadFileInfo;
     versionstr := versionstr + ' - ' + FileVerInfo.VersionStrings.Values['FileVersion'];
   finally
     FileVerInfo.Free;
@@ -447,7 +447,7 @@ begin
   where := 4;
   if PNG_TILE > 0 then
   begin
-    LoadPNGTiles('resource/title', TitlePNGIndex, TitlePNGTex, TitlePNGTile, 1);
+    LoadPNGTiles('resource/title', TitlePNGIndex, 1);
     InitialPicArrays;
   end;
 

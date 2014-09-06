@@ -81,7 +81,7 @@ procedure DrawPic(sur: PSDL_Surface; Pictype, num, px, py, shadow, alpha: intege
 var
   PNGIndex: TPNGIndex;
   pPNGIndex: ^TPNGIndex;
-  pSurface: PPSDL_Surface;
+  //pSurface: PPSDL_Surface;
   path: string;
   inRegion: boolean;
   pPicByte: pbyte;
@@ -280,7 +280,7 @@ end;
 procedure DrawEPic(num, px, py, shadow, alpha: integer; mixColor: uint32; mixAlpha: integer;
   index: integer = 0; scalex: real = 1; scaley: real = 1; angle: real = 1; center: PSDL_Point = nil); overload;
 begin
-  if (num >= 0) and (num < EPicAmount[index]) then
+  if (num >= 0) and (num < EPNGIndex[index].Amount) then
   begin
     if PNG_TILE > 0 then
     begin
@@ -289,7 +289,7 @@ begin
           LoadOnePNGTile('resource/eft/', pEPic, num, EPNGIndex[num], @EPNGTile[0]);
       DrawPNGTile(EPNGIndex[num], 0, nil, screen, px, py, shadow, alpha, mixColor, mixAlpha,
         0, nil, 0, 0, 0, 0, 0);}
-      DrawPNGTile(render, EPNGIndex[index, num], 0, px, py, nil, shadow, alpha, mixColor, mixAlpha,
+      DrawPNGTile(render, EPNGIndex[index].PNGIndexArray[num], 0, px, py, nil, shadow, alpha, mixColor, mixAlpha,
         scalex, scaley, angle, center);
     end;
     if PNG_TILE = 0 then
@@ -314,15 +314,14 @@ begin
   case PNG_TILE of
     1, 2:
     begin
-      if FPicLoaded[index] = 0 then
+      if FPNGIndex[index].Loaded = 0 then
       begin
-        LoadPNGTiles(formatfloat('resource/fight/fight000', index), FPNGIndex[index],
-          FPNGTex[index], FPNGTile[index], 1);
-        FPicLoaded[index] := 1;
+        LoadPNGTiles(formatfloat('resource/fight/fight000', index), FPNGIndex[index].PNGIndexArray, 1);
+        FPNGIndex[index].Loaded := 1;
       end;
       if (index >= 0) and (index < High(FPNGIndex)) then
-        if (num >= Low(FPNGIndex[index])) and (num <= High(FPNGIndex[index])) then
-          DrawPNGTile(render, FPNGIndex[index][num], 0, px, py, nil, shadow, alpha, mixColor, mixAlpha,
+        if (num >= Low(FPNGIndex[index].PNGIndexArray)) and (num <= High(FPNGIndex[index].PNGIndexArray)) then
+          DrawPNGTile(render, FPNGIndex[index].PNGIndexArray[num], 0, px, py, nil, shadow, alpha, mixColor, mixAlpha,
             1, 1, 0, nil);
     end;
     0:
