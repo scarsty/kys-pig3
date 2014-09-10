@@ -174,6 +174,7 @@ var
   rendernum: integer;
   info: TSDL_RendererInfo;
   str: string;
+  a: array of integer;
 {$IFDEF UNIX}
   filestat: stat;
 {$ENDIF}
@@ -279,7 +280,7 @@ begin
 
   if CellPhone = 1 then
   begin
-    WindowFlag := WindowFlag {or SDL_WINDOW_FULLSCREEN_DESKTOP};
+    WindowFlag := WindowFlag or SDL_WINDOW_FULLSCREEN_DESKTOP;
     KEEP_SCREEN_RATIO := 0;
     TEXT_LAYER := 0;
   end;
@@ -389,7 +390,7 @@ begin
   FileVerInfo := TFileVersionInfo.Create(nil);
   try
     FileVerInfo.FileName := ParamStr(1);
-    //FileVerInfo.ReadFileInfo;
+    FileVerInfo.ReadFileInfo;
     versionstr := versionstr + ' - ' + FileVerInfo.VersionStrings.Values['FileVersion'];
   finally
     FileVerInfo.Free;
@@ -545,12 +546,12 @@ begin
         begin
           menu := menu - 1;
           if menu < 0 then
-            menu := 2;
+            menu := maxm;
         end;
         if event.key.keysym.sym = SDLK_DOWN then
         begin
           menu := menu + 1;
-          if menu > 2 then
+          if menu > maxm then
             menu := 0;
         end;
       end;

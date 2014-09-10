@@ -24,7 +24,7 @@
       <MajorVersionNr Value="3"/>
       <MinorVersionNr Value="3"/>
       <RevisionNr Value="1"/>
-      <BuildNr Value="6"/>
+      <BuildNr Value="7"/>
       <Language Value="0804"/>
       <StringTable Comments="108 Brothers and Sisters" CompanyName="http://www.txdx.net" LegalCopyright="no" ProductName="kys_pig3.exe" ProductVersion="3.3"/>
     </VersionInfo>
@@ -70,7 +70,6 @@
             </Options>
           </Linking>
           <Other>
-            <CompilerPath Value="$(CompPath)"/>
             <ExecuteAfter>
               <CompileReasons Compile="False" Build="False" Run="False"/>
             </ExecuteAfter>
@@ -123,7 +122,6 @@
             </Options>
           </Linking>
           <Other>
-            <CompilerPath Value="$(CompPath)"/>
             <ExecuteAfter>
               <CompileReasons Compile="False" Build="False" Run="False"/>
             </ExecuteAfter>
@@ -235,9 +233,6 @@
         <UseExternalDbgSyms Value="True"/>
       </Debugging>
     </Linking>
-    <Other>
-      <CompilerPath Value="$(CompPath)"/>
-    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="5">

@@ -4141,11 +4141,12 @@ var
   i: integer;
   str: string;
 begin
-{$ifdef console}
+  if IsConsole then
+  begin
   Write(format(formatstring, content));
   if cr then
     writeln();
-{$endif}
+end;
 {$ifdef android}
   str := format(formatstring, content);
   mythoutput.mythoutput(pchar(str));
@@ -4161,11 +4162,12 @@ var
   i: integer;
   str: string;
 begin
-{$ifdef console}
+if IsConsole then
+begin
   Write(format(formatstring, []));
   if cr then
     writeln();
-{$endif}
+end;
 {$ifdef android}
   str := format(formatstring, []);
   mythoutput.mythoutput(pchar(str));
