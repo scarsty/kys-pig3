@@ -1121,7 +1121,8 @@ begin
   Result := Result and (Name <> '');
   if Result then
   begin
-    Name := CP936ToUTF8(Simplified2Traditional(UTF8ToCP936(Name)));
+    if SIMPLE <> 0 then
+      Name := CP936ToUTF8(Simplified2Traditional(UTF8ToCP936(Name)));
     str2 := UTF8Decode(Name);
     p0 := @Rrole[0].Name;
     p1 := @str2[1];
@@ -7290,23 +7291,35 @@ begin
     move(Rrole[low(Rrole)], tempRrole[low(tempRrole)], sizeof(TRole) * length(Rrole));
     move(RItemlist[0], tempRItemList[0], sizeof(TItemList) * MAX_ITEM_AMOUNT);
 
-    //清空主角武功
-    {for i := 1 to 9 do
-    begin
-      tempRrole[0].Magic[i] := 0;
-      tempRrole[0].MagLevel[i] := 0;
-    end;
-    for i := 0 to 3 do
-    begin
-      tempRrole[0].NeiGong[i] := 0;
-      tempRrole[0].NGLevel[i] := 0;
-    end;}
     LoadR(0);
 
     //保留人物第一个技能的等级
     if mode >= 1 then
     begin
-      Rrole[0].Name := tempRrole[0].Name;
+      Rrole[0]:=tempRrole[0];
+      Rrole[0].Level := 1;
+      Rrole[0].Attack:=10;
+      Rrole[0].Defence:=10;
+      //Rrole[0].Speed:=10;
+       Rrole[0].CurrentHP:=0;
+       Rrole[0].CurrentMP:=0;
+      Rrole[0].MaxHP:=Rrole[0].MaxHP div 40;
+      Rrole[0].MaxMP:=Rrole[0].MaxMP div 40;
+      Rrole[0].Exp:=0;
+      Rrole[0].MagLevel[0]:=800;
+      Rrole[0].Equip[0]:=-1;
+      Rrole[0].Equip[1]:=-1;
+          //清空主角武功
+    for i := 1 to 9 do
+    begin
+      Rrole[0].Magic[i] := 0;
+      Rrole[0].MagLevel[i] := 0;
+    end;
+    for i := 0 to 3 do
+    begin
+      Rrole[0].NeiGong[i] := 0;
+      Rrole[0].NGLevel[i] := 0;
+    end;
       for i := 0 to 107 do
       begin
         rnum := StarToRole(i);
@@ -7334,6 +7347,8 @@ begin
         if (tempRItemList[i].Number = MONEY_ID) or (itemType in [1, 3, 4]) then
           instruct_32(tempRItemList[i].Number, tempRItemList[i].Amount);
       end;
+      if Rrole[0].AmiFrameNum[0]<0 then
+        Rrole[0].AmiFrameNum[0] := 8;
     end;
     //保留秘籍, 正式进入二周目
     if mode >= 3 then
@@ -8288,6 +8303,7 @@ begin
   words.Add('柳无色');
   words.Add('bttt');
   words.Add('无酒肆屋');
+    words.Add('DonaldHuang');
   words.Add('');
 
   words.Add('劇本');
@@ -8387,8 +8403,8 @@ begin
   words.Add('winson7891');
   words.Add('halfrice');
   words.Add('soastao');
+    words.Add('项羽');
   words.Add('ice');
-  words.Add('DonaldHuang');
   words.Add('黑天鹅');
   words.Add('');
 
