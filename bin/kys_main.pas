@@ -65,8 +65,8 @@ procedure NewStartAmi;
 procedure StartAmi;
 procedure ReadFiles;
 function InitialRole: boolean;
-procedure BufferRead(var p: pchar; buf: pchar; size: integer);
-procedure BufferWrite(var p: pchar; buf: pchar; size: integer);
+procedure BufferRead(var p: PChar; buf: PChar; size: integer);
+procedure BufferWrite(var p: PChar; buf: PChar; size: integer);
 function LoadR(num: integer): boolean;
 function SaveR(num: integer): boolean;
 function WaitAnyKey: integer;
@@ -115,7 +115,7 @@ procedure MenuSystem;
 procedure MenuSet;
 function MenuLoad: integer;
 function MenuLoadAtBeginning(mode: integer): integer;
-function LoadFor2nd(num: integer): boolean;
+function LoadForSecondRound(num: integer): boolean;
 procedure MenuSave;
 procedure MenuQuit;
 
@@ -206,7 +206,7 @@ begin
   //test;
   ReadFiles;
 
-  Message('Read ini and data files ended');
+  ConsoleLog('Read ini and data files ended');
 
   SetMODVersion;
 
@@ -228,22 +228,22 @@ begin
   for i := 0 to SDL_GetNumRenderDrivers() - 1 do
   begin
     SDL_GetRenderDriverInfo(i, @info);
-    Message('Renderer %d is %s, support:', [i, info.Name]);
+    ConsoleLog('Renderer %d is %s, support:', [i, info.Name]);
     if info.flags and SDL_RENDERER_SOFTWARE <> 0 then
-      Message('software fallback, ', False);
+      ConsoleLog('software fallback, ', False);
     if info.flags and SDL_RENDERER_ACCELERATED <> 0 then
-      Message('hardware acceleration, ', False);
+      ConsoleLog('hardware acceleration, ', False);
     if info.flags and SDL_RENDERER_PRESENTVSYNC <> 0 then
-      Message('persent synchronizing, ', False);
+      ConsoleLog('persent synchronizing, ', False);
     if info.flags and SDL_RENDERER_TARGETTEXTURE <> 0 then
-      Message('texture rendering, ', False);
-    message('...end');
+      ConsoleLog('texture rendering, ', False);
+    ConsoleLog('...end');
     if (info.Name = 'opengl') or (info.Name = 'opengles2') then
     begin
       if (RENDERER = 1) then
       begin
         rendernum := i;
-        Message('Select OPENGL renderer');
+        ConsoleLog('Select OPENGL renderer');
       end;
     end;
     if info.Name = 'direct3d' then
@@ -251,7 +251,7 @@ begin
       if (RENDERER = 0) then
       begin
         rendernum := i;
-        Message('Select Direct3D renderer');
+        ConsoleLog('Select Direct3D renderer');
       end;
     end;
     if info.Name = 'software' then
@@ -259,7 +259,7 @@ begin
       if (RENDERER = 2) then
       begin
         rendernum := i;
-        Message('Select software renderer');
+        ConsoleLog('Select software renderer');
       end;
     end;
   end;
@@ -270,7 +270,7 @@ begin
   begin
     SMOOTH := 0;
   end;
-  SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, pchar(IntToStr(SMOOTH)));
+  SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, PChar(IntToStr(SMOOTH)));
 
   WindowFlag := 0;
   if RENDERER = 1 then
@@ -289,14 +289,14 @@ begin
   if PRESENT_SYNC <> 0 then
     RenderFlag := RenderFlag or SDL_RENDERER_PRESENTVSYNC;
 
-  Message('Creating window with width and height %d anf %d', [RESOLUTIONX, RESOLUTIONY]);
-  window := SDL_CreateWindow(pchar(TitleString), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+  ConsoleLog('Creating window with width and height %d anf %d', [RESOLUTIONX, RESOLUTIONY]);
+  window := SDL_CreateWindow(PChar(TitleString), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
     RESOLUTIONX, RESOLUTIONY, WindowFlag);
   SDL_GetWindowSize(window, @RESOLUTIONX, @RESOLUTIONY);
 
   if (CellPhone = 1) then
   begin
-    Message('Width and height of the window is %d, %d', [RESOLUTIONX, RESOLUTIONY]);
+    ConsoleLog('Width and height of the window is %d, %d', [RESOLUTIONX, RESOLUTIONY]);
     if (RESOLUTIONY > RESOLUTIONX) then
       ScreenRotate := 0;
     //SDL_WarpMouseInWindow(window, RESOLUTIONX, RESOLUTIONY);
@@ -305,11 +305,11 @@ begin
   if SW_OUTPUT <> 0 then
     RealScreen := SDL_GetWindowSurface(window);
 
-  Message('Creating renderer');
+  ConsoleLog('Creating renderer');
   render := SDL_CreateRenderer(window, rendernum, RenderFlag);
 
-  Message('All pictures will be loaded as surface: %d', [SW_SURFACE]);
-  Message('Text will be draw on single layer: %d', [TEXT_LAYER]);
+  ConsoleLog('All pictures will be loaded as surface: %d', [SW_SURFACE]);
+  ConsoleLog('Text will be draw on single layer: %d', [TEXT_LAYER]);
 
   ImageWidth := (36 * 32 + CENTER_X) * 2;
   ImageHeight := (18 * 32 + CENTER_Y) * 2;
@@ -325,7 +325,7 @@ begin
   InitialMusic;
 
   //mutex := SDL_CreateMutex();
-  keystate := pchar(SDL_GetKeyboardState(nil));
+  keystate := PChar(SDL_GetKeyboardState(nil));
   keyup := puint8(keystate + sdl_SCANCODE_up);
   keydown := puint8(keystate + sdl_SCANCODE_down);
   keyleft := puint8(keystate + sdl_SCANCODE_left);
@@ -338,7 +338,7 @@ begin
     SDL_InitSubSystem(SDL_INIT_JOYSTICK);
     if SDL_NumJoysticks() > 0 then
     begin
-      Message('Found Joystick');
+      ConsoleLog('Found Joystick');
       joy := SDL_JoystickOpen(0);
       if SDL_JoystickNumAxes(joy) > 0 then
       begin
@@ -348,7 +348,7 @@ begin
     end;
   end;
 
-  Message('Initial ended, start game');
+  ConsoleLog('Initial ended, start game');
   Start;
 
   Quit;
@@ -381,7 +381,7 @@ procedure SetMODVersion;
 var
   filename: string;
   Kys_ini: TIniFile;
-  p, p1: pchar;
+  p, p1: PChar;
   FileVerInfo: TFileVersionInfo;
 begin
   Setlength(Music, 99);
@@ -462,11 +462,11 @@ begin
       ScreenBlendMode := 1;
   end;}
 
-  Message('Play movie and start music');
+  ConsoleLog('Play movie and start music');
   if (OPEN_MOVIE = 1) then
     PlayMovie('open.wmv', 1);
   PlayMP3(StartMusic, -1);
-  Message('Begin.....');
+  ConsoleLog('Begin.....');
   Redraw;
   UpdateAllScreen;
 
@@ -801,7 +801,7 @@ begin
     Quit;
 
   Kys_ini := TIniFile.Create(iniFilename);
-  Message('Find ini file: %s', [iniFilename]);
+  ConsoleLog('Find ini file: %s', [iniFilename]);
   try
     SIMPLE := Kys_ini.ReadInteger('system', 'SIMPLE', 0);
     //FULLSCREEN := Kys_ini.ReadInteger('system', 'FULLSCREEN', 0);
@@ -1028,10 +1028,10 @@ begin
   else
   begin
     filename := AppPath + 'save/0.zip';
-    zfile := unzOpen(pchar(filename));
+    zfile := unzOpen(PChar(filename));
     if zfile <> nil then
     begin
-      if (unzLocateFile(zfile, pchar('ranger.idx'), 2) = UNZ_OK) then
+      if (unzLocateFile(zfile, PChar('ranger.idx'), 2) = UNZ_OK) then
       begin
         unzOpenCurrentFile(zfile);
         unzReadCurrentFile(zfile, @RoleOffset, 4);
@@ -1067,7 +1067,7 @@ var
 {$ifdef android}
   env: PJNIEnv;
   jstr: jstring;
-  cstr: pchar;
+  cstr: PChar;
   activity: jobject;
   clazz: jclass;
   method_id: jmethodID;
@@ -1103,7 +1103,7 @@ begin
   cstr := env^.GetStringUTFChars(env, jstr, 0);
   Name := strpas(cstr);
   env^.ReleaseStringUTFChars(env, jstr, cstr);
-  Result := true;
+  Result := True;
 {$else}
   if FULLSCREEN = 0 then
     Result := inputquery('Enter name', str, Name)
@@ -1134,7 +1134,7 @@ begin
       Inc(p1);
     end;
     DivideName(pWideChar(@Rrole[0].Name[0]), str2, str0);
-    Message('%s, %s, %s', [WideString(pWideChar(@Rrole[0].Name[0])), str2, str0]);
+    ConsoleLog('%s, %s, %s', [WideString(pWideChar(@Rrole[0].Name[0])), str2, str0]);
     Redraw;
     str2 := '資質';
     repeat
@@ -1335,13 +1335,13 @@ begin
   end;
 end;
 
-procedure BufferRead(var p: pchar; buf: pchar; size: integer);
+procedure BufferRead(var p: PChar; buf: PChar; size: integer);
 begin
   move(p^, buf^, size);
   p := p + size;
 end;
 
-procedure BufferWrite(var p: pchar; buf: pchar; size: integer);
+procedure BufferWrite(var p: PChar; buf: PChar; size: integer);
 begin
   move(buf^, p^, size);
   p := p + size;
@@ -1352,7 +1352,7 @@ end;
 function LoadR(num: integer): boolean;
 var
   zfilename, filenamer, filenames, filenamed, s: string;
-  str, p, p1: pchar;
+  str, p, p1: PChar;
   key1, key2: pbyte;
   idx, grp, t1, offset, i, i1, i2, lenkey: integer;
   zfile: unzfile;
@@ -1402,24 +1402,24 @@ begin
   end
   else
   begin
-    zfile := unzOpen(pchar(zfilename));
+    zfile := unzOpen(PChar(zfilename));
     if (zfile <> nil) then
     begin
-      if (unzLocateFile(zfile, pchar(filenamer), 2) = UNZ_OK) and
-        (unzLocateFile(zfile, pchar(filenames), 2) = UNZ_OK) and
-        (unzLocateFile(zfile, pchar(filenamed), 2) = UNZ_OK) then
+      if (unzLocateFile(zfile, PChar(filenamer), 2) = UNZ_OK) and
+        (unzLocateFile(zfile, PChar(filenames), 2) = UNZ_OK) and
+        (unzLocateFile(zfile, PChar(filenamed), 2) = UNZ_OK) then
       begin
-        unzLocateFile(zfile, pchar(filenamer), 2);
+        unzLocateFile(zfile, PChar(filenamer), 2);
         unzOpenCurrentFile(zfile);
         unzGetCurrentFileInfo(zfile, @file_info, nil, 0, nil, 0, nil, 0);
         //LenOfData := file_info.uncompressed_size;
         unzReadCurrentFile(zfile, p, LenR);
         unzCloseCurrentFile(zfile);
-        unzLocateFile(zfile, pchar(filenames), 2);
+        unzLocateFile(zfile, PChar(filenames), 2);
         unzOpenCurrentFile(zfile);
         unzReadCurrentFile(zfile, @Sdata[0, 0, 0, 0], sizeof(Sdata));
         unzCloseCurrentFile(zfile);
-        unzLocateFile(zfile, pchar(filenamed), 2);
+        unzLocateFile(zfile, PChar(filenamed), 2);
         unzOpenCurrentFile(zfile);
         unzReadCurrentFile(zfile, @Ddata[0, 0, 0], sizeof(Ddata));
         unzCloseCurrentFile(zfile);
@@ -1542,7 +1542,7 @@ begin
   //物品修正, 判断标准为最后一个物品的数量
   if Ritemlist[MAX_ITEM_AMOUNT - 1].Amount <> 0 then
   begin
-    Message('Item list format is old, now converting...');
+    ConsoleLog('Item list format is old, now converting...');
     move(Ritemlist[0], temp[0], sizeof(Titemlist) * MAX_ITEM_AMOUNT);
     for i := 0 to MAX_ITEM_AMOUNT - 1 do
     begin
@@ -1602,7 +1602,7 @@ function SaveR(num: integer): boolean;
 var
   zfilename, filenamer, filenames, filenamed, s: string;
   key1, key2: pbyte;
-  p, p1: pchar;
+  p, p1: PChar;
   idx, grp, i1, i2: integer;
   BasicOffset, i: integer;
   zfile: zipfile;
@@ -1687,20 +1687,20 @@ begin
   end
   else
   begin
-    zfile := zipOpen(pchar(zfilename), 0);
+    zfile := zipOpen(PChar(zfilename), 0);
     if zfile = nil then
     begin
       Result := False;
     end
     else
     begin
-      zipOpenNewFileInZip(zFile, pchar(filenamer), nil, nil, 0, nil, 0, nil, Z_DEFLATED, Z_DEFAULT_COMPRESSION);
+      zipOpenNewFileInZip(zFile, PChar(filenamer), nil, nil, 0, nil, 0, nil, Z_DEFLATED, Z_DEFAULT_COMPRESSION);
       zipWriteInFileInZip(zFile, p, lenR);
       zipCloseFileInZip(zfile);
-      zipOpenNewFileInZip(zFile, pchar(filenames), nil, nil, 0, nil, 0, nil, Z_DEFLATED, Z_DEFAULT_COMPRESSION);
+      zipOpenNewFileInZip(zFile, PChar(filenames), nil, nil, 0, nil, 0, nil, Z_DEFLATED, Z_DEFAULT_COMPRESSION);
       zipWriteInFileInZip(zFile, @Sdata[0, 0, 0, 0], ScenceAmount * 64 * 64 * 6 * 2);
       zipCloseFileInZip(zfile);
-      zipOpenNewFileInZip(zFile, pchar(filenamed), nil, nil, 0, nil, 0, nil, Z_DEFLATED, Z_DEFAULT_COMPRESSION);
+      zipOpenNewFileInZip(zFile, PChar(filenamed), nil, nil, 0, nil, 0, nil, Z_DEFLATED, Z_DEFAULT_COMPRESSION);
       zipWriteInFileInZip(zFile, @Ddata[0, 0, 0], ScenceAmount * 200 * 11 * 2);
       zipCloseFileInZip(zfile);
       zipClose(zfile, nil);
@@ -2437,7 +2437,7 @@ var
   scencename: WideString;
   now, now2, next_time, next_time2, timer1, timer2: uint32;
   AmiCount: integer; //场景内动态效果计数
-  keystate: pchar;
+  keystate: PChar;
   UpDate: PSDL_Thread;
   pos: TPosition;
 begin
@@ -2487,7 +2487,7 @@ begin
   now2 := 0;
   TimeInWater := 15 + Rrole[0].CurrentMP div 100;
 
-  CurScenceRolePic := 2501 + SFace * 7;
+  CurScenceRolePic := BEGIN_WALKPIC2 + SFace * 7;
   DrawScence;
   ShowScenceName(CurScence);
   //是否有第3类事件位于场景入口
@@ -2856,7 +2856,7 @@ begin
           end;
         end;
       end;
-      CurScenceRolePic := 2501 + SFace * 7 + SStep;
+      CurScenceRolePic := BEGIN_WALKPIC2 + SFace * 7 + SStep;
       DrawScence;
       UpdateAllScreen;
       CheckEvent3;
@@ -2871,7 +2871,7 @@ begin
       if SCENCEAMI > 0 then
       begin
         //DrawScence;
-        CurScenceRolePic := 2501 + SFace * 7 + SStep;
+        CurScenceRolePic := BEGIN_WALKPIC2 + SFace * 7 + SStep;
         DrawScence;
         if walking = 0 then
         begin
@@ -2924,7 +2924,7 @@ var
 begin
   UpdateAllScreen;
   //显示场景名
-  scencename := PCharToUnicode(pchar(@Rscence[snum].Name[0]), 5);
+  scencename := PCharToUnicode(PChar(@Rscence[snum].Name[0]), 5);
   //c:=sdl_maprgba(screen.format,0,255,0,0);
   DrawTextWithRect(@scencename[1], CENTER_X - DrawLength(scencename) * 5 - 23, 100,
     0, 0, $202020);
@@ -3000,7 +3000,7 @@ begin
       Cx := Sx;
       Cy := Sy;
       Sstep := 0;
-      CurScenceRolePic := 2501 + SFace * 7 + SStep;
+      CurScenceRolePic := BEGIN_WALKPIC2 + SFace * 7 + SStep;
       CallEvent(DData[CurScence, CurEvent, 2]);
       Result := True;
     end;
@@ -4138,7 +4138,7 @@ var
       amount := RItemlist[listnum].Amount;
       str := format('%10d', [amount]);
       DrawShadowText(@str[1], 280 + xp, 3 + yp, ColColor($64), ColColor($66));
-      len := DrawLength(pchar(@Ritem[item].Name));
+      len := DrawLength(PChar(@Ritem[item].Name));
       DrawU16ShadowText(@Ritem[item].Name, 215 - len * 5 + xp, 3 + yp, 0, $202020);
       //drawshadowtext(@words[Ritem[item].ItemType, 1], 252, 115 + row * 50, colcolor($21), colcolor($23));
 
@@ -4163,7 +4163,7 @@ var
         if Ritem[item].User >= 0 then
         begin
           str := '使用';
-          DrawShadowText(@str[1], 18 + length(pchar(@Rrole[Ritem[item].User].Name)) * 10 +
+          DrawShadowText(@str[1], 18 + length(PChar(@Rrole[Ritem[item].User].Name)) * 10 +
             len * 20 + xp, 47 + dt + yp, ColColor($64), ColColor($66));
           DrawU16ShadowText(@Rrole[Ritem[item].User].Name, 18 + len * 20 + xp, 48 + dt + yp,
             ColColor($64), ColColor($66));
@@ -4650,7 +4650,7 @@ begin
             begin
               CurItem := RItemlist[itemlist[(y * col + x + listLT)]].Number;
               dragitem := curItem;
-              message('%d', [curItem]);
+              ConsoleLog('%d', [curItem]);
             end;
           end;
         end;
@@ -4703,7 +4703,7 @@ begin
             //curitem0 := curitem;
             refresh := True;
             dragitem := -1;
-            message('%d %d', [dragitem, curitem]);
+            ConsoleLog('%d %d', [dragitem, curitem]);
           end;
         end;
       end;
@@ -4921,7 +4921,7 @@ begin
               Cx := Sx;
               Cy := Sy;
               Sstep := 0;
-              CurScenceRolePic := 2501 + SFace * 7 + SStep;
+              CurScenceRolePic := BEGIN_WALKPIC2 + SFace * 7 + SStep;
               CallEvent(DData[CurScence, CurEvent, 3]);
             end;
           end;
@@ -5504,7 +5504,7 @@ begin
 
     //显示姓名
     Name := pWideChar(@Rrole[rnum].Name);
-    DrawTextWithRect(@Name[1], x + 58 - DrawLength(pchar(@Rrole[rnum].Name)) * 5, y + 180, 0,
+    DrawTextWithRect(@Name[1], x + 58 - DrawLength(PChar(@Rrole[rnum].Name)) * 5, y + 180, 0,
       ColColor($64), ColColor($66), 0, 0);
 
     //显示所需字符
@@ -6759,7 +6759,7 @@ var
   filename: string;
   str, str2: array[0..7] of WideString;
   menuString: array[0..1] of WideString;
-  value: array [0..8] of integer;
+  Value: array [0..8] of integer;
   Kys_ini: TIniFile;
   tempsur: PSDL_Surface;
   dest: TSDL_Rect;
@@ -6778,15 +6778,15 @@ begin
   str[5] := '戰鬥文字顯示';
   str[6] := '顯示模式';
   str[7] := '文字設置';
-  value[0] := volume;
-  value[1] := volumewav;
-  value[2] := walk_speed;
-  value[3] := walk_speed2;
-  value[4] := BATTLE_SPEED;
-  value[5] := EFFECT_STRING;
-  value[6] := FULLSCREEN;
-  value[7] := SIMPLE;
-  value[maxmenu] := 0;
+  Value[0] := volume;
+  Value[1] := volumewav;
+  Value[2] := walk_speed;
+  Value[3] := walk_speed2;
+  Value[4] := BATTLE_SPEED;
+  Value[5] := EFFECT_STRING;
+  Value[6] := FULLSCREEN;
+  Value[7] := SIMPLE;
+  Value[maxmenu] := 0;
   menuString[0] := '取消';
   menuString[1] := '確定';
   x := CENTER_X - 384 + 440;
@@ -6831,7 +6831,7 @@ begin
         end;
         if i < 5 then
         begin
-          str2[i] := format('%5d', [value[i]]);
+          str2[i] := format('%5d', [Value[i]]);
           mixalphal := 0;
           mixalphar := 0;
           mixcolorl := $FFFFFFFF;
@@ -6843,12 +6843,12 @@ begin
             if leftright > 0 then
               mixalphar := 25;
           end;
-          if value[i] <= 0 then
+          if Value[i] <= 0 then
           begin
             mixcolorl := 0;
             mixalphal := 50;
           end;
-          if value[i] >= 100 then
+          if Value[i] >= 100 then
           begin
             mixcolorr := 0;
             mixalphar := 50;
@@ -6860,21 +6860,21 @@ begin
         begin
           if i = 5 then
           begin
-            if value[i] = 0 then
+            if Value[i] = 0 then
               str2[i] := '關閉'
             else
               str2[i] := '打開';
           end;
           if i = 6 then
           begin
-            if value[i] = 0 then
+            if Value[i] = 0 then
               str2[i] := '窗口'
             else
               str2[i] := '全屏';
           end;
           if i = 7 then
           begin
-            if value[i] = 0 then
+            if Value[i] = 0 then
               str2[i] := '繁體'
             else
               str2[i] := '簡體';
@@ -6885,7 +6885,7 @@ begin
       end;
       for i := 0 to 1 do
       begin
-        if (i = value[maxmenu]) and (menu = maxmenu) then
+        if (i = Value[maxmenu]) and (menu = maxmenu) then
         begin
           color1 := ColColor($64);
           color2 := ColColor($66);
@@ -6927,12 +6927,12 @@ begin
             if menu < 5 then
             begin
               //writeln(leftright,'before l down');
-              value[menu] := max(value[menu] - 1, 0);
+              Value[menu] := max(Value[menu] - 1, 0);
               leftright := leftright - 1;
             end
             else
             begin
-              value[menu] := 1 - value[menu];
+              Value[menu] := 1 - Value[menu];
             end;
             valuechanged := 1;
           end;
@@ -6940,12 +6940,12 @@ begin
           begin
             if menu < 5 then
             begin
-              value[menu] := min(value[menu] + 1, 100);
+              Value[menu] := min(Value[menu] + 1, 100);
               leftright := leftright + 1;
             end
             else
             begin
-              value[menu] := 1 - value[menu];
+              Value[menu] := 1 - Value[menu];
             end;
             valuechanged := 1;
           end;
@@ -6963,7 +6963,7 @@ begin
           begin
             if menu = maxmenu then
             begin
-              pressed := value[maxmenu];
+              pressed := Value[maxmenu];
               break;
             end;
           end;
@@ -6982,12 +6982,12 @@ begin
           begin
             if MouseInRegion(arrowlx, y + 5, 20, h0 * 5) then
             begin
-              value[menu] := max(value[menu] - 1, 0);
+              Value[menu] := max(Value[menu] - 1, 0);
               leftright := leftright - 1;
             end
             else if MouseInRegion(arrowrx, y + 5, 20, h0 * 5) then
             begin
-              value[menu] := min(value[menu] + 1, 100);
+              Value[menu] := min(Value[menu] + 1, 100);
               leftright := leftright + 1;
             end
             else
@@ -7007,23 +7007,23 @@ begin
               if MouseInRegion(x + 160 + 13, y + 5 + maxmenu * h0, 50, h0) or
                 MouseInRegion(x + 210 + 13, y + 5 + maxmenu * h0, 50, h0) then
               begin
-                pressed := value[maxmenu];
+                pressed := Value[maxmenu];
                 //writeln(pressed);
                 break;
               end;
               if MouseInRegion(x + 160 + 13, y + 5 + 5 * h0, 50, h0) then
               begin
-                value[5] := 1 - value[5];
+                Value[5] := 1 - Value[5];
                 //valuechanged := 1;
               end;
               if MouseInRegion(x + 160 + 13, y + 5 + 6 * h0, 50, h0) then
               begin
-                value[6] := 1 - value[6];
+                Value[6] := 1 - Value[6];
                 //valuechanged := 1;
               end;
               if MouseInRegion(x + 160 + 13, y + 5 + 7 * h0, 50, h0) then
               begin
-                value[7] := 1 - value[7];
+                Value[7] := 1 - Value[7];
                 //valuechanged := 1;
               end;
               leftright := 0;
@@ -7045,12 +7045,12 @@ begin
           begin
             if MouseInRegion(x + 160 + 13, y + 5 + maxmenu * h0, 50, h0) then
             begin
-              value[maxmenu] := 0;
+              Value[maxmenu] := 0;
               valuechanged := 1;
             end;
             if MouseInRegion(x + 210 + 13, y + 5 + maxmenu * h0, 50, h0) then
             begin
-              value[maxmenu] := 1;
+              Value[maxmenu] := 1;
               valuechanged := 1;
             end;
           end;
@@ -7067,18 +7067,18 @@ begin
   CleanKeyValue;
   if pressed = 1 then
   begin
-    volume := value[0];
+    volume := Value[0];
     StopMP3(0);
     PlayMP3(nowmusic, -1, 0);
 
-    volumewav := value[1];
-    walk_speed := value[2];
-    walk_speed2 := value[3];
-    BATTLE_SPEED := value[4];
-    EFFECT_STRING := value[5];
-    if FULLSCREEN <> value[6] then
+    volumewav := Value[1];
+    walk_speed := Value[2];
+    walk_speed2 := Value[3];
+    BATTLE_SPEED := Value[4];
+    EFFECT_STRING := Value[5];
+    if FULLSCREEN <> Value[6] then
     begin
-      FULLSCREEN := value[6];
+      FULLSCREEN := Value[6];
       SDL_SetRenderTarget(render, nil);
       SDL_RenderClear(render);
       if FULLSCREEN = 0 then
@@ -7091,7 +7091,7 @@ begin
       MenuEscType := -1;
     end;
 
-    SIMPLE := value[7];
+    SIMPLE := Value[7];
 
     filename := iniFilename;
     Kys_ini := TIniFile.Create(filename);
@@ -7243,7 +7243,7 @@ begin
     end
     else
     begin
-      if not LoadFor2nd(menu + 1) then
+      if not LoadForSecondRound(menu + 1) then
       begin
         menu := -2;
         str := '繼承失敗！';
@@ -7262,7 +7262,7 @@ begin
 
 end;
 
-function LoadFor2nd(num: integer): boolean;
+function LoadForSecondRound(num: integer): boolean;
 var
   i, s, j: integer;
   tempRitemlist: array of TItemList;
@@ -7296,30 +7296,30 @@ begin
     //保留人物第一个技能的等级
     if mode >= 1 then
     begin
-      Rrole[0]:=tempRrole[0];
+      Rrole[0] := tempRrole[0];
       Rrole[0].Level := 1;
-      Rrole[0].Attack:=10;
-      Rrole[0].Defence:=10;
+      Rrole[0].Attack := 10;
+      Rrole[0].Defence := 10;
       //Rrole[0].Speed:=10;
-       Rrole[0].CurrentHP:=0;
-       Rrole[0].CurrentMP:=0;
-      Rrole[0].MaxHP:=Rrole[0].MaxHP div 40;
-      Rrole[0].MaxMP:=Rrole[0].MaxMP div 40;
-      Rrole[0].Exp:=0;
-      Rrole[0].MagLevel[0]:=800;
-      Rrole[0].Equip[0]:=-1;
-      Rrole[0].Equip[1]:=-1;
-          //清空主角武功
-    for i := 1 to 9 do
-    begin
-      Rrole[0].Magic[i] := 0;
-      Rrole[0].MagLevel[i] := 0;
-    end;
-    for i := 0 to 3 do
-    begin
-      Rrole[0].NeiGong[i] := 0;
-      Rrole[0].NGLevel[i] := 0;
-    end;
+      Rrole[0].CurrentHP := 0;
+      Rrole[0].CurrentMP := 0;
+      Rrole[0].MaxHP := Rrole[0].MaxHP div 40;
+      Rrole[0].MaxMP := Rrole[0].MaxMP div 40;
+      Rrole[0].Exp := 0;
+      Rrole[0].MagLevel[0] := 800;
+      Rrole[0].Equip[0] := -1;
+      Rrole[0].Equip[1] := -1;
+      //清空主角武功
+      for i := 1 to 9 do
+      begin
+        Rrole[0].Magic[i] := 0;
+        Rrole[0].MagLevel[i] := 0;
+      end;
+      for i := 0 to 3 do
+      begin
+        Rrole[0].NeiGong[i] := 0;
+        Rrole[0].NGLevel[i] := 0;
+      end;
       for i := 0 to 107 do
       begin
         rnum := StarToRole(i);
@@ -7347,7 +7347,7 @@ begin
         if (tempRItemList[i].Number = MONEY_ID) or (itemType in [1, 3, 4]) then
           instruct_32(tempRItemList[i].Number, tempRItemList[i].Amount);
       end;
-      if Rrole[0].AmiFrameNum[0]<0 then
+      if Rrole[0].AmiFrameNum[0] < 0 then
         Rrole[0].AmiFrameNum[0] := 8;
     end;
     //保留秘籍, 正式进入二周目
@@ -7818,7 +7818,7 @@ begin
     end;
     setlength(e, len div 2 + 1);
     move(KDef[offset], e[0], len);
-    Message('Event %d', [num]);
+    ConsoleLog('Event %d', [num]);
     i := 0;
     //普通事件写成子程, 需跳转事件写成函数
     len := length(e);
@@ -8216,15 +8216,14 @@ begin
   begin
     if KDEF_SCRIPT = 1 then
     begin
-      Message('Enter script %d', [num]);
+      ConsoleLog('Enter script %d', [num]);
       ExecScript(AppPath + EventScriptPath + IntToStr(num) + '.lua', '');
-      //writeln('Exit from script ', num);
     end
     else
     begin
       script := LoadStringFromIMZMEM(AppPath + 'script/event/', pEvent, num);
+      //ConsoleLog(script);
       ExecScriptString(script, '');
-      //writeln(UTF8Decode(script));
     end;
   end;
   event.key.keysym.sym := 0;
@@ -8303,7 +8302,7 @@ begin
   words.Add('柳无色');
   words.Add('bttt');
   words.Add('无酒肆屋');
-    words.Add('DonaldHuang');
+  words.Add('DonaldHuang');
   words.Add('');
 
   words.Add('劇本');
@@ -8403,7 +8402,7 @@ begin
   words.Add('winson7891');
   words.Add('halfrice');
   words.Add('soastao');
-    words.Add('项羽');
+  words.Add('项羽');
   words.Add('ice');
   words.Add('黑天鹅');
   words.Add('');
@@ -8480,7 +8479,7 @@ begin
   if SW_SURFACE = 0 then
   begin
     tex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, texw, texh);
-    Message('Big texture, the width and height are %d and %d', [texw, texh]);
+    ConsoleLog('Big texture, the width and height are %d and %d', [texw, texh]);
     SDL_SetRenderTarget(render, tex);
     SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_NONE);
     SDL_SetRenderDrawColor(render, 0, 0, 0, 255);

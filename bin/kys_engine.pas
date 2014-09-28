@@ -185,8 +185,8 @@ procedure QuickSortB(var a: array of TBuildInfo; l, r: integer);
 procedure tic;
 procedure toc;
 
-procedure Message(formatstring: string; content: array of const; cr: boolean = True); overload; inline;
-procedure Message(formatstring: string = ''; cr: boolean = True); overload; inline;
+procedure ConsoleLog(formatstring: string; content: array of const; cr: boolean = True); overload; inline;
+procedure ConsoleLog(formatstring: string = ''; cr: boolean = True); overload; inline;
 //function Myth_VideoPlay(window: integer; filename: string): integer; cdecl; external 'myth-simpleplayer.dll';
 
 
@@ -768,7 +768,7 @@ begin
     try
       SDL_FreeSurface(tempsur);
     except
-      Message('Free font surface %s %d failed', [widechar(num), size0]);
+      ConsoleLog('Free font surface %s %d failed', [widechar(num), size0]);
     end;
 
     if usesur = 0 then
@@ -779,7 +779,7 @@ begin
       //检查是否需要保存
       if size = size0 then
       begin
-        Message(widechar(num), False);
+        ConsoleLog(widechar(num), False);
         if CharSize[num] > 0 then
           SDL_DestroyTexture(CharTex[num]);
         CharTex[num] := tex;
@@ -792,7 +792,7 @@ begin
       p := pointer(Sur);
       if size = size0 then
       begin
-        Message(widechar(num), False);
+        ConsoleLog(widechar(num), False);
         if CharSize[num] > 0 then
           SDL_FreeSurface(CharSur[num]);
         CharSur[num] := sur;
@@ -2118,7 +2118,7 @@ begin
           //event.button.y := RESOLUTIONY div 2;
           event.button.button := SDL_BUTTON_RIGHT;
           event.key.keysym.sym := SDLK_ESCAPE;
-          message('Change to escape');
+          ConsoleLog('Change to escape');
         end
         else if inReturn(x, y) then
         begin
@@ -2126,7 +2126,7 @@ begin
           //event.button.y := RESOLUTIONY div 2;
           event.type_ := SDL_KEYUP;
           event.key.keysym.sym := SDLK_RETURN;
-          message('Change to return');
+          ConsoleLog('Change to return');
         end
         //手机在战场仅有确认键有用
         else if (where = 2) and (BattleSelecting) then
@@ -2427,7 +2427,7 @@ begin
 
   if PNG_TILE = 2 then
   begin
-    Message('Searching imz file %s', [path]);
+    ConsoleLog('Searching imz file %s', [path]);
     p := ReadFileToBuffer(nil, AppPath + path + '.imz', -1, 1);
     if p <> nil then
     begin
@@ -2462,13 +2462,13 @@ begin
       end;
     end
     else
-      Message('Can''t find imz file');
+      ConsoleLog('Can''t find imz file');
   end;
 
 
   if (PNG_TILE = 1) or (p = nil) then
   begin
-    Message('Searching index of png files %s/index.ka', [path]);
+    ConsoleLog('Searching index of png files %s/index.ka', [path]);
     path := path + '/';
     p := ReadFileToBuffer(nil, AppPath + path + '/index.ka', -1, 1);
     size := StrBufSize(p);
@@ -2524,19 +2524,19 @@ begin
     end;
   end;
 
-  Message('%d index, %d real tiles', [Result, Count]);
+  ConsoleLog('%d index, %d real tiles', [Result, Count]);
 
   for i := 0 to Result - 1 do
     PNGIndexArray[i].BeginPointer := po;
 
   if LoadPic = 1 then
   begin
-    Message('Now loading...', False);
+    ConsoleLog('Now loading...', False);
     for i := 0 to Result - 1 do
     begin
       LoadOnePNGTexture(path, p, PNGIndexArray[i], 1);
     end;
-    Message('end');
+    ConsoleLog('end');
   end;
   FreeFileBuffer(p);
 
@@ -2697,6 +2697,7 @@ begin
   off := pinteger(p + 4 + num * 4)^ + 8;
   index := pinteger(p + off)^;
   len := pinteger(p + off + 4)^;
+  //ConsoleLog('%d %d %d', [num, off, len]);
   setlength(Result, len);
   move((p + index)^, Result[1], len);
 end;
@@ -3035,7 +3036,7 @@ begin
     if newsur then
       SDL_FreeSurface(sur);
   except
-    Message('Bad PNGINDEX, filenum %d, width %d, height %d', [PNGIndex.FileNum, PNGIndex.w, PNGIndex.h]);
+    ConsoleLog('Bad PNGINDEX, filenum %d, width %d, height %d', [PNGIndex.FileNum, PNGIndex.w, PNGIndex.h]);
   end;
 end;
 
@@ -3474,7 +3475,7 @@ begin
   ENGLISH_FONT_REALSIZE := engsize;
 
   if (font = nil) or (engfont = nil) then
-    Message('Read fonts failed');
+    ConsoleLog('Read fonts failed');
 
   //测试中文字体的空格宽度
   Text := TTF_RenderUNICODE_solid(font, @word[0], tempcolor);
@@ -3674,7 +3675,7 @@ begin
     FreshScreen.Add(sur);
   end;
   //CleanTextScreenRect(x, y, w, h);
-  Message('Now the amount of fresh screens is %d', [FreshScreen.Count]);
+  ConsoleLog('Now the amount of fresh screens is %d', [FreshScreen.Count]);
 
 end;
 
@@ -4119,7 +4120,7 @@ end;
 procedure toc;
 begin
   QueryPerformanceCounter(cccc2);
-  Message(' %3.2f us', [(cccc2 - cccc1) / tttt * 1e6]);
+  ConsoleLog(' %3.2f us', [(cccc2 - cccc1) / tttt * 1e6]);
 end;
 
 {$else}
@@ -4136,7 +4137,7 @@ end;
 
 {$endif}
 
-procedure Message(formatstring: string; content: array of const; cr: boolean = True); overload;
+procedure ConsoleLog(formatstring: string; content: array of const; cr: boolean = True); overload;
 var
   i: integer;
   str: string;
@@ -4157,7 +4158,7 @@ end;
 {$endif}
 end;
 
-procedure Message(formatstring: string = ''; cr: boolean = True); overload;
+procedure ConsoleLog(formatstring: string = ''; cr: boolean = True); overload;
 var
   i: integer;
   str: string;

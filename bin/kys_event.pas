@@ -291,7 +291,7 @@ begin
   if step >= 7 then
     step := 1;
   if pic < 0 then
-    CurScenceRolePic := 2501 + SFace * 7 + Sstep;
+    CurScenceRolePic := BEGIN_WALKPIC2 + SFace * 7 + Sstep;
 end;
 
 //得到物品可显示数量, 数量为负显示失去物品
@@ -724,7 +724,7 @@ begin
   Cx := Sx;
   Cy := Sy;
   Sstep := 0;
-  CurScenceRolePic := 2501 + SFace * 7 + SStep;
+  CurScenceRolePic := BEGIN_WALKPIC2 + SFace * 7 + SStep;
   Redraw;
 end;
 
@@ -919,7 +919,7 @@ begin
       SStep := SStep + 1;
       if SStep >= 7 then
         SStep := 1;
-      CurScenceRolePic := 2501 + SFace * 7 + SStep;
+      CurScenceRolePic := BEGIN_WALKPIC2 + SFace * 7 + SStep;
       Cx := Sx;
       Cy := Sy;
       DrawScence;
@@ -941,7 +941,7 @@ begin
       SStep := SStep + 1;
       if SStep >= 7 then
         SStep := 1;
-      CurScenceRolePic := 2501 + SFace * 7 + SStep;
+      CurScenceRolePic := BEGIN_WALKPIC2 + SFace * 7 + SStep;
       Cx := Sx;
       Cy := Sy;
       DrawScence;
@@ -953,7 +953,7 @@ begin
   Sx := y2;
   Sy := x2;
   SStep := 0;
-  CurScenceRolePic := 2501 + SFace * 7;
+  CurScenceRolePic := BEGIN_WALKPIC2 + SFace * 7;
   Cx := Sx;
   Cy := Sy;
 end;
@@ -1149,7 +1149,7 @@ end;
 procedure instruct_40(director: integer);
 begin
   Sface := director;
-  CurScenceRolePic := 2501 + SFace * 7;
+  CurScenceRolePic := BEGIN_WALKPIC2 + SFace * 7;
   DrawScence;
 end;
 
@@ -2250,7 +2250,7 @@ begin
       x50[$7101] := e4;
       x50[$7102] := e5;
       x50[$7103] := e6;
-      Message('Call another event or special process, the code is %d-%d %d %d %d', [e2, e3, e4, e5, e6]);
+      ConsoleLog('Call another event or special process, the code is %d-%d %d %d %d', [e2, e3, e4, e5, e6]);
 
       case e2 of
         201: NewTalk(e3, e4, e5, e6 mod 100, (e6 mod 100) div 10, e6 div 100, 0);
@@ -2438,7 +2438,8 @@ begin
     end;
     54:
     begin
-
+      BEGIN_WALKPIC := e_GetValue(0, e1, e2);
+      BEGIN_WALKPIC2 := e_GetValue(0, e1, e3);
     end;
     60: //Call scripts.
     begin

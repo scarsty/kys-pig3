@@ -438,9 +438,9 @@ begin
         begin
           if (InShip = 0) then
             if still = 0 then
-              num := 2501 + MFace * 7 + MStep
+              num := BEGIN_WALKPIC + MFace * 7 + MStep
             else
-              num := 2528 + Mface * 6 + MStep
+              num := BEGIN_WALKPIC + 27 + Mface * 6 + MStep
           else
             num := 3715 + MFace * 4 + (MStep + 1) div 2;
         end;

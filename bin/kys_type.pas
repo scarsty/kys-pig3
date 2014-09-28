@@ -276,8 +276,8 @@ var
   NOVEL_BOOK: integer = 144; //天书起始编码(因偷懒并未使用)
   MAX_HEAD_NUM: integer = 189; //有专有头像的最大人物编号, 仅用于对话指令
   BEGIN_NAME_IN_TALK: integer = 0; //对话文件中记录名字的起始位置
-  BEGIN_WALKPIC: integer = 2501; //起始的行走贴图(并未使用)
-
+  BEGIN_WALKPIC: integer = 2501; //外景起始的行走贴图
+  BEGIN_WALKPIC2: integer = 2501; //内景起始的行走贴图
   //游戏数据
   ACol: array[0..768] of byte;
   ACol1: array[0..768] of byte;

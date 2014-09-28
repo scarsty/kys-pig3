@@ -1472,7 +1472,7 @@ begin
       begin
         if (event.key.keysym.sym = SDLK_RETURN) or (event.key.keysym.sym = SDLK_SPACE) then
         begin
-          message('%d/%d/%d', [event.type_, event.key.keysym.sym, menu]);
+          ConsoleLog('%d/%d/%d', [event.type_, event.key.keysym.sym, menu]);
           break;
         end;
         if (event.key.keysym.sym = SDLK_ESCAPE) then
@@ -6659,7 +6659,7 @@ begin
       begin
         pFunc(bnum, mnum, level);
         Result := True;
-        Message('Use Special Ability %d, level %d', [mnum, level]);
+        ConsoleLog('Use Special Ability %d, level %d', [mnum, level]);
       end;
     end;
 end;
@@ -8468,7 +8468,7 @@ begin
               @Rmagic[Rrole[Brole[i].rnum].magic[i1]].Name);
             //menustring[amount] := pwidechar(@namemagic);
             menuString[amount] := namemagic;
-            Message(menuString[amount]);
+            ConsoleLog(menuString[amount]);
             amount := amount + 1;
           end;
         end;
@@ -8493,7 +8493,7 @@ begin
             namemagic := pWideChar(@Rrole[rnum].Name) + StringOfChar(' ', 10 -
               DrawLength(pWideChar(@Rrole[rnum].Name))) + pWideChar(@Rmagic[Rrole[rnum].magic[0]].Name);
             menuString[amount] := namemagic;
-            Message(menuString[amount]);
+            ConsoleLog(menuString[amount]);
             amount := amount + 1;
           end;
         end;

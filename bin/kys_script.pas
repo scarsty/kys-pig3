@@ -20,7 +20,7 @@ uses
 
 type
   TScriptRegister = record
-    Name: pchar;
+    Name: PChar;
     f: lua_CFunction;
   end;
 
@@ -497,15 +497,14 @@ var
   len: integer;
 begin
   try
-{$IFDEF UNIX}
+    if (Script[1] = char($EF)) and (Script[2] = char($BB)) and (Script[3] = char($BF)) then
+    begin
+      ConsoleLog('Found BOM, replace it to space');
+      Script[1] := ' ';
+      Script[2] := ' ';
+      Script[3] := ' ';
+    end;
     Script := LowerCase(Script);
-{$ELSE}
-{$IFDEF FPC}
-    Script := LowerCase(Script);
-{$ELSE}
-    Script := LowerCase(Script);
-{$ENDIF}
-{$ENDIF}
     //writeln(script);
     Result := lual_loadbuffer(Lua_script, @script[1], length(script), 'code');
     if Result = 0 then
@@ -514,14 +513,14 @@ begin
       //lua_dofile(Lua_script,pchar(filename[1]));
       if functionname <> '' then
       begin
-        lua_getglobal(Lua_script, pchar(functionname));
+        lua_getglobal(Lua_script, PChar(functionname));
         Result := lua_pcall(Lua_script, 0, 1, 0);
       end;
     end;
     //lua_gc(Lua_script, LUA_GCCOLLECT, 0);
     if Result <> 0 then
     begin
-      Message(lua_tostring(Lua_script, -1));
+      ConsoleLog(lua_tostring(Lua_script, -1));
       lua_pop(Lua_script, 1);
     end;
   except
@@ -670,7 +669,7 @@ begin
   FillChar(Ritem[itemnum].Introduction[0], sizeof(@Ritem[0].Introduction), 0);
   if (len > 15) then
   begin
-    Message('Intro length is too long!');
+    ConsoleLog('Intro length is too long!');
   end
   else
   begin
