@@ -463,10 +463,10 @@ begin
           end
           else
           begin
-            Width := SmallInt(Mpic[MIdx[num - 1]]);
+            {Width := SmallInt(Mpic[MIdx[num - 1]]);
             Height := SmallInt(Mpic[MIdx[num - 1] + 2]);
             //xoffset := SmallInt(Mpic[MIdx[num - 1] + 4]);
-            yoffset := SmallInt(Mpic[MIdx[num - 1] + 6]);
+            yoffset := SmallInt(Mpic[MIdx[num - 1] + 6]);}
           end;
           //根据图片的宽度计算图的中点, 为避免出现小数, 实际是中点坐标的2倍
           //次要排序依据是y坐标

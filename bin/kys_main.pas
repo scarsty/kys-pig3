@@ -784,7 +784,7 @@ end;
 
 procedure ReadFiles;
 var
-  tnum, beginnum, offset, len, idx, grp, col, t1, i, i1, b: integer;
+  tnum, beginnum, offset, len, IDX, GRP, col, t1, i, i1, b: integer;
   filename: string;
   p: pbyte;
   Kys_ini: TIniFile;
@@ -867,6 +867,8 @@ begin
       PNG_TILE := 0;
     if (not FileExists(AppPath + 'save/ranger.grp')) then
       ZIP_SAVE := 1;
+    if (not FileExists(AppPath + 'script/event.imz')) then
+      KDEF_SCRIPT := 1;
 {$ifdef unix}
     THREAD_READ_PNG := 0;
     if RENDERER = 0 then
@@ -916,9 +918,11 @@ begin
   ReadFileToBuffer(@FightFrame[0], AppPath + 'resource/fight/fightframe.ka', 5 * 500 * 2, 0);
   ReadFileToBuffer(@WarStaList[0], AppPath + 'resource/war.sta', sizeof(TWarData) * length(WarStaList), 0);
 
-  LoadIdxGrp('resource/kdef.idx', 'resource/kdef.grp', KIdx, KDef);
-  LoadIdxGrp('resource/talk1.idx', 'resource/talk1.grp', TIdx, TDef);
+  //pWarfld := ReadFileToBuffer(nil, AppPath + 'resource/warfld.grp', -1, 1);
 
+  KDEF := LoadIdxGrp('resource/kdef.idx', 'resource/kdef.grp');
+  TDEF := LoadIdxGrp('resource/talk1.idx', 'resource/talk1.grp');
+  WARFLD := LoadIdxGrp('resource/warfld.idx', 'resource/warfld.grp');
   //LoadIdxGrp('resource/name.idx', 'resource/name.grp', NameIdx, NameGrp);
 
   //升级经验统一为1000点
@@ -1016,14 +1020,14 @@ begin
   //读取存档的索引
   if ZIP_SAVE = 0 then
   begin
-    idx := FileOpen(AppPath + 'save/ranger.idx', fmopenread);
-    FileRead(idx, RoleOffset, 4);
-    FileRead(idx, ItemOffset, 4);
-    FileRead(idx, ScenceOffset, 4);
-    FileRead(idx, MagicOffset, 4);
-    FileRead(idx, WeiShopOffset, 4);
-    FileRead(idx, LenR, 4);
-    FileClose(idx);
+    IDX := FileOpen(AppPath + 'save/ranger.idx', fmopenread);
+    FileRead(IDX, RoleOffset, 4);
+    FileRead(IDX, ItemOffset, 4);
+    FileRead(IDX, ScenceOffset, 4);
+    FileRead(IDX, MagicOffset, 4);
+    FileRead(IDX, WeiShopOffset, 4);
+    FileRead(IDX, LenR, 4);
+    FileClose(IDX);
   end
   else
   begin
@@ -1354,7 +1358,7 @@ var
   zfilename, filenamer, filenames, filenamed, s: string;
   str, p, p1: PChar;
   key1, key2: pbyte;
-  idx, grp, t1, offset, i, i1, i2, lenkey: integer;
+  IDX, GRP, t1, offset, i, i1, i2, lenkey: integer;
   zfile: unzfile;
   file_info: unz_file_info;
   talkarray: array of byte;
@@ -1385,15 +1389,15 @@ begin
     if FileExists(AppPath + 'save/' + filenamer) and FileExists(AppPath + 'save/' + filenames) and
       FileExists(AppPath + 'save/' + filenamed) then
     begin
-      grp := FileOpen(AppPath + 'save/' + filenamer, fmopenread);
-      FileRead(grp, p^, lenR);
-      FileClose(grp);
-      grp := FileOpen(AppPath + 'save/' + filenames, fmopenread);
-      FileRead(grp, Sdata, ScenceAmount * 64 * 64 * 6 * 2);
-      FileClose(grp);
-      grp := FileOpen(AppPath + 'save/' + filenamed, fmopenread);
-      FileRead(grp, Ddata, ScenceAmount * 200 * 11 * 2);
-      FileClose(grp);
+      GRP := FileOpen(AppPath + 'save/' + filenamer, fmopenread);
+      FileRead(GRP, p^, lenR);
+      FileClose(GRP);
+      GRP := FileOpen(AppPath + 'save/' + filenames, fmopenread);
+      FileRead(GRP, Sdata, ScenceAmount * 64 * 64 * 6 * 2);
+      FileClose(GRP);
+      GRP := FileOpen(AppPath + 'save/' + filenamed, fmopenread);
+      FileRead(GRP, Ddata, ScenceAmount * 200 * 11 * 2);
+      FileClose(GRP);
     end
     else
     begin
@@ -1603,7 +1607,7 @@ var
   zfilename, filenamer, filenames, filenamed, s: string;
   key1, key2: pbyte;
   p, p1: PChar;
-  idx, grp, i1, i2: integer;
+  IDX, GRP, i1, i2: integer;
   BasicOffset, i: integer;
   zfile: zipfile;
   file_info: zip_fileinfo;
@@ -1659,30 +1663,30 @@ begin
 
   if ZIP_SAVE = 0 then
   begin
-    grp := filecreate(AppPath + 'save/' + filenamer, fmopenreadwrite);
-    if grp < 0 then
+    GRP := filecreate(AppPath + 'save/' + filenamer, fmopenreadwrite);
+    if GRP < 0 then
       Result := False
     else
     begin
-      FileSeek(grp, 0, 0);
-      FileWrite(grp, p^, lenR);
-      FileClose(grp);
+      FileSeek(GRP, 0, 0);
+      FileWrite(GRP, p^, lenR);
+      FileClose(GRP);
     end;
-    grp := filecreate(AppPath + 'save/' + filenames);
-    if grp < 0 then
+    GRP := filecreate(AppPath + 'save/' + filenames);
+    if GRP < 0 then
       Result := False
     else
     begin
-      FileWrite(grp, Sdata, ScenceAmount * 64 * 64 * 6 * 2);
-      FileClose(grp);
+      FileWrite(GRP, Sdata, ScenceAmount * 64 * 64 * 6 * 2);
+      FileClose(GRP);
     end;
-    grp := filecreate(AppPath + 'save/' + filenamed);
-    if grp < 0 then
+    GRP := filecreate(AppPath + 'save/' + filenamed);
+    if GRP < 0 then
       Result := False
     else
     begin
-      FileWrite(grp, Ddata, ScenceAmount * 200 * 11 * 2);
-      FileClose(grp);
+      FileWrite(GRP, Ddata, ScenceAmount * 200 * 11 * 2);
+      FileClose(GRP);
     end;
   end
   else
@@ -2430,7 +2434,7 @@ end;
 
 function WalkInScence(Open: integer): integer;
 var
-  grp, idx, offset, just, i1, i2, x, y, haveAmi, preface, drawed: integer;
+  GRP, IDX, offset, just, i1, i2, x, y, haveAmi, preface, drawed: integer;
   Sx1, Sy1, s, i, walking, Prescence, stillcount, speed: integer;
   axp, ayp, axp1, ayp1, gotoEvent, minstep, step, x1, y1: integer;
   filename: string;
@@ -7309,6 +7313,7 @@ begin
       Rrole[0].MagLevel[0] := 800;
       Rrole[0].Equip[0] := -1;
       Rrole[0].Equip[1] := -1;
+      Rrole[0].PracticeBook := -1;
       //清空主角武功
       for i := 1 to 9 do
       begin
@@ -7794,7 +7799,7 @@ end;
 procedure CallEvent(num: integer);
 var
   e: array of smallint;
-  i, idx, grp, offset, len, p, lenkey: integer;
+  i, IDX, GRP, offset, len, p, lenkey: integer;
   check: boolean;
   script: string;
 begin
@@ -7805,7 +7810,7 @@ begin
   SkipTalk := 0;
   if (KDEF_SCRIPT = 0) {or (not FileExists(AppPath + EventScriptPath + IntToStr(num) + '.lua'))} then
   begin
-    len := 0;
+    {len := 0;
     if num = 0 then
     begin
       offset := 0;
@@ -7815,9 +7820,11 @@ begin
     begin
       offset := KIdx[num - 1];
       len := KIdx[num] - offset;
-    end;
+    end;}
+    offset := KDEF.IDX[num];
+    len := KDEF.IDX[num + 1] - offset;
     setlength(e, len div 2 + 1);
-    move(KDef[offset], e[0], len);
+    move(KDEF.GRP[offset], e[0], len);
     ConsoleLog('Event %d', [num]);
     i := 0;
     //普通事件写成子程, 需跳转事件写成函数
@@ -8329,6 +8336,7 @@ begin
   words.Add('Czhe520');
   words.Add('流木匆匆');
   words.Add('无酒肆屋');
+  words.Add('项羽');
   words.Add('');
 
   words.Add('場景');
@@ -8402,7 +8410,6 @@ begin
   words.Add('winson7891');
   words.Add('halfrice');
   words.Add('soastao');
-  words.Add('项羽');
   words.Add('ice');
   words.Add('黑天鹅');
   words.Add('');

@@ -166,7 +166,7 @@ end;
 
 procedure instruct_1(talknum, headnum, dismode: integer);
 var
-  idx, grp, offset, len, i, p, l, headx, heady, diagx, diagy, namenum: integer;
+  IDX, GRP, offset, len, i, p, l, headx, heady, diagx, diagy, namenum: integer;
   talkarray: array of byte;
   Name: WideString;
 begin
@@ -248,13 +248,13 @@ begin
   //name := PreSpaceUnicode(@rrole[headnum].Name);
   //drawshadowtext(@name[1], headx + 20 - length(name) * 10, heady + 5, colcolor($ff), colcolor($0));
   //end;
-  {for i := 0 to len - 1 do
+  for i := 0 to len - 1 do
   begin
     talkarray[i] := talkarray[i] xor $FF;
     if (talkarray[i] = $2A) then
       talkarray[i] := 0;
-  end;}
-  {talkarray[len - 1] := $20;
+  end;
+  talkarray[len - 1] := $20;
   p := 0;
   l := 0;
   for i := 0 to len do
@@ -1671,8 +1671,8 @@ end;
 
 function instruct_50e(code, e1, e2, e3, e4, e5, e6: integer): integer;
 var
-  i, t1, grp, idx, offset, len, i1, i2: integer;
-  p, p1: pchar;
+  i, t1, GRP, IDX, offset, len, i1, i2: integer;
+  p, p1: PChar;
   pw, pw1: puint16;
   //ps :pstring;
   str: string;
@@ -1744,7 +1744,8 @@ begin
     8: //Read talk to string.
     begin
       t1 := e_GetValue(0, e1, e2);
-      if t1 <= 0 then
+
+      {if t1 <= 0 then
       begin
         len := TIdx[0];
         offset := 0;
@@ -1753,8 +1754,10 @@ begin
       begin
         len := TIdx[t1] - TIdx[t1 - 1];
         offset := TIdx[t1 - 1];
-      end;
-      move(Tdef[offset], x50[e3], len);
+      end;}
+      offset := TDEF.IDX[t1];
+      len := TDEF.IDX[t1 + 1] - offset;
+      move(TDEF.GRP[offset], x50[e3], len);
       p := @x50[e3];
       Inc(p, len);
       p^ := char(0);
@@ -2065,7 +2068,7 @@ begin
         begin
           pw^ := 0;
           //DrawU16ShadowText(pchar(pw1), e3 - 2, e4 + 22 * i - 25, ColColor(e5 and $FF), ColColor((e5 and $FF00) shr 8));
-          DrawU16ShadowText(pchar(pw1), e3 - 2, e4 + 22 * i - 25, 0, $202020);
+          DrawU16ShadowText(PChar(pw1), e3 - 2, e4 + 22 * i - 25, 0, $202020);
           i := i + 1;
           pw1 := pw;
           Inc(pw1);
@@ -2073,7 +2076,7 @@ begin
         Inc(pw);
       end;
       //Drawu16ShadowText(pchar(pw1), e3 - 2, e4 + 22 - 25, ColColor(e5 and $FF), ColColor((e5 and $FF00) shr 8));
-      Drawu16ShadowText(pchar(pw1), e3 - 2, e4 + 22 - 25, 0, $202020);
+      Drawu16ShadowText(PChar(pw1), e3 - 2, e4 + 22 - 25, 0, $202020);
       UpdateAllScreen;
       //waitanykey;
     end;
@@ -2144,7 +2147,7 @@ begin
         if uint16(pw^) = $2A then
         begin
           pw^ := 0;
-          DrawU16ShadowText(pchar(pw1), e3 + 3, e4 + 22 * i + 2, ColColor(e5 and $FF),
+          DrawU16ShadowText(PChar(pw1), e3 + 3, e4 + 22 * i + 2, ColColor(e5 and $FF),
             ColColor((e5 and $FF00) shr 8));
           i := i + 1;
           pw1 := pw;
@@ -2152,7 +2155,7 @@ begin
         end;
         Inc(pw);
       end;
-      DrawU16ShadowText(pchar(pw1), e3 + 3, e4 + 22 * i + 2, ColColor(e5 and $FF), ColColor((e5 and $FF00) shr 8));
+      DrawU16ShadowText(PChar(pw1), e3 + 3, e4 + 22 * i + 2, ColColor(e5 and $FF), ColColor((e5 and $FF00) shr 8));
       UpdateAllScreen;
       i := WaitAnyKey;
       if i = SDLK_y then
@@ -3939,8 +3942,8 @@ end;
 function ReSetName(t, inum, newnamenum: integer): integer;
 var
   NewName: string;
-  offset, len, i, idx, grp: integer;
-  p, np: pchar;
+  offset, len, i, IDX, GRP: integer;
+  p, np: PChar;
   talkarray: array of byte;
 begin
   ReadTalk(newnamenum, talkarray);
@@ -3986,7 +3989,7 @@ end;
 
 procedure ShowStarList;
 var
-  hx, hy, hw, hh, headnum, Count, n, i, c1, r1, offset, idx, len, grp, h: integer;
+  hx, hy, hw, hh, headnum, Count, n, i, c1, r1, offset, IDX, len, GRP, h: integer;
   str: ansistring;
   pword: array[0..1] of uint16;
   talkarray: array of byte;
@@ -4002,11 +4005,11 @@ var
   procedure ShowCommonScrollMenu_starlist(x, y, w, max, maxshow, menu, menutop, headn: integer);
   var
     i, p: integer;
-    hx, hy, hw, hh, Count, len, idx, grp, r1, c1, offset, state: integer;
+    hx, hy, hw, hh, Count, len, IDX, GRP, r1, c1, offset, state: integer;
     str1, str2: WideString;
     talkarray: array of byte;
     pword: array[0..1] of uint16;
-    str: pchar;
+    str: PChar;
     statusstr: WideString;
     strs: array[0..21] of WideString;
     color1, color2: uint32;
@@ -4931,10 +4934,10 @@ end;
 
 procedure RoleEnding(starnum, headnum, talknum: integer);
 var
-  status, newcolor, alen, n, ch, r1, c1, color1, color2, grp, idx, i, offset, len, hx, hy,
+  status, newcolor, alen, n, ch, r1, c1, color1, color2, GRP, IDX, i, offset, len, hx, hy,
   Sx, Sy, nx, ny, tx, ty, cell, framex, l, w, h, framey: integer;
   str1, str2, str, talkstr, namestr: WideString;
-  np3, np1, np2, tp, p1, ap: pchar;
+  np3, np1, np2, tp, p1, ap: PChar;
   actorarray, name1, name2, talkarray: array of byte;
   pword: array[0..1] of uint16;
   r, g, b: byte;
@@ -5060,8 +5063,10 @@ function WoodMan(Chamber: integer): boolean;
 var
   x, y, x1, y1, i, i3, i2, sta, offset, eface1, eface2, position, roleface, xm, ym: integer;
   CanWalk, stay: boolean;
+  p: PChar;
   picnum: integer = 4714;
 begin
+  Redraw;
   Result := True;
   x := 80;
   y := 90;
@@ -5069,15 +5074,19 @@ begin
   eface2 := 0;
   roleface := 0;
   i := sizeof(woodmansta);
-  sta := FileOpen(AppPath + 'binlist/woodman.bin', fmopenread);
   offset := Chamber * i;
+  {sta := FileOpen(AppPath + 'binlist/woodman.bin', fmopenread);
   FileSeek(sta, offset, 0);
   FileRead(sta, Woodmansta, i);
-  FileClose(sta);
+  FileClose(sta);}
+  p := ReadFileToBuffer(nil, AppPath + 'binlist/woodman.bin', -1, 1);
+  move((p + offset)^, Woodmansta, i);
+  FreeFileBuffer(p);
   //if SPNGIndex[picnum].Loaded = 0 then
-    LoadOnePNGTexture('resource/smap', pSPic, SPNGIndex[picnum]);
+  LoadOnePNGTexture('resource/smap', pSPic, SPNGIndex[picnum]);
   WoodPic := SPNGIndex[picnum].Pointers[0];
-    if WoodPic = nil then  exit;
+  if WoodPic = nil then
+    exit;
   for i := 0 to 99 do
   begin
     x1 := i div 10;
@@ -5664,9 +5673,10 @@ begin
   if picnum >= SPicAmount then
     exit;
   //if SPNGIndex[picnum].Loaded = 0 then
-    LoadOnePNGTexture('resource/smap', pSPic, SPNGIndex[picnum]);
+  LoadOnePNGTexture('resource/smap', pSPic, SPNGIndex[picnum]);
   Pic := SPNGIndex[picnum].Pointers[0];
-  if Pic = nil then  exit;
+  if Pic = nil then
+    exit;
   //filename := 'resource/Pic' + IntToStr(num);
   //if FileExists(filename) then
   //Pic := IMG_Load(@filename[1]);
@@ -5997,9 +6007,9 @@ procedure ReadTalk(talknum: integer; var talk: Tbytearray; needxor: integer = 0)
 var
   len, offset, i: integer;
 begin
-  if (talknum >= 0) and (talknum <= high(TIdx)) then
+  if (talknum >= 0) and (talknum <= TDEF.Amount) then
   begin
-    len := 0;
+    {len := 0;
     if talknum = 0 then
     begin
       offset := 0;
@@ -6009,10 +6019,11 @@ begin
     begin
       offset := TIdx[talknum - 1];
       len := TIdx[talknum] - offset;
-    end;
-
+    end;}
+    offset := TDEF.IDX[talknum];
+    len := TDEF.IDX[talknum + 1] - offset;
     setlength(talk, len + 1);
-    move(TDef[offset], talk[0], len);
+    move(TDEF.GRP[offset], talk[0], len);
     if needxor = 1 then
       for i := 0 to len - 1 do
       begin
@@ -6543,7 +6554,7 @@ end;
 
 function EnterNumber(MinValue, MaxValue, x, y: integer; Default: integer = 0): smallint;
 var
-  value, i, menu, sure, pvalue, pmenu, highButton: integer;
+  Value, i, menu, sure, pvalue, pmenu, highButton: integer;
   str: array[0..13] of WideString;
   color: uint32;
   strv, strr: WideString;
@@ -6551,7 +6562,7 @@ var
   Button: array[0..13] of TSDL_Rect;
 begin
   CleanKeyValue;
-  value := Default;
+  Value := Default;
   MinValue := max(-32768, MinValue);
   MaxValue := min(32767, MaxValue);
   //13个按钮的位置和大小
@@ -6652,10 +6663,10 @@ begin
       end;
     end;
     //画界面
-    if (value <> pvalue) or (menu <> pmenu) then
+    if (Value <> pvalue) or (menu <> pmenu) then
     begin
       LoadFreshScreen(x, y);
-      strv := format('%6d', [value]);
+      strv := format('%6d', [Value]);
       DrawShadowText(@strv[1], x + 80, y + 10, ColColor($64), ColColor($66));
       if (menu >= 0) and (menu <= highButton) then
       begin
@@ -6667,7 +6678,7 @@ begin
         DrawShadowText(@str[i][1], Button[i].x + 8, Button[i].y + Button[i].h div 2 - 11, ColColor(5), ColColor(7));
       end;
       UpdateAllScreen;
-      pvalue := value;
+      pvalue := Value;
       pmenu := menu;
     end;
     CleanKeyValue;
@@ -6676,11 +6687,11 @@ begin
     begin
       case menu of
         0.. 9:
-          if value * 10 < 1e5 then
-            value := 10 * value + menu;
-        10: value := -value;
-        11: value := value div 10;
-        12: value := 0;
+          if Value * 10 < 1e5 then
+            Value := 10 * Value + menu;
+        10: Value := -Value;
+        11: Value := Value div 10;
+        12: Value := 0;
         else
           if menu = highButton then
             break;
@@ -6691,9 +6702,9 @@ begin
     sure := 0;
     SDL_Delay(25);
   end;
-  Result := RegionParameter(value, MinValue, MaxValue);
+  Result := RegionParameter(Value, MinValue, MaxValue);
   //Redraw;
-  if Result <> value then
+  if Result <> Value then
   begin
     Redraw;
     UpdateAllScreen;

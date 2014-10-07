@@ -431,7 +431,7 @@ end;
 
 function InitialBField: boolean;
 var
-  sta, grp, idx, offset, i, i1, i2, x, y, fieldnum: integer;
+  sta, GRP, IDX, offset, i, i1, i2, x, y, fieldnum: integer;
 begin
   {i := sizeof(warsta);
   sta := FileOpen(AppPath + 'resource/war.sta', fmopenread);
@@ -441,7 +441,7 @@ begin
   FileClose(sta);}
   warsta := WarStaList[CurrentBattle];
   fieldnum := warsta.BFieldNum;
-  if fieldnum = 0 then
+  {if fieldnum = 0 then
     offset := 0
   else
   begin
@@ -453,7 +453,8 @@ begin
   grp := FileOpen(AppPath + 'resource/warfld.grp', fmopenread);
   FileSeek(grp, offset, 0);
   FileRead(grp, BField[0, 0, 0], 2 * 64 * 64 * 2);
-  FileClose(grp);
+  FileClose(grp);}
+  move(WARFLD.GRP[WARFLD.IDX[fieldnum]], Bfield[0, 0, 0], 2 * 64 * 64 * 2);
   for i1 := 0 to 63 do
     for i2 := 0 to 63 do
       BField[2, i1, i2] := -1;
@@ -1165,19 +1166,30 @@ begin
   Result := r;
 end;
 
-//按轻功重排人物(未考虑装备)
+//按轻功重排人物(考虑装备)
 //2号状态, 轻功有加成
 
 procedure ReArrangeBRole;
 var
-  i, i1, i2, x, t: integer;
+  i, i1, i2, x, t, s1, s2: integer;
   temp: TBattleRole;
+
+  function calTotalSpeed(bnum: integer): integer;
+  var
+    rnum: integer;
+  begin
+    rnum := Brole[bnum].rnum;
+    Result := Rrole[rnum].Speed + Ritem[Rrole[rnum].Equip[0]].AddSpeed + Ritem[Rrole[rnum].Equip[1]].AddSpeed;
+    Result := Result * (100 + Brole[bnum].StateLevel[2] + Brole[bnum].loverlevel[9]) div 100;
+  end;
+
 begin
   for i1 := 0 to BRoleAmount - 2 do
     for i2 := i1 + 1 to BRoleAmount - 1 do
     begin
-      if Rrole[Brole[i1].rnum].Speed * (100 + Brole[i1].StateLevel[2] + Brole[i1].loverlevel[9]) div
-        100 < Rrole[Brole[i2].rnum].Speed * (100 + Brole[i2].StateLevel[2] + Brole[i2].loverlevel[9]) div 100 then
+      s1 := calTotalSpeed(i1);
+      s2 := calTotalSpeed(i2);
+      if s1 < s2 then
       begin
         temp := Brole[i1];
         Brole[i1] := Brole[i2];
@@ -3278,8 +3290,8 @@ begin
   begin
     if EPNGIndex[enum].Loaded = 0 then
     begin
-      EPNGIndex[enum].Amount := LoadPNGTiles(formatfloat('resource/eft/eft000', enum), EPNGIndex[enum].PNGIndexArray,
- 1);
+      EPNGIndex[enum].Amount := LoadPNGTiles(formatfloat('resource/eft/eft000', enum),
+        EPNGIndex[enum].PNGIndexArray, 1);
       EPNGIndex[enum].Loaded := 1;
     end;
     endpic := EPNGIndex[enum].Amount;
@@ -4443,7 +4455,7 @@ end;
 
 procedure PlayActionAmination(bnum, mode: integer);
 var
-  rnum, i, beginpic, endpic, idx, grp, tnum, len, Ax1, Ay1, actnum, k: integer;
+  rnum, i, beginpic, endpic, IDX, GRP, tnum, len, Ax1, Ay1, actnum, k: integer;
   filename: string;
 begin
   //暗器类用特殊的动作
@@ -7141,6 +7153,7 @@ begin
         itemid := -1;
         for k := 0 to 2 do
         begin
+          CheckBasicEvent;
           if Rrole[aimrnum].TakingItem[k] >= 0 then
           begin
             if random(100) < 30 then
@@ -8464,7 +8477,7 @@ begin
           begin
             mnumarray[amount] := Rrole[Brole[i].rnum].magic[i1];
             namemagic := pWideChar(@Rrole[Brole[i].rnum].Name) + StringOfChar(' ', 10 -
-              DrawLength(pchar(@Rrole[Brole[i].rnum].Name))) + pWideChar(
+              DrawLength(PChar(@Rrole[Brole[i].rnum].Name))) + pWideChar(
               @Rmagic[Rrole[Brole[i].rnum].magic[i1]].Name);
             //menustring[amount] := pwidechar(@namemagic);
             menuString[amount] := namemagic;
@@ -9081,7 +9094,7 @@ var
   str: WideString;
   i, bnum2, rnum, rnum2, hurt, hurtMP: integer;
 begin
-  if (mnum = 332) then
+  if (mnum = 332) or (mnum = 22) then
   begin
     ShowMagicName(mnum2);
     bnum2 := BField[2, Ax, Ay];

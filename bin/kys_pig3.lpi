@@ -24,7 +24,7 @@
       <MajorVersionNr Value="3"/>
       <MinorVersionNr Value="3"/>
       <RevisionNr Value="1"/>
-      <BuildNr Value="8"/>
+      <BuildNr Value="10"/>
       <Language Value="0804"/>
       <StringTable Comments="108 Brothers and Sisters" CompanyName="http://www.txdx.net" LegalCopyright="no" ProductName="kys_pig3.exe" ProductVersion="3.3"/>
     </VersionInfo>
@@ -197,6 +197,7 @@
       <Unit9>
         <Filename Value="lib\mythoutput.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="mythoutput"/>
       </Unit9>
     </Units>
   </ProjectOptions>

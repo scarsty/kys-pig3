@@ -69,10 +69,15 @@ type
   //TSurfaceArray = array of PSDL_Surface;
 
   //TTextureArray = array of PSDL_Texture;
-
   TIntArray = array of integer;
   TByteArray = array of byte;
 
+
+  TIDXGRP = record
+    Amount: integer;
+    IDX: array of integer;
+    GRP: array of byte;
+  end;
 
   TCallType = (Element, Address);
 
@@ -217,7 +222,7 @@ type
   TLoadTileData = record
     amount: integer;
     path: string;
-    filemem: pchar;
+    filemem: PChar;
     beginIndex: ^TPNGIndex;
   end;
 
@@ -354,8 +359,9 @@ var
 
   //以下是各类贴图内容与索引
   //云的贴图内容及索引
-  MPic, SPic, WPic, EPic, FPic, HPic, CPic, KDef, TDef, NameGrp: TByteArray;
-  MIdx, SIdx, WIdx, EIdx, Fidx, HIdx, CIdx, KIdx, TIdx, NameIdx: TIntArray;
+  TDEF, WARFLD, KDEF: TIDXGRP;
+  //MPic, SPic, WPic, EPic, FPic, HPic, CPic, KDef, TDef, NameGrp: TByteArray;
+  //MIdx, SIdx, WIdx, EIdx, Fidx, HIdx, CIdx, KIdx, TIdx, NameIdx: TIntArray;
 
   MPNGIndex, SPNGIndex, {BPNGIndex, EPNGIndex,} HPNGIndex, CPNGIndex, TitlePNGIndex, IPNGIndex: TPNGIndexArray;
 
@@ -479,7 +485,7 @@ var
   ReadingTiles: boolean = False;
   LoadingBattleTiles: boolean = False;
 
-  pMPic, pSPic, {pBPic,} pEPic, pHPic, pIPic: pchar; //图片文件保存的位置
+  pMPic, pSPic, {pBPic,} pEPic, pHPic, pIPic: PChar; //图片文件保存的位置
 
   ScreenBlendMode: integer = 0;  //色调 0-白天 1-夜晚 2-黄昏 3-水下
 
@@ -530,7 +536,7 @@ var
   p5032pos: integer = -100;  //脚本用于处理50 32使用
   p5032value: integer = -1;
 
-  pEvent: pchar;
+  pEvent: PChar;
 
   CHNFONT_SPACEWIDTH: integer;
 
@@ -540,7 +546,7 @@ var
   screenTex, ImgSGroundTex, ImgBGroundTex, TextScreenTex, BlackScreenTex, SimpleStateTex: PSDL_Texture;
   //FreshScreenTex: TList;
 
-  keystate: pchar;
+  keystate: PChar;
   keyup, keydown, keyright, keyleft: puint8;
 
   SimpleStatusTex: array[0..5] of PSDL_Texture; //全队简明状态的表面
