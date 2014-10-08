@@ -105,6 +105,7 @@ procedure ReadTiles;
 function LoadPNGTilesThread(Data: pointer): longint; cdecl;
 function ReadFileToBuffer(p: PChar; filename: string; size, malloc: integer): PChar; overload;
 function ReadFileToBuffer(p: PChar; const filename: PChar; size, malloc: integer): PChar; overload;
+function FileGetlength(filename: string): integer;
 procedure FreeFileBuffer(var p: PChar);
 function LoadIdxGrp(stridx, strgrp: string): TIDXGRP;
 function LoadPNGTiles(path: string; var PNGIndexArray: TPNGIndexArray; LoadPic: integer = 1): integer; overload;
@@ -224,6 +225,7 @@ var
   str: string;
   sf: BASS_MIDI_FONT;
   Flag: longword;
+  p: PChar;
 begin
   BASS_Set3DFactors(1, 0, 0);
   sf.font := BASS_MIDI_FontInit(PChar(AppPath + 'music/mid.sf2'), 0);
@@ -240,9 +242,14 @@ begin
     if FileExists(PChar(str)) then
     begin
       try
+{$ifdef android}
+        p := ReadFileToBuffer(nil, PChar(str), -1, 1);
+        Music[i] := BASS_StreamCreateFile(True, p, 0, FileGetlength(str), 0);
+        FreeFileBuffer(p);
+{$else}
         Music[i] := BASS_StreamCreateFile(False, PChar(str), 0, 0, 0);
+{$endif}
       finally
-
       end;
     end
     else
@@ -251,11 +258,16 @@ begin
       if FileExists(PChar(str)) then
       begin
         try
+{$ifdef android}
+          p := ReadFileToBuffer(nil, PChar(str), -1, 1);
+          Music[i] := BASS_MIDI_StreamCreateFile(True, p, 0, FileGetlength(str), 0, 0);
+          FreeFileBuffer(p);
+{$else}
           Music[i] := BASS_MIDI_StreamCreateFile(False, PChar(str), 0, 0, 0, 0);
+{$endif}
           BASS_MIDI_StreamSetFonts(Music[i], sf, 1);
           //showmessage(inttostr(Music[i]));
         finally
-
         end;
       end
       else
@@ -267,7 +279,15 @@ begin
   begin
     str := AppPath + 'sound/e' + IntToStr(i) + '.wav';
     if FileExists(PChar(str)) then
-      ESound[i] := BASS_SampleLoad(False, PChar(str), 0, 0, 1, Flag)
+    begin
+{$ifdef android}
+      p := ReadFileToBuffer(nil, PChar(str), -1, 1);
+      ESound[i] := BASS_SampleLoad(True, p, 0, FileGetlength(str), 1, Flag);
+      FreeFileBuffer(p);
+{$else}
+      ESound[i] := BASS_SampleLoad(False, PChar(str), 0, 0, 1, Flag);
+{$endif}
+    end
     else
       ESound[i] := 0;
     //showmessage(inttostr(esound[i]));
@@ -276,7 +296,15 @@ begin
   begin
     str := AppPath + formatfloat('sound/atk00', i) + '.wav';
     if FileExists(PChar(str)) then
-      ASound[i] := BASS_SampleLoad(False, PChar(str), 0, 0, 1, Flag)
+    begin
+{$ifdef android}
+      p := ReadFileToBuffer(nil, PChar(str), -1, 1);
+      ASound[i] := BASS_SampleLoad(True, p, 0, FileGetlength(str), 1, Flag);
+      FreeFileBuffer(p);
+{$else}
+      ASound[i] := BASS_SampleLoad(False, PChar(str), 0, 0, 1, Flag);
+{$endif}
+    end
     else
       ASound[i] := 0;
   end;
@@ -2341,11 +2369,12 @@ end;
 //当读入的位置并非变长数据时, 务必设置 malloc = 0!
 //size小于0时, 则读整个文件.
 
-function ReadFileToBuffer(p: PChar; filename: string; size, malloc: integer): PChar;
+function ReadFileToBuffer(p: PChar; filename: string; size, malloc: integer): PChar; overload;
 var
   i: integer;
 begin
 {$ifdef android}
+  filename := StringReplace(filename, AppPath, 'game/', [rfReplaceAll]);
   Result := Android_ReadFiletoBuffer(p, PChar(filename), size, malloc);
 {$else}
   i := FileOpen(filename, fmopenread);
@@ -2375,11 +2404,25 @@ begin
   Result := ReadFileToBuffer(p, filename, size, malloc);
 end;
 
+function FileGetlength(filename: string): integer;
+begin
+{$ifdef android}
+  filename := StringReplace(filename, AppPath, 'game/', [rfReplaceAll]);
+  Result := Android_FileGetlength(PChar(filename));
+{$else}
+{$endif}
+end;
+
 procedure FreeFileBuffer(var p: PChar);
 begin
+{$ifdef android}
+  if p <> nil then
+    Android_FileFreeBuffer(p);
+{$else}
   if p <> nil then
     StrDispose(p);
   p := nil;
+{$endif}
 end;
 
 //载入IDX和GRP文件到变长数据, 不适于非变长数据
@@ -3452,6 +3495,7 @@ var
   Text: PSDL_Surface;
   word: array[0..1] of uint16 = (32, 0);
   tempcolor: TSDL_Color;
+  p: PChar;
 begin
   if (TEXT_LAYER = 0) or (force = 1) then
     scale := 1
@@ -3483,8 +3527,18 @@ begin
     engsize := round(engsize * scale);
   end;
 
+{$ifdef android}
+  p := ReadFileToBuffer(nil, PChar(AppPath + CHINESE_FONT), -1, 1);
+  font := TTF_OpenFontRW(SDL_RWFromMem(p, FileGetlength(PChar(AppPath + CHINESE_FONT))), 1, chnsize);
+  FreeFileBuffer(p);
+  p := ReadFileToBuffer(nil, PChar(AppPath + CHINESE_FONT), -1, 1);
+  engfont := TTF_OpenFontRW(SDL_RWFromMem(p, FileGetlength(PChar(AppPath + CHINESE_FONT))), 1, engsize);
+  FreeFileBuffer(p);
+{$else}
   font := TTF_OpenFont(PChar(AppPath + CHINESE_FONT), chnsize);
   engfont := TTF_OpenFont(PChar(AppPath + ENGLISH_FONT), engsize);
+{$endif}
+
   CHINESE_FONT_REALSIZE := chnsize;
   ENGLISH_FONT_REALSIZE := engsize;
 

@@ -289,7 +289,7 @@ begin
   if PRESENT_SYNC <> 0 then
     RenderFlag := RenderFlag or SDL_RENDERER_PRESENTVSYNC;
 
-  ConsoleLog('Creating window with width and height %d anf %d', [RESOLUTIONX, RESOLUTIONY]);
+  ConsoleLog('Creating window with width and height %d and %d', [RESOLUTIONX, RESOLUTIONY]);
   window := SDL_CreateWindow(PChar(TitleString), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
     RESOLUTIONX, RESOLUTIONY, WindowFlag);
   SDL_GetWindowSize(window, @RESOLUTIONX, @RESOLUTIONY);
@@ -309,21 +309,26 @@ begin
   render := SDL_CreateRenderer(window, rendernum, RenderFlag);
 
   ConsoleLog('All pictures will be loaded as surface: %d', [SW_SURFACE]);
-  ConsoleLog('Text will be draw on single layer: %d', [TEXT_LAYER]);
+  ConsoleLog('Text will be drawn on single layer: %d', [TEXT_LAYER]);
 
   ImageWidth := (36 * 32 + CENTER_X) * 2;
   ImageHeight := (18 * 32 + CENTER_Y) * 2;
 
   //初始化字体
+  ConsoleLog('Try to load the fonts');
   TTF_Init();
   SetFontSize(20, 18, -1);
 
+  ConsoleLog('Creating rendered textures');
   CreateMainRenderTextures;
   CreateAssistantRenderTextures;
 
+  ConsoleLog('Initial lua script environment');
   InitialScript;
+  ConsoleLog('Initial music');
   InitialMusic;
 
+  ConsoleLog('Record the state of the direction keys');
   //mutex := SDL_CreateMutex();
   keystate := PChar(SDL_GetKeyboardState(nil));
   keyup := puint8(keystate + sdl_SCANCODE_up);
@@ -331,6 +336,7 @@ begin
   keyleft := puint8(keystate + sdl_SCANCODE_left);
   keyright := puint8(keystate + sdl_SCANCODE_right);
 
+  ConsoleLog('Set event filter');
   SDL_SetEventFilter(@EventFilter, nil);
 
   if CellPhone = 0 then
@@ -338,7 +344,7 @@ begin
     SDL_InitSubSystem(SDL_INIT_JOYSTICK);
     if SDL_NumJoysticks() > 0 then
     begin
-      ConsoleLog('Found Joystick');
+      ConsoleLog('Found joystick');
       joy := SDL_JoystickOpen(0);
       if SDL_JoystickNumAxes(joy) > 0 then
       begin
@@ -346,6 +352,10 @@ begin
         SDL_AddTimer(JOY_AXIS_DELAY, JoyAxisMouse, nil);
       end;
     end;
+  end
+  else
+  begin
+    ConsoleLog('Ignore joystick in cellphone ');
   end;
 
   ConsoleLog('Initial ended, start game');
