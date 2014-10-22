@@ -8455,7 +8455,7 @@ begin
     exit;
   end;
   ShowMagicName(mnum);
-  RecordFreshScreen;
+  //RecordFreshScreen;
   amount := 0;
   if (level < 10) or (MODVersion <> 13) then
   begin
@@ -8521,12 +8521,12 @@ begin
     else
       while res < 0 do
       begin
-        LoadFreshScreen;
+        //LoadFreshScreen;
         res := CommonScrollMenu(CENTER_X - 60 - length(menuString[0]) * 5, 130, 105 +
           length(menuString[0]) * 10, amount - 1, 12, menuString);
       end;
   end;
-  FreeFreshScreen;
+  //FreeFreshScreen;
   Rrole[Brole[bnum].rnum].Magic[0] := mnumarray[res];
   PlayMagicAmination(bnum, Rmagic[mnumarray[res]].AmiNum, Rmagic[mnumarray[res]].AddMP[0]);
   if AI then
@@ -9094,7 +9094,7 @@ var
   str: WideString;
   i, bnum2, rnum, rnum2, hurt, hurtMP: integer;
 begin
-  if (mnum = 332) or (mnum = 22) then
+  if (mnum = 332) then
   begin
     ShowMagicName(mnum2);
     bnum2 := BField[2, Ax, Ay];

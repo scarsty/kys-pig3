@@ -2444,6 +2444,17 @@ begin
       BEGIN_WALKPIC := e_GetValue(0, e1, e2);
       BEGIN_WALKPIC2 := e_GetValue(0, e1, e3);
     end;
+    55:
+    begin
+      DrawRectangleWithoutFrame(0, 0, CENTER_X * 2, CENTER_Y * 2, 0, 0);
+      //UpdateAllScreen;
+      if PlayMovie(IntToStr(e_GetValue(0, e1, e2)) + '.wmv') then
+      begin
+        CleanKeyValue;
+        WaitAnyKey;
+      end;
+      Redraw;
+    end;
     60: //Call scripts.
     begin
       e2 := e_GetValue(0, e1, e2);

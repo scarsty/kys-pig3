@@ -763,6 +763,8 @@ begin
       2: CurTargetSurface := ImgBGround;
     end;
   end;
+  SDL_SetRenderDrawColor(render, 0, 0, 0, 0);
+  SDL_RenderClear(render);
   for i1 := -64 to 127 do
     for i2 := -64 to 127 do
     begin
