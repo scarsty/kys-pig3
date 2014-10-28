@@ -366,18 +366,19 @@ begin
         actionnum := 0;
       if FPNGIndex[actionnum].Loaded = 0 then
       begin
-        LoadPNGTiles(formatfloat('resource/fight/fight000', actionnum), FPNGIndex[actionnum].PNGIndexArray, 1);
+        LoadPNGTiles(formatfloat('resource/fight/fight000', actionnum), FPNGIndex[actionnum].PNGIndexArray,
+          1, @FPNGIndex[actionnum].FightFrame[0]);
         FPNGIndex[actionnum].Loaded := 1;
       end;
       //计算人物静止时的贴图编号
       num := 0;
       for j := 0 to 4 do
       begin
-        if FightFrame[actionnum, j] > 0 then
+        if FPNGIndex[actionnum].FightFrame[j] > 0 then
         begin
           for k := 0 to 3 do
           begin
-            Brole[i].StaticPic[k] := num + FightFrame[actionnum, j] * k;
+            Brole[i].StaticPic[k] := num + FPNGIndex[actionnum].FightFrame[j] * k;
           end;
           break;
         end;
@@ -4490,13 +4491,13 @@ begin
   //计算动作帧数
   //if Rrole[rnum].AmiFrameNum[mode] > 0 then
   //如果对应帧数小于等于0, 则寻找第一个不为零的帧数
-  if FightFrame[actNum, mode] <= 0 then
+  if FPNGIndex[actnum].FightFrame[mode] <= 0 then
   begin
     for mode := 0 to 4 do
-      if FightFrame[actNum, mode] > 0 then
+      if FPNGIndex[actnum].FightFrame[mode] > 0 then
         break;
   end;
-  if FightFrame[actNum, mode] > 0 then
+  if FPNGIndex[actnum].FightFrame[mode] > 0 then
   begin
     beginpic := 0;
     for i := 0 to 4 do
@@ -4504,12 +4505,12 @@ begin
       if i >= mode then
         break;
       //beginpic := beginpic + Rrole[rnum].AmiFrameNum[i] * 4;
-      beginpic := beginpic + FightFrame[actNum, i] * 4;
+      beginpic := beginpic + FPNGIndex[actnum].FightFrame[i] * 4;
     end;
     //beginpic := beginpic + Brole[bnum].Face * Rrole[rnum].AmiFrameNum[mode];
     //endpic := beginpic + Rrole[rnum].AmiFrameNum[mode] - 1;
-    beginpic := beginpic + Brole[bnum].Face * FightFrame[actNum, mode];
-    endpic := beginpic + FightFrame[actNum, mode] - 1;
+    beginpic := beginpic + Brole[bnum].Face * FPNGIndex[actnum].FightFrame[mode];
+    endpic := beginpic + FPNGIndex[actnum].FightFrame[mode] - 1;
 
     //filename := formatfloat('fight/fight000', Rrole[rnum].HeadNum);
     //LoadIdxGrp(filename + '.idx', filename + '.grp', FIdx, FPic);

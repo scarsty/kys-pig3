@@ -58,6 +58,7 @@ type
   //该组用于保存效果和战斗
   TPNGIndexes = record
     Amount, Loaded: integer;
+    FightFrame: array [0..4]of smallint;
     PNGIndexArray: array of TPNGIndex;
   end;
 
@@ -230,6 +231,7 @@ var
 
   MODVersion: integer = 13;
   //13-金庸水浒传(小猪3)
+  //31-再戰江湖
   //仅为标记用
 
   //初始值
@@ -501,7 +503,7 @@ var
 
   //ScreenScale: real = 1;
 
-  FightFrame: array[0..500, 0..4] of smallint;   //保存所有人的战斗帧数, 这里限制了501人
+  //FightFrame: array[0..4] of smallint;   //临时使用的战斗帧数
 
   ZIP_SAVE: integer = 1;  //使用zip存档
 

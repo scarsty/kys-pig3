@@ -108,7 +108,8 @@ function ReadFileToBuffer(p: PChar; const filename: PChar; size, malloc: integer
 function FileGetlength(filename: string): integer;
 procedure FreeFileBuffer(var p: PChar);
 function LoadIdxGrp(stridx, strgrp: string): TIDXGRP;
-function LoadPNGTiles(path: string; var PNGIndexArray: TPNGIndexArray; LoadPic: integer = 1): integer; overload;
+function LoadPNGTiles(path: string; var PNGIndexArray: TPNGIndexArray; LoadPic: integer = 1;
+  frame: psmallint = nil): integer; overload;
 procedure LoadOnePNGTexture(path: string; p: PChar; var PNGIndex: TPNGIndex; forceLoad: integer = 0); overload;
 function LoadTileFromFile(filename: string; var pt: Pointer; usesur: integer; var w, h: integer): boolean;
 function LoadTileFromMem(p: PChar; len: integer; var pt: Pointer; usesur: integer; var w, h: integer): boolean;
@@ -2385,7 +2386,7 @@ begin
     if malloc = 1 then
     begin
       //GetMem(result, size + 4);
-      Result := StrAlloc(size + 4);
+      Result := StrAlloc(size);
       p := Result;
       //writeln(StrBufSize(p));
     end;
@@ -2423,7 +2424,7 @@ begin
   if p <> nil then
     StrDispose(p);
 {$endif}
-p := nil;
+  p := nil;
 end;
 
 //载入IDX和GRP文件到变长数据, 不适于非变长数据
@@ -2467,11 +2468,12 @@ end;
 
 //为了提高启动的速度, M之外的贴图均仅读入基本信息, 需要时才实际载入图, 并且游戏过程中通常不再释放资源
 
-function LoadPNGTiles(path: string; var PNGIndexArray: TPNGIndexArray; LoadPic: integer = 1): integer; overload;
+function LoadPNGTiles(path: string; var PNGIndexArray: TPNGIndexArray; LoadPic: integer = 1;
+  frame: psmallint = nil): integer; overload;
 const
   maxCount: integer = 9999;
 var
-  i, j, k, state, size, Count, pngoff: integer;
+  i, j, k, state, size, Count, pngoff, n, n0: integer;
   //zipFile: unzFile;
   //info: unz_file_info;
   offset: array of smallint;
@@ -2489,7 +2491,13 @@ begin
     p := ReadFileToBuffer(nil, AppPath + path + '.imz', -1, 1);
     if p <> nil then
     begin
-      Result := min(maxCount, pinteger(p)^);
+      n := pinteger(p)^;
+      if (frame <> nil) then
+      begin
+        size := StrBufSize(p);
+        move((p+size-10)^, frame^,10);
+      end;
+      Result := min(maxCount, n);
       //最大的有帧数的数量作为贴图的最大编号
       for i := Result - 1 downto 0 do
       begin
@@ -2528,6 +2536,15 @@ begin
   begin
     ConsoleLog('Searching index of png files %s/index.ka', [path]);
     path := path + '/';
+    if (frame <> nil) then
+    begin
+      p := ReadFileToBuffer(nil, AppPath + path + '/fightframe.ka', -1, 1);
+      if p <> nil then
+      begin
+        move(p^, frame^, 10);
+      end;
+      FreeFileBuffer(p);
+    end;
     p := ReadFileToBuffer(nil, AppPath + path + '/index.ka', -1, 1);
     size := StrBufSize(p);
     setlength(offset, size div 2 + 2);
@@ -3502,7 +3519,7 @@ begin
     scale := 1
   else
     scale := min(RESOLUTIONX / CENTER_X / 2, RESOLUTIONY / CENTER_Y / 2);
-  ConsoleLog('scale is %f', [scale]);
+  //ConsoleLog('scale is %f', [scale]);
   //非初始化时先关闭字体
   if force <> -1 then
   begin
@@ -3527,22 +3544,22 @@ begin
     chnsize := round(chnsize * scale);
     engsize := round(engsize * scale);
   end;
-  ConsoleLog('size is %d and %d', [chnsize, engsize]);
-//{$ifdef android}
+  //ConsoleLog('size is %d and %d', [chnsize, engsize]);
+  //{$ifdef android}
   {p := ReadFileToBuffer(nil, PChar(AppPath + CHINESE_FONT), -1, 1);
   font := TTF_OpenFontRW(SDL_RWFromMem(p, FileGetlength(PChar(AppPath + CHINESE_FONT))), 1, chnsize);
   //FreeFileBuffer(p);
   p := ReadFileToBuffer(nil, PChar(AppPath + CHINESE_FONT), -1, 1);
   engfont := TTF_OpenFontRW(SDL_RWFromMem(p, FileGetlength(PChar(AppPath + CHINESE_FONT))), 1, engsize);
   //FreeFileBuffer(p);}
-//{$else}
+  //{$else}
   font := TTF_OpenFont(PChar(AppPath + CHINESE_FONT), chnsize);
   engfont := TTF_OpenFont(PChar(AppPath + ENGLISH_FONT), engsize);
-//{$endif}
+  //{$endif}
 
   CHINESE_FONT_REALSIZE := chnsize;
   ENGLISH_FONT_REALSIZE := engsize;
-  ConsoleLog('real size is %d and %d', [CHINESE_FONT_REALSIZE, ENGLISH_FONT_REALSIZE]);
+  //ConsoleLog('real size is %d and %d', [CHINESE_FONT_REALSIZE, ENGLISH_FONT_REALSIZE]);
 
   if (font = nil) or (engfont = nil) then
     ConsoleLog('Read fonts failed');
@@ -3551,7 +3568,7 @@ begin
   Text := TTF_RenderUNICODE_solid(font, @word[0], tempcolor);
   CHNFONT_SPACEWIDTH := Text.w;
   SDL_FreeSurface(Text);
-  ConsoleLog('space size is %d', [CHNFONT_SPACEWIDTH]);
+  //ConsoleLog('space size is %d', [CHNFONT_SPACEWIDTH]);
   //writeln(chnsize, engsize);
 end;
 
@@ -4250,4 +4267,4 @@ begin
 {$endif}
 end;
 
-end.
+end.

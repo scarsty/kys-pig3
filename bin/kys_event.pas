@@ -480,12 +480,13 @@ end;
 function instruct_5(jump1, jump2: integer): integer;
 var
   menu: integer;
-  menuString: array[0..2] of WideString;
+  menuString: array[0..1] of WideString;
+    str: widestring;
 begin
   menuString[0] := '取消';
   menuString[1] := '戰鬥';
-  menuString[2] := '是否與之戰鬥？';
-  DrawTextWithRect(@menuString[2][1], CENTER_X - 75, CENTER_Y - 85, 0, 0, $202020);
+  str := '是否與之戰鬥？';
+  DrawTextWithRect(@str[1], CENTER_X - 75, CENTER_Y - 85, 0, 0, $202020);
   menu := CommonMenu2(CENTER_X - 49, CENTER_Y - 50, 48, menuString);
   if menu = 1 then
     Result := jump1
@@ -516,12 +517,13 @@ end;
 function instruct_9(jump1, jump2: integer): integer;
 var
   menu: integer;
-  menuString: array[0..2] of WideString;
+  menuString: array[0..1] of WideString;
+    str: widestring;
 begin
   menuString[0] := '取消';
   menuString[1] := '要求';
-  menuString[2] := '是否要求加入？';
-  DrawTextWithRect(@menuString[2][1], CENTER_X - 75, CENTER_Y - 85, 0, 0, $202020);
+  str := '是否要求加入？';
+  DrawTextWithRect(@str[1], CENTER_X - 75, CENTER_Y - 85, 0, 0, $202020);
   menu := CommonMenu2(CENTER_X - 49, CENTER_Y - 50, 48, menuString);
   if menu = 1 then
     Result := jump1
@@ -564,12 +566,19 @@ end;
 function instruct_11(jump1, jump2: integer): integer;
 var
   menu: integer;
-  menuString: array[0..2] of WideString;
+  menuString: array[0..1] of WideString;
+  str: widestring;
 begin
-  menuString[0] := '取消';
+  menuString[0] :='取消';
   menuString[1] := '住宿';
-  menuString[2] := '是否需要住宿？';
-  DrawTextWithRect(@menuString[2][1], CENTER_X - 75, CENTER_Y - 85, 0, 0, $202020);
+  str:='是否需要住宿？'     ;
+  if MODVersion = 31 then
+  begin
+  menuString[0] :='N-否';
+  menuString[1] := 'Y-是';
+  str := '請作出您的選擇';
+  end;
+  DrawTextWithRect(@str[1], CENTER_X - 75, CENTER_Y - 85, 0, 0, $202020);
   menu := CommonMenu2(CENTER_X - 49, CENTER_Y - 50, 48, menuString);
   if menu = 1 then
     Result := jump1

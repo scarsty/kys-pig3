@@ -175,6 +175,8 @@ var
   info: TSDL_RendererInfo;
   str: string;
   a: array of integer;
+  logo: PSDL_Texture;
+  rect: TSDL_Rect;
 {$IFDEF UNIX}
   filestat: stat;
 {$ENDIF}
@@ -308,6 +310,18 @@ begin
   ConsoleLog('Creating renderer');
   render := SDL_CreateRenderer(window, rendernum, RenderFlag);
 
+  logo := img_loadtexture(render, PChar(AppPath + 'resource/logo.png'));
+
+  rect.w := 294;
+  rect.h := 284;
+  rect.x := (RESOLUTIONX - rect.w) div 2;
+  rect.y := (RESOLUTIONY - rect.h) div 2;
+
+  SDL_RenderClear(render);
+  SDL_RenderCopy(render, logo, nil, @rect);
+  SDL_RenderPresent(render);
+  SDL_DestroyTexture(logo);
+
   ConsoleLog('All pictures will be loaded as surface: %d', [SW_SURFACE]);
   ConsoleLog('Text will be drawn on single layer: %d', [TEXT_LAYER]);
 
@@ -426,6 +440,22 @@ begin
       MAX_LOVER := 0;
       EventScriptPath := 'script/oldevent/oldevent_';
       EventScriptExt := '.lua';
+      StartMusic := 59;
+    end;
+    31:
+    begin
+      TitleString := 'Wider rivers and deeper lakes';
+      versionstr := '金庸水滸傳-再战江湖';
+      BEGIN_EVENT := 691;
+      BEGIN_SCENCE := 70;
+      MONEY_ID := 174;
+      COMPASS_ID := 182;
+      BEGIN_LEAVE_EVENT := 1;
+      BEGIN_NAME_IN_TALK := 8016;
+      MAX_LOVER := 0;
+      EventScriptPath := 'script/oldevent/oldevent_';
+      EventScriptExt := '.lua';
+      StartMusic := 59;
     end;
   end;
 
@@ -877,7 +907,7 @@ begin
       PNG_TILE := 0;
     if (not FileExists(AppPath + 'save/ranger.grp')) then
       ZIP_SAVE := 1;
-    if (not FileExists(AppPath + 'script/event.imz')) then
+    if (KDEF_SCRIPT=2)and (not FileExists(AppPath + 'script/event.imz')) then
       KDEF_SCRIPT := 1;
 {$ifdef unix}
     THREAD_READ_PNG := 0;
@@ -925,7 +955,7 @@ begin
   //ReadFileToBuffer(@matchlist[0], AppPath + 'binlist/match.bin', MAX_WEAPON_MATCH * 3 * 2, 0);
   ReadFileToBuffer(@loverlist[0], AppPath + 'binlist/lover.bin', MAX_LOVER * 5 * 2, 0);
 
-  ReadFileToBuffer(@FightFrame[0], AppPath + 'resource/fight/fightframe.ka', 5 * 500 * 2, 0);
+  //ReadFileToBuffer(@FightFrame[0], AppPath + 'resource/fight/fightframe.ka', 5 * 500 * 2, 0);
   ReadFileToBuffer(@WarStaList[0], AppPath + 'resource/war.sta', sizeof(TWarData) * length(WarStaList), 0);
 
   //pWarfld := ReadFileToBuffer(nil, AppPath + 'resource/warfld.grp', -1, 1);
@@ -1203,7 +1233,7 @@ begin
     InitGrowth();
     //特殊名字
     case MODVersion of
-      0, 13:
+      0, 13, 31:
       begin
         if Name = '曹輕羽' then
         begin
@@ -1783,6 +1813,7 @@ var
   axp, ayp, axp1, ayp1, gotoEntrance, minstep, step, drawed, speed: integer;
   now, next_time, next_time2, next_time3: uint32;
   pos: TPosition;
+  info: WideString;
 begin
   if where >= 3 then
     exit;
@@ -1850,7 +1881,8 @@ begin
         stillcount := 0;
       if stillcount >= 10 then
       begin
-        still := 1;
+        if not (MODVersion in [31]) then
+          still := 1;
         mstep := mstep + 1;
         if mstep > 6 then
           mstep := 1;
@@ -3513,7 +3545,6 @@ begin
     if len1 > len then
       len := len1;
   end;
-
   w := w + 40;
 
   RecordFreshScreen(x, y, w * (max + 1) + 3, 30);
@@ -3737,6 +3768,7 @@ var
   temp, rotoscr, tempscr: PSDL_Surface;
   dest: TSDL_Rect;
   selected: boolean;
+  info: WideString;
 begin
   for i := 0 to 3 do
   begin
@@ -3824,7 +3856,8 @@ begin
       DrawMPic(2022 + i, pos[i].x - 30, pos[i].y - 25);
     end;
     menup := menu;
-
+    info := UTF8Decode(format('位置：(%3d, %3d)', [My, Mx]));
+    DrawShadowText(@info[1], 5, 5, ColColor($64), ColColor($66));
     UpdateAllScreen;
     CheckBasicEvent;
     case event.type_ of
