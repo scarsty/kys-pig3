@@ -451,11 +451,13 @@ begin
       MONEY_ID := 174;
       COMPASS_ID := 182;
       BEGIN_LEAVE_EVENT := 1;
-      BEGIN_NAME_IN_TALK := 8016;
+      BEGIN_NAME_IN_TALK := 8015;
       MAX_LOVER := 0;
-      EventScriptPath := 'script/oldevent/oldevent_';
-      EventScriptExt := '.lua';
+      //EventScriptPath := 'script/event/ka';
+      //EventScriptExt := '.lua';
       StartMusic := 59;
+      BEGIN_Sx := 13;
+      BEGIN_Sy := 54;
     end;
   end;
 
@@ -907,7 +909,7 @@ begin
       PNG_TILE := 0;
     if (not FileExists(AppPath + 'save/ranger.grp')) then
       ZIP_SAVE := 1;
-    if (KDEF_SCRIPT=2)and (not FileExists(AppPath + 'script/event.imz')) then
+    if (KDEF_SCRIPT = 2) and (not FileExists(AppPath + 'script/event.imz')) then
       KDEF_SCRIPT := 1;
 {$ifdef unix}
     THREAD_READ_PNG := 0;
@@ -4280,8 +4282,8 @@ var
         if (p2[i] = 1) then
         begin
           str := format('%d', [Ritem[item].Data[45 + i]]);
-          if (i = 21) and (Ritem[item].ItemType = 2) then
-            str := format('0.%d', [Ritem[item].Data[45 + i]]);
+          //if (i = 21) and (Ritem[item].ItemType = 2) then
+          //str := format('0.%d', [Ritem[item].Data[45 + i]]);
           //if (i = 1) or (i = 6) then
           //str := format('^%d', [ritem[item].Data[45 + i]]);
           if i = 4 then
@@ -5732,11 +5734,11 @@ begin
     addnum[0] := addnum[0] + Brole[bnum].StateLevel[0] * Rrole[rnum].Attack div 100;
     addnum[1] := addnum[1] + Brole[bnum].StateLevel[1] * Rrole[rnum].Defence div 100;
     addnum[2] := addnum[2] + Brole[bnum].StateLevel[2] * Rrole[rnum].Speed div 100;
-    addnum[3] := addnum[3] + Brole[bnum].StateLevel[3];
+    addnum[3] := addnum[3] + Brole[bnum].StateLevel[3] * 10;
     addnum[0] := addnum[0] + Brole[bnum].loverlevel[0] * Rrole[rnum].Attack div 100;
     addnum[1] := addnum[1] + Brole[bnum].loverlevel[1] * Rrole[rnum].Defence div 100;
     addnum[2] := addnum[2] + Brole[bnum].loverlevel[9] * Rrole[rnum].Speed div 100;
-    addnum[3] := addnum[3] + Brole[bnum].loverlevel[2];
+    addnum[3] := addnum[3] + Brole[bnum].loverlevel[2] * 10;
   end;
 
   for i := 6 to 17 do
@@ -5785,7 +5787,8 @@ begin
   DrawEngShadowText(@str[1], x + 280 + 100, y + 5 + h * 2, color1, color2);
 
   //其他属性
-  str := format('%4d', [Rrole[rnum].Movestep div 10 + addnum[3]]);
+  //移动的增加是乘以10
+  str := format('%4d', [Rrole[rnum].Movestep + addnum[3]]);
   SetColorByPro(Rrole[rnum].Movestep + addnum[3] * 10, 100, color1, color2);
   DrawEngShadowText(@str[1], x + 280 + 100, y + 5 + h * 3, color1, color2);
 
@@ -7484,8 +7487,8 @@ begin
   menuString[0] := '取消';
   menuString[1] := '確定';
   menuString[2] := 'Test';
-  n := 1;
-  if KDEF_SCRIPT > 0 then
+  //n := 1;
+  //if KDEF_SCRIPT > 0 then
     n := 2;
   menu := CommonMenu(CENTER_X - 384 + 660, CENTER_Y - 240 + 90, 47, n, 0, menuString);
   if menu = 1 then
@@ -7802,10 +7805,10 @@ begin
         Rrole[rnum].Data[rolelist[i]] := Rrole[rnum].Data[rolelist[i]] + addvalue[i];
       DrawTextFrame(14 + xp, 127 + yp + y + p * 28, 18, 10, 0, 25);
       DrawShadowText(@word[i, 1], 33 + xp + x, 130 + yp + y + p * 28, 0, $202020);
-      if i <> 21 then
-        str := format('%5d', [addvalue[i]])
-      else
-        str := format('%5.1f', [addvalue[i] / 10]);
+      //if i <> 21 then
+      str := format('%5d', [addvalue[i]]);
+      //else
+      //str := format('%5.1f', [addvalue[i] / 10]);
       DrawEngShadowText(@str[1], 163 + xp + x, 130 + yp + y + p * 28, ColColor($64), ColColor($66));
       p := p + 1;
     end;

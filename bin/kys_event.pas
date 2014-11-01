@@ -2783,6 +2783,9 @@ begin
   Name_X := Talk_X;
   Name_Y := Frame_Y + 7;
 
+  if place > 2 then
+  place := 5 - place;
+
   if place = 0 then //头像在左
   begin
     //头像位置
@@ -2875,7 +2878,7 @@ begin
         begin
           ReadTalk(namenum, Name);
         end;
-      0:
+      else
         if HeadNum > 0 then
           ReadTalk(BEGIN_NAME_IN_TALK + HeadNum, Name);
     end;
@@ -2902,7 +2905,7 @@ begin
       NameStr := pWideChar(@Name[0])
     else if (namenum = -1) or (namenum = 0) then
       NameStr := '';
-    if (MODVersion = 0) and (namenum = 0) then
+    if (MODVersion in [0, 31]) and (namenum = 0) then
       NameStr := pWideChar(@Rrole[0].Name);
   end
   else

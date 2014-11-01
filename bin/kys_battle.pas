@@ -200,6 +200,7 @@ var
 begin
   Bstatus := 0;
   BattleRound := 1;
+  SkipTalk := 0;
   CurrentBattle := battlenum;
   FillChar(Brole[0], sizeof(TBattleRole) * length(Brole), 0);
   autoselect := InitialBField;

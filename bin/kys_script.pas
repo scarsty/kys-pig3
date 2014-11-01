@@ -505,7 +505,7 @@ begin
       Script[3] := ' ';
     end;
     Script := LowerCase(Script);
-    //writeln(script);
+    //ConsoleLog(script);
     Result := lual_loadbuffer(Lua_script, @script[1], length(script), 'code');
     if Result = 0 then
     begin
@@ -696,6 +696,8 @@ end;
 //字串与数字的穿插顺序任意
 //如果显示模式不指定则自动计算
 
+//talk(头像号, 内容[数字或字串], 姓名[数字或字串], 显示模式)
+
 function Talk(L: Plua_state): integer; cdecl;
 var
   //head, dismode, n: integer;
@@ -713,11 +715,16 @@ begin
   strs[1] := '';
   for i := -n to -1 do
   begin
-    if (inum <= high(nums)) then
+    if (inum <= high(nums)) {and lua_isnumber(L, i)} then
     begin
       nums[inum] := lua_tointeger(L, i);
       inum := inum + 1;
     end;
+    {if (istr<2 )and lua_isstring(L, i) then
+    begin
+      strs[istr] := UTF8Decode(lua_tostring(L, i));
+      istr:=istr+1;
+    end;}
   end;
   if not lua_isnumber(L, -n + 1) then
   begin
@@ -730,7 +737,9 @@ begin
   if nums[3] < 0 then
     nums[3] := abs(nums[3]);
   NewTalk(nums[0], nums[1], nums[2], nums[3], nums[4], nums[5], 0, strs[0], strs[1]);
-
+  result := 0;
+  //writeln(strs[0]);
+  //writeln(strs[1]);
   {Width := 48;
   line := 4;
   case dismode of

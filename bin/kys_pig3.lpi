@@ -22,9 +22,7 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="3"/>
-      <MinorVersionNr Value="3"/>
-      <RevisionNr Value="1"/>
-      <BuildNr Value="12"/>
+      <MinorVersionNr Value="4"/>
       <Language Value="0804"/>
       <StringTable Comments="108 Brothers and Sisters" CompanyName="http://www.txdx.net" LegalCopyright="no" ProductName="kys_pig3.exe" ProductVersion="3.3"/>
     </VersionInfo>
@@ -205,7 +203,7 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="../../zzjhdemo/bin/kys_pig3-console"/>
+      <Filename Value="kys_pig3-console"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>

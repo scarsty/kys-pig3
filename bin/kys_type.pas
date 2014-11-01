@@ -534,7 +534,7 @@ var
   needOffset: integer = 0; //偏移值, 震动效果用
 
   EventScriptPath: string = 'script/event/ka';
-  EventScriptExt: string = '.png';
+  EventScriptExt: string = '.lua';
   p5032pos: integer = -100;  //脚本用于处理50 32使用
   p5032value: integer = -1;
 
