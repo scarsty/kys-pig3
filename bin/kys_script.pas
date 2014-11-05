@@ -726,11 +726,11 @@ begin
       istr:=istr+1;
     end;}
   end;
-  if not lua_isnumber(L, -n + 1) then
+  if lua_type(L, -n + 1)<>LUA_TNUMBER then
   begin
     strs[0] := UTF8Decode(lua_tostring(L, -n + 1));
   end;
-  if not lua_isnumber(L, -n + 2) then
+  if lua_type(L, -n + 2)<>LUA_TNUMBER then
   begin
     strs[1] := UTF8Decode(lua_tostring(L, -n + 2));
   end;

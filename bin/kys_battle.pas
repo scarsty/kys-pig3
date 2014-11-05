@@ -702,11 +702,12 @@ begin
     begin
       //SetAttribute(enum, 71, rrole[enum].Repute , rrole[enum].RoundLeave , warsta.exp div 100);
       //331~878属于杂兵, 应该是忽略了后面的部分boss
+      //738~741为珍珑假主角
       case MODVersion of
         13:
         begin
           Rrole[rnum] := Rrole0[rnum];
-          if (rnum > 331) and (rnum <= 878) then
+          if (rnum >= 738) and (rnum <= 741) then
             SetAttribute(rnum, 71, Rrole[rnum].Repute, Rrole[rnum].RoundLeave, 60)
           else
             SetAttribute(rnum, 1, Rrole[rnum].Repute, Rrole[rnum].RoundLeave, 60);
