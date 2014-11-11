@@ -1449,8 +1449,14 @@ end;
 //读场景事件信息
 
 function GetScenceEventPro(L: Plua_state): integer; cdecl;
+var
+  snum, enum: integer;
 begin
-  lua_pushinteger(L, ddata[lua_tointeger(L, -3), lua_tointeger(L, -2), lua_tointeger(L, -1)]);
+  snum :=   lua_tointeger(L, -3);
+  enum :=   lua_tointeger(L, -2);
+  if snum =-2 then snum := CurScence;
+  if enum =-2 then enum := CurEvent;
+  lua_pushinteger(L, ddata[snum, enum, lua_tointeger(L, -1)]);
   Result := 1;
 
 end;
@@ -1458,8 +1464,14 @@ end;
 //写场景事件信息
 
 function SetScenceEventPro(L: Plua_state): integer; cdecl;
+var
+  snum, enum: integer;
 begin
-  ddata[lua_tointeger(L, -3), lua_tointeger(L, -2), lua_tointeger(L, -1)] :=
+  snum :=   lua_tointeger(L, -3);
+  enum :=   lua_tointeger(L, -2);
+  if snum =-2 then snum := CurScence;
+  if enum =-2 then enum := CurEvent;
+  ddata[snum, enum, lua_tointeger(L, -1)] :=
     lua_tointeger(L, -4);
   Result := 0;
 

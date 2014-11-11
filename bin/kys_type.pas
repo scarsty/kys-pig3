@@ -137,7 +137,8 @@ type
   TScence = record
     case TCallType of
       Element: (ListNum: smallint;
-        Name: array[0..9] of char;
+        Name: array[0..49] of char;
+        //梁羽生群侠传在这里修改了9为49
         ExitMusic, EntranceMusic: smallint;
         JumpScence, EnCondition: smallint;
         MainEntranceY1, MainEntranceX1, MainEntranceY2, MainEntranceX2: smallint;
@@ -232,6 +233,7 @@ var
   MODVersion: integer = 13;
   //13-金庸水浒传(小猪3)
   //31-再戰江湖
+  //81-梁羽生群侠传
   //仅为标记用
 
   //初始值

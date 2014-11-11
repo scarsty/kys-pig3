@@ -195,7 +195,6 @@
       <Unit9>
         <Filename Value="lib\mythoutput.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="mythoutput"/>
       </Unit9>
     </Units>
   </ProjectOptions>
@@ -203,7 +202,7 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="kys_pig3-console"/>
+      <Filename Value="..\..\yusheng\bin\kys_pig3-console"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>

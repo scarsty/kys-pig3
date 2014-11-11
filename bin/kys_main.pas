@@ -459,6 +459,21 @@ begin
       BEGIN_Sx := 13;
       BEGIN_Sy := 54;
     end;
+    81:
+    begin
+      TitleString := 'Liang Yu Sheng';
+      versionstr := '羽生群侠转';
+      BEGIN_EVENT := 1;
+      BEGIN_SCENCE := 0;
+      MONEY_ID := 174;
+      COMPASS_ID := 182;
+      BEGIN_LEAVE_EVENT := 1;
+      BEGIN_NAME_IN_TALK := 8015;
+      MAX_LOVER := 0;
+      //EventScriptPath := 'script/event/ka';
+      //EventScriptExt := '.lua';
+      StartMusic := 0;
+    end;
   end;
 
   Kys_ini := TIniFile.Create(iniFilename);
@@ -2516,7 +2531,7 @@ begin
     Cx := Sx;
     Cy := Sy;
     ShowMR := False;
-    if MODVersion = 0 then
+    if MODVersion <> 13 then
     begin
       CurScenceRolePic := 3445;
       ShowMR := True;

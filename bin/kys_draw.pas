@@ -196,11 +196,11 @@ var
 begin
   if (num >= 0) and (num < SPicAmount) then
   begin
-    if num = 1941 then
+    {if num = 1941 then
     begin
       num := 0;
       py := py - 50;
-    end;
+    end;}
     if PNG_TILE > 0 then
     begin
       if PNG_LOAD_ALL = 0 then
