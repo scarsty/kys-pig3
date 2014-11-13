@@ -68,6 +68,7 @@
             </Options>
           </Linking>
           <Other>
+            <CompilerPath Value="$(CompPath)"/>
             <ExecuteAfter>
               <CompileReasons Compile="False" Build="False" Run="False"/>
             </ExecuteAfter>
@@ -120,6 +121,7 @@
             </Options>
           </Linking>
           <Other>
+            <CompilerPath Value="$(CompPath)"/>
             <ExecuteAfter>
               <CompileReasons Compile="False" Build="False" Run="False"/>
             </ExecuteAfter>
@@ -202,7 +204,7 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\..\yusheng\bin\kys_pig3-console"/>
+      <Filename Value="kys_pig3-console"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
@@ -232,6 +234,9 @@
         <UseExternalDbgSyms Value="True"/>
       </Debugging>
     </Linking>
+    <Other>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="5">

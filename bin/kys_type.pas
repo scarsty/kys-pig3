@@ -571,6 +571,8 @@ var
 
   FULL_DESKTOP: integer = 0;
 
+  AUTO_LEVELUP: integer = 0;
+
   SurfaceFlag: uint32;
 
   CurTargetSurface, RealScreen, screen, ImgSGround, ImgBGround, TextScreen, BlackScreenSur, SimpleState: PSDL_Surface;

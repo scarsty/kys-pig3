@@ -183,6 +183,7 @@ function RegionParameter(x, x1, x2: integer): integer;
 function LinearInsert(x, x1, x2: real; y1, y2: integer): integer;
 procedure QuickSort(var a: array of integer; l, r: Integer);
 procedure QuickSortB(var a: array of TBuildInfo; l, r: integer);
+function InRegion(x, x1, x2: integer): boolean;
 
 //计时, 测速用
 procedure tic;
@@ -4194,6 +4195,11 @@ begin
     QuickSortB(a, i, r);
   if l < j then
     QuickSortB(a, l, j);
+end;
+
+function InRegion(x, x1, x2: integer): boolean;
+begin
+  result := (x>=x1) and (x<=x2);
 end;
 
 {$ifdef mswindows}

@@ -694,6 +694,7 @@ end;
 procedure SetEnemyAttribute;
 var
   i, rnum: integer;
+  minrnum, maxrnum: integer;
 begin
   for i := 0 to 19 do
   begin
@@ -707,7 +708,14 @@ begin
         13:
         begin
           Rrole[rnum] := Rrole0[rnum];
-          if (rnum >= 738) and (rnum <= 741) then
+          minrnum := 331;
+          maxrnum := 878;
+          if AUTO_LEVELUP = 0 then
+          begin
+            minrnum := 738;
+            maxrnum := 741;
+          end;
+          if (rnum >= minrnum) and (rnum <= maxrnum) then
             SetAttribute(rnum, 71, Rrole[rnum].Repute, Rrole[rnum].RoundLeave, 60)
           else
             SetAttribute(rnum, 1, Rrole[rnum].Repute, Rrole[rnum].RoundLeave, 60);

@@ -462,7 +462,7 @@ begin
     81:
     begin
       TitleString := 'Liang Yu Sheng';
-      versionstr := '羽生群侠转';
+      versionstr := ' 梁羽生群侠傳';
       BEGIN_EVENT := 1;
       BEGIN_SCENCE := 0;
       MONEY_ID := 174;
@@ -899,6 +899,7 @@ begin
     FULL_DESKTOP := Kys_ini.ReadInteger('system', 'FULL_DESKTOP', 0);
     SW_SURFACE := Kys_ini.ReadInteger('system', 'SW_SURFACE', 0);
     SW_OUTPUT := Kys_ini.ReadInteger('system', 'SW_OUTPUT', 0);
+    AUTO_LEVELUP := Kys_ini.ReadInteger('system', 'AUTO_LEVELUP', 0);
 
     VOLUME := Kys_ini.ReadInteger('music', 'VOLUME', 30);
     VOLUMEWAV := Kys_ini.ReadInteger('music', 'VOLUMEWAV', 30);
@@ -8324,8 +8325,12 @@ begin
   FillChar(Entrance[0, 0], sizeof(Entrance), -1);
   for i := 0 to min(ScenceAmount - 1, High(Rscence)) do
   begin
-    Entrance[Rscence[i].MainEntranceX1, Rscence[i].MainEntranceY1] := i;
-    Entrance[Rscence[i].MainEntranceX2, Rscence[i].MainEntranceY2] := i;
+    if (Rscence[i].MainEntranceX1 >= 0) and (Rscence[i].MainEntranceX1 < 480) and
+      (Rscence[i].MainEntranceY1 >= 0) and (Rscence[i].MainEntranceY1 < 480) then
+      Entrance[Rscence[i].MainEntranceX1, Rscence[i].MainEntranceY1] := i;
+    if (Rscence[i].MainEntranceX2 >= 0) and (Rscence[i].MainEntranceX2 < 480) and
+      (Rscence[i].MainEntranceY2 >= 0) and (Rscence[i].MainEntranceY2 < 480) then
+      Entrance[Rscence[i].MainEntranceX2, Rscence[i].MainEntranceY2] := i;
   end;
 end;
 
