@@ -375,6 +375,8 @@ begin
       num := 0;
       for j := 0 to 4 do
       begin
+        if (FPNGIndex[actionnum].FightFrame[j] < 0) or (FPNGIndex[actionnum].FightFrame[j] > 50) then
+          FPNGIndex[actionnum].FightFrame[j] := 1;
         if FPNGIndex[actionnum].FightFrame[j] > 0 then
         begin
           for k := 0 to 3 do

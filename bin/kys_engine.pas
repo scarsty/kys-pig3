@@ -2496,6 +2496,7 @@ begin
       if (frame <> nil) then
       begin
         size := StrBufSize(p);
+        fillchar(frame^, 10, 0);
         move((p+size-10)^, frame^,10);
       end;
       Result := min(maxCount, n);
@@ -2539,6 +2540,7 @@ begin
     path := path + '/';
     if (frame <> nil) then
     begin
+      fillchar(frame^, 10, 0);
       p := ReadFileToBuffer(nil, AppPath + path + '/fightframe.ka', -1, 1);
       if p <> nil then
       begin
