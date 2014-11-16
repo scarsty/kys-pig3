@@ -83,13 +83,13 @@
           <Version Value="11"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="libkys_pig3.so"/>
+            <Filename Value="libkys_pig3"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
             <Libraries Value="lib;.;\usr\local\lib;\usr\X11R6\lib;D:\soft\develop_adt\ndk\platforms\android-12\arch-arm\usr\lib\"/>
             <OtherUnitFiles Value="lib"/>
-            <UnitOutputDirectory Value="lib"/>
+            <UnitOutputDirectory Value="lib\android"/>
           </SearchPaths>
           <Parsing>
             <SyntaxOptions>
