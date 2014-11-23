@@ -2886,6 +2886,12 @@ begin
     HeadNumR := HeadNum;
     if (HeadNum >= ExpressionMin) and (HeadNum <= ExpressionMax) then
       HeadNumR := 0;
+
+    if MODVersion = 13 then
+    begin
+      if HeadNum = 0 then HeadNum := 434;
+    end;
+
     if NameNum = -2 then
     begin
       for I := 0 to length(Rrole) - 1 do

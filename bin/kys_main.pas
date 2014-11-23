@@ -1517,7 +1517,7 @@ begin
     BufferRead(p1, @Ritemlist[0], sizeof(Titemlist) * MAX_ITEM_AMOUNT);
 
     BufferRead(p1, @Rrole[0], ItemOffset - RoleOffset);
-    if (num = 0) or (MODVersion = 13) then
+    if (num = 0) or (MODVersion = 13) or (MODVersion = 31) then
       BufferRead(p1, @Ritem[0], ScenceOffset - ItemOffset)
     else
       p1 := p1 + ScenceOffset - ItemOffset;

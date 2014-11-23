@@ -68,7 +68,6 @@
             </Options>
           </Linking>
           <Other>
-            <CompilerPath Value="$(CompPath)"/>
             <ExecuteAfter>
               <CompileReasons Compile="False" Build="False" Run="False"/>
             </ExecuteAfter>
@@ -121,7 +120,6 @@
             </Options>
           </Linking>
           <Other>
-            <CompilerPath Value="$(CompPath)"/>
             <ExecuteAfter>
               <CompileReasons Compile="False" Build="False" Run="False"/>
             </ExecuteAfter>
@@ -188,7 +186,6 @@
       <Unit7>
         <Filename Value="kys_type.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="kys_type"/>
       </Unit7>
       <Unit8>
         <Filename Value="macro.inc"/>
@@ -234,9 +231,6 @@
         <UseExternalDbgSyms Value="True"/>
       </Debugging>
     </Linking>
-    <Other>
-      <CompilerPath Value="$(CompPath)"/>
-    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="5">
