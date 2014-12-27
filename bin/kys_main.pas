@@ -86,8 +86,8 @@ procedure TurnBlack;
 //选单子程
 function CommonMenu(x, y, w, max, default: integer; menuString, menuEngString: array of WideString): integer; overload;
 function CommonMenu(x, y, w, max, default: integer; menuString: array of WideString): integer; overload;
-function CommonMenu(x, y, w, max, default: integer; menuString, menuEngString: array of WideString;
-  needFrame: integer; color1, color2, menucolor1, menucolor2: uint32): integer; overload;
+function CommonMenu(x, y, w, max, default: integer; menuString, menuEngString: array of WideString; needFrame: integer;
+  color1, color2, menucolor1, menucolor2: uint32): integer; overload;
 //function CommonMenu(x, y, w, max, default: integer; menuString, menuEngString: array of WideString; fn: TPInt1): integer; overload;
 function CommonScrollMenu(x, y, w, max, maxshow: integer; menuString: array of WideString): integer; overload;
 function CommonScrollMenu(x, y, w, max, maxshow: integer; menuString, menuEngString: array of WideString): integer;
@@ -128,8 +128,7 @@ procedure EatOneItem(rnum, inum: integer);
 procedure CallEvent(num: integer);
 procedure ReSetEntrance; //重设入口
 procedure Maker;
-procedure ScrollTextAmi(words: TStringList;
-  chnsize, engsize, linespace, align, alignx, style, delay, picnum, scrolldirect: integer);
+procedure ScrollTextAmi(words: TStringList; chnsize, engsize, linespace, align, alignx, style, delay, picnum, scrolldirect: integer);
 
 
 procedure InitGrowth();
@@ -292,8 +291,7 @@ begin
     RenderFlag := RenderFlag or SDL_RENDERER_PRESENTVSYNC;
 
   ConsoleLog('Creating window with width and height %d and %d', [RESOLUTIONX, RESOLUTIONY]);
-  window := SDL_CreateWindow(PChar(TitleString), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-    RESOLUTIONX, RESOLUTIONY, WindowFlag);
+  window := SDL_CreateWindow(PChar(TitleString), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, RESOLUTIONX, RESOLUTIONY, WindowFlag);
   SDL_GetWindowSize(window, @RESOLUTIONX, @RESOLUTIONY);
 
   if (CellPhone = 1) then
@@ -301,6 +299,7 @@ begin
     ConsoleLog('Width and height of the window is %d, %d', [RESOLUTIONX, RESOLUTIONY]);
     if (RESOLUTIONY > RESOLUTIONX) then
       ScreenRotate := 0;
+    ShowVirtualKey := True;
     //SDL_WarpMouseInWindow(window, RESOLUTIONX, RESOLUTIONY);
   end;
 
@@ -914,14 +913,15 @@ begin
     JOY_MOUSE_LEFT := Kys_ini.ReadInteger('joystick', 'JOY_MOUSE_LEFT', 12);
     JOY_AXIS_DELAY := Kys_ini.ReadInteger('joystick', 'JOY_AXIS_DELAY', 10);
 
+    VirtualKeyX := Kys_ini.ReadInteger('system', 'Virtual_Key_X', 150);
+    VirtualKeyY := Kys_ini.ReadInteger('system', 'Virtual_Key_Y', 250);
 
     if KEEP_SCREEN_RATIO = 0 then
       TEXT_LAYER := 0;
     if SW_OUTPUT = 1 then
       TEXT_LAYER := 0;
 
-    if (not FileExists(AppPath + 'resource/mmap/index.ka')) and
-      (not FileExists(AppPath + 'resource/mmap.imz')) then
+    if (not FileExists(AppPath + 'resource/mmap/index.ka')) and (not FileExists(AppPath + 'resource/mmap.imz')) then
       PNG_TILE := 0;
     if (not FileExists(AppPath + 'save/ranger.grp')) then
       ZIP_SAVE := 1;
@@ -1467,8 +1467,7 @@ begin
     zfile := unzOpen(PChar(zfilename));
     if (zfile <> nil) then
     begin
-      if (unzLocateFile(zfile, PChar(filenamer), 2) = UNZ_OK) and
-        (unzLocateFile(zfile, PChar(filenames), 2) = UNZ_OK) and
+      if (unzLocateFile(zfile, PChar(filenamer), 2) = UNZ_OK) and (unzLocateFile(zfile, PChar(filenames), 2) = UNZ_OK) and
         (unzLocateFile(zfile, PChar(filenamed), 2) = UNZ_OK) then
       begin
         unzLocateFile(zfile, PChar(filenamer), 2);
@@ -1879,8 +1878,7 @@ begin
       begin
         Cloud[i].Positionx := Cloud[i].Positionx + Cloud[i].Speedx;
         Cloud[i].Positiony := Cloud[i].Positiony + Cloud[i].Speedy;
-        if (Cloud[i].Positionx > 17279) or (Cloud[i].Positionx < 0) or (Cloud[i].Positiony > 8639) or
-          (Cloud[i].Positiony < 0) then
+        if (Cloud[i].Positionx > 17279) or (Cloud[i].Positionx < 0) or (Cloud[i].Positiony > 8639) or (Cloud[i].Positiony < 0) then
         begin
           CloudCreateOnSide(i);
         end;
@@ -1954,15 +1952,18 @@ begin
       end;
       SDL_MOUSEMOTION:
       begin
-        SDL_GetMouseState2(x1, y1);
-        if (x1 < CENTER_X) and (y1 < CENTER_Y) then
-          Mface := 2;
-        if (x1 > CENTER_X) and (y1 < CENTER_Y) then
-          Mface := 0;
-        if (x1 < CENTER_X) and (y1 > CENTER_Y) then
-          Mface := 3;
-        if (x1 > CENTER_X) and (y1 > CENTER_Y) then
-          Mface := 1;
+        if not ShowVirtualKey then
+        begin
+          SDL_GetMouseState2(x1, y1);
+          if (x1 < CENTER_X) and (y1 < CENTER_Y) then
+            Mface := 2;
+          if (x1 > CENTER_X) and (y1 < CENTER_Y) then
+            Mface := 0;
+          if (x1 < CENTER_X) and (y1 > CENTER_Y) then
+            Mface := 3;
+          if (x1 > CENTER_X) and (y1 > CENTER_Y) then
+            Mface := 1;
+        end;
       end;
       SDL_MOUSEBUTTONUP:
       begin
@@ -2096,8 +2097,7 @@ begin
 
             if MStep >= 7 then
               MStep := 1;
-            if (abs(Mx - linex[nowstep]) + abs(My - liney[nowstep]) = 1) and
-              CanWalk(linex[nowstep], liney[nowstep]) then
+            if (abs(Mx - linex[nowstep]) + abs(My - liney[nowstep]) = 1) and CanWalk(linex[nowstep], liney[nowstep]) then
             begin
               Mx := linex[nowstep];
               My := liney[nowstep];
@@ -2355,8 +2355,8 @@ begin
           else if (earth[nextx, nexty] = 838) or ((earth[nextx, nexty] >= 612) and (earth[nextx, nexty] <= 670)) then
             Bgrid[i] := 1
           else if ((earth[nextx, nexty] >= 358) and (earth[nextx, nexty] <= 362)) or
-            ((earth[nextx, nexty] >= 506) and (earth[nextx, nexty] <= 670)) or
-            ((earth[nextx, nexty] >= 1016) and (earth[nextx, nexty] <= 1022)) then
+            ((earth[nextx, nexty] >= 506) and (earth[nextx, nexty] <= 670)) or ((earth[nextx, nexty] >= 1016) and
+            (earth[nextx, nexty] <= 1022)) then
           begin
             if (nextx = shipy) and (nexty = shipx) then
               Bgrid[i] := 4 //船
@@ -2521,8 +2521,7 @@ begin
   for i := 0 to 199 do
     if (DData[CurScence, i, 7] < DData[CurScence, i, 6]) then
     begin
-      DData[CurScence, i, 5] := DData[CurScence, i, 7] + DData[CurScence, i, 8] * 2 mod
-        (DData[CurScence, i, 6] - DData[CurScence, i, 7] + 2);
+      DData[CurScence, i, 5] := DData[CurScence, i, 7] + DData[CurScence, i, 8] * 2 mod (DData[CurScence, i, 6] - DData[CurScence, i, 7] + 2);
     end;
 
   if Open = 1 then
@@ -2625,8 +2624,7 @@ begin
       break;
     end;
     //检查是否位于跳转口, 如是则重新初始化场景
-    if ((Sx = Rscence[CurScence].JumpX1) and (Sy = Rscence[CurScence].JumpY1)) and
-      (Rscence[CurScence].JumpScence >= 0) then
+    if ((Sx = Rscence[CurScence].JumpX1) and (Sy = Rscence[CurScence].JumpY1)) and (Rscence[CurScence].JumpScence >= 0) then
     begin
       instruct_14;
       PreScence := CurScence;
@@ -2709,15 +2707,18 @@ begin
       end;
       SDL_MOUSEMOTION:
       begin
-        SDL_GetMouseState2(x1, y1);
-        if (x1 < CENTER_X) and (y1 < CENTER_Y) then
-          Sface := 2;
-        if (x1 > CENTER_X) and (y1 < CENTER_Y) then
-          Sface := 0;
-        if (x1 < CENTER_X) and (y1 > CENTER_Y) then
-          Sface := 3;
-        if (x1 > CENTER_X) and (y1 > CENTER_Y) then
-          Sface := 1;
+        if not ShowVirtualKey then
+        begin
+          SDL_GetMouseState2(x1, y1);
+          if (x1 < CENTER_X) and (y1 < CENTER_Y) then
+            Sface := 2;
+          if (x1 > CENTER_X) and (y1 < CENTER_Y) then
+            Sface := 0;
+          if (x1 < CENTER_X) and (y1 > CENTER_Y) then
+            Sface := 3;
+          if (x1 > CENTER_X) and (y1 > CENTER_Y) then
+            Sface := 1;
+        end;
       end;
       SDL_MOUSEBUTTONUP:
       begin
@@ -3029,9 +3030,8 @@ begin
     if (SData[CurScence, 3, x, y] >= 0) and (Result) and (DData[CurScence, SData[CurScence, 3, x, y], 0] = 1) then
       Result := False;
     //直接判定贴图范围
-    if ((SData[CurScence, 0, x, y] >= 358) and (SData[CurScence, 0, x, y] <= 362)) or
-      (SData[CurScence, 0, x, y] = 522) or (SData[CurScence, 0, x, y] = 1022) or
-      ((SData[CurScence, 0, x, y] >= 1324) and (SData[CurScence, 0, x, y] <= 1330)) or
+    if ((SData[CurScence, 0, x, y] >= 358) and (SData[CurScence, 0, x, y] <= 362)) or (SData[CurScence, 0, x, y] = 522) or
+      (SData[CurScence, 0, x, y] = 1022) or ((SData[CurScence, 0, x, y] >= 1324) and (SData[CurScence, 0, x, y] <= 1330)) or
       (SData[CurScence, 0, x, y] = 1348) then
       Result := False;
     //if SData[CurScence, 0, x, y] = 1358 * 2 then result := true;
@@ -3127,12 +3127,11 @@ end;
 
 function CommonMenu(x, y, w, max, default: integer; menuString, menuEngString: array of WideString): integer; overload;
 begin
-  Result := CommonMenu(x, y, w, max, default, menuString, menuEngString, 1, $0, $202020,
-    ColColor($64), ColColor($66));
+  Result := CommonMenu(x, y, w, max, default, menuString, menuEngString, 1, $0, $202020, ColColor($64), ColColor($66));
 end;
 
-function CommonMenu(x, y, w, max, default: integer; menuString, menuEngString: array of WideString;
-  needFrame: integer; color1, color2, menucolor1, menucolor2: uint32): integer; overload;
+function CommonMenu(x, y, w, max, default: integer; menuString, menuEngString: array of WideString; needFrame: integer;
+  color1, color2, menucolor1, menucolor2: uint32): integer; overload;
 var
   menu, menup, x1, y1, h, len, len1, lene, p, i: integer;
 
@@ -3744,15 +3743,14 @@ begin
       if menu > max then
         menu := menu - max - 1;
     end;
-    if ((event.type_ = SDL_KEYUP) and (event.key.keysym.sym = SDLK_ESCAPE)) or
-      ((event.type_ = SDL_MOUSEBUTTONUP) and (event.button.button = SDL_BUTTON_RIGHT)) then
+    if ((event.type_ = SDL_KEYUP) and (event.key.keysym.sym = SDLK_ESCAPE)) or ((event.type_ = SDL_MOUSEBUTTONUP) and
+      (event.button.button = SDL_BUTTON_RIGHT)) then
     begin
       Result := -1;
       break;
     end;
-    if ((event.type_ = SDL_KEYUP) and ((event.key.keysym.sym = SDLK_RETURN) or
-      (event.key.keysym.sym = SDLK_SPACE))) or ((event.type_ = SDL_MOUSEBUTTONUP) and
-      (event.button.button = SDL_BUTTON_LEFT)) then
+    if ((event.type_ = SDL_KEYUP) and ((event.key.keysym.sym = SDLK_RETURN) or (event.key.keysym.sym = SDLK_SPACE))) or
+      ((event.type_ = SDL_MOUSEBUTTONUP) and (event.button.button = SDL_BUTTON_LEFT)) then
     begin
       if (menu >= 0) and (menu <= max) and (1 shl menu and mask <> 0) then
       begin
@@ -4047,9 +4045,8 @@ var
   i: integer;
 begin
   Result := MenuEscType;
-  if (event.type_ = SDL_MOUSEBUTTONUP) and (event.button.button = SDL_BUTTON_LEFT) and
-    MouseInRegion(TitleMenu[0].x, TitleMenu[0].y, TitleMenu[3].x + TitleMenu[3].w - TitleMenu[0].x,
-    TitleMenu[3].y + TitleMenu[3].h - TitleMenu[0].y) then
+  if (event.type_ = SDL_MOUSEBUTTONUP) and (event.button.button = SDL_BUTTON_LEFT) and MouseInRegion(TitleMenu[0].x,
+    TitleMenu[0].y, TitleMenu[3].x + TitleMenu[3].w - TitleMenu[0].x, TitleMenu[3].y + TitleMenu[3].h - TitleMenu[0].y) then
   begin
     for i := 0 to 3 do
     begin
@@ -4131,8 +4128,7 @@ var
   //point似乎未使用, listLT为处于左上角的物品在列表中的序号, x, y为光标位置
   //col, row为总列数和行数
   regionx1, regiony1, regionx2, regiony2, d, level: integer;
-  titlex1, titley1, titlew, titlemax, intitle, pintitle, dragitem, dragitemx, dragitemy,
-  dragteammate, DragSuccess: integer;
+  titlex1, titley1, titlew, titlemax, intitle, pintitle, dragitem, dragitemx, dragitemy, dragteammate, DragSuccess: integer;
   menuString: array of WideString;
   //tempsur, tempsur2: PSDL_Surface;
   dest: TSDL_Rect;
@@ -4228,8 +4224,8 @@ var
         if Ritem[item].User >= 0 then
         begin
           str := '使用';
-          DrawShadowText(@str[1], 18 + length(PChar(@Rrole[Ritem[item].User].Name)) * 10 +
-            len * 20 + xp, 47 + dt + yp, ColColor($64), ColColor($66));
+          DrawShadowText(@str[1], 18 + length(PChar(@Rrole[Ritem[item].User].Name)) * 10 + len * 20 +
+            xp, 47 + dt + yp, ColColor($64), ColColor($66));
           DrawU16ShadowText(@Rrole[Ritem[item].User].Name, 18 + len * 20 + xp, 48 + dt + yp,
             ColColor($64), ColColor($66));
         end;
@@ -4348,10 +4344,9 @@ var
             color1 := ColColor($64);
             color2 := ColColor($66);
           end;
-          DrawShadowText(@words3[i][1], 68 + i1 mod 4 * w + xp, ((len2 + l1) div l + i1 div l) *
-            28 + 78 + dt + yp, ColColor($50), ColColor($4E));
-          DrawShadowText(@str[1], 108 + i1 mod 4 * w + xp, ((len2 + l1) div l + i1 div l) *
-            28 + 78 + dt + yp, color1, color2);
+          DrawShadowText(@words3[i][1], 68 + i1 mod 4 * w + xp, ((len2 + l1) div l + i1 div l) * 28 +
+            78 + dt + yp, ColColor($50), ColColor($4E));
+          DrawShadowText(@str[1], 108 + i1 mod 4 * w + xp, ((len2 + l1) div l + i1 div l) * 28 + 78 + dt + yp, color1, color2);
           i1 := i1 + 1;
         end;
       end;
@@ -4852,8 +4847,8 @@ begin
       if MenuEscType <> 2 then
         break;
     end;
-    refresh := refresh or (x <> px) or (y <> py) or (listLT <> plistLT) or (menu <> pmenu) or
-      (intitle <> pintitle) or Result or (dragitem >= 0);
+    refresh := refresh or (x <> px) or (y <> py) or (listLT <> plistLT) or (menu <> pmenu) or (intitle <> pintitle) or
+      Result or (dragitem >= 0);
     event.key.keysym.sym := 0;
     event.button.button := 0;
     SDL_Delay(20);
@@ -4999,8 +4994,7 @@ begin
       menu := 1;
       //有使用者时, 如有预订者则需预订者不为使用者, 且预订者能装备才提问
       //有使用者, 无预订者必定会提问
-      if (Ritem[inum].User >= 0) and ((potentialUser < 0) or ((Ritem[inum].User <> potentialUser) and
-        CanEquip(potentialUser, inum))) then
+      if (Ritem[inum].User >= 0) and ((potentialUser < 0) or ((Ritem[inum].User <> potentialUser) and CanEquip(potentialUser, inum))) then
       begin
         TransBlackScreen;
         UpdateAllScreen;
@@ -5065,8 +5059,7 @@ begin
     2: //秘笈
     begin
       menu := 1;
-      if (Ritem[inum].User >= 0) and ((potentialUser < 0) or ((Ritem[inum].User <> potentialUser) and
-        CanEquip(potentialUser, inum))) then
+      if (Ritem[inum].User >= 0) and ((potentialUser < 0) or ((Ritem[inum].User <> potentialUser) and CanEquip(potentialUser, inum))) then
       begin
         TransBlackScreen;
         UpdateAllScreen;
@@ -5371,15 +5364,13 @@ begin
     //DrawMPic(2100, 18, menu * 80 + 10, f);
     f := f + 1;}
     CheckBasicEvent;
-    if ((event.type_ = SDL_KEYDOWN) and (event.key.keysym.sym = SDLK_UP)) or
-      ((event.type_ = SDL_MOUSEWHEEL) and (event.wheel.y > 0)) then
+    if ((event.type_ = SDL_KEYDOWN) and (event.key.keysym.sym = SDLK_UP)) or ((event.type_ = SDL_MOUSEWHEEL) and (event.wheel.y > 0)) then
     begin
       menu := menu - 1;
       if menu < 0 then
         menu := max;
     end;
-    if ((event.type_ = SDL_KEYDOWN) and (event.key.keysym.sym = SDLK_DOWN)) or
-      ((event.type_ = SDL_MOUSEWHEEL) and (event.wheel.y < 0)) then
+    if ((event.type_ = SDL_KEYDOWN) and (event.key.keysym.sym = SDLK_DOWN)) or ((event.type_ = SDL_MOUSEWHEEL) and (event.wheel.y < 0)) then
     begin
       menu := menu + 1;
       if menu > max then
@@ -5389,8 +5380,8 @@ begin
     begin
       equip := 1 - equip;
     end;
-    if ((event.type_ = SDL_KEYUP) and (event.key.keysym.sym = SDLK_ESCAPE)) or
-      ((event.type_ = SDL_MOUSEBUTTONUP) and (event.button.button = SDL_BUTTON_RIGHT)) then
+    if ((event.type_ = SDL_KEYUP) and (event.key.keysym.sym = SDLK_ESCAPE)) or ((event.type_ = SDL_MOUSEBUTTONUP) and
+      (event.button.button = SDL_BUTTON_RIGHT)) then
     begin
       MenuEscType := -1;
       break;
@@ -5410,9 +5401,8 @@ begin
         equip := 1;
       end;
     end;
-    if ((event.type_ = SDL_MOUSEBUTTONUP) and (event.button.button = SDL_BUTTON_LEFT) and
-      MouseInRegion(item1x, item1y, d, d)) or ((event.type_ = SDL_KEYUP) and (equip = 0) and
-      ((event.key.keysym.sym = SDLK_RETURN) or (event.key.keysym.sym = SDLK_SPACE))) then
+    if ((event.type_ = SDL_MOUSEBUTTONUP) and (event.button.button = SDL_BUTTON_LEFT) and MouseInRegion(item1x, item1y, d, d)) or
+      ((event.type_ = SDL_KEYUP) and (equip = 0) and ((event.key.keysym.sym = SDLK_RETURN) or (event.key.keysym.sym = SDLK_SPACE))) then
     begin
       case CommonMenu2(item1x - 40, item1y + d, 47, menuString, 2) of
         1:
@@ -5440,9 +5430,8 @@ begin
       end;
       premenu := -1;
     end;
-    if ((event.type_ = SDL_MOUSEBUTTONUP) and (event.button.button = SDL_BUTTON_LEFT) and
-      MouseInRegion(item2x, item2y, d, d)) or ((event.type_ = SDL_KEYUP) and (equip = 1) and
-      ((event.key.keysym.sym = SDLK_RETURN) or (event.key.keysym.sym = SDLK_SPACE))) then
+    if ((event.type_ = SDL_MOUSEBUTTONUP) and (event.button.button = SDL_BUTTON_LEFT) and MouseInRegion(item2x, item2y, d, d)) or
+      ((event.type_ = SDL_KEYUP) and (equip = 1) and ((event.key.keysym.sym = SDLK_RETURN) or (event.key.keysym.sym = SDLK_SPACE))) then
     begin
       case CommonMenu2(item2x - 40, item2y + d, 45, menuString, 2) of
         1:
@@ -6281,15 +6270,13 @@ begin
       preselect := select;
     end;
     CheckBasicEvent;
-    if ((event.type_ = SDL_KEYDOWN) and (event.key.keysym.sym = SDLK_UP)) or
-      ((event.type_ = SDL_MOUSEWHEEL) and (event.wheel.y > 0)) then
+    if ((event.type_ = SDL_KEYDOWN) and (event.key.keysym.sym = SDLK_UP)) or ((event.type_ = SDL_MOUSEWHEEL) and (event.wheel.y > 0)) then
     begin
       menu := menu - 1;
       if menu < 0 then
         menu := max;
     end;
-    if ((event.type_ = SDL_KEYDOWN) and (event.key.keysym.sym = SDLK_DOWN)) or
-      ((event.type_ = SDL_MOUSEWHEEL) and (event.wheel.y < 0)) then
+    if ((event.type_ = SDL_KEYDOWN) and (event.key.keysym.sym = SDLK_DOWN)) or ((event.type_ = SDL_MOUSEWHEEL) and (event.wheel.y < 0)) then
     begin
       menu := menu + 1;
       if menu > max then
@@ -6307,20 +6294,18 @@ begin
       if select > maxselect then
         select := 0;
     end;
-    if ((event.type_ = SDL_KEYUP) and (event.key.keysym.sym = SDLK_ESCAPE)) or
-      ((event.type_ = SDL_MOUSEBUTTONUP) and (event.button.button = SDL_BUTTON_RIGHT)) then
+    if ((event.type_ = SDL_KEYUP) and (event.key.keysym.sym = SDLK_ESCAPE)) or ((event.type_ = SDL_MOUSEBUTTONUP) and
+      (event.button.button = SDL_BUTTON_RIGHT)) then
     begin
       MenuEscType := -1;
       break;
     end;
-    if ((event.type_ = SDL_KEYUP) and ((event.key.keysym.sym = SDLK_RETURN) or
-      (event.key.keysym.sym = SDLK_SPACE))) or ((event.type_ = SDL_MOUSEBUTTONUP) and
-      (event.button.button = SDL_BUTTON_LEFT) and (mouseactive = 1)) then
+    if ((event.type_ = SDL_KEYUP) and ((event.key.keysym.sym = SDLK_RETURN) or (event.key.keysym.sym = SDLK_SPACE))) or
+      ((event.type_ = SDL_MOUSEBUTTONUP) and (event.button.button = SDL_BUTTON_LEFT) and (mouseactive = 1)) then
     begin
       if select >= 0 then
       begin
-        if ((select = 0) and (Rrole[TeamList[menu]].Medcine > 0)) or ((select = 1) and
-          (Rrole[TeamList[menu]].MedPoi > 0)) then
+        if ((select = 0) and (Rrole[TeamList[menu]].Medcine > 0)) or ((select = 1) and (Rrole[TeamList[menu]].MedPoi > 0)) then
         begin
           TransBlackScreen;
           menu2 := SelectOneTeamMember(x + 50, y + 80 + select * 150, UTF8Decode('選擇目標隊友'), 0, 0);
@@ -6587,8 +6572,7 @@ begin
     mlevel := 1;
     magicnum := Ritem[Rrole[rnum].PracticeBook].Magic;
     mlevel := max(1, GetMagicLevel(rnum, magicnum));
-    needexp := trunc((1 + (mlevel - 1) * 0.5) * Ritem[Rrole[rnum].PracticeBook].NeedExp *
-      (1 + (7 - Rrole[rnum].Aptitude / 15) * 0.5));
+    needexp := trunc((1 + (mlevel - 1) * 0.5) * Ritem[Rrole[rnum].PracticeBook].NeedExp * (1 + (7 - Rrole[rnum].Aptitude / 15) * 0.5));
 
     DrawTextWithRect(@Ritem[Rrole[rnum].PracticeBook].Name, x + 70, y + 400, 0, 0, $202020, 20, 0);
     str := format('%d/%d', [uint16(Rrole[rnum].ExpForBook), needexp]);
@@ -7070,8 +7054,8 @@ begin
           begin
             if MouseInRegion(x, y + 5, w, h - 5) then
             begin
-              if MouseInRegion(x + 160 + 13, y + 5 + maxmenu * h0, 50, h0) or
-                MouseInRegion(x + 210 + 13, y + 5 + maxmenu * h0, 50, h0) then
+              if MouseInRegion(x + 160 + 13, y + 5 + maxmenu * h0, 50, h0) or MouseInRegion(x +
+                210 + 13, y + 5 + maxmenu * h0, 50, h0) then
               begin
                 pressed := Value[maxmenu];
                 //writeln(pressed);
@@ -7505,7 +7489,7 @@ begin
   menuString[2] := 'Test';
   //n := 1;
   //if KDEF_SCRIPT > 0 then
-    n := 2;
+  n := 2;
   menu := CommonMenu(CENTER_X - 384 + 660, CENTER_Y - 240 + 90, 47, n, 0, menuString);
   if menu = 1 then
   begin
@@ -7921,8 +7905,8 @@ begin
         end;
         3:
         begin
-          instruct_3([e[i + 1], e[i + 2], e[i + 3], e[i + 4], e[i + 5], e[i + 6], e[i + 7],
-            e[i + 8], e[i + 9], e[i + 10], e[i + 11], e[i + 12], e[i + 13]]);
+          instruct_3([e[i + 1], e[i + 2], e[i + 3], e[i + 4], e[i + 5], e[i + 6], e[i + 7], e[i + 8],
+            e[i + 9], e[i + 10], e[i + 11], e[i + 12], e[i + 13]]);
           i := i + 14;
         end;
         4:
@@ -8325,11 +8309,11 @@ begin
   FillChar(Entrance[0, 0], sizeof(Entrance), -1);
   for i := 0 to min(ScenceAmount - 1, High(Rscence)) do
   begin
-    if (Rscence[i].MainEntranceX1 >= 0) and (Rscence[i].MainEntranceX1 < 480) and
-      (Rscence[i].MainEntranceY1 >= 0) and (Rscence[i].MainEntranceY1 < 480) then
+    if (Rscence[i].MainEntranceX1 >= 0) and (Rscence[i].MainEntranceX1 < 480) and (Rscence[i].MainEntranceY1 >= 0) and
+      (Rscence[i].MainEntranceY1 < 480) then
       Entrance[Rscence[i].MainEntranceX1, Rscence[i].MainEntranceY1] := i;
-    if (Rscence[i].MainEntranceX2 >= 0) and (Rscence[i].MainEntranceX2 < 480) and
-      (Rscence[i].MainEntranceY2 >= 0) and (Rscence[i].MainEntranceY2 < 480) then
+    if (Rscence[i].MainEntranceX2 >= 0) and (Rscence[i].MainEntranceX2 < 480) and (Rscence[i].MainEntranceY2 >= 0) and
+      (Rscence[i].MainEntranceY2 < 480) then
       Entrance[Rscence[i].MainEntranceX2, Rscence[i].MainEntranceY2] := i;
   end;
 end;
@@ -8521,8 +8505,7 @@ end;
 
 //align: 0-居中, 1-左对齐
 //alignx: 非居中时指定横轴位置
-procedure ScrollTextAmi(words: TStringList;
-  chnsize, engsize, linespace, align, alignx, style, delay, picnum, scrolldirect: integer);
+procedure ScrollTextAmi(words: TStringList; chnsize, engsize, linespace, align, alignx, style, delay, picnum, scrolldirect: integer);
 var
   x, y, i, l, len, w, h, texw, texh, texh0: integer;
   tempscr, tempscr1: PSDL_Surface;

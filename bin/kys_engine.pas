@@ -67,10 +67,9 @@ function UnicodeToBig5(str: pWideChar): string;
 function UnicodeToGBK(str: pWideChar): string;
 procedure DrawText(word: puint16; x_pos, y_pos: integer; color: uint32; engwidth: integer = -1);
 procedure DrawEngText(word: puint16; x_pos, y_pos: integer; color: uint32);
-procedure DrawShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32;
-  Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil; realPosition: integer = 0; eng: integer = 0); overload;
-procedure DrawEngShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32;
-  Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil);
+procedure DrawShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32; Tex: PSDL_Texture = nil;
+  Sur: PSDL_Surface = nil; realPosition: integer = 0; eng: integer = 0); overload;
+procedure DrawEngShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32; Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil);
 procedure DrawBig5Text(sur: PSDL_Surface; str: PChar; x_pos, y_pos: integer; color: uint32);
 procedure DrawBig5ShadowText(word: PChar; x_pos, y_pos: integer; color1, color2: uint32);
 procedure DrawGBKShadowText(word: PChar; x_pos, y_pos: integer; color1, color2: uint32);
@@ -108,8 +107,7 @@ function ReadFileToBuffer(p: PChar; const filename: PChar; size, malloc: integer
 function FileGetlength(filename: string): integer;
 procedure FreeFileBuffer(var p: PChar);
 function LoadIdxGrp(stridx, strgrp: string): TIDXGRP;
-function LoadPNGTiles(path: string; var PNGIndexArray: TPNGIndexArray; LoadPic: integer = 1;
-  frame: psmallint = nil): integer; overload;
+function LoadPNGTiles(path: string; var PNGIndexArray: TPNGIndexArray; LoadPic: integer = 1; frame: psmallint = nil): integer; overload;
 procedure LoadOnePNGTexture(path: string; p: PChar; var PNGIndex: TPNGIndex; forceLoad: integer = 0); overload;
 function LoadTileFromFile(filename: string; var pt: Pointer; usesur: integer; var w, h: integer): boolean;
 function LoadTileFromMem(p: PChar; len: integer; var pt: Pointer; usesur: integer; var w, h: integer): boolean;
@@ -121,12 +119,10 @@ procedure DestroyAllTextures(all: integer = 1);
 procedure DestroyFontTextures();
 
 procedure DrawPNGTile(render: PSDL_Renderer; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer); overload;
-procedure DrawPNGTile(render: PSDL_Renderer; PNGIndex: TPNGIndex; FrameNum: integer;
-  px, py: integer; region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer;
-  scalex, scaley, angle: real; center: PSDL_Point); overload;
-procedure DrawPNGTileS(scr: PSDL_Surface; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer;
-  region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer;
-  scalex, scaley, angle: real); overload;
+procedure DrawPNGTile(render: PSDL_Renderer; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer; region: PSDL_Rect;
+  shadow, alpha: integer; mixColor: uint32; mixAlpha: integer; scalex, scaley, angle: real; center: PSDL_Point); overload;
+procedure DrawPNGTileS(scr: PSDL_Surface; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer; region: PSDL_Rect;
+  shadow, alpha: integer; mixColor: uint32; mixAlpha: integer; scalex, scaley, angle: real); overload;
 
 function CopyIndexSurface(PNGIndexArray: TPNGIndexArray; i: integer): PSDL_Surface;
 
@@ -167,6 +163,7 @@ procedure CleanKeyValue; inline;
 
 //屏幕拉伸相关
 procedure GetMousePosition(var x, y: integer; x0, y0: integer; yp: integer = 0);
+function InRegion(x1, y1, x, y, w, h: integer): boolean; overload;
 function MouseInRegion(x, y, w, h: integer): boolean; overload;
 function MouseInRegion(x, y, w, h: integer; var x1, y1: integer): boolean; overload;
 function GetRealRect(var x, y, w, h: integer; force: integer = 0): TSDL_Rect; overload;
@@ -181,9 +178,9 @@ procedure swap(var x, y: uint32); overload;
 function round(x: real): integer; inline;
 function RegionParameter(x, x1, x2: integer): integer;
 function LinearInsert(x, x1, x2: real; y1, y2: integer): integer;
-procedure QuickSort(var a: array of integer; l, r: Integer);
+procedure QuickSort(var a: array of integer; l, r: integer);
 procedure QuickSortB(var a: array of TBuildInfo; l, r: integer);
-function InRegion(x, x1, x2: integer): boolean;
+function InRegion(x, x1, x2: integer): boolean; overload;
 
 //计时, 测速用
 procedure tic;
@@ -986,8 +983,8 @@ end;
 
 
 //显示unicode中文阴影文字, 即将同样内容显示2次, 间隔1像素
-procedure DrawShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32;
-  Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil; realPosition: integer = 0; eng: integer = 0); overload;
+procedure DrawShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32; Tex: PSDL_Texture = nil;
+  Sur: PSDL_Surface = nil; realPosition: integer = 0; eng: integer = 0); overload;
 var
   w, h: integer;
   ptex: PSDL_Texture;
@@ -1040,8 +1037,7 @@ end;
 
 //显示英文阴影文字
 
-procedure DrawEngShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32;
-  Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil);
+procedure DrawEngShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32; Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil);
 begin
   DrawShadowText(word, x_pos, y_pos + 4, color1, color2, Tex, Sur, 0, 1);
 end;
@@ -1810,16 +1806,14 @@ begin
   begin
     if SW_SURFACE = 0 then
     begin
-      TextScreenTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET,
-        RESOLUTIONX, RESOLUTIONY);
+      TextScreenTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, RESOLUTIONX, RESOLUTIONY);
       SDL_SetTextureBlendMode(TextScreenTex, SDL_BLENDMODE_BLEND);
       CleanTextScreen;
     end
     else
     begin
       TextScreen := SDL_CreateRGBSurface(0, RESOLUTIONX, RESOLUTIONY, 32, RMask, GMask, BMask, AMASK);
-      TextScreenTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
-        RESOLUTIONX, RESOLUTIONY);
+      TextScreenTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, RESOLUTIONX, RESOLUTIONY);
       SDL_SetTextureBlendMode(TextScreenTex, SDL_BLENDMODE_BLEND);
     end;
     ResizeSimpleText(1);  //设定简单状态使用的字体层
@@ -1837,10 +1831,8 @@ begin
   if SW_SURFACE = 0 then
   begin
     screenTex := SDL_CreateTexture(render, 0, SDL_TEXTUREACCESS_TARGET, CENTER_X * 2, CENTER_Y * 2);
-    ImgSGroundTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET,
-      ImageWidth, ImageHeight);
-    ImgBGroundTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET,
-      ImageWidth, ImageHeight);
+    ImgSGroundTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, ImageWidth, ImageHeight);
+    ImgBGroundTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, ImageWidth, ImageHeight);
     SimpleStateTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, 270, 90);
     for i := 0 to 5 do
       SimpleStatusTex[i] := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, 270, 90);
@@ -1863,8 +1855,7 @@ begin
     //SDL_SetSurfaceBlendMode(ImgBGround, SDL_BLENDMODE_NONE);
     CurTargetSurface := screen;
 
-    screenTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
-      CENTER_X * 2, CENTER_Y * 2);
+    screenTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, CENTER_X * 2, CENTER_Y * 2);
     SDL_SetTextureBlendMode(screenTex, SDL_BLENDMODE_NONE);
   end;
   //FreshScreenTex:=TList.Create();
@@ -1922,8 +1913,7 @@ begin
       begin
         if SimpleTextTex[i] <> nil then
           SDL_DestroyTexture(SimpleTextTex[i]);
-        SimpleTextTex[i] := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET,
-          w1 + x, y + h1);
+        SimpleTextTex[i] := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, w1 + x, y + h1);
         //这里的混合方式需设为none, 才能正常合并到Text层不留白边, 必须人为保证不会盖住原本的文字
         SDL_SetTextureBlendMode(SimpleTextTex[i], SDL_BLENDMODE_NONE);
       end
@@ -2020,6 +2010,25 @@ var
   function inEscape(x, y: integer): boolean; inline;
   begin
     Result := (x < 100) and (y > CENTER_Y * 2 - 100);
+  end;
+
+  function inShowVirtualKey(x, y: integer): boolean; inline;
+  begin
+    Result := (x > CENTER_X * 2 - 100) and (y < 100);
+  end;
+
+  function inVirtualKey(x, y: integer; var key: uint32): uint32;
+  begin
+    Result := 0;
+    if inregion(x, y, VirtualKeyX, VirtualKeyY, VirtualKeySize, VirtualKeySize) then
+      Result := sdlk_up;
+    if inregion(x, y, VirtualKeyX - VirtualKeySize, VirtualKeyY + VirtualKeySize, VirtualKeySize, VirtualKeySize) then
+      Result := sdlk_left;
+    if inregion(x, y, VirtualKeyX, VirtualKeyY + VirtualKeySize, VirtualKeySize, VirtualKeySize) then
+      Result := sdlk_down;
+    if inregion(x, y, VirtualKeyX + VirtualKeySize, VirtualKeyY + VirtualKeySize, VirtualKeySize, VirtualKeySize) then
+      Result := sdlk_right;
+    key := result;
   end;
 
 begin
@@ -2130,6 +2139,19 @@ begin
           event.type_ := 0;
       end;
     end;
+    SDL_MOUSEBUTTONDOWN:
+    begin
+      if (CellPhone = 1) and showVirtualKey then
+      begin
+        SDL_GetMouseState2(x, y);
+        inVirtualKey(x, y, VirtualKeyValue);
+        if VirtualKeyValue <> 0 then
+        begin
+          event.type_ := SDL_KEYDOWN;
+          event.key.keysym.sym := VirtualKeyValue;
+        end;
+      end;
+    end;
     SDL_KEYUP, SDL_MOUSEBUTTONUP:
     begin
       if (CellPhone = 1) and (event.type_ = SDL_MOUSEBUTTONUP) and (event.button.button = SDL_BUTTON_LEFT) then
@@ -2151,10 +2173,23 @@ begin
           event.key.keysym.sym := SDLK_RETURN;
           ConsoleLog('Change to return');
         end
+        else if showVirtualKey and (inVirtualKey(x, y, VirtualKeyValue) <> 0) then
+        begin
+          if VirtualKeyValue<>0 then
+          begin
+            event.type_ := SDL_KEYUP;
+            event.key.keysym.sym := VirtualKeyValue;
+          end;
+        end
         //手机在战场仅有确认键有用
         else if (where = 2) and (BattleSelecting) then
         begin
           event.button.button := 0;
+        end;
+
+        if inShowVirtualKey(x, y) then
+        begin
+          ShowVirtualKey := not ShowVirtualKey;
         end;
         //第二指不触发事件
         if FingerCount >= 1 then
@@ -2469,8 +2504,7 @@ end;
 
 //为了提高启动的速度, M之外的贴图均仅读入基本信息, 需要时才实际载入图, 并且游戏过程中通常不再释放资源
 
-function LoadPNGTiles(path: string; var PNGIndexArray: TPNGIndexArray; LoadPic: integer = 1;
-  frame: psmallint = nil): integer; overload;
+function LoadPNGTiles(path: string; var PNGIndexArray: TPNGIndexArray; LoadPic: integer = 1; frame: psmallint = nil): integer; overload;
 const
   maxCount: integer = 9999;
 var
@@ -2497,7 +2531,7 @@ begin
       begin
         size := StrBufSize(p);
         fillchar(frame^, 10, 0);
-        move((p+size-10)^, frame^,10);
+        move((p + size - 10)^, frame^, 10);
       end;
       Result := min(maxCount, n);
       //最大的有帧数的数量作为贴图的最大编号
@@ -2556,8 +2590,7 @@ begin
 
     for i := size div 4 downto 0 do
     begin
-      if FileExists(AppPath + path + IntToStr(i) + '.png') or FileExists(AppPath + path +
-        IntToStr(i) + '_0.png') then
+      if FileExists(AppPath + path + IntToStr(i) + '.png') or FileExists(AppPath + path + IntToStr(i) + '_0.png') then
       begin
         Result := i + 1;
         break;
@@ -2658,8 +2691,7 @@ begin
         end
         else
         begin
-          if LoadTileFromFile(AppPath + path + IntToStr(filenum) + '.png', Pointers[0],
-            SW_SURFACE, w, h) = False then
+          if LoadTileFromFile(AppPath + path + IntToStr(filenum) + '.png', Pointers[0], SW_SURFACE, w, h) = False then
             LoadTileFromFile(AppPath + path + IntToStr(filenum) + '_0.png', Pointers[0], SW_SURFACE, w, h);
         end;
       end;
@@ -2675,8 +2707,7 @@ begin
             LoadTileFromMem(p + index, len, Pointers[j], SW_SURFACE, w, h);
           end
           else
-            LoadTileFromFile(AppPath + path + IntToStr(filenum) + '_' + IntToStr(j) +
-              '.png', Pointers[j], SW_SURFACE, w1, h1);
+            LoadTileFromFile(AppPath + path + IntToStr(filenum) + '_' + IntToStr(j) + '.png', Pointers[j], SW_SURFACE, w1, h1);
           if (j = 0) then
           begin
             w := w1;
@@ -2914,9 +2945,8 @@ begin
 end;
 
 
-procedure DrawPNGTile(render: PSDL_Renderer; PNGIndex: TPNGIndex; FrameNum: integer;
-  px, py: integer; region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer;
-  scalex, scaley, angle: real; center: PSDL_Point); overload;
+procedure DrawPNGTile(render: PSDL_Renderer; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer; region: PSDL_Rect;
+  shadow, alpha: integer; mixColor: uint32; mixAlpha: integer; scalex, scaley, angle: real; center: PSDL_Point); overload;
 var
   rect: TSDL_Rect;
   r, g, b, a, r1, g1, b1: byte;
@@ -3020,9 +3050,8 @@ begin
 
 end;
 
-procedure DrawPNGTileS(scr: PSDL_Surface; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer;
-  region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer;
-  scalex, scaley, angle: real); overload;
+procedure DrawPNGTileS(scr: PSDL_Surface; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer; region: PSDL_Rect;
+  shadow, alpha: integer; mixColor: uint32; mixAlpha: integer; scalex, scaley, angle: real); overload;
 var
   rect: TSDL_Rect;
   r, g, b, a, r1, g1, b1: byte;
@@ -3296,8 +3325,7 @@ begin
       end;
     end;
     pCodecCtx := pFormatCtx.streams[videoStream].codec;
-    frametime := 1e3 * pFormatCtx.streams[videoStream].r_frame_rate.den /
-      pFormatCtx.streams[videoStream].r_frame_rate.num;  //每帧的时间(毫秒)
+    frametime := 1e3 * pFormatCtx.streams[videoStream].r_frame_rate.den / pFormatCtx.streams[videoStream].r_frame_rate.num;  //每帧的时间(毫秒)
     //writeln(1 / frametime);
     maxdelay := round(frametime);
     pCodec := avcodec_find_decoder(pCodecCtx.codec_id);
@@ -3307,8 +3335,7 @@ begin
     size := avpicture_get_size(PIX_FMT_YUV420P, pCodecCtx.Width, pCodecCtx.Height);
     buffer := av_malloc(size);
     avpicture_fill(pAVPicture(pFrameRGB), buffer, PIX_FMT_YUV420P, pCodecCtx.Width, pCodecCtx.Height);
-    bmp := SDL_CreateTexture(render, SDL_PIXELFORMAT_YV12, SDL_TEXTUREACCESS_STREAMING,
-      pCodecCtx.Width, pCodecCtx.Height);
+    bmp := SDL_CreateTexture(render, SDL_PIXELFORMAT_YV12, SDL_TEXTUREACCESS_STREAMING, pCodecCtx.Width, pCodecCtx.Height);
 
     frame_timer_begin := av_gettime() / 1e3;
 
@@ -4029,6 +4056,11 @@ end;
 
 //判断鼠标是否在区域内, 以画布的坐标为准
 //第二个函数会返回鼠标的画布位置
+function InRegion(x1, y1, x, y, w, h: integer): boolean;
+begin
+  Result := (x1 >= x) and (y1 >= y) and (x1 < x + w) and (y1 < y + h);
+end;
+
 function MouseInRegion(x, y, w, h: integer): boolean; overload;
 var
   x1, y1: integer;
@@ -4199,9 +4231,9 @@ begin
     QuickSortB(a, l, j);
 end;
 
-function InRegion(x, x1, x2: integer): boolean;
+function InRegion(x, x1, x2: integer): boolean; overload;
 begin
-  result := (x>=x1) and (x<=x2);
+  Result := (x >= x1) and (x <= x2);
 end;
 
 {$ifdef mswindows}

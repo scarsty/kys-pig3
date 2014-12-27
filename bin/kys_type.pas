@@ -605,6 +605,11 @@ var
   FingerTick: uint32 = 0;    //双指操作间隔
   FreeWalking: boolean = False;
   BattleSelecting: boolean = False;   //是否处于战场上选择
+  ShowVirtualKey: boolean = false;
+  VirtualKeyValue: Uint32 = 0;
+  VirtualKeyX: integer = 150;
+  VirtualKeyY: integer = 250;
+  VIrtualKeySize: integer = 60;
 
 const
   //色值蒙版, 注意透明蒙版在创建表面时需设为0而不应用此值
@@ -612,7 +617,6 @@ const
   GMask: uint32 = $FF00;
   BMask: uint32 = $FF;
   AMask: uint32 = $FF000000;
-
 
 implementation
 

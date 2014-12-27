@@ -3087,9 +3087,7 @@ begin
             menu := 0;
           if menup <> menu then
             ShowMagicMenu(MenuStatus, menu, max);
-        end
-        else
-          menu := -1;
+        end;
       end;
     end;
   end;
@@ -6063,9 +6061,7 @@ begin
             menu := -2;
           if menup <> menu then
             ShowTeamModeMenu;
-        end
-        else
-          menu := -1;
+        end;
       end;
     end;
     event.key.keysym.sym := 0;
