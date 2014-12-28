@@ -605,7 +605,9 @@ var
   FingerTick: uint32 = 0;    //双指操作间隔
   FreeWalking: boolean = False;
   BattleSelecting: boolean = False;   //是否处于战场上选择
-  ShowVirtualKey: boolean = false;
+
+  //虚拟按键相关
+  ShowVirtualKey: integer = 0;
   VirtualKeyValue: Uint32 = 0;
   VirtualKeyX: integer = 150;
   VirtualKeyY: integer = 250;

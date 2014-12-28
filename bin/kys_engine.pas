@@ -2012,7 +2012,7 @@ var
     Result := (x < 100) and (y > CENTER_Y * 2 - 100);
   end;
 
-  function inShowVirtualKey(x, y: integer): boolean; inline;
+  function inSwitchShowVirtualKey(x, y: integer): boolean; inline;
   begin
     Result := (x > CENTER_X * 2 - 100) and (y < 100);
   end;
@@ -2141,7 +2141,7 @@ begin
     end;
     SDL_MOUSEBUTTONDOWN:
     begin
-      if (CellPhone = 1) and showVirtualKey then
+      if (CellPhone = 1) and (showVirtualKey <> 0) then
       begin
         SDL_GetMouseState2(x, y);
         inVirtualKey(x, y, VirtualKeyValue);
@@ -2173,7 +2173,7 @@ begin
           event.key.keysym.sym := SDLK_RETURN;
           ConsoleLog('Change to return');
         end
-        else if showVirtualKey and (inVirtualKey(x, y, VirtualKeyValue) <> 0) then
+        else if (showVirtualKey <> 0) and (inVirtualKey(x, y, VirtualKeyValue) <> 0) then
         begin
           if VirtualKeyValue<>0 then
           begin
@@ -2181,15 +2181,14 @@ begin
             event.key.keysym.sym := VirtualKeyValue;
           end;
         end
+        else if inSwitchShowVirtualKey(x, y) then
+        begin
+          ShowVirtualKey := not ShowVirtualKey;
+        end
         //手机在战场仅有确认键有用
         else if (where = 2) and (BattleSelecting) then
         begin
           event.button.button := 0;
-        end;
-
-        if inShowVirtualKey(x, y) then
-        begin
-          ShowVirtualKey := not ShowVirtualKey;
         end;
         //第二指不触发事件
         if FingerCount >= 1 then

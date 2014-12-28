@@ -1486,24 +1486,24 @@ end;
 
 procedure DrawVirtualKey;
 var
-  a1, a2, a3, a4: integer;
+  u, d, l, r: integer;
 begin
-  if ShowVirtualKey then
+  if ShowVirtualKey <> 0 then
   begin
-    a1 := 50;
-    a2 := 50;
-    a3 := 50;
-    a4 := 50;
+    u := 50;
+    d := 50;
+    l := 50;
+    r := 50;
     case VirtualKeyValue of
-      SDLK_UP: a1 := 0;
-      SDLK_Left: a2 := 0;
-      SDLK_down: a3 := 0;
-      SDLK_RIGHT: a4 := 0;
+      SDLK_UP: u := 0;
+      SDLK_Left: l := 0;
+      SDLK_down: d := 0;
+      SDLK_RIGHT: r := 0;
     end;
-    DrawTPic(27, VirtualKeyX, VirtualKeyY, nil, 0, a1);
-    DrawTPic(29, VirtualKeyX - VirtualKeySize, VirtualKeyY + VirtualKeySize, nil, 0, a2);
-    DrawTPic(28, VirtualKeyX, VirtualKeyY + VirtualKeySize, nil, 0, a3);
-    DrawTPic(30, VirtualKeyX + VirtualKeySize, VirtualKeyY + VirtualKeySize, nil, 0, a4);
+    DrawTPic(27, VirtualKeyX, VirtualKeyY, nil, 0, u);
+    DrawTPic(29, VirtualKeyX - VirtualKeySize, VirtualKeyY + VirtualKeySize, nil, 0, l);
+    DrawTPic(28, VirtualKeyX, VirtualKeyY + VirtualKeySize, nil, 0, d);
+    DrawTPic(30, VirtualKeyX + VirtualKeySize, VirtualKeyY + VirtualKeySize, nil, 0, r);
   end;
 end;
 

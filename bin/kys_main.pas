@@ -299,7 +299,6 @@ begin
     ConsoleLog('Width and height of the window is %d, %d', [RESOLUTIONX, RESOLUTIONY]);
     if (RESOLUTIONY > RESOLUTIONX) then
       ScreenRotate := 0;
-    ShowVirtualKey := True;
     //SDL_WarpMouseInWindow(window, RESOLUTIONX, RESOLUTIONY);
   end;
 
@@ -913,9 +912,14 @@ begin
     JOY_MOUSE_LEFT := Kys_ini.ReadInteger('joystick', 'JOY_MOUSE_LEFT', 12);
     JOY_AXIS_DELAY := Kys_ini.ReadInteger('joystick', 'JOY_AXIS_DELAY', 10);
 
-    VirtualKeyX := Kys_ini.ReadInteger('system', 'Virtual_Key_X', 150);
-    VirtualKeyY := Kys_ini.ReadInteger('system', 'Virtual_Key_Y', 250);
-
+    if CellPhone <> 0 then
+    begin
+      ShowVirtualKey := Kys_ini.ReadInteger('system', 'Virtual_Key', 1);
+      VirtualKeyX := Kys_ini.ReadInteger('system', 'Virtual_Key_X', 150);
+      VirtualKeyY := Kys_ini.ReadInteger('system', 'Virtual_Key_Y', 250);
+    end
+    else
+      ShowVirtualKey := 0;
     if KEEP_SCREEN_RATIO = 0 then
       TEXT_LAYER := 0;
     if SW_OUTPUT = 1 then
@@ -1952,7 +1956,7 @@ begin
       end;
       SDL_MOUSEMOTION:
       begin
-        if not ShowVirtualKey then
+        if ShowVirtualKey = 0 then
         begin
           SDL_GetMouseState2(x1, y1);
           if (x1 < CENTER_X) and (y1 < CENTER_Y) then
@@ -2707,7 +2711,7 @@ begin
       end;
       SDL_MOUSEMOTION:
       begin
-        if not ShowVirtualKey then
+        if ShowVirtualKey = 0 then
         begin
           SDL_GetMouseState2(x1, y1);
           if (x1 < CENTER_X) and (y1 < CENTER_Y) then
