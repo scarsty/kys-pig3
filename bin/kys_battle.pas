@@ -710,17 +710,22 @@ begin
         13:
         begin
           Rrole[rnum] := Rrole0[rnum];
-          minrnum := 331;
-          maxrnum := 878;
           if AUTO_LEVELUP = 0 then
           begin
             minrnum := 738;
             maxrnum := 741;
-          end;
-          if (rnum >= minrnum) and (rnum <= maxrnum) then
-            SetAttribute(rnum, 71, Rrole[rnum].Repute, Rrole[rnum].RoundLeave, 60)
+            if (rnum >= minrnum) and (rnum <= maxrnum) then
+              SetAttribute(rnum, 71, Rrole[rnum].Repute, Rrole[rnum].RoundLeave, 60);
+          end
           else
-            SetAttribute(rnum, 1, Rrole[rnum].Repute, Rrole[rnum].RoundLeave, 60);
+          begin
+            minrnum := 331;
+            maxrnum := 878;
+            if (rnum >= minrnum) and (rnum <= maxrnum) then
+              SetAttribute(rnum, 71, Rrole[rnum].Repute, Rrole[rnum].RoundLeave, 60)
+            else
+              SetAttribute(rnum, 1, Rrole[rnum].Repute, Rrole[rnum].RoundLeave, 60);
+          end;
         end;
         0:
         begin
