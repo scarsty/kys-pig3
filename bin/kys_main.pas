@@ -8331,12 +8331,13 @@ begin
   words := TStringList.Create;
   //words.LoadFromFile(AppPath + 'txt/group.txt');
   words.Add('');
-  words.Add('《金庸水滸傳》');
+  words.Add('《金庸巨基傳》');
   //words.Add('Legend of Little Village III');
   words.Add('108 Brothers And Sisters');
   words.Add('');
 
-  words.Add('鐵血丹心論壇出品');
+  words.Add('原鐵血丹心論壇出品');
+  words.Add('http://www.dawuxia.net');
   words.Add('http://www.txdx.net');
   words.Add('');
 
@@ -8494,9 +8495,9 @@ begin
   words.Add('論壇無數版友');
   words.Add('以及網絡上的諸多素材');
   words.Add('');
-  words.Add('铁血丹心论坛');
-  words.Add('做中国人自己的武侠单机游戏');
-  words.Add('http://www.txdx.net');
+  //words.Add('铁血丹心论坛');
+  //words.Add('做中国人自己的武侠单机游戏');
+  //words.Add('http://www.txdx.net');
   if where < 3 then
   begin
     PlayMP3(startmusic, -1);
