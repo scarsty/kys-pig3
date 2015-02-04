@@ -11,11 +11,11 @@ uses
 {$IFDEF mswindows}
   Windows,
   //xVideo,
-  avcodec,
-  avformat,
-  swscale,
-  avutil,
 {$ENDIF}
+avcodec,
+avformat,
+swscale,
+avutil,
   Classes,
   SysUtils,
   SDL2_TTF,
@@ -3166,7 +3166,7 @@ end;
 
 
 function PlayMovie(filename: string; fullwindow: integer = 0): boolean;
-{$IFDEF MSWINDOWS}
+//{$IFDEF MSWINDOWS}
 var
   pFormatCtx: pAVFormatContext;
   pCodecCtx: pAVCodecContext;
@@ -3258,9 +3258,9 @@ var
 
   end;
 
-{$ENDIF}
+//{$ENDIF}
 begin
-{$IFDEF MSWINDOWS}
+//{$IFDEF MSWINDOWS}
   {xVideo_Init(0, 0);
   Channel := xVideo_StreamCreateFile(PChar(filename), 0, 0, 0);
   if Channel <> 0 then
@@ -3431,7 +3431,7 @@ begin
     end;
   end;
 
-{$ENDIF}
+//{$ENDIF}
 end;
 
 procedure Big5ToGBK(p: PChar);
@@ -4306,4 +4306,4 @@ begin
 {$endif}
 end;
 
-end.
+end.

@@ -38,7 +38,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <Libraries Value="lib;.;\usr\local\lib;\usr\X11R6\lib"/>
+            <Libraries Value="lib;.;\usr\local\lib\;\usr\X11R6\lib\"/>
             <OtherUnitFiles Value="lib"/>
             <UnitOutputDirectory Value="lib"/>
           </SearchPaths>
@@ -69,6 +69,7 @@
             </Options>
           </Linking>
           <Other>
+            <CompilerPath Value="$(CompPath)"/>
             <ExecuteAfter>
               <CompileReasons Compile="False" Build="False" Run="False"/>
             </ExecuteAfter>
@@ -87,7 +88,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <Libraries Value="lib;.;\usr\local\lib;\usr\X11R6\lib;android-4.0-api14-arm"/>
+            <Libraries Value="lib;.;\usr\local\lib\;\usr\X11R6\lib\;android-4.0-api14-arm"/>
             <OtherUnitFiles Value="lib"/>
             <UnitOutputDirectory Value="lib\android"/>
           </SearchPaths>
@@ -119,6 +120,7 @@
             </Options>
           </Linking>
           <Other>
+            <CompilerPath Value="$(CompPath)"/>
             <ExecuteAfter>
               <CompileReasons Compile="False" Build="False" Run="False"/>
             </ExecuteAfter>
@@ -205,7 +207,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <Libraries Value="lib;.;\usr\local\lib;\usr\X11R6\lib"/>
+      <Libraries Value="lib;.;\usr\local\lib\;\usr\X11R6\lib\"/>
       <OtherUnitFiles Value="lib"/>
       <UnitOutputDirectory Value="lib"/>
     </SearchPaths>
@@ -231,6 +233,9 @@
         <UseExternalDbgSyms Value="True"/>
       </Debugging>
     </Linking>
+    <Other>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="5">
@@ -251,4 +256,4 @@
       </Item5>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>
