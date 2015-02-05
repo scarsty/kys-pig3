@@ -15,7 +15,6 @@ uses
   avcodec,
   avformat,
   avutil,
-  audioconvert,
   swresample,
   Classes,
   SysUtils,
@@ -3180,9 +3179,11 @@ begin
     Result := SDL_CreateRGBSurface(ScreenFlag, 1, 1, 32, RMask, GMask, BMask, 0);}
 end;
 
+//use it like:
+//AudioResampling(aCodecCtx, frame, AV_SAMPLE_FMT_S16, frame.channels, frame.sample_rate, audio_buf0);
+
 function AudioResampling(audio_dec_ctx: PAVCodecContext; pAudioDecodeFrame: pAVFrame;
   out_sample_fmt: TAVSampleFormat; out_channels: integer; out_sample_rate: integer; out_buf: pbyte): integer;
-  //int len2 = AudioResampling(aCodecCtx, frame, AV_SAMPLE_FMT_S16, frame->channels, frame->sample_rate, audio_buf0);
 var
   swr_ctx: pSwrContext = nil;
   data_size: integer = 0;
@@ -3215,17 +3216,17 @@ begin
   if out_channels = 1 then
   begin
     dst_ch_layout := AV_CH_LAYOUT_MONO;
-    //printf("dst_ch_layout: AV_CH_LAYOUT_MONO\n");
+    //consolelog('dst_ch_layout: AV_CH_LAYOUT_MONO');
   end
   else if out_channels = 2 then
   begin
     dst_ch_layout := AV_CH_LAYOUT_STEREO;
-    //printf("dst_ch_layout: AV_CH_LAYOUT_STEREO\n");
+    //consolelog('dst_ch_layout: AV_CH_LAYOUT_STEREO');
   end
   else
   begin
     dst_ch_layout := AV_CH_LAYOUT_SURROUND;
-    //printf("dst_ch_layout: AV_CH_LAYOUT_SURROUND\n");
+    //consolelog('dst_ch_layout: AV_CH_LAYOUT_SURROUND');
   end;
 
   if src_ch_layout <= 0 then
@@ -3247,7 +3248,7 @@ begin
 
   av_opt_set_int(swr_ctx, 'out_channel_layout', dst_ch_layout, 0);
   av_opt_set_int(swr_ctx, 'out_sample_rate', out_sample_rate, 0);
-  av_opt_set_sample_fmt(swr_ctx, 'out_sample_fmt', TAVSampleFormat(out_sample_fmt), 0);
+  av_opt_set_sample_fmt(swr_ctx, 'out_sample_fmt', out_sample_fmt, 0);
 
   if swr_init(swr_ctx) < 0 then
   begin
@@ -3264,7 +3265,7 @@ begin
 
   dst_nb_channels := av_get_channel_layout_nb_channels(dst_ch_layout);
   ret := av_samples_alloc_array_and_samples(@dst_data, @dst_linesize, dst_nb_channels,
-    dst_nb_samples, TAVSampleFormat(out_sample_fmt), 0);
+    dst_nb_samples, out_sample_fmt, 0);
   if ret < 0 then
   begin
     consolelog('av_samples_alloc_array_and_samples error');
@@ -3282,8 +3283,8 @@ begin
   if dst_nb_samples > max_dst_nb_samples then
   begin
     av_free(dst_data^);
-    ret := av_samples_alloc(dst_data, @dst_linesize, dst_nb_channels, dst_nb_samples, TAVSampleFormat(
-      out_sample_fmt), 1);
+    ret := av_samples_alloc(dst_data, @dst_linesize, dst_nb_channels, dst_nb_samples,
+      out_sample_fmt, 1);
     max_dst_nb_samples := dst_nb_samples;
   end;
 
@@ -3297,7 +3298,7 @@ begin
     end;
 
     resampled_data_size := av_samples_get_buffer_size(@dst_linesize, dst_nb_channels, ret,
-      TAVSampleFormat(out_sample_fmt), 1);
+      out_sample_fmt, 1);
     if (resampled_data_size < 0) then
     begin
       consolelog('av_samples_get_buffer_size error');
@@ -3337,7 +3338,7 @@ var
   pFrameRGB: pAVFrame;
   packet: TAVPacket;
   i, videoStream, frameFinished, size, maxdelay, delay, totalsize: integer;
-  buffer: pbyte;
+  //buffer: pbyte;
   framenum, frametime, frame_timer_begin, timer, timerV, timerA, ptimerA, scale: real;
   //bmp: pSDL_Overlay;
   pict: TAVPicture;
@@ -3514,9 +3515,9 @@ begin
     avcodec_open2(pCodecCtx, pCodec, nil);
     pFrame := avcodec_alloc_frame();
     pFrameRGB := avcodec_alloc_frame();
-    size := avpicture_get_size(AV_PIX_FMT_YUV420P16, pCodecCtx.Width, pCodecCtx.Height);
-    buffer := av_malloc(size);
-    avpicture_fill(pAVPicture(pFrameRGB), buffer, AV_PIX_FMT_YUV420P16, pCodecCtx.Width, pCodecCtx.Height);
+    //size := avpicture_get_size(AV_PIX_FMT_YUV420P16, pCodecCtx.Width, pCodecCtx.Height);
+    //buffer := av_malloc(size);
+    //avpicture_fill(pAVPicture(pFrameRGB), buffer, AV_PIX_FMT_YUV420P16, pCodecCtx.Width, pCodecCtx.Height);
     bmp := SDL_CreateTexture(render, SDL_PIXELFORMAT_YV12, SDL_TEXTUREACCESS_STREAMING,
       pCodecCtx.Width, pCodecCtx.Height);
 
@@ -3604,7 +3605,7 @@ begin
 
     av_free(pFrame);
     av_free(pFrameRGB);
-    av_free(buffer);
+    //av_free(buffer);
     avcodec_close(pCodecCtx);
     //avcodec_close(pCodecCtxA);
     avformat_close_input(@pFormatCtx);

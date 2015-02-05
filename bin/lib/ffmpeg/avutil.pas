@@ -58,7 +58,7 @@ uses
 const
   (* Max. supported version by this header *)
   LIBAVUTIL_MAX_VERSION_MAJOR   = 54;
-  LIBAVUTIL_MAX_VERSION_MINOR   = 18;
+  LIBAVUTIL_MAX_VERSION_MINOR   = 15;
   LIBAVUTIL_MAX_VERSION_RELEASE = 100;
   LIBAVUTIL_MAX_VERSION = (LIBAVUTIL_MAX_VERSION_MAJOR * VERSION_MAJOR) +
                           (LIBAVUTIL_MAX_VERSION_MINOR * VERSION_MINOR) +
@@ -73,14 +73,15 @@ const
                           (LIBAVUTIL_MIN_VERSION_RELEASE * VERSION_RELEASE);
 
 (* Check if linked versions are supported *)
+(*
 {$IF (LIBAVUTIL_VERSION < LIBAVUTIL_MIN_VERSION)}
-  {$MESSAGE Error 'Linked version of libavutil is too old!'}
+  //{$MESSAGE Error 'Linked version of libavutil is too old!'}
 {$IFEND}
 
 {$IF (LIBAVUTIL_VERSION > LIBAVUTIL_MAX_VERSION)}
-  {$MESSAGE Error 'Linked version of libavutil is not yet supported!'}
+  //{$MESSAGE Error 'Linked version of libavutil is not yet supported!'}
 {$IFEND}
-
+*)
 type
 {$IFNDEF FPC}
   // defines for Delphi

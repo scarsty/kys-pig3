@@ -63,7 +63,7 @@ const
    *)
   (* Max. supported version by this header *)
   LIBAVFORMAT_MAX_VERSION_MAJOR   = 56;
-  LIBAVFORMAT_MAX_VERSION_MINOR   = 21;
+  LIBAVFORMAT_MAX_VERSION_MINOR   = 15;
   LIBAVFORMAT_MAX_VERSION_RELEASE = 102;
   LIBAVFORMAT_MAX_VERSION = (LIBAVFORMAT_MAX_VERSION_MAJOR * VERSION_MAJOR) +
                             (LIBAVFORMAT_MAX_VERSION_MINOR * VERSION_MINOR) +
@@ -78,14 +78,14 @@ const
                             (LIBAVFORMAT_MIN_VERSION_RELEASE * VERSION_RELEASE);
 
 (* Check if linked versions are supported *)
-{$IF (LIBAVFORMAT_VERSION < LIBAVFORMAT_MIN_VERSION)}
-  {$MESSAGE Error 'Linked version of libavformat is too old!'}
-{$IFEND}
-
-(* Check if linked versions are supported *)
-{$IF (LIBAVFORMAT_VERSION > LIBAVFORMAT_MAX_VERSION)}
-  {$MESSAGE Error 'Linked version of libavformat is not yet supported!'}
-{$IFEND}
+//{$IF (LIBAVFORMAT_VERSION < LIBAVFORMAT_MIN_VERSION)}
+//  {$MESSAGE Error 'Linked version of libavformat is too old!'}
+//{$IFEND}
+//
+//(* Check if linked versions are supported *)
+//{$IF (LIBAVFORMAT_VERSION > LIBAVFORMAT_MAX_VERSION)}
+//  {$MESSAGE Error 'Linked version of libavformat is not yet supported!'}
+//{$IFEND}
 
 {
 const

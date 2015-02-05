@@ -55,6 +55,8 @@ uses
   {$ENDIF}
   UConfig;
 
+{$I libavcodec/audioconvert.pas}
+
 const
   (*
    * IMPORTANT: The official FFmpeg C headers change very quickly. Often some
@@ -99,14 +101,14 @@ const
                             (LIBAVCODEC_MIN_VERSION_RELEASE * VERSION_RELEASE);
 
 (* Check if linked versions are supported *)
-{$IF (LIBAVCODEC_VERSION < LIBAVCODEC_MIN_VERSION)}
-  {$MESSAGE Error 'Linked version of libavcodec is too old!'}
-{$IFEND}
-
-(* Check if linked version is supported *)
-{$IF (LIBAVCODEC_VERSION > LIBAVCODEC_MAX_VERSION)}
-  //{$MESSAGE Error 'Linked version of libavcodec is not yet supported!'}
-{$IFEND}
+//{$IF (LIBAVCODEC_VERSION < LIBAVCODEC_MIN_VERSION)}
+//  {$MESSAGE Error 'Linked version of libavcodec is too old!'}
+//{$IFEND}
+//
+//(* Check if linked version is supported *)
+//{$IF (LIBAVCODEC_VERSION > LIBAVCODEC_MAX_VERSION)}
+//  //{$MESSAGE Error 'Linked version of libavcodec is not yet supported!'}
+//{$IFEND}
 
 {$IFNDEF FPC}
 type

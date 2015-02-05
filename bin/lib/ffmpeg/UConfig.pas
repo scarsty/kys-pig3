@@ -103,22 +103,65 @@ const
   // So we have to include the config-file in switches.inc
   // with IncludeConstants undefined and in UConfig.pas with
   // IncludeConstants defined (see the note above).
-  {$DEFINE IncludeConstants}
+{$IF Defined(MSWindows)}
+  av__codec = 'avcodec-56';
+  LIBAVCODEC_VERSION_MAJOR   = 56;
+  LIBAVCODEC_VERSION_MINOR   = 21;
+  LIBAVCODEC_VERSION_RELEASE = 102;
 
-  // include config-file (defines + constants)
-  {$IF Defined(MSWindows)}
-    {$I config-win.inc}
-  {$ELSEIF Defined(Linux)}
-    {$I ../config-linux.inc}
-  {$ELSEIF Defined(FreeBSD)}
-    {$I ../config-freebsd.inc}
-  {$ELSEIF Defined(Darwin)}
-    {$I config-darwin.inc}
-  {$ELSEIF Defined(android)}
-    {$I config-android.inc}
-  {$ELSE}
-    {$MESSAGE Fatal 'Unknown OS'}
-  {$IFEND}
+  av__format = 'avformat-56';
+  LIBAVFORMAT_VERSION_MAJOR   = 56;
+  LIBAVFORMAT_VERSION_MINOR   = 19;
+  LIBAVFORMAT_VERSION_RELEASE = 100;
+
+  av__util = 'avutil-54';
+  LIBAVUTIL_VERSION_MAJOR   = 54;
+  LIBAVUTIL_VERSION_MINOR   = 18;
+  LIBAVUTIL_VERSION_RELEASE = 100;
+
+  sw__resample = 'swresample-1';
+  LIBRESAMPLE_VERSION_MAJOR = 1;
+  LIBRESAMPLE_VERSION_MINOR = 1;
+  LIBRESAMPLE_VERSION_RELEASE = 100;
+  LIBSWRESAMPLE_VERSION = 1001100;
+{$ELSEIF Defined(Darwin)}
+  av__codec = 'libavcodec';
+  LIBAVCODEC_VERSION_MAJOR   = 56;
+  LIBAVCODEC_VERSION_MINOR   = 1;
+  LIBAVCODEC_VERSION_RELEASE = 100;
+
+  av__format = 'libavformat';
+  LIBAVFORMAT_VERSION_MAJOR   = 56;
+  LIBAVFORMAT_VERSION_MINOR   = 4;
+  LIBAVFORMAT_VERSION_RELEASE = 101;
+
+  av__util = 'libavutil';
+  LIBAVUTIL_VERSION_MAJOR   = 54;
+  LIBAVUTIL_VERSION_MINOR   = 7;
+  LIBAVUTIL_VERSION_RELEASE = 100;
+{$ELSEIF Defined(android)}
+  av__codec = 'ffmpeg';
+  LIBAVCODEC_VERSION_MAJOR   = 56;
+  LIBAVCODEC_VERSION_MINOR   = 21;
+  LIBAVCODEC_VERSION_RELEASE = 102;
+
+  av__format = 'ffmpeg';
+  LIBAVFORMAT_VERSION_MAJOR   = 56;
+  LIBAVFORMAT_VERSION_MINOR   = 19;
+  LIBAVFORMAT_VERSION_RELEASE = 100;
+
+  av__util = 'ffmpeg';
+  LIBAVUTIL_VERSION_MAJOR   = 54;
+  LIBAVUTIL_VERSION_MINOR   = 18;
+  LIBAVUTIL_VERSION_RELEASE = 100;
+
+  sw__resample = 'ffmpeg';
+  LIBRESAMPLE_VERSION_MAJOR = 1;
+  LIBRESAMPLE_VERSION_MINOR = 1;
+  LIBRESAMPLE_VERSION_RELEASE = 100;
+  LIBSWRESAMPLE_VERSION = 1001100;
+{$IFEND}
+
 
 {* Libraries *}
 
@@ -126,109 +169,6 @@ const
   VERSION_MINOR   = 1000;
   VERSION_RELEASE = 1;
 
-  (*
-   * Current version of UltraStar Deluxe
-   *)
-  USDX_VERSION_MAJOR   = 1;
-  USDX_VERSION_MINOR   = 1;
-  USDX_VERSION_RELEASE = 0;
-  USDX_VERSION_STATE   = '';
-  USDX_STRING = 'UltraStar Deluxe';
-
-  (*
-   * FPC version numbers are already defined as built-in macros:
-   *   FPC_VERSION (MAJOR)
-   *   FPC_RELEASE (MINOR)
-   *   FPC_PATCH   (RELEASE)
-   * Since FPC_VERSION is already defined, we will use FPC_VERSION_INT as
-   * composed version number.
-   *)
-  {$IFNDEF FPC}
-  // Delphi 7 evaluates every $IF-directive even if it is disabled by a surrounding
-  // $IF or $IFDEF so the follwing will give you an error in delphi:
-  //   {$IFDEF FPC}{$IF (FPC_VERSION > 2)}...{$IFEND}{$ENDIF}
-  // The reason for this error is that FPC_VERSION is not a valid constant.
-  // To avoid this error, we define dummys here.
-  FPC_VERSION = 0;
-  FPC_RELEASE = 0;
-  FPC_PATCH   = 0;
-  {$ENDIF}
-
-  FPC_VERSION_INT = (FPC_VERSION * VERSION_MAJOR) +
-                    (FPC_RELEASE * VERSION_MINOR) +
-                    (FPC_PATCH * VERSION_RELEASE);
-
-  // FPC 2.2.0 unicode support is very buggy. The cwstring unit for example
-  // always crashes whenever UTF8ToAnsi() is called on a non UTF8 encoded string
-  // what is fixed in 2.2.2.
-  {$IF Defined(FPC) and (FPC_VERSION_INT < 2002002)} // < 2.2.2
-    {$MESSAGE FATAL 'FPC >= 2.2.2 required!'}
-  {$IFEND}
-
-  {$IFDEF HaveFFmpeg}
-
-  LIBAVCODEC_VERSION = (LIBAVCODEC_VERSION_MAJOR * VERSION_MAJOR) +
-                       (LIBAVCODEC_VERSION_MINOR * VERSION_MINOR) +
-                       (LIBAVCODEC_VERSION_RELEASE * VERSION_RELEASE);
-
-  LIBAVFORMAT_VERSION = (LIBAVFORMAT_VERSION_MAJOR * VERSION_MAJOR) +
-                        (LIBAVFORMAT_VERSION_MINOR * VERSION_MINOR) +
-                        (LIBAVFORMAT_VERSION_RELEASE * VERSION_RELEASE);
-
-  LIBAVUTIL_VERSION = (LIBAVUTIL_VERSION_MAJOR * VERSION_MAJOR) +
-                      (LIBAVUTIL_VERSION_MINOR * VERSION_MINOR) +
-                      (LIBAVUTIL_VERSION_RELEASE * VERSION_RELEASE);
-
-  {$IFDEF HaveSWScale}
-  LIBSWSCALE_VERSION = (LIBSWSCALE_VERSION_MAJOR * VERSION_MAJOR) +
-                       (LIBSWSCALE_VERSION_MINOR * VERSION_MINOR) +
-                       (LIBSWSCALE_VERSION_RELEASE * VERSION_RELEASE);
-  {$ENDIF}
-
-  {$ENDIF}
-
-  {$IFDEF HaveProjectM}
-  PROJECTM_VERSION = (PROJECTM_VERSION_MAJOR * VERSION_MAJOR) +
-                     (PROJECTM_VERSION_MINOR * VERSION_MINOR) +
-                     (PROJECTM_VERSION_RELEASE * VERSION_RELEASE);
-  {$ENDIF}
-
-  {$IFDEF HavePortaudio}
-  PORTAUDIO_VERSION = (PORTAUDIO_VERSION_MAJOR * VERSION_MAJOR) +
-                      (PORTAUDIO_VERSION_MINOR * VERSION_MINOR) +
-                      (PORTAUDIO_VERSION_RELEASE * VERSION_RELEASE);
-  {$ENDIF}
-
-  {$IFDEF HaveLibsamplerate}
-  LIBSAMPLERATE_VERSION = (LIBSAMPLERATE_VERSION_MAJOR * VERSION_MAJOR) +
-                          (LIBSAMPLERATE_VERSION_MINOR * VERSION_MINOR) +
-                          (LIBSAMPLERATE_VERSION_RELEASE * VERSION_RELEASE);
-  {$ENDIF}
-
-function USDXVersionStr(): string;
-function USDXShortVersionStr(): string;
-
 implementation
-
-uses
-  StrUtils, Math;
-
-function USDXShortVersionStr(): string;
-begin
-  Result :=
-    USDX_STRING +
-    IfThen(USDX_VERSION_STATE <> '', ' '+USDX_VERSION_STATE);
-end;
-
-function USDXVersionStr(): string;
-begin
-  Result :=
-    USDX_STRING + ' V ' +
-    IntToStr(USDX_VERSION_MAJOR) + '.' +
-    IntToStr(USDX_VERSION_MINOR) + '.' +
-    IntToStr(USDX_VERSION_RELEASE) +
-    IfThen(USDX_VERSION_STATE <> '', ' '+USDX_VERSION_STATE) +
-    ' Build';
-end;
 
 end.
