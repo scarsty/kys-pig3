@@ -12,10 +12,11 @@ uses
   Windows,
   //xVideo,
 {$ENDIF}
-avcodec,
-avformat,
-swscale,
-avutil,
+  avcodec,
+  avformat,
+  avutil,
+  audioconvert,
+  swresample,
   Classes,
   SysUtils,
   SDL2_TTF,
@@ -67,9 +68,10 @@ function UnicodeToBig5(str: pWideChar): string;
 function UnicodeToGBK(str: pWideChar): string;
 procedure DrawText(word: puint16; x_pos, y_pos: integer; color: uint32; engwidth: integer = -1);
 procedure DrawEngText(word: puint16; x_pos, y_pos: integer; color: uint32);
-procedure DrawShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32; Tex: PSDL_Texture = nil;
-  Sur: PSDL_Surface = nil; realPosition: integer = 0; eng: integer = 0); overload;
-procedure DrawEngShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32; Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil);
+procedure DrawShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32;
+  Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil; realPosition: integer = 0; eng: integer = 0); overload;
+procedure DrawEngShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32;
+  Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil);
 procedure DrawBig5Text(sur: PSDL_Surface; str: PChar; x_pos, y_pos: integer; color: uint32);
 procedure DrawBig5ShadowText(word: PChar; x_pos, y_pos: integer; color1, color2: uint32);
 procedure DrawGBKShadowText(word: PChar; x_pos, y_pos: integer; color1, color2: uint32);
@@ -107,7 +109,8 @@ function ReadFileToBuffer(p: PChar; const filename: PChar; size, malloc: integer
 function FileGetlength(filename: string): integer;
 procedure FreeFileBuffer(var p: PChar);
 function LoadIdxGrp(stridx, strgrp: string): TIDXGRP;
-function LoadPNGTiles(path: string; var PNGIndexArray: TPNGIndexArray; LoadPic: integer = 1; frame: psmallint = nil): integer; overload;
+function LoadPNGTiles(path: string; var PNGIndexArray: TPNGIndexArray; LoadPic: integer = 1;
+  frame: psmallint = nil): integer; overload;
 procedure LoadOnePNGTexture(path: string; p: PChar; var PNGIndex: TPNGIndex; forceLoad: integer = 0); overload;
 function LoadTileFromFile(filename: string; var pt: Pointer; usesur: integer; var w, h: integer): boolean;
 function LoadTileFromMem(p: PChar; len: integer; var pt: Pointer; usesur: integer; var w, h: integer): boolean;
@@ -119,10 +122,12 @@ procedure DestroyAllTextures(all: integer = 1);
 procedure DestroyFontTextures();
 
 procedure DrawPNGTile(render: PSDL_Renderer; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer); overload;
-procedure DrawPNGTile(render: PSDL_Renderer; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer; region: PSDL_Rect;
-  shadow, alpha: integer; mixColor: uint32; mixAlpha: integer; scalex, scaley, angle: real; center: PSDL_Point); overload;
-procedure DrawPNGTileS(scr: PSDL_Surface; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer; region: PSDL_Rect;
-  shadow, alpha: integer; mixColor: uint32; mixAlpha: integer; scalex, scaley, angle: real); overload;
+procedure DrawPNGTile(render: PSDL_Renderer; PNGIndex: TPNGIndex; FrameNum: integer;
+  px, py: integer; region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer;
+  scalex, scaley, angle: real; center: PSDL_Point); overload;
+procedure DrawPNGTileS(scr: PSDL_Surface; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer;
+  region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer;
+  scalex, scaley, angle: real); overload;
 
 function CopyIndexSurface(PNGIndexArray: TPNGIndexArray; i: integer): PSDL_Surface;
 
@@ -983,8 +988,8 @@ end;
 
 
 //显示unicode中文阴影文字, 即将同样内容显示2次, 间隔1像素
-procedure DrawShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32; Tex: PSDL_Texture = nil;
-  Sur: PSDL_Surface = nil; realPosition: integer = 0; eng: integer = 0); overload;
+procedure DrawShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32;
+  Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil; realPosition: integer = 0; eng: integer = 0); overload;
 var
   w, h: integer;
   ptex: PSDL_Texture;
@@ -1037,7 +1042,8 @@ end;
 
 //显示英文阴影文字
 
-procedure DrawEngShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32; Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil);
+procedure DrawEngShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32;
+  Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil);
 begin
   DrawShadowText(word, x_pos, y_pos + 4, color1, color2, Tex, Sur, 0, 1);
 end;
@@ -1806,14 +1812,16 @@ begin
   begin
     if SW_SURFACE = 0 then
     begin
-      TextScreenTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, RESOLUTIONX, RESOLUTIONY);
+      TextScreenTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET,
+        RESOLUTIONX, RESOLUTIONY);
       SDL_SetTextureBlendMode(TextScreenTex, SDL_BLENDMODE_BLEND);
       CleanTextScreen;
     end
     else
     begin
       TextScreen := SDL_CreateRGBSurface(0, RESOLUTIONX, RESOLUTIONY, 32, RMask, GMask, BMask, AMASK);
-      TextScreenTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, RESOLUTIONX, RESOLUTIONY);
+      TextScreenTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
+        RESOLUTIONX, RESOLUTIONY);
       SDL_SetTextureBlendMode(TextScreenTex, SDL_BLENDMODE_BLEND);
     end;
     ResizeSimpleText(1);  //设定简单状态使用的字体层
@@ -1831,8 +1839,10 @@ begin
   if SW_SURFACE = 0 then
   begin
     screenTex := SDL_CreateTexture(render, 0, SDL_TEXTUREACCESS_TARGET, CENTER_X * 2, CENTER_Y * 2);
-    ImgSGroundTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, ImageWidth, ImageHeight);
-    ImgBGroundTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, ImageWidth, ImageHeight);
+    ImgSGroundTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET,
+      ImageWidth, ImageHeight);
+    ImgBGroundTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET,
+      ImageWidth, ImageHeight);
     SimpleStateTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, 270, 90);
     for i := 0 to 5 do
       SimpleStatusTex[i] := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, 270, 90);
@@ -1855,7 +1865,8 @@ begin
     //SDL_SetSurfaceBlendMode(ImgBGround, SDL_BLENDMODE_NONE);
     CurTargetSurface := screen;
 
-    screenTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, CENTER_X * 2, CENTER_Y * 2);
+    screenTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
+      CENTER_X * 2, CENTER_Y * 2);
     SDL_SetTextureBlendMode(screenTex, SDL_BLENDMODE_NONE);
   end;
   //FreshScreenTex:=TList.Create();
@@ -1913,7 +1924,8 @@ begin
       begin
         if SimpleTextTex[i] <> nil then
           SDL_DestroyTexture(SimpleTextTex[i]);
-        SimpleTextTex[i] := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, w1 + x, y + h1);
+        SimpleTextTex[i] := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET,
+          w1 + x, y + h1);
         //这里的混合方式需设为none, 才能正常合并到Text层不留白边, 必须人为保证不会盖住原本的文字
         SDL_SetTextureBlendMode(SimpleTextTex[i], SDL_BLENDMODE_NONE);
       end
@@ -2028,7 +2040,7 @@ var
       Result := sdlk_down;
     if inregion(x, y, VirtualKeyX + VirtualKeySize, VirtualKeyY + VirtualKeySize, VirtualKeySize, VirtualKeySize) then
       Result := sdlk_right;
-    key := result;
+    key := Result;
   end;
 
 begin
@@ -2175,7 +2187,7 @@ begin
         end
         else if (showVirtualKey <> 0) and (inVirtualKey(x, y, VirtualKeyValue) <> 0) then
         begin
-          if VirtualKeyValue<>0 then
+          if VirtualKeyValue <> 0 then
           begin
             event.type_ := SDL_KEYUP;
             event.key.keysym.sym := VirtualKeyValue;
@@ -2503,7 +2515,8 @@ end;
 
 //为了提高启动的速度, M之外的贴图均仅读入基本信息, 需要时才实际载入图, 并且游戏过程中通常不再释放资源
 
-function LoadPNGTiles(path: string; var PNGIndexArray: TPNGIndexArray; LoadPic: integer = 1; frame: psmallint = nil): integer; overload;
+function LoadPNGTiles(path: string; var PNGIndexArray: TPNGIndexArray; LoadPic: integer = 1;
+  frame: psmallint = nil): integer; overload;
 const
   maxCount: integer = 9999;
 var
@@ -2706,7 +2719,8 @@ begin
             LoadTileFromMem(p + index, len, Pointers[j], SW_SURFACE, w, h);
           end
           else
-            LoadTileFromFile(AppPath + path + IntToStr(filenum) + '_' + IntToStr(j) + '.png', Pointers[j], SW_SURFACE, w1, h1);
+            LoadTileFromFile(AppPath + path + IntToStr(filenum) + '_' + IntToStr(j) + '.png',
+              Pointers[j], SW_SURFACE, w1, h1);
           if (j = 0) then
           begin
             w := w1;
@@ -2944,8 +2958,9 @@ begin
 end;
 
 
-procedure DrawPNGTile(render: PSDL_Renderer; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer; region: PSDL_Rect;
-  shadow, alpha: integer; mixColor: uint32; mixAlpha: integer; scalex, scaley, angle: real; center: PSDL_Point); overload;
+procedure DrawPNGTile(render: PSDL_Renderer; PNGIndex: TPNGIndex; FrameNum: integer;
+  px, py: integer; region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer;
+  scalex, scaley, angle: real; center: PSDL_Point); overload;
 var
   rect: TSDL_Rect;
   r, g, b, a, r1, g1, b1: byte;
@@ -3049,8 +3064,9 @@ begin
 
 end;
 
-procedure DrawPNGTileS(scr: PSDL_Surface; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer; region: PSDL_Rect;
-  shadow, alpha: integer; mixColor: uint32; mixAlpha: integer; scalex, scaley, angle: real); overload;
+procedure DrawPNGTileS(scr: PSDL_Surface; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer;
+  region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer;
+  scalex, scaley, angle: real); overload;
 var
   rect: TSDL_Rect;
   r, g, b, a, r1, g1, b1: byte;
@@ -3164,9 +3180,155 @@ begin
     Result := SDL_CreateRGBSurface(ScreenFlag, 1, 1, 32, RMask, GMask, BMask, 0);}
 end;
 
+function AudioResampling(audio_dec_ctx: PAVCodecContext; pAudioDecodeFrame: pAVFrame;
+  out_sample_fmt: TAVSampleFormat; out_channels: integer; out_sample_rate: integer; out_buf: pbyte): integer;
+  //int len2 = AudioResampling(aCodecCtx, frame, AV_SAMPLE_FMT_S16, frame->channels, frame->sample_rate, audio_buf0);
+var
+  swr_ctx: pSwrContext = nil;
+  data_size: integer = 0;
+  ret: integer = 0;
+  src_ch_layout: int64;
+  dst_ch_layout: int64;
+  dst_nb_channels: integer = 0;
+  dst_linesize: integer = 0;
+  src_nb_samples: integer = 0;
+  dst_nb_samples: integer = 0;
+  max_dst_nb_samples: integer = 0;
+  dst_data: ppbyte = nil;
+  resampled_data_size: integer = 0;
+begin
+  Result := -1;
+  src_ch_layout := audio_dec_ctx.channel_layout;
+  dst_ch_layout := AV_CH_LAYOUT_STEREO;
+  swr_ctx := swr_alloc();
+  if swr_ctx = nil then
+  begin
+    consolelog('swr_alloc error');
+    exit;
+  end;
+
+  if audio_dec_ctx.channels = av_get_channel_layout_nb_channels(audio_dec_ctx.channel_layout) then
+    src_ch_layout := audio_dec_ctx.channel_layout
+  else
+    src_ch_layout := av_get_default_channel_layout(audio_dec_ctx.channels);
+
+  if out_channels = 1 then
+  begin
+    dst_ch_layout := AV_CH_LAYOUT_MONO;
+    //printf("dst_ch_layout: AV_CH_LAYOUT_MONO\n");
+  end
+  else if out_channels = 2 then
+  begin
+    dst_ch_layout := AV_CH_LAYOUT_STEREO;
+    //printf("dst_ch_layout: AV_CH_LAYOUT_STEREO\n");
+  end
+  else
+  begin
+    dst_ch_layout := AV_CH_LAYOUT_SURROUND;
+    //printf("dst_ch_layout: AV_CH_LAYOUT_SURROUND\n");
+  end;
+
+  if src_ch_layout <= 0 then
+  begin
+    consolelog('src_ch_layout error');
+    exit;
+  end;
+
+  src_nb_samples := pAudioDecodeFrame.nb_samples;
+  if src_nb_samples <= 0 then
+  begin
+    consolelog('src_nb_samples error');
+    exit;
+  end;
+
+  av_opt_set_int(swr_ctx, 'in_channel_layout', src_ch_layout, 0);
+  av_opt_set_int(swr_ctx, 'in_sample_rate', audio_dec_ctx.sample_rate, 0);
+  av_opt_set_sample_fmt(swr_ctx, 'in_sample_fmt', audio_dec_ctx.sample_fmt, 0);
+
+  av_opt_set_int(swr_ctx, 'out_channel_layout', dst_ch_layout, 0);
+  av_opt_set_int(swr_ctx, 'out_sample_rate', out_sample_rate, 0);
+  av_opt_set_sample_fmt(swr_ctx, 'out_sample_fmt', TAVSampleFormat(out_sample_fmt), 0);
+
+  if swr_init(swr_ctx) < 0 then
+  begin
+    consolelog('Failed to initialize the resampling context');
+    exit;
+  end;
+  dst_nb_samples := av_rescale_rnd(src_nb_samples, out_sample_rate, audio_dec_ctx.sample_rate, AV_ROUND_UP);
+  max_dst_nb_samples := dst_nb_samples;
+  if max_dst_nb_samples <= 0 then
+  begin
+    consolelog('av_rescale_rnd error');
+    exit;
+  end;
+
+  dst_nb_channels := av_get_channel_layout_nb_channels(dst_ch_layout);
+  ret := av_samples_alloc_array_and_samples(@dst_data, @dst_linesize, dst_nb_channels,
+    dst_nb_samples, TAVSampleFormat(out_sample_fmt), 0);
+  if ret < 0 then
+  begin
+    consolelog('av_samples_alloc_array_and_samples error');
+    exit;
+  end;
+
+
+  dst_nb_samples := av_rescale_rnd(swr_get_delay(swr_ctx, audio_dec_ctx.sample_rate) +
+    src_nb_samples, out_sample_rate, audio_dec_ctx.sample_rate, AV_ROUND_UP);
+  if dst_nb_samples <= 0 then
+  begin
+    consolelog('av_rescale_rnd error ');
+    exit;
+  end;
+  if dst_nb_samples > max_dst_nb_samples then
+  begin
+    av_free(dst_data^);
+    ret := av_samples_alloc(dst_data, @dst_linesize, dst_nb_channels, dst_nb_samples, TAVSampleFormat(
+      out_sample_fmt), 1);
+    max_dst_nb_samples := dst_nb_samples;
+  end;
+
+  if swr_ctx <> nil then
+  begin
+    ret := swr_convert(swr_ctx, dst_data, dst_nb_samples, pAudioDecodeFrame.Data, pAudioDecodeFrame.nb_samples);
+    if (ret < 0) then
+    begin
+      consolelog('swr_convert error');
+      exit;
+    end;
+
+    resampled_data_size := av_samples_get_buffer_size(@dst_linesize, dst_nb_channels, ret,
+      TAVSampleFormat(out_sample_fmt), 1);
+    if (resampled_data_size < 0) then
+    begin
+      consolelog('av_samples_get_buffer_size error');
+      exit;
+    end;
+  end
+  else
+  begin
+    consolelog('swr_ctx null error');
+    exit;
+  end;
+
+  move(dst_data^^, out_buf^, resampled_data_size);
+
+  if (dst_data <> nil) then
+  begin
+    av_freep(@dst_data^);
+  end;
+  av_freep(@dst_data);
+  dst_data := nil;
+
+  if swr_ctx <> nil then
+  begin
+    swr_free(@swr_ctx);
+  end;
+  Result := resampled_data_size;
+end;
+
 
 function PlayMovie(filename: string; fullwindow: integer = 0): boolean;
-//{$IFDEF MSWINDOWS}
+  //{$IFDEF MSWINDOWS}
 var
   pFormatCtx: pAVFormatContext;
   pCodecCtx: pAVCodecContext;
@@ -3179,7 +3341,7 @@ var
   framenum, frametime, frame_timer_begin, timer, timerV, timerA, ptimerA, scale: real;
   //bmp: pSDL_Overlay;
   pict: TAVPicture;
-  img_convert_ctx: pSwsContext;
+  //img_convert_ctx: pSwsContext;  //swscale使用
   rect: TSDL_Rect;
   pp: pointer;
   p2: puint16;
@@ -3200,6 +3362,8 @@ var
   bufferA: pbyte;
   audioStream, sizeA: integer;
 
+  ppStream: PPAVstream;
+
   bmp: PSDL_Texture;
 
   timerid: TSDL_TimerID;
@@ -3215,52 +3379,62 @@ var
     bufferA: pbyte;
     audioStream, sizeA: integer;
     i: integer;
+    ppStream: PPAVstream;
+    len: integer;
+    pframe: PAVFrame;
+
   begin
     Result := 0;
     //另开一个寻找音频
-    av_open_input_file(pFormatCtxA, PChar(movieName), nil, 0, nil);
+    pFormatCtxA := avformat_alloc_context();
+    avformat_open_input(@pFormatCtxA, PChar(movieName), nil, nil);
     //pFormatCtxA := pFormatCtx;
-    av_find_stream_info(pFormatCtxA);
+    avformat_find_stream_info(pFormatCtxA, nil);
     audioStream := -1;
+    ppStream := pFormatCtxA.streams;
     for i := 0 to pFormatCtxA.nb_streams - 1 do
     begin
-      if pFormatCtxA.streams[i].codec.codec_type = AVMEDIA_TYPE_AUDIO then
+      if ppStream^.codec.codec_type = AVMEDIA_TYPE_AUDIO then
       begin
         audioStream := i;
+        pCodecCtxA := ppStream^.codec;
         break;
       end;
+      Inc(ppStream);
     end;
-    pCodecCtxA := pFormatCtxA.streams[audioStream].codec;
+    //pCodecCtxA := pFormatCtxA.streams[audioStream].codec;
     pCodecA := avcodec_find_decoder(pCodecCtxA.codec_id);
-    avcodec_open(pCodecCtxA, pCodecA);
+    avcodec_open2(pCodecCtxA, pCodecA, nil);
     //push模式的全局bass音频流
     openAudio := BASS_StreamCreate(pCodecCtxA.sample_rate, pCodecCtxA.channels, 0, STREAMPROC_PUSH, nil);
     BASS_ChannelSetAttribute(openAudio, BASS_ATTRIB_VOL, VOLUME / 100.0);
     BASS_ChannelPlay(openAudio, False);
     //在副线程中生成完整音频
-    bufferA := av_mallocz(AVCODEC_MAX_AUDIO_FRAME_SIZE);
+
+    //packetA := av_mallocz(sizeof(AVPacket));
+    pframe := avcodec_alloc_frame();
+    bufferA := av_mallocz(192000);
     while True do
     begin
       if av_read_frame(pFormatCtxA, packetA) < 0 then
         break;
       if (packetA.stream_index = audioStream) then
       begin
-        sizeA := AVCODEC_MAX_AUDIO_FRAME_SIZE;
-        avcodec_decode_audio2(pCodecCtxA, pSmallint(bufferA), sizeA, packetA.Data, packetA.size);
+        avcodec_decode_audio4(pCodecCtxA, pframe, @sizeA, @packetA);
+        len := AudioResampling(pCodecCtxA, pframe, AV_SAMPLE_FMT_S16, pframe.channels, pframe.sample_rate, bufferA);
         if openAudio <> 0 then
-          BASS_StreamPutData(openAudio, bufferA, sizeA);
+          BASS_StreamPutData(openAudio, bufferA, len);
       end;
       av_free_packet(@packetA);
     end;
     av_free(bufferA);
     avcodec_close(pCodecCtxA);
-    av_close_input_file(pFormatCtxA);
-
+    avformat_close_input(@pFormatCtxA);
   end;
 
-//{$ENDIF}
+  //{$ENDIF}
 begin
-//{$IFDEF MSWINDOWS}
+  //{$IFDEF MSWINDOWS}
   {xVideo_Init(0, 0);
   Channel := xVideo_StreamCreateFile(PChar(filename), 0, 0, 0);
   if Channel <> 0 then
@@ -3293,6 +3467,7 @@ begin
 
   //where := 5;
   Result := False;
+
   filename := AppPath + 'movie/' + filename;
   if not FileExists(filename) then
     exit;
@@ -3300,48 +3475,58 @@ begin
   Result := True;
   StopMP3;
   av_register_all();
-  if av_open_input_file(pFormatCtx, PChar(filename), nil, 0, nil) = 0 then
+
+  pFormatCtx := avformat_alloc_context();
+  if avformat_open_input(@pFormatCtx, PChar(filename), nil, nil) = 0 then
   begin
-    av_find_stream_info(pFormatCtx);
+    avformat_find_stream_info(pFormatCtx, nil);
     movieName := filename;
 
-    if THREAD_READ_PNG = 0 then
-      LoadAudioThread(nil)
-    else
-      try
-        LoadAudio := SDL_CreateThread(@LoadAudioThread, nil, nil);
-      except
-      end;
+    //if THREAD_READ_PNG = 0 then
+    LoadAudioThread(nil);
 
+    {openAudio := BASS_StreamCreateFile(False, PChar(filename), 0, 0, 0);
+    BASS_ChannelSetAttribute(openAudio, BASS_ATTRIB_VOL, VOLUME / 100.0);
+    BASS_ChannelPlay(openAudio, False);}
+    //else
+    // try
+    //   LoadAudio := SDL_CreateThread(@LoadAudioThread, nil, nil);
+    // except
+    // end;
     //寻找视频
     videoStream := -1;
+    ppStream := pFormatCtx.streams;
     for i := 0 to pFormatCtx.nb_streams - 1 do
     begin
-      if pFormatCtx.streams[i].codec.codec_type = AVMEDIA_TYPE_VIDEO then
+      if ppStream^.codec.codec_type = AVMEDIA_TYPE_VIDEO then
       begin
         videoStream := i;
+        pCodecCtx := ppStream^.codec;
         break;
       end;
+      Inc(ppStream);
     end;
-    pCodecCtx := pFormatCtx.streams[videoStream].codec;
-    frametime := 1e3 * pFormatCtx.streams[videoStream].r_frame_rate.den / pFormatCtx.streams[videoStream].r_frame_rate.num;  //每帧的时间(毫秒)
+    //pCodecCtx := pFormatCtx.streams[videoStream].codec;
+    frametime := 1e3 * ppStream^.r_frame_rate.den / ppStream^.r_frame_rate.num;  //每帧的时间(毫秒)
     //writeln(1 / frametime);
     maxdelay := round(frametime);
     pCodec := avcodec_find_decoder(pCodecCtx.codec_id);
-    avcodec_open(pCodecCtx, pCodec);
+    avcodec_open2(pCodecCtx, pCodec, nil);
     pFrame := avcodec_alloc_frame();
     pFrameRGB := avcodec_alloc_frame();
-    size := avpicture_get_size(PIX_FMT_YUV420P, pCodecCtx.Width, pCodecCtx.Height);
+    size := avpicture_get_size(AV_PIX_FMT_YUV420P16, pCodecCtx.Width, pCodecCtx.Height);
     buffer := av_malloc(size);
-    avpicture_fill(pAVPicture(pFrameRGB), buffer, PIX_FMT_YUV420P, pCodecCtx.Width, pCodecCtx.Height);
-    bmp := SDL_CreateTexture(render, SDL_PIXELFORMAT_YV12, SDL_TEXTUREACCESS_STREAMING, pCodecCtx.Width, pCodecCtx.Height);
+    avpicture_fill(pAVPicture(pFrameRGB), buffer, AV_PIX_FMT_YUV420P16, pCodecCtx.Width, pCodecCtx.Height);
+    bmp := SDL_CreateTexture(render, SDL_PIXELFORMAT_YV12, SDL_TEXTUREACCESS_STREAMING,
+      pCodecCtx.Width, pCodecCtx.Height);
 
-    frame_timer_begin := av_gettime() / 1e3;
+    frame_timer_begin := SDL_getticks() / 1e3;
 
+    //consolelog('must,video');
     timerA := 0;
     while SDL_PollEvent(@event) >= 0 do
     begin
-      time1 := av_gettime() / 1e3;
+      time1 := SDL_getticks() / 1e3;
       ptimerA := timerA;
       if ((event.key.keysym.sym = SDLK_ESCAPE) or (event.button.button = SDL_BUTTON_RIGHT)) then
         break;
@@ -3395,7 +3580,7 @@ begin
           begin
             //如果以音频为标准的值明显不合理, 则可能是音频解码出现问题, 依据播放时间重新计算延迟
             //但是如果音频时间在变大, 说明音频解码正常, 可能是音频偏慢, 此时应保持延迟
-            time2 := av_gettime() / 1e3;
+            time2 := SDL_getticks() / 1e3;
             delay := maxdelay - round(time2 - time1);
             delay := min(maxdelay, delay);
           end;
@@ -3422,7 +3607,7 @@ begin
     av_free(buffer);
     avcodec_close(pCodecCtx);
     //avcodec_close(pCodecCtxA);
-    av_close_input_file(pFormatCtx);
+    avformat_close_input(@pFormatCtx);
     //av_close_input_file(pFormatCtxA);
     if openAudio <> 0 then
     begin
@@ -3431,7 +3616,8 @@ begin
     end;
   end;
 
-//{$ENDIF}
+  //consolelog('bye,video');
+  //{$ENDIF}
 end;
 
 procedure Big5ToGBK(p: PChar);
@@ -4306,4 +4492,4 @@ begin
 {$endif}
 end;
 
-end.
+end.

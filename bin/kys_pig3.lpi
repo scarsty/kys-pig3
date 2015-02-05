@@ -23,7 +23,7 @@
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="3"/>
       <MinorVersionNr Value="4"/>
-      <RevisionNr Value="1"/>
+      <RevisionNr Value="2"/>
       <Language Value="0804"/>
       <StringTable Comments="108 Brothers and Sisters" CompanyName="http://www.txdx.net" LegalCopyright="no" ProductName="kys_pig3.exe" ProductVersion="3.3"/>
     </VersionInfo>
@@ -38,8 +38,8 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <Libraries Value="lib;.;\usr\local\lib\;\usr\X11R6\lib\"/>
-            <OtherUnitFiles Value="lib"/>
+            <Libraries Value="lib;.;\usr\local\lib;\usr\X11R6\lib"/>
+            <OtherUnitFiles Value="lib;lib\ffmpeg;lib\ffmpeg\libavcodec"/>
             <UnitOutputDirectory Value="lib"/>
           </SearchPaths>
           <Parsing>
@@ -69,7 +69,6 @@
             </Options>
           </Linking>
           <Other>
-            <CompilerPath Value="$(CompPath)"/>
             <ExecuteAfter>
               <CompileReasons Compile="False" Build="False" Run="False"/>
             </ExecuteAfter>
@@ -88,8 +87,8 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <Libraries Value="lib;.;\usr\local\lib\;\usr\X11R6\lib\;android-4.0-api14-arm"/>
-            <OtherUnitFiles Value="lib"/>
+            <Libraries Value="lib;.;\usr\local\lib;\usr\X11R6\lib;android-4.0-api14-arm"/>
+            <OtherUnitFiles Value="lib;lib\ffmpeg"/>
             <UnitOutputDirectory Value="lib\android"/>
           </SearchPaths>
           <Parsing>
@@ -99,6 +98,7 @@
             </SyntaxOptions>
           </Parsing>
           <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
             <TargetCPU Value="arm"/>
             <TargetOS Value="android"/>
             <Optimizations>
@@ -112,6 +112,7 @@
               <StripSymbols Value="True"/>
               <UseExternalDbgSyms Value="True"/>
             </Debugging>
+            <LinkSmart Value="True"/>
             <Options>
               <Win32>
                 <GraphicApplication Value="True"/>
@@ -120,7 +121,6 @@
             </Options>
           </Linking>
           <Other>
-            <CompilerPath Value="$(CompPath)"/>
             <ExecuteAfter>
               <CompileReasons Compile="False" Build="False" Run="False"/>
             </ExecuteAfter>
@@ -157,17 +157,14 @@
       <Unit1>
         <Filename Value="kys_main.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="kys_main"/>
       </Unit1>
       <Unit2>
         <Filename Value="kys_event.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="kys_event"/>
       </Unit2>
       <Unit3>
         <Filename Value="kys_battle.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="kys_battle"/>
       </Unit3>
       <Unit4>
         <Filename Value="kys_engine.pas"/>
@@ -177,12 +174,10 @@
       <Unit5>
         <Filename Value="kys_script.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="kys_script"/>
       </Unit5>
       <Unit6>
         <Filename Value="kys_draw.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="kys_draw"/>
       </Unit6>
       <Unit7>
         <Filename Value="kys_type.pas"/>
@@ -207,8 +202,8 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <Libraries Value="lib;.;\usr\local\lib\;\usr\X11R6\lib\"/>
-      <OtherUnitFiles Value="lib"/>
+      <Libraries Value="lib;.;\usr\local\lib;\usr\X11R6\lib"/>
+      <OtherUnitFiles Value="lib;lib\ffmpeg;lib\ffmpeg\libavcodec"/>
       <UnitOutputDirectory Value="lib"/>
     </SearchPaths>
     <Parsing>
@@ -233,9 +228,6 @@
         <UseExternalDbgSyms Value="True"/>
       </Debugging>
     </Linking>
-    <Other>
-      <CompilerPath Value="$(CompPath)"/>
-    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="5">
@@ -256,4 +248,4 @@
       </Item5>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>
