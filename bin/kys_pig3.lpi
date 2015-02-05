@@ -88,7 +88,7 @@
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
             <Libraries Value="lib;.;\usr\local\lib;\usr\X11R6\lib;android-4.0-api14-arm"/>
-            <OtherUnitFiles Value="lib;lib\ffmpeg"/>
+            <OtherUnitFiles Value="lib;lib\ffmpeg;lib\ffmpeg\libavcodec"/>
             <UnitOutputDirectory Value="lib\android"/>
           </SearchPaths>
           <Parsing>
@@ -104,6 +104,7 @@
             <Optimizations>
               <OptimizationLevel Value="3"/>
             </Optimizations>
+            <SmallerCode Value="True"/>
           </CodeGeneration>
           <Linking>
             <Debugging>
