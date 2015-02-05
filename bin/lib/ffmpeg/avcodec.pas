@@ -36,7 +36,7 @@ unit avcodec;
   {$MINENUMSIZE 4} (* use 4-byte enums *)
 {$ENDIF}
 
-{$I switches.inc}  (* for ffmpeg defines *)
+//{$I switches.inc}  (* for ffmpeg defines *)
 {$I ff_api-defines.inc}  (* FF_API_* defines *)
 
 {$IFDEF DARWIN}

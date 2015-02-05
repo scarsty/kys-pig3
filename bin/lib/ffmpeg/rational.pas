@@ -37,7 +37,7 @@ unit rational;
   {$MINENUMSIZE 4} (* use 4-byte enums *)
 {$ENDIF}
 
-{$I switches.inc}
+//{$I switches.inc}
 
 interface
 

@@ -35,7 +35,7 @@ unit avformat;
   {$MINENUMSIZE 4} (* use 4-byte enums *)
 {$ENDIF}
 
-{$I switches.inc}  (* for the HasInline define *)
+//{$I switches.inc}  (* for the HasInline define *)
 {$I ff_api-defines.inc}  (* FF_API_* defines *)
 
 {$IFDEF DARWIN}

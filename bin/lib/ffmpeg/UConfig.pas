@@ -87,7 +87,7 @@ interface
   {$MACRO ON} // for evaluation of FPC_VERSION/RELEASE/PATCH
 {$ENDIF}
 
-{$I switches.inc}
+//{$I switches.inc}
 
 uses
   SysUtils;
