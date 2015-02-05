@@ -3556,6 +3556,7 @@ begin
             rect.y := s.py;
             rect.w := pCodecCtx.Width * s.num div s.den;
             rect.h := pCodecCtx.Height * s.num div s.den;
+            SDL_RenderClear(render);
             SDL_RenderCopy(render, bmp, nil, @rect);
             UpdateAllScreen;
           end
@@ -3566,6 +3567,7 @@ begin
             rect.y := s.py;
             rect.w := pCodecCtx.Width * s.num div s.den;
             rect.h := pCodecCtx.Height * s.num div s.den;
+            SDL_RenderClear(render);
             SDL_RenderCopy(render, bmp, nil, @rect);
             SDL_RenderPresent(render);
           end;
@@ -3586,7 +3588,9 @@ begin
             delay := min(maxdelay, delay);
           end;
           if delay > 0 then
+          begin
             SDL_Delay(delay);
+          end;
       {end
       else if (packet.stream_index = audioStream) then
       begin
@@ -4493,4 +4497,4 @@ begin
 {$endif}
 end;
 
-end.
+end.
