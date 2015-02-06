@@ -316,6 +316,7 @@ begin
   rect.y := (RESOLUTIONY - rect.h) div 2;
 
   SDL_RenderClear(render);
+  SDL_RenderPresent(render);
   SDL_RenderCopy(render, logo, nil, @rect);
   SDL_RenderPresent(render);
   SDL_DestroyTexture(logo);
@@ -887,6 +888,7 @@ begin
     TEXT_LAYER := Kys_ini.ReadInteger('system', 'Text_Layer', 0);
     ZIP_SAVE := Kys_ini.ReadInteger('system', 'ZIP_SAVE', 1);
     OPEN_MOVIE := Kys_ini.ReadInteger('system', 'OPEN_MOVIE', 1);
+    THREAD_READ_MOVIE := Kys_ini.ReadInteger('system', 'THREAD_READ_MOVIE', 1);
     THREAD_READ_PNG := Kys_ini.ReadInteger('system', 'THREAD_READ_PNG', 0);
     DISABLE_MENU_AMI := Kys_ini.ReadInteger('system', 'DISABLE_MENU_AMI', 0);
     EXPAND_GROUND := Kys_ini.ReadInteger('system', 'EXPAND_GROUND', 1);

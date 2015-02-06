@@ -67,10 +67,9 @@ function UnicodeToBig5(str: pWideChar): string;
 function UnicodeToGBK(str: pWideChar): string;
 procedure DrawText(word: puint16; x_pos, y_pos: integer; color: uint32; engwidth: integer = -1);
 procedure DrawEngText(word: puint16; x_pos, y_pos: integer; color: uint32);
-procedure DrawShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32;
-  Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil; realPosition: integer = 0; eng: integer = 0); overload;
-procedure DrawEngShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32;
-  Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil);
+procedure DrawShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32; Tex: PSDL_Texture = nil;
+  Sur: PSDL_Surface = nil; realPosition: integer = 0; eng: integer = 0); overload;
+procedure DrawEngShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32; Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil);
 procedure DrawBig5Text(sur: PSDL_Surface; str: PChar; x_pos, y_pos: integer; color: uint32);
 procedure DrawBig5ShadowText(word: PChar; x_pos, y_pos: integer; color1, color2: uint32);
 procedure DrawGBKShadowText(word: PChar; x_pos, y_pos: integer; color1, color2: uint32);
@@ -108,8 +107,7 @@ function ReadFileToBuffer(p: PChar; const filename: PChar; size, malloc: integer
 function FileGetlength(filename: string): integer;
 procedure FreeFileBuffer(var p: PChar);
 function LoadIdxGrp(stridx, strgrp: string): TIDXGRP;
-function LoadPNGTiles(path: string; var PNGIndexArray: TPNGIndexArray; LoadPic: integer = 1;
-  frame: psmallint = nil): integer; overload;
+function LoadPNGTiles(path: string; var PNGIndexArray: TPNGIndexArray; LoadPic: integer = 1; frame: psmallint = nil): integer; overload;
 procedure LoadOnePNGTexture(path: string; p: PChar; var PNGIndex: TPNGIndex; forceLoad: integer = 0); overload;
 function LoadTileFromFile(filename: string; var pt: Pointer; usesur: integer; var w, h: integer): boolean;
 function LoadTileFromMem(p: PChar; len: integer; var pt: Pointer; usesur: integer; var w, h: integer): boolean;
@@ -121,12 +119,10 @@ procedure DestroyAllTextures(all: integer = 1);
 procedure DestroyFontTextures();
 
 procedure DrawPNGTile(render: PSDL_Renderer; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer); overload;
-procedure DrawPNGTile(render: PSDL_Renderer; PNGIndex: TPNGIndex; FrameNum: integer;
-  px, py: integer; region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer;
-  scalex, scaley, angle: real; center: PSDL_Point); overload;
-procedure DrawPNGTileS(scr: PSDL_Surface; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer;
-  region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer;
-  scalex, scaley, angle: real); overload;
+procedure DrawPNGTile(render: PSDL_Renderer; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer; region: PSDL_Rect;
+  shadow, alpha: integer; mixColor: uint32; mixAlpha: integer; scalex, scaley, angle: real; center: PSDL_Point); overload;
+procedure DrawPNGTileS(scr: PSDL_Surface; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer; region: PSDL_Rect;
+  shadow, alpha: integer; mixColor: uint32; mixAlpha: integer; scalex, scaley, angle: real); overload;
 
 function CopyIndexSurface(PNGIndexArray: TPNGIndexArray; i: integer): PSDL_Surface;
 
@@ -987,8 +983,8 @@ end;
 
 
 //显示unicode中文阴影文字, 即将同样内容显示2次, 间隔1像素
-procedure DrawShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32;
-  Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil; realPosition: integer = 0; eng: integer = 0); overload;
+procedure DrawShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32; Tex: PSDL_Texture = nil;
+  Sur: PSDL_Surface = nil; realPosition: integer = 0; eng: integer = 0); overload;
 var
   w, h: integer;
   ptex: PSDL_Texture;
@@ -1041,8 +1037,7 @@ end;
 
 //显示英文阴影文字
 
-procedure DrawEngShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32;
-  Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil);
+procedure DrawEngShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32; Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil);
 begin
   DrawShadowText(word, x_pos, y_pos + 4, color1, color2, Tex, Sur, 0, 1);
 end;
@@ -1811,16 +1806,14 @@ begin
   begin
     if SW_SURFACE = 0 then
     begin
-      TextScreenTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET,
-        RESOLUTIONX, RESOLUTIONY);
+      TextScreenTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, RESOLUTIONX, RESOLUTIONY);
       SDL_SetTextureBlendMode(TextScreenTex, SDL_BLENDMODE_BLEND);
       CleanTextScreen;
     end
     else
     begin
       TextScreen := SDL_CreateRGBSurface(0, RESOLUTIONX, RESOLUTIONY, 32, RMask, GMask, BMask, AMASK);
-      TextScreenTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
-        RESOLUTIONX, RESOLUTIONY);
+      TextScreenTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, RESOLUTIONX, RESOLUTIONY);
       SDL_SetTextureBlendMode(TextScreenTex, SDL_BLENDMODE_BLEND);
     end;
     ResizeSimpleText(1);  //设定简单状态使用的字体层
@@ -1838,10 +1831,8 @@ begin
   if SW_SURFACE = 0 then
   begin
     screenTex := SDL_CreateTexture(render, 0, SDL_TEXTUREACCESS_TARGET, CENTER_X * 2, CENTER_Y * 2);
-    ImgSGroundTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET,
-      ImageWidth, ImageHeight);
-    ImgBGroundTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET,
-      ImageWidth, ImageHeight);
+    ImgSGroundTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, ImageWidth, ImageHeight);
+    ImgBGroundTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, ImageWidth, ImageHeight);
     SimpleStateTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, 270, 90);
     for i := 0 to 5 do
       SimpleStatusTex[i] := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, 270, 90);
@@ -1864,8 +1855,7 @@ begin
     //SDL_SetSurfaceBlendMode(ImgBGround, SDL_BLENDMODE_NONE);
     CurTargetSurface := screen;
 
-    screenTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
-      CENTER_X * 2, CENTER_Y * 2);
+    screenTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, CENTER_X * 2, CENTER_Y * 2);
     SDL_SetTextureBlendMode(screenTex, SDL_BLENDMODE_NONE);
   end;
   //FreshScreenTex:=TList.Create();
@@ -1923,8 +1913,7 @@ begin
       begin
         if SimpleTextTex[i] <> nil then
           SDL_DestroyTexture(SimpleTextTex[i]);
-        SimpleTextTex[i] := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET,
-          w1 + x, y + h1);
+        SimpleTextTex[i] := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, w1 + x, y + h1);
         //这里的混合方式需设为none, 才能正常合并到Text层不留白边, 必须人为保证不会盖住原本的文字
         SDL_SetTextureBlendMode(SimpleTextTex[i], SDL_BLENDMODE_NONE);
       end
@@ -2514,8 +2503,7 @@ end;
 
 //为了提高启动的速度, M之外的贴图均仅读入基本信息, 需要时才实际载入图, 并且游戏过程中通常不再释放资源
 
-function LoadPNGTiles(path: string; var PNGIndexArray: TPNGIndexArray; LoadPic: integer = 1;
-  frame: psmallint = nil): integer; overload;
+function LoadPNGTiles(path: string; var PNGIndexArray: TPNGIndexArray; LoadPic: integer = 1; frame: psmallint = nil): integer; overload;
 const
   maxCount: integer = 9999;
 var
@@ -2957,9 +2945,8 @@ begin
 end;
 
 
-procedure DrawPNGTile(render: PSDL_Renderer; PNGIndex: TPNGIndex; FrameNum: integer;
-  px, py: integer; region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer;
-  scalex, scaley, angle: real; center: PSDL_Point); overload;
+procedure DrawPNGTile(render: PSDL_Renderer; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer; region: PSDL_Rect;
+  shadow, alpha: integer; mixColor: uint32; mixAlpha: integer; scalex, scaley, angle: real; center: PSDL_Point); overload;
 var
   rect: TSDL_Rect;
   r, g, b, a, r1, g1, b1: byte;
@@ -3063,9 +3050,8 @@ begin
 
 end;
 
-procedure DrawPNGTileS(scr: PSDL_Surface; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer;
-  region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer;
-  scalex, scaley, angle: real); overload;
+procedure DrawPNGTileS(scr: PSDL_Surface; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer; region: PSDL_Rect;
+  shadow, alpha: integer; mixColor: uint32; mixAlpha: integer; scalex, scaley, angle: real); overload;
 var
   rect: TSDL_Rect;
   r, g, b, a, r1, g1, b1: byte;
@@ -3181,9 +3167,8 @@ end;
 
 //use it like:
 //AudioResampling(aCodecCtx, frame, AV_SAMPLE_FMT_S16, frame.channels, frame.sample_rate, audio_buf0);
-
-function AudioResampling(audio_dec_ctx: PAVCodecContext; pAudioDecodeFrame: pAVFrame;
-  out_sample_fmt: TAVSampleFormat; out_channels: integer; out_sample_rate: integer; out_buf: pbyte): integer;
+function AudioResampling(audio_dec_ctx: PAVCodecContext; pAudioDecodeFrame: pAVFrame; out_sample_fmt: TAVSampleFormat;
+  out_channels: integer; out_sample_rate: integer; out_buf: pbyte): integer;
 var
   swr_ctx: pSwrContext = nil;
   data_size: integer = 0;
@@ -3264,8 +3249,7 @@ begin
   end;
 
   dst_nb_channels := av_get_channel_layout_nb_channels(dst_ch_layout);
-  ret := av_samples_alloc_array_and_samples(@dst_data, @dst_linesize, dst_nb_channels,
-    dst_nb_samples, out_sample_fmt, 0);
+  ret := av_samples_alloc_array_and_samples(@dst_data, @dst_linesize, dst_nb_channels, dst_nb_samples, out_sample_fmt, 0);
   if ret < 0 then
   begin
     consolelog('av_samples_alloc_array_and_samples error');
@@ -3273,8 +3257,8 @@ begin
   end;
 
 
-  dst_nb_samples := av_rescale_rnd(swr_get_delay(swr_ctx, audio_dec_ctx.sample_rate) +
-    src_nb_samples, out_sample_rate, audio_dec_ctx.sample_rate, AV_ROUND_UP);
+  dst_nb_samples := av_rescale_rnd(swr_get_delay(swr_ctx, audio_dec_ctx.sample_rate) + src_nb_samples, out_sample_rate,
+    audio_dec_ctx.sample_rate, AV_ROUND_UP);
   if dst_nb_samples <= 0 then
   begin
     consolelog('av_rescale_rnd error ');
@@ -3283,8 +3267,7 @@ begin
   if dst_nb_samples > max_dst_nb_samples then
   begin
     av_free(dst_data^);
-    ret := av_samples_alloc(dst_data, @dst_linesize, dst_nb_channels, dst_nb_samples,
-      out_sample_fmt, 1);
+    ret := av_samples_alloc(dst_data, @dst_linesize, dst_nb_channels, dst_nb_samples, out_sample_fmt, 1);
     max_dst_nb_samples := dst_nb_samples;
   end;
 
@@ -3297,8 +3280,7 @@ begin
       exit;
     end;
 
-    resampled_data_size := av_samples_get_buffer_size(@dst_linesize, dst_nb_channels, ret,
-      out_sample_fmt, 1);
+    resampled_data_size := av_samples_get_buffer_size(@dst_linesize, dst_nb_channels, ret, out_sample_fmt, 1);
     if (resampled_data_size < 0) then
     begin
       consolelog('av_samples_get_buffer_size error');
@@ -3327,9 +3309,7 @@ begin
   Result := resampled_data_size;
 end;
 
-
 function PlayMovie(filename: string; fullwindow: integer = 0): boolean;
-  //{$IFDEF MSWINDOWS}
 var
   pFormatCtx: pAVFormatContext;
   pCodecCtx: pAVCodecContext;
@@ -3433,9 +3413,7 @@ var
     avformat_close_input(@pFormatCtxA);
   end;
 
-  //{$ENDIF}
 begin
-  //{$IFDEF MSWINDOWS}
   {xVideo_Init(0, 0);
   Channel := xVideo_StreamCreateFile(PChar(filename), 0, 0, 0);
   if Channel <> 0 then
@@ -3483,17 +3461,16 @@ begin
     avformat_find_stream_info(pFormatCtx, nil);
     movieName := filename;
 
-    //if THREAD_READ_PNG = 0 then
-    LoadAudioThread(nil);
-
+    if THREAD_READ_MOVIE = 0 then
+      LoadAudioThread(nil);
+    try
+      LoadAudio := SDL_CreateThread(@LoadAudioThread, nil, nil);
+    except
+    end;
     {openAudio := BASS_StreamCreateFile(False, PChar(filename), 0, 0, 0);
     BASS_ChannelSetAttribute(openAudio, BASS_ATTRIB_VOL, VOLUME / 100.0);
     BASS_ChannelPlay(openAudio, False);}
-    //else
-    // try
-    //   LoadAudio := SDL_CreateThread(@LoadAudioThread, nil, nil);
-    // except
-    // end;
+
     //寻找视频
     videoStream := -1;
     ppStream := pFormatCtx.streams;
@@ -3514,16 +3491,23 @@ begin
     pCodec := avcodec_find_decoder(pCodecCtx.codec_id);
     avcodec_open2(pCodecCtx, pCodec, nil);
     pFrame := avcodec_alloc_frame();
-    pFrameRGB := avcodec_alloc_frame();
+    //pFrameRGB := avcodec_alloc_frame();
     //size := avpicture_get_size(AV_PIX_FMT_YUV420P16, pCodecCtx.Width, pCodecCtx.Height);
     //buffer := av_malloc(size);
     //avpicture_fill(pAVPicture(pFrameRGB), buffer, AV_PIX_FMT_YUV420P16, pCodecCtx.Width, pCodecCtx.Height);
-    bmp := SDL_CreateTexture(render, SDL_PIXELFORMAT_YV12, SDL_TEXTUREACCESS_STREAMING,
-      pCodecCtx.Width, pCodecCtx.Height);
+    bmp := SDL_CreateTexture(render, SDL_PIXELFORMAT_YV12, SDL_TEXTUREACCESS_STREAMING, pCodecCtx.Width, pCodecCtx.Height);
 
     frame_timer_begin := SDL_getticks() / 1e3;
 
-    //consolelog('must,video');
+    if SW_SURFACE = 0 then
+      s := KeepRatioScale(pCodecCtx.Width, pCodecCtx.Height, CENTER_X * 2, CENTER_Y * 2)
+    else
+      s := KeepRatioScale(pCodecCtx.Width, pCodecCtx.Height, RESOLUTIONX, RESOLUTIONY);
+    rect.x := s.px;
+    rect.y := s.py;
+    rect.w := pCodecCtx.Width * s.num div s.den;
+    rect.h := pCodecCtx.Height * s.num div s.den;
+
     timerA := 0;
     while SDL_PollEvent(@event) >= 0 do
     begin
@@ -3549,28 +3533,10 @@ begin
             pFrame.Data[1], pFrame.linesize[1], pFrame.Data[2], pFrame.linesize[2]);
           //计算窗口的位置
 
-          if SW_SURFACE = 0 then
-          begin
-            s := KeepRatioScale(pCodecCtx.Width, pCodecCtx.Height, CENTER_X * 2, CENTER_Y * 2);
-            rect.x := s.px;
-            rect.y := s.py;
-            rect.w := pCodecCtx.Width * s.num div s.den;
-            rect.h := pCodecCtx.Height * s.num div s.den;
-            SDL_RenderClear(render);
-            SDL_RenderCopy(render, bmp, nil, @rect);
-            UpdateAllScreen;
-          end
-          else
-          begin
-            s := KeepRatioScale(pCodecCtx.Width, pCodecCtx.Height, RESOLUTIONX, RESOLUTIONY);
-            rect.x := s.px;
-            rect.y := s.py;
-            rect.w := pCodecCtx.Width * s.num div s.den;
-            rect.h := pCodecCtx.Height * s.num div s.den;
-            SDL_RenderClear(render);
-            SDL_RenderCopy(render, bmp, nil, @rect);
-            SDL_RenderPresent(render);
-          end;
+          SDL_RenderClear(render);
+          SDL_RenderCopy(render, bmp, nil, @rect);
+          UpdateAllScreen;
+
           //av_free_packet(@packet);
           timerA := BASS_ChannelBytes2Seconds(openAudio, BASS_ChannelGetPosition(openAudio, BASS_POS_BYTE)) * 1e3;
           //音频的时间为标准
@@ -3608,7 +3574,7 @@ begin
     SDL_DestroyTexture(bmp);
 
     av_free(pFrame);
-    av_free(pFrameRGB);
+    //av_free(pFrameRGB);
     //av_free(buffer);
     avcodec_close(pCodecCtx);
     //avcodec_close(pCodecCtxA);
@@ -3621,9 +3587,9 @@ begin
     end;
   end;
 
-  //consolelog('bye,video');
-  //{$ENDIF}
 end;
+
+
 
 procedure Big5ToGBK(p: PChar);
 var
@@ -4497,4 +4463,4 @@ begin
 {$endif}
 end;
 
-end.
+end.
