@@ -3165,6 +3165,63 @@ begin
     Result := SDL_CreateRGBSurface(ScreenFlag, 1, 1, 32, RMask, GMask, BMask, 0);}
 end;
 
+function av_samples_alloc_array_and_samples2(audio_data: PPPcuint8; linesize: Plongint; nb_channels: longint;
+  nb_samples: longint; sample_fmt: TAVSampleFormat; align: longint): longint;
+var
+  ret, nb_planes: longint;
+begin
+  nb_planes := 1;
+  if (av_sample_fmt_is_planar(sample_fmt) <> 0) then
+    nb_planes := nb_channels;
+  audio_data^ := av_calloc(nb_planes, sizeof(audio_data^^));
+  if (audio_data^ = nil) then
+  begin
+    Result := ENOMEM;
+    exit;
+  end;
+  ret := av_samples_alloc(audio_data^, linesize, nb_channels, nb_samples, sample_fmt, align);
+  if (ret < 0) then
+    av_freep(audio_data);
+  Result := ret;
+
+end;
+
+function set_format(obj: Pointer; Name: Pansichar; fmt: integer; search_flags: integer; type_: TAVOptionType;
+  desc: pansichar; nb_fmts: integer): integer;
+var
+  target_obj: pbyte;
+  min_, max_: single;
+  o: PAVOption;
+begin
+  o := av_opt_find2(obj, Name, nil, 0, search_flags, target_obj);
+  if (o = nil) or (target_obj = nil) then
+  begin
+    Result := AVERROR_OPTION_NOT_FOUND;
+    exit;
+  end;
+  if (o.type_ <> type_) then
+  begin
+    Result := EINVAL;
+    exit;
+  end;
+  min_ := max(o.min, -1);
+  max_ := min(o.max, nb_fmts - 1);
+  if (fmt < min_) or (fmt > max_) then
+  begin
+    Result := 34;
+    exit;
+  end;
+  Inc(target_obj, o.offset);
+  pinteger(target_obj)^ := fmt;
+  Result := 0;
+end;
+
+function av_opt_set_sample_fmt2(obj: pointer; Name: PAnsiChar; fmt: TAVSampleFormat; search_flags: longint): longint;
+begin
+  Result := set_format(obj, Name, longint(fmt), search_flags, AV_OPT_TYPE_SAMPLE_FMT, 'sample', longint(AV_SAMPLE_FMT_NB));
+
+end;
+
 //use it like:
 //AudioResampling(aCodecCtx, frame, AV_SAMPLE_FMT_S16, frame.channels, frame.sample_rate, audio_buf0);
 function AudioResampling(audio_dec_ctx: PAVCodecContext; pAudioDecodeFrame: pAVFrame; out_sample_fmt: TAVSampleFormat;
@@ -3229,11 +3286,11 @@ begin
 
   av_opt_set_int(swr_ctx, 'in_channel_layout', src_ch_layout, 0);
   av_opt_set_int(swr_ctx, 'in_sample_rate', audio_dec_ctx.sample_rate, 0);
-  av_opt_set_sample_fmt(swr_ctx, 'in_sample_fmt', audio_dec_ctx.sample_fmt, 0);
+  av_opt_set_sample_fmt2(swr_ctx, 'in_sample_fmt', audio_dec_ctx.sample_fmt, 0);
 
   av_opt_set_int(swr_ctx, 'out_channel_layout', dst_ch_layout, 0);
   av_opt_set_int(swr_ctx, 'out_sample_rate', out_sample_rate, 0);
-  av_opt_set_sample_fmt(swr_ctx, 'out_sample_fmt', out_sample_fmt, 0);
+  av_opt_set_sample_fmt2(swr_ctx, 'out_sample_fmt', out_sample_fmt, 0);
 
   if swr_init(swr_ctx) < 0 then
   begin
@@ -3249,7 +3306,7 @@ begin
   end;
 
   dst_nb_channels := av_get_channel_layout_nb_channels(dst_ch_layout);
-  ret := av_samples_alloc_array_and_samples(@dst_data, @dst_linesize, dst_nb_channels, dst_nb_samples, out_sample_fmt, 0);
+  ret := av_samples_alloc_array_and_samples2(@dst_data, @dst_linesize, dst_nb_channels, dst_nb_samples, out_sample_fmt, 0);
   if ret < 0 then
   begin
     consolelog('av_samples_alloc_array_and_samples error');
@@ -3389,12 +3446,13 @@ var
     //push模式的全局bass音频流
     openAudio := BASS_StreamCreate(pCodecCtxA.sample_rate, pCodecCtxA.channels, 0, STREAMPROC_PUSH, nil);
     BASS_ChannelSetAttribute(openAudio, BASS_ATTRIB_VOL, VOLUME / 100.0);
-    BASS_ChannelPlay(openAudio, False);
+    if THREAD_READ_MOVIE <> 0 then
+      BASS_ChannelPlay(openAudio, False);
     //在副线程中生成完整音频
-
     //packetA := av_mallocz(sizeof(AVPacket));
     pframe := avcodec_alloc_frame();
     bufferA := av_mallocz(192000);
+    ConsoleLog('Decode audio...');
     while True do
     begin
       if av_read_frame(pFormatCtxA, packetA) < 0 then
@@ -3408,9 +3466,13 @@ var
       end;
       av_free_packet(@packetA);
     end;
+    ConsoleLog('Decode audio end.');
     av_free(bufferA);
     avcodec_close(pCodecCtxA);
     avformat_close_input(@pFormatCtxA);
+    if THREAD_READ_MOVIE = 0 then
+      BASS_ChannelPlay(openAudio, False);
+
   end;
 
 begin
@@ -3462,7 +3524,8 @@ begin
     movieName := filename;
 
     if THREAD_READ_MOVIE = 0 then
-      LoadAudioThread(nil);
+      LoadAudioThread(nil)
+    else
     try
       LoadAudio := SDL_CreateThread(@LoadAudioThread, nil, nil);
     except
@@ -3470,7 +3533,7 @@ begin
     {openAudio := BASS_StreamCreateFile(False, PChar(filename), 0, 0, 0);
     BASS_ChannelSetAttribute(openAudio, BASS_ATTRIB_VOL, VOLUME / 100.0);
     BASS_ChannelPlay(openAudio, False);}
-
+    ConsoleLog('Decode video...');
     //寻找视频
     videoStream := -1;
     ppStream := pFormatCtx.streams;

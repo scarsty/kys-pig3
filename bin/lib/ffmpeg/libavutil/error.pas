@@ -53,6 +53,7 @@ const
   EINVAL = 22;
   EPIPE  = 32;  // just an assumption. needs to be checked.
   EDOM   = 33;
+  ERANGE = 34;
   {$IFDEF MSWINDOWS}
   // Note: we assume that ffmpeg was compiled with MinGW.
   // This must be changed if DLLs were compiled with cygwin.

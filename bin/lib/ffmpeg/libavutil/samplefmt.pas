@@ -75,9 +75,6 @@ type
   TAVSampleFormatArray = array [0 .. MaxInt div SizeOf(TAVSampleFormat) - 1] of TAVSampleFormat;
   PAVSampleFormatArray = ^TAVSampleFormatArray;
 
-  PPcuint8 = ^Pcuint8;
-  PPPcuint8 = ^PPcuint8;
-
 (**
  * Return the name of sample_fmt, or NULL if sample_fmt is not
  * recognized.

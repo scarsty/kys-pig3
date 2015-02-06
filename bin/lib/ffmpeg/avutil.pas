@@ -126,6 +126,10 @@ type
     AVMEDIA_TYPE_NB
   );
 
+  PPcuint8 = ^Pcuint8;
+  PPPcuint8 = ^PPcuint8;
+
+
 (**
  * Return a string describing the media_type enum, NULL if media_type
  * is unknown.
