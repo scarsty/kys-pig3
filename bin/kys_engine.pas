@@ -3165,7 +3165,8 @@ begin
     Result := SDL_CreateRGBSurface(ScreenFlag, 1, 1, 32, RMask, GMask, BMask, 0);}
 end;
 
-function av_samples_alloc_array_and_samples2(audio_data: PPPcuint8; linesize: Plongint; nb_channels: longint;
+
+{function av_samples_alloc_array_and_samples2(audio_data: PPPcuint8; linesize: Plongint; nb_channels: longint;
   nb_samples: longint; sample_fmt: TAVSampleFormat; align: longint): longint;
 var
   ret, nb_planes: longint;
@@ -3220,7 +3221,7 @@ function av_opt_set_sample_fmt2(obj: pointer; Name: PAnsiChar; fmt: TAVSampleFor
 begin
   Result := set_format(obj, Name, longint(fmt), search_flags, AV_OPT_TYPE_SAMPLE_FMT, 'sample', longint(AV_SAMPLE_FMT_NB));
 
-end;
+end;}
 
 //use it like:
 //AudioResampling(aCodecCtx, frame, AV_SAMPLE_FMT_S16, frame.channels, frame.sample_rate, audio_buf0);
@@ -3286,11 +3287,11 @@ begin
 
   av_opt_set_int(swr_ctx, 'in_channel_layout', src_ch_layout, 0);
   av_opt_set_int(swr_ctx, 'in_sample_rate', audio_dec_ctx.sample_rate, 0);
-  av_opt_set_sample_fmt2(swr_ctx, 'in_sample_fmt', audio_dec_ctx.sample_fmt, 0);
+  av_opt_set_sample_fmt(swr_ctx, 'in_sample_fmt', audio_dec_ctx.sample_fmt, 0);
 
   av_opt_set_int(swr_ctx, 'out_channel_layout', dst_ch_layout, 0);
   av_opt_set_int(swr_ctx, 'out_sample_rate', out_sample_rate, 0);
-  av_opt_set_sample_fmt2(swr_ctx, 'out_sample_fmt', out_sample_fmt, 0);
+  av_opt_set_sample_fmt(swr_ctx, 'out_sample_fmt', out_sample_fmt, 0);
 
   if swr_init(swr_ctx) < 0 then
   begin
@@ -3306,7 +3307,7 @@ begin
   end;
 
   dst_nb_channels := av_get_channel_layout_nb_channels(dst_ch_layout);
-  ret := av_samples_alloc_array_and_samples2(@dst_data, @dst_linesize, dst_nb_channels, dst_nb_samples, out_sample_fmt, 0);
+  ret := av_samples_alloc_array_and_samples(@dst_data, @dst_linesize, dst_nb_channels, dst_nb_samples, out_sample_fmt, 0);
   if ret < 0 then
   begin
     consolelog('av_samples_alloc_array_and_samples error');
@@ -3516,7 +3517,7 @@ begin
   Result := True;
   StopMP3;
   av_register_all();
-
+  ConsoleLog('Open video file: %s', [filename]);
   pFormatCtx := avformat_alloc_context();
   if avformat_open_input(@pFormatCtx, PChar(filename), nil, nil) = 0 then
   begin
@@ -3548,7 +3549,9 @@ begin
       Inc(ppStream);
     end;
     //pCodecCtx := pFormatCtx.streams[videoStream].codec;
-    frametime := 1e3 * ppStream^.r_frame_rate.den / ppStream^.r_frame_rate.num;  //每帧的时间(毫秒)
+    frametime := 1e3 / 25;
+    if ppStream^.r_frame_rate.num > 0 then
+      frametime := 1e3 * ppStream^.r_frame_rate.den / ppStream^.r_frame_rate.num;  //每帧的时间(毫秒)
     //writeln(1 / frametime);
     maxdelay := round(frametime);
     pCodec := avcodec_find_decoder(pCodecCtx.codec_id);
