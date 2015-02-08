@@ -87,7 +87,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <Libraries Value="lib;.;\usr\local\lib;\usr\X11R6\lib;android-4.0-api14-arm"/>
+            <Libraries Value="lib;.;\usr\local\lib\;\usr\X11R6\lib\;android-4.0-api14-arm"/>
             <OtherUnitFiles Value="lib;lib\ffmpeg"/>
             <UnitOutputDirectory Value="lib\android"/>
           </SearchPaths>
@@ -167,6 +167,7 @@
       <Unit3>
         <Filename Value="kys_battle.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="kys_battle"/>
       </Unit3>
       <Unit4>
         <Filename Value="kys_engine.pas"/>
@@ -176,10 +177,12 @@
       <Unit5>
         <Filename Value="kys_script.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="kys_script"/>
       </Unit5>
       <Unit6>
         <Filename Value="kys_draw.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="kys_draw"/>
       </Unit6>
       <Unit7>
         <Filename Value="kys_type.pas"/>
@@ -193,6 +196,7 @@
       <Unit9>
         <Filename Value="lib\mythoutput.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="mythoutput"/>
       </Unit9>
     </Units>
   </ProjectOptions>
@@ -204,7 +208,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <Libraries Value="lib;.;\usr\local\lib;\usr\X11R6\lib"/>
+      <Libraries Value="lib;.;\usr\local\lib\;\usr\X11R6\lib\"/>
       <OtherUnitFiles Value="lib;lib\ffmpeg"/>
       <UnitOutputDirectory Value="lib"/>
     </SearchPaths>
@@ -250,4 +254,4 @@
       </Item5>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>
