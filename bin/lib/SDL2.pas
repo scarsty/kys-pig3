@@ -28,7 +28,8 @@ interface
 {$DEFINE lSDL:=cdecl; external 'SDL2'}
 
 {$IFDEF DARWIN}
-  {$linkframework SDL2}
+  //{$DEFINE lSDL:=cdecl; external 'SDL2'}
+  {$linklib SDL2}
 {$ENDIF}
 
 {$IFNDEF WINDOWS}

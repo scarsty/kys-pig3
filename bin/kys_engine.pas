@@ -18,7 +18,7 @@ uses
   swresample,
   Classes,
   SysUtils,
-  SDL2_TTF,
+  SDL2_ttf,
   SDL2_image,
   SDL2,
   kys_type,
@@ -4529,4 +4529,4 @@ begin
 {$endif}
 end;
 
-end.
+end.
