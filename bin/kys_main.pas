@@ -1190,7 +1190,7 @@ begin
   if Result then
   begin
     //if SIMPLE <> 0 then
-    Name := CP936ToUTF8(Simplified2Traditional(UTF8ToCP936(Name)));
+    //Name := CP936ToUTF8(Simplified2Traditional(UTF8ToCP936(Name)));
     str2 := UTF8Decode(Name);
     p0 := @Rrole[0].Name;
     p1 := @str2[1];
