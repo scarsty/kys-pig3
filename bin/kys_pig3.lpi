@@ -24,6 +24,7 @@
       <MajorVersionNr Value="3"/>
       <MinorVersionNr Value="4"/>
       <RevisionNr Value="2"/>
+      <BuildNr Value="1"/>
       <Language Value="0804"/>
       <StringTable Comments="108 Brothers and Sisters" CompanyName="http://www.txdx.net" LegalCopyright="no" ProductName="kys_pig3.exe" ProductVersion="3.3"/>
     </VersionInfo>
@@ -87,7 +88,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <Libraries Value="lib;.;\usr\local\lib\;\usr\X11R6\lib\;android-4.0-api14-arm"/>
+            <Libraries Value="lib;.;\usr\local\lib;\usr\X11R6\lib;android-4.0-api14-arm"/>
             <OtherUnitFiles Value="lib;lib\ffmpeg"/>
             <UnitOutputDirectory Value="lib\android"/>
           </SearchPaths>
@@ -163,11 +164,11 @@
       <Unit2>
         <Filename Value="kys_event.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="kys_event"/>
       </Unit2>
       <Unit3>
         <Filename Value="kys_battle.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="kys_battle"/>
       </Unit3>
       <Unit4>
         <Filename Value="kys_engine.pas"/>
@@ -177,17 +178,14 @@
       <Unit5>
         <Filename Value="kys_script.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="kys_script"/>
       </Unit5>
       <Unit6>
         <Filename Value="kys_draw.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="kys_draw"/>
       </Unit6>
       <Unit7>
         <Filename Value="kys_type.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="kys_type"/>
       </Unit7>
       <Unit8>
         <Filename Value="macro.inc"/>
@@ -196,7 +194,6 @@
       <Unit9>
         <Filename Value="lib\mythoutput.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="mythoutput"/>
       </Unit9>
     </Units>
   </ProjectOptions>
@@ -208,7 +205,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <Libraries Value="lib;.;\usr\local\lib\;\usr\X11R6\lib\"/>
+      <Libraries Value="lib;.;\usr\local\lib;\usr\X11R6\lib"/>
       <OtherUnitFiles Value="lib;lib\ffmpeg"/>
       <UnitOutputDirectory Value="lib"/>
     </SearchPaths>
@@ -254,4 +251,4 @@
       </Item5>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>

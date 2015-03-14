@@ -2887,10 +2887,10 @@ begin
     if (HeadNum >= ExpressionMin) and (HeadNum <= ExpressionMax) then
       HeadNumR := 0;
 
-    if MODVersion = 13 then
+    {if MODVersion = 13 then
     begin
       if HeadNum = 0 then HeadNum := 434;
-    end;
+    end;}
 
     if NameNum = -2 then
     begin
