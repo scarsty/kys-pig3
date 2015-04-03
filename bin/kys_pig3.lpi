@@ -24,7 +24,7 @@
       <MajorVersionNr Value="3"/>
       <MinorVersionNr Value="4"/>
       <RevisionNr Value="2"/>
-      <BuildNr Value="1"/>
+      <BuildNr Value="2"/>
       <Language Value="0804"/>
       <StringTable Comments="108 Brothers and Sisters" CompanyName="http://www.txdx.net" LegalCopyright="no" ProductName="kys_pig3.exe" ProductVersion="3.3"/>
     </VersionInfo>
@@ -169,6 +169,7 @@
       <Unit3>
         <Filename Value="kys_battle.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="kys_battle"/>
       </Unit3>
       <Unit4>
         <Filename Value="kys_engine.pas"/>
@@ -178,6 +179,7 @@
       <Unit5>
         <Filename Value="kys_script.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="kys_script"/>
       </Unit5>
       <Unit6>
         <Filename Value="kys_draw.pas"/>
@@ -186,6 +188,7 @@
       <Unit7>
         <Filename Value="kys_type.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="kys_type"/>
       </Unit7>
       <Unit8>
         <Filename Value="macro.inc"/>
@@ -233,7 +236,7 @@
     </Linking>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="5">
+    <Exceptions Count="6">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -249,6 +252,9 @@
       <Item5>
         <Name Value="EInOutError"/>
       </Item5>
+      <Item6>
+        <Name Value="ERangeError"/>
+      </Item6>
     </Exceptions>
   </Debugging>
 </CONFIG>

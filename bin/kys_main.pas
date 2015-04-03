@@ -441,6 +441,23 @@ begin
       EventScriptExt := '.lua';
       StartMusic := 59;
     end;
+    12:
+    begin
+      TitleString := 'We Are Dragons';
+      versionstr := '金庸水滸傳-蒼龍逐日';
+      BEGIN_EVENT := 691;
+      BEGIN_SCENCE := 70;
+      MONEY_ID := 174;
+      COMPASS_ID := 182;
+      BEGIN_LEAVE_EVENT := 100;
+      BEGIN_NAME_IN_TALK := 0;
+      MAX_LOVER := 0;
+      //EventScriptPath := 'script/oldevent/oldevent_';
+      //EventScriptExt := '.lua';
+      StartMusic := 59;
+      BEGIN_Sx := 13;
+      BEGIN_Sy := 54;
+    end;
     31:
     begin
       TitleString := 'Wider rivers and deeper lakes';
@@ -1257,7 +1274,7 @@ begin
     InitGrowth();
     //特殊名字
     case MODVersion of
-      0, 13, 31:
+      0, 13, 31, 12:
       begin
         if Name = '曹輕羽' then
         begin
@@ -1559,14 +1576,16 @@ begin
     ReSetEntrance;
 
     RoleName[0] := pWideChar(@Rrole[0].Name[0]);
-
-    BEGIN_MISSION_NUM := Rrole[650].Data[0];
-    setlength(MissionStr, MISSION_AMOUNT);
-
-    for i := 0 to MISSION_AMOUNT - 1 do
+    if MODVersion=13 then
     begin
-      ReadTalk(BEGIN_MISSION_NUM + i, talkarray);
-      MissionStr[i] := pWideChar(@talkarray[0]);
+      BEGIN_MISSION_NUM := Rrole[650].Data[0];
+      setlength(MissionStr, MISSION_AMOUNT);
+
+      for i := 0 to MISSION_AMOUNT - 1 do
+      begin
+        ReadTalk(BEGIN_MISSION_NUM + i, talkarray);
+        MissionStr[i] := pWideChar(@talkarray[0]);
+      end;
     end;
   end;
   StrDispose(p);

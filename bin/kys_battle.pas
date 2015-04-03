@@ -4140,8 +4140,7 @@ begin
   end;
 
   //恢复0号人物的森罗万象
-  if MODVersion in [0, 13] then
-    Rrole[0].Magic[0] := 278;
+  Rrole[0].Magic[0] := 278;
 
 end;
 

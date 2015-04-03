@@ -572,7 +572,7 @@ begin
   menuString[0] :='取消';
   menuString[1] := '住宿';
   str:='是否需要住宿？'     ;
-  if MODVersion = 31 then
+  if (MODVersion = 31) or (MODVersion = 12) then
   begin
   menuString[0] :='N-否';
   menuString[1] := 'Y-是';
