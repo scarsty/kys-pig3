@@ -6051,6 +6051,7 @@ begin
     end;}
     offset := TDEF.IDX[talknum];
     len := TDEF.IDX[talknum + 1] - offset;
+    if len < 0 then exit;
     setlength(talk, len + 1);
     move(TDEF.GRP[offset], talk[0], len);
     if needxor = 1 then

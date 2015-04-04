@@ -2709,7 +2709,7 @@ begin
     if Brole[bnum].Acted = 1 then
       Rrole[rnum].MagLevel[i] := min(999, Rrole[rnum].MagLevel[i] + random(2) + 1);
   end;
-  if MODVersion = 0 then
+  if MODVersion <> 13 then
     for i1 := 0 to 3 do
     begin
       if Rrole[rnum].NeiGong[i1] > 0 then
@@ -4140,8 +4140,15 @@ begin
   end;
 
   //恢复0号人物的森罗万象
-  Rrole[0].Magic[0] := 278;
 
+  for i := 0 to High(Rmagic) do
+  begin
+    if rmagic[i].ScriptNum=31 then
+    begin
+      Rrole[0].Magic[0] := i;
+      break;
+    end;
+  end;
 end;
 
 

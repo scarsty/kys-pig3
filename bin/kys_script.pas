@@ -366,6 +366,7 @@ begin
   lua_register(Lua_script, 'openscence', OpenScence);
   lua_register(Lua_script, 'pause', Pause);
   lua_register(Lua_script, 'instruct_44', Play2Amination);
+  lua_register(Lua_script, 'play2animation', Play2Amination);
   lua_register(Lua_script, 'playaction', PlayAction);
   lua_register(Lua_script, 'instruct_27', PlayAnimation);
   lua_register(Lua_script, 'playanimation', PlayAnimation);

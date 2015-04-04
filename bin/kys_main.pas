@@ -414,7 +414,7 @@ begin
   try
     FileVerInfo.FileName := ParamStr(1);
     FileVerInfo.ReadFileInfo;
-    versionstr := versionstr + ' - ' + FileVerInfo.VersionStrings.Values['FileVersion'];
+    versionstr := versionstr + '-' + FileVerInfo.VersionStrings.Values['FileVersion'];
   finally
     FileVerInfo.Free;
   end;
@@ -429,7 +429,7 @@ begin
   case MODVersion of
     0:
     begin
-      versionstr := '金庸水滸傳引擎演示版';
+      versionstr := versionstr + '-演示版';
       BEGIN_EVENT := 691;
       BEGIN_SCENCE := 70;
       MONEY_ID := 174;
@@ -439,29 +439,25 @@ begin
       MAX_LOVER := 0;
       EventScriptPath := 'script/oldevent/oldevent_';
       EventScriptExt := '.lua';
-      StartMusic := 59;
     end;
     12:
     begin
       TitleString := 'We Are Dragons';
-      versionstr := '金庸水滸傳-蒼龍逐日';
+      versionstr := versionstr + '-蒼龍逐日';
       BEGIN_EVENT := 691;
       BEGIN_SCENCE := 70;
       MONEY_ID := 174;
       COMPASS_ID := 182;
       BEGIN_LEAVE_EVENT := 100;
-      BEGIN_NAME_IN_TALK := 0;
+      BEGIN_NAME_IN_TALK := 4021;
       MAX_LOVER := 0;
-      //EventScriptPath := 'script/oldevent/oldevent_';
-      //EventScriptExt := '.lua';
-      StartMusic := 59;
       BEGIN_Sx := 13;
       BEGIN_Sy := 54;
     end;
     31:
     begin
       TitleString := 'Wider rivers and deeper lakes';
-      versionstr := '金庸水滸傳-再战江湖';
+      versionstr := versionstr + '-再战江湖';
       BEGIN_EVENT := 691;
       BEGIN_SCENCE := 70;
       MONEY_ID := 174;
@@ -469,11 +465,22 @@ begin
       BEGIN_LEAVE_EVENT := 1;
       BEGIN_NAME_IN_TALK := 8015;
       MAX_LOVER := 0;
-      //EventScriptPath := 'script/event/ka';
-      //EventScriptExt := '.lua';
-      StartMusic := 59;
       BEGIN_Sx := 13;
       BEGIN_Sy := 54;
+    end;
+    41:
+    begin
+      TitleString := 'PTT';
+      versionstr := versionstr + '-鄉民闖江湖';
+      BEGIN_EVENT := 691;
+      BEGIN_SCENCE := 70;
+      MONEY_ID := 174;
+      COMPASS_ID := 182;
+      BEGIN_LEAVE_EVENT := 1050;
+      BEGIN_NAME_IN_TALK := 5693;
+      MAX_LOVER := 0;
+      BEGIN_Sx := 20;
+      BEGIN_Sy := 19;
     end;
     81:
     begin
@@ -486,8 +493,6 @@ begin
       BEGIN_LEAVE_EVENT := 1;
       BEGIN_NAME_IN_TALK := 8015;
       MAX_LOVER := 0;
-      //EventScriptPath := 'script/event/ka';
-      //EventScriptExt := '.lua';
       StartMusic := 0;
     end;
   end;
@@ -587,7 +592,7 @@ begin
     if alpha >= 100 then
     begin
       headnum := random(412);
-      if MODVersion = 0 then
+      if MODVersion <> 13 then
         headnum := random(HPicAmount);
     end;
 
@@ -1243,7 +1248,7 @@ begin
       Rrole[0].HidWeapon := 25 + random(6);
 
       Rrole[0].Aptitude := 50 + random(40);
-      if MODVersion = 0 then
+      if MODVersion <> 13 then
         Rrole[0].Aptitude := random(100);
       Redraw;
       //showmessage('');
@@ -1274,7 +1279,7 @@ begin
     InitGrowth();
     //特殊名字
     case MODVersion of
-      0, 13, 31, 12:
+      0, 13, 31, 12, 41:
       begin
         if Name = '曹輕羽' then
         begin
@@ -1439,7 +1444,7 @@ var
   zfilename, filenamer, filenames, filenamed, s: string;
   str, p, p1: PChar;
   key1, key2: pbyte;
-  IDX, GRP, t1, offset, i, i1, i2, lenkey: integer;
+  IDX, GRP, t1, offset, i, j, i1, i2, lenkey: integer;
   zfile: unzfile;
   file_info: unz_file_info;
   talkarray: array of byte;
@@ -1609,10 +1614,33 @@ begin
   begin
     //if MODVersion = 13 then
     move(Rrole[low(Rrole)], Rrole0[low(Rrole0)], sizeof(TRole) * length(Rrole));
+    //调整错位的内功
+    for i := 0 to high(Rrole) do
+    begin
+      for i1 := 0 to 9 do
+      begin
+        if (rrole[i].Magic[i1] > 0) and (rmagic[rrole[i].Magic[i1]].HurtType = 3) then
+        begin
+          for i2:= 0 to 3 do
+          begin
+            if (rrole[i].NeiGong[i2]=rrole[i].Magic[i1]) then
+              break;
+            if (rrole[i].NeiGong[i2]<=0) then
+            begin
+              rrole[i].NeiGong[i2] := rrole[i].Magic[i1];
+              rrole[i].NGLevel[i2] := rrole[i].MagLevel[i1];
+              break;
+            end;
+          end;
+          rrole[i].Magic[i1]:=0;
+          rrole[i].MagLevel[i1]:=0;
+        end;
+      end;
+    end;
   end
   else
   //物品使用者修正
-  if MODVersion = 0 then
+  if MODVersion <> 13 then
     for i := 0 to high(Rrole) do
     begin
       if Rrole[i].Level <= 0 then
@@ -5271,7 +5299,7 @@ begin
   end;
 
   //如果以上判定为真, 且属于自宫物品, 则提问, 若选否则为假
-  if (MODVersion = 0) and (use = 1) then
+  if (MODVersion <> 13) and (use = 1) then
     if (inum in [78, 93]) and (Result = True) and (Rrole[rnum].Sexual <> 2) then
     begin
       TransBlackScreen;
@@ -8299,6 +8327,7 @@ begin
     end
     else
     begin
+      ConsoleLog('Enter script %d', [num]);
       script := LoadStringFromIMZMEM(AppPath + 'script/event/', pEvent, num);
       //ConsoleLog(script);
       ExecScriptString(script, '');
@@ -8364,6 +8393,10 @@ begin
 
   words.Add('總策劃');
   words.Add('小小猪');
+  words.Add('');
+
+  words.Add('架構');
+  words.Add('bttt');
   words.Add('');
 
   words.Add('程式');
@@ -8458,10 +8491,6 @@ begin
   //words.Add('风神无名');
   //words.Add('KA');
   //words.Add('');
-
-  words.Add('架構');
-  words.Add('bttt');
-  words.Add('');
 
   words.Add('Android移植');
   words.Add('KA');
@@ -8738,10 +8767,10 @@ end;
 function IsCave(snum: integer): boolean;
 begin
   case MODVersion of
-    0: Result := snum in [5, 7, 10, 41, 42, 46, 65, 66, 67, 72, 79];
     13: Result := snum in [6, 10, 26, 35, 52, 71, 72, 78, 87, 107];
     else
-      Result := False;
+      Result := snum in [5, 7, 10, 41, 42, 46, 65, 66, 67, 72, 79];
+      //Result := False;
   end;
 end;
 
