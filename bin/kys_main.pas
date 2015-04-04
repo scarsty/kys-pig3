@@ -2482,8 +2482,11 @@ end;
 function CheckEntrance: boolean;
 var
   x, y, i, snum: integer;
+  minspeed: integer;
   //CanEntrance: boolean;
 begin
+  minspeed := 300;
+  if MODVersion<>13 then minspeed:=70;
   x := Mx;
   y := My;
   case Mface of
@@ -2503,7 +2506,7 @@ begin
     if (Rscence[snum].EnCondition = 2) then
       for i := 0 to 5 do
         if teamlist[i] >= 0 then
-          if Rrole[teamlist[i]].Speed > 300 then
+          if Rrole[teamlist[i]].Speed > minspeed then
             Result := True;
     if Result = True then
     begin

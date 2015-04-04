@@ -411,6 +411,7 @@ begin
   lua_register(Lua_script, 'setmenuesctype', SetMenuEscType);
   lua_register(Lua_script, 'instruct_49', SetMPPro);
   lua_register(Lua_script, 'setmppro', SetMPPro);
+  lua_register(Lua_script, 'setpersonmppro', SetMPPro);
   lua_register(Lua_script, 'instruct_35', SetOneMagic);
   lua_register(Lua_script, 'setonemagic', SetOneMagic);
   lua_register(Lua_script, 'instruct_23', SetOneUsePoi);

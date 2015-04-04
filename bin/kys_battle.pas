@@ -4311,6 +4311,11 @@ begin
 
   Rrole[rnum].Speed := Rrole[rnum].Speed + 1 + random(Rrole[rnum].AddSpeed);
 
+  if MODVersion = 41 then
+  begin
+    Rrole[rnum].Movestep:=Rrole[rnum].Speed * 10 div 15;
+  end;
+
   for i := 46 to 54 do
   begin
     //抗毒不增加
@@ -4408,7 +4413,7 @@ begin
             TransBlackScreen;
             ShowSimpleStatus(rnum, CENTER_X - 150, CENTER_Y - 240 + 70);
             //DrawRectangle(CENTER_X - 150 + 30, CENTER_Y - 240 + 170,{115, 63,} 90, 25, 0, ColColor(255), 25);
-            DrawTextFrame(CENTER_X - 150, CENTER_Y - 240 + 170, 4);
+            DrawTextFrame(CENTER_X - 150, CENTER_Y - 240 + 170, 8);
             str := '製得物品';
             DrawShadowText(@str[1], CENTER_X - 150 + 19, CENTER_Y - 240 + 173, 0, $202020);
             instruct_2(Ritem[inum].GetItem[p], 30 + random(25));

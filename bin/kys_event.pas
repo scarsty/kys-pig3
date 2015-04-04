@@ -308,7 +308,7 @@ begin
   if where = 2 then
   begin
     x := CENTER_X;
-    y := CENTER_Y;
+    y := CENTER_Y + 60;
   end;
 
   //DrawRectangle(x - 85, y, 170, 76, 0, ColColor(255), 30);
