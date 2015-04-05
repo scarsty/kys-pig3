@@ -1614,29 +1614,8 @@ begin
   begin
     //if MODVersion = 13 then
     move(Rrole[low(Rrole)], Rrole0[low(Rrole0)], sizeof(TRole) * length(Rrole));
-    //调整错位的内功
-    for i := 0 to high(Rrole) do
-    begin
-      for i1 := 0 to 9 do
-      begin
-        if (rrole[i].Magic[i1] > 0) and (rmagic[rrole[i].Magic[i1]].HurtType = 3) then
-        begin
-          for i2:= 0 to 3 do
-          begin
-            if (rrole[i].NeiGong[i2]=rrole[i].Magic[i1]) then
-              break;
-            if (rrole[i].NeiGong[i2]<=0) then
-            begin
-              rrole[i].NeiGong[i2] := rrole[i].Magic[i1];
-              rrole[i].NGLevel[i2] := rrole[i].MagLevel[i1];
-              break;
-            end;
-          end;
-          rrole[i].Magic[i1]:=0;
-          rrole[i].MagLevel[i1]:=0;
-        end;
-      end;
-    end;
+    for i:=0 to High(rrole) do
+      correctmagic(i);
   end
   else
   //物品使用者修正
@@ -6628,7 +6607,7 @@ begin
     mlevel := 1;
     magicnum := Ritem[Rrole[rnum].PracticeBook].Magic;
     mlevel := max(1, GetMagicLevel(rnum, magicnum));
-    needexp := trunc((1 + (mlevel - 1) * 0.5) * Ritem[Rrole[rnum].PracticeBook].NeedExp * (1 + (7 - Rrole[rnum].Aptitude / 15) * 0.5));
+    needexp := min(30000, trunc((1 + (mlevel - 1) * 0.5) * Ritem[Rrole[rnum].PracticeBook].NeedExp * (1 + (7 - Rrole[rnum].Aptitude / 15) * 0.5)));
 
     DrawTextWithRect(@Ritem[Rrole[rnum].PracticeBook].Name, x + 70, y + 400, 0, 0, $202020, 20, 0);
     str := format('%d/%d', [uint16(Rrole[rnum].ExpForBook), needexp]);

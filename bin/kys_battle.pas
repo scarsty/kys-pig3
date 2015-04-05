@@ -4361,8 +4361,8 @@ begin
       mlevel := max(1, GetMagicLevel(rnum, mnum));
       while (mlevel < 10) do
       begin
-        needexp := trunc((1 + (mlevel - 1) * 0.5) * Ritem[Rrole[rnum].PracticeBook].NeedExp *
-          (1 + (7 - Rrole[rnum].Aptitude / 15) * 0.5));
+        needexp := min(30000, trunc((1 + (mlevel - 1) * 0.5) * Ritem[Rrole[rnum].PracticeBook].NeedExp *
+          (1 + (7 - Rrole[rnum].Aptitude / 15) * 0.5)));
         if (Rrole[rnum].ExpForBook >= needexp) and (mlevel < 10) then
         begin
           Redraw;

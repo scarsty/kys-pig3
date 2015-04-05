@@ -39,7 +39,7 @@
             <IncludeFiles Value="$(ProjOutDir)"/>
             <Libraries Value="lib;."/>
             <OtherUnitFiles Value="lib;lib\ffmpeg"/>
-            <UnitOutputDirectory Value="lib"/>
+            <UnitOutputDirectory Value="lib\release"/>
           </SearchPaths>
           <Parsing>
             <SyntaxOptions>
@@ -208,7 +208,7 @@
       <IncludeFiles Value="$(ProjOutDir)"/>
       <Libraries Value="lib;.;\usr\local\lib;\usr\X11R6\lib"/>
       <OtherUnitFiles Value="lib;lib\ffmpeg"/>
-      <UnitOutputDirectory Value="lib"/>
+      <UnitOutputDirectory Value="lib\debug"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>

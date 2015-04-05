@@ -130,6 +130,8 @@ procedure BookList;
 function GetStarAmount: smallint;
 function DancerAfter90S: integer;
 
+function CorrectMagic(rnum: integer): integer;
+
 procedure ReadTalk(talknum: integer; var talk: Tbytearray; needxor: integer = 0);
 
 procedure NewShop(shop_num: integer);
@@ -422,6 +424,7 @@ end;
 procedure instruct_3(list: array of integer);
 var
   i, i1, i2, curPic, preEventPic: integer;
+  ModifyS: boolean;
 begin
   curPic := DData[CurScence, CurEvent, 5];
   if list[0] = -2 then
@@ -436,7 +439,11 @@ begin
   //这里应该是原本z文件的bug, 如果不处于当前场景, 在连坐标值一起修改时, 并不会同时
   //对S数据进行修改. 而<苍龙逐日>中有几条语句无意中符合了这个bug而造成正确的结果
   //if list[0] = CurScence then
-  Sdata[list[0], 3, Ddata[list[0], list[1], 10], Ddata[list[0], list[1], 9]] := -1;
+  ModifyS := True;
+  if ((MODVersion = 12) or (MODVersion = 31)) and (list[0] <> CurScence) then
+    ModifyS := False;
+  if ModifyS then
+    Sdata[list[0], 3, Ddata[list[0], list[1], 10], Ddata[list[0], list[1], 9]] := -1;
   for i := 0 to 10 do
   begin
     if list[2 + i] <> -2 then
@@ -547,8 +554,10 @@ begin
       Teamlist[i] := rnum;
       for i1 := 0 to 3 do
       begin
-        if (Rrole[rnum].TakingItem[i1] >= 0) and (Rrole[rnum].TakingItemAmount[i1] > 0) then
+        if (Rrole[rnum].TakingItem[i1] >= 0) and (Rrole[rnum].TakingItemAmount[i1] >= 0) then
         begin
+          if Rrole[rnum].TakingItemAmount[i1] = 0 then
+            Rrole[rnum].TakingItemAmount[i1] := 1;
           instruct_2(Rrole[rnum].TakingItem[i1], Rrole[rnum].TakingItemAmount[i1]);
           Rrole[rnum].TakingItem[i1] := -1;
           Rrole[rnum].TakingItemAmount[i1] := 0;
@@ -605,6 +614,8 @@ begin
       Rrole[rnum].PhyPower := MAX_PHYSICAL_POWER;
     end;
   end;
+  for i:=0 to High(rrole) do
+    correctmagic(i);
 end;
 
 
@@ -1022,12 +1033,23 @@ end;
 
 procedure instruct_33(rnum, mnum, dismode: integer);
 var
-  i, l, x, l1: integer;
+  i, l, x, l1, p, pm: integer;
   word: WideString;
 begin
   if Rmagic[mnum].HurtType = 3 then
   begin
+    p:=-1;
+    pm:=-1;
     for i := 0 to 3 do
+    begin
+      if (Rrole[rnum].neigong[i] <= 0) and (p<0) then
+        p := i;
+      if (Rrole[rnum].neigong[i] = mnum) then
+        pm := i;
+    end;
+    i:=pm;
+    if i<0 then i:=p;
+    if (i>=0) then
     begin
       if (Rrole[rnum].neigong[i] <= 0) or (Rrole[rnum].neigong[i] = mnum) then
       begin
@@ -1036,12 +1058,23 @@ begin
         Rrole[rnum].neigong[i] := mnum;
         if Rrole[rnum].NGLevel[i] > 999 then
           Rrole[rnum].NGlevel[i] := 999;
-        break;
+        //break;
       end;
     end;
   end
   else
+    p:=-1;
+    pm:=-1;
     for i := 0 to 9 do
+    begin
+      if (Rrole[rnum].Magic[i] <= 0) and (p<0) then
+        p := i;
+      if (Rrole[rnum].Magic[i] = mnum) then
+        pm := i;
+    end;
+    i:=pm;
+    if i<0 then i:=p;
+    if (i>=0) then
     begin
       if (Rrole[rnum].Magic[i] <= 0) or (Rrole[rnum].Magic[i] = mnum) then
       begin
@@ -1050,7 +1083,7 @@ begin
         Rrole[rnum].Magic[i] := mnum;
         if Rrole[rnum].MagLevel[i] > 999 then
           Rrole[rnum].Maglevel[i] := 999;
-        break;
+        //break;
       end;
     end;
   //if i = 10 then rrole[rnum].data[i+63] := magicnum;
@@ -2535,7 +2568,7 @@ begin
           if Result > 0 then
             break;
         end;
-      0, 1, 2:
+      else
         for i := 0 to 9 do
         begin
           if (Rrole[person].Magic[i] = mnum) then
@@ -2911,7 +2944,7 @@ begin
       NameStr := pWideChar(@Name[0])
     else if (namenum = -1) or (namenum = 0) then
       NameStr := '';
-    if (MODVersion in [0, 31]) and (namenum = 0) then
+    if {(MODVersion in [0, 31]) and} (namenum = 0) then
       NameStr := pWideChar(@Rrole[0].Name);
   end
   else
@@ -5899,6 +5932,51 @@ begin
   gamearray[0][p2] := t;
 end;
 
+function CorrectMagic(rnum: integer): integer;
+var
+  i1, i2: integer;
+begin
+  //调整错位的内功
+  for i1 := 0 to 9 do
+  begin
+    if (rrole[rnum].Magic[i1] > 0) and (rmagic[rrole[rnum].Magic[i1]].HurtType = 3) then
+        begin
+          for i2:= 0 to 3 do
+          begin
+            if (rrole[rnum].NeiGong[i2]=rrole[rnum].Magic[i1]) then
+              break;
+            if (rrole[rnum].NeiGong[i2]<=0) then
+            begin
+              rrole[rnum].NeiGong[i2] := rrole[rnum].Magic[i1];
+              rrole[rnum].NGLevel[i2] := rrole[rnum].MagLevel[i1];
+              break;
+            end;
+          end;
+          rrole[rnum].Magic[i1]:=0;
+          rrole[rnum].MagLevel[i1]:=0;
+        end;
+      end;
+
+  for i1 := 0 to 3 do
+  begin
+    if (rrole[rnum].NeiGong[i1] > 0) and (rmagic[rrole[rnum].NeiGong[i1]].HurtType <> 3) then
+        begin
+          for i2:= 0 to 9 do
+          begin
+            if (rrole[rnum].Magic[i2]=rrole[rnum].NeiGong[i1]) then
+              break;
+            if (rrole[rnum].Magic[i2]<=0) then
+            begin
+              rrole[rnum].Magic[i2] := rrole[rnum].NeiGong[i1];
+              rrole[rnum].magLevel[i2] := rrole[rnum].NGLevel[i1];
+              break;
+            end;
+          end;
+          rrole[rnum].NeiGong[i1]:=0;
+          rrole[rnum].ngLevel[i1]:=0;
+        end;
+      end;
+end;
 
 procedure BookList;
 var
