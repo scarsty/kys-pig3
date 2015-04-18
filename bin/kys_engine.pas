@@ -2184,6 +2184,13 @@ begin
         else if inSwitchShowVirtualKey(x, y) then
         begin
           ShowVirtualKey := not ShowVirtualKey;
+          event.type_ := SDL_RELEASED;
+          event.key.keysym.sym := 0;
+        end
+        else if (showVirtualKey <> 0) and (inVirtualKey(x, y, VirtualKeyValue) = 0) then
+        begin
+          event.type_ := SDL_RELEASED;
+          event.key.keysym.sym := 0;
         end
         //手机在战场仅有确认键有用
         else if (where = 2) and (BattleSelecting) then
@@ -4529,4 +4536,4 @@ begin
 {$endif}
 end;
 
-end.
+end.
