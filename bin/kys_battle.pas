@@ -821,7 +821,7 @@ begin
   //战斗未分出胜负则继续
   while BStatus = 0 do
   begin
-    //CalMoveAbility; //计算移动能力, 因此有些移动能力的状态可能会推迟生效
+    CalMoveAbility; //计算移动能力, 因此有些移动能力的状态可能会推迟生效
 
     if SEMIREAL = 0 then
       ReArrangeBRole; //排列角色顺序
@@ -1273,22 +1273,29 @@ end;
 
 procedure CalMoveAbility;
 var
-  i, rnum: integer;
+  i, rnum, maxRealspeed: integer;
 begin
+  maxRealspeed := 1;
   for i := 0 to BRoleAmount - 1 do
   begin
-    //rnum := Brole[i].rnum;
+    rnum := Brole[i].rnum;
     //Brole[i].Step := CalBroleMoveAbility(i);
-    if SEMIREAL = 1 then
+    if (SEMIREAL = 1) and (Brole[i].Dead = 0) then
     begin
-      Brole[i].RealSpeed := trunc((Rrole[rnum].Speed) + 175) - Rrole[rnum].Hurt div 10 -
+      Brole[i].RealSpeed := trunc(Rrole[rnum].Speed + 100) - Rrole[rnum].Hurt div 10 -
         Rrole[rnum].Poison div 30;
-      Brole[i].RealSpeed := Brole[i].RealSpeed div 3;
+      Brole[i].RealSpeed := Brole[i].RealSpeed;
+      maxRealspeed := max(maxRealspeed, Brole[i].RealSpeed);
       //if Brole[i].RealSpeed > 200 then
       //Brole[i].RealSpeed := 200 + (Brole[i].RealSpeed - 200) div 3;
+      writeln(Brole[i].RealSpeed);
     end;
   end;
-
+  for i := 0 to BRoleAmount - 1 do
+  begin
+    Brole[i].RealSpeed := trunc(Brole[i].RealSpeed * 200.0 / maxRealspeed);
+    writeln(Brole[i].RealSpeed);
+  end;
 end;
 
 //0: Continue; 1: Victory; 2:Failed.
@@ -1456,7 +1463,7 @@ begin
   h := 28;
 
   Redraw;
-  ShowSimpleStatus(Brole[bnum].rnum, 80, CENTER_Y * 2 - 130);
+  ShowSimpleStatus(Brole[bnum].rnum, 80, CENTER_Y * 2 - 150);
   //str := UTF8Decode(format('回合%d', [BattleRound]));
   //DrawTextWithRect(puint16(str), 160, 50, DrawLength(str) * 10 + 7, ColColor($21), ColColor($23), 30);
   //DrawMPic(2121, 160, 50);
@@ -1755,7 +1762,7 @@ begin
     begin
       DrawBFieldWithCursor(AttAreaType, step, range);
       if BField[2, Ax, Ay] >= 0 then
-        ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, 80, CENTER_Y * 2 - 130);
+        ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, 80, CENTER_Y * 2 - 150);
       UpdateAllScreen;
       pAx := Ax;
       pAy := Ay;
@@ -1778,7 +1785,7 @@ begin
   BattleSelecting := True;
   DrawBFieldWithCursor(0, step, 0);
   if (BField[2, Ax, Ay] >= 0) then
-    ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 130);
+    ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 150);
   UpdateAllScreen;
   while (SDL_WaitEvent(@event) >= 0) do
   begin
@@ -1858,7 +1865,7 @@ begin
     end;
     DrawBFieldWithCursor(0, step, 0);
     if BField[2, Ax, Ay] >= 0 then
-      ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 130);
+      ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 150);
     UpdateAllScreen;
   end;
   BattleSelecting := False;
@@ -1922,7 +1929,7 @@ begin
   BattleSelecting := True;
   DrawBFieldWithCursor(AttAreaType, step, range);
   if (BField[2, Ax, Ay] >= 0) then
-    ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 130);
+    ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 150);
   UpdateAllScreen;
   while (SDL_WaitEvent(@event) >= 0) do
   begin
@@ -1971,7 +1978,7 @@ begin
         end;
         DrawBFieldWithCursor(AttAreaType, step, range);
         if (BField[2, Ax, Ay] >= 0) then
-          ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 130);
+          ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 150);
         UpdateAllScreen;
       end;
       SDL_MOUSEBUTTONUP:
@@ -2000,7 +2007,7 @@ begin
           Ay := Ayp;
           DrawBFieldWithCursor(AttAreaType, step, range);
           if (BField[2, Ax, Ay] >= 0) then
-            ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 130);
+            ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 150);
           UpdateAllScreen;
         end;
       end;
@@ -3021,7 +3028,7 @@ begin
   max := max - 1;
 
   Redraw;
-  ShowSimpleStatus(rnum, 80, CENTER_Y * 2 - 130);
+  ShowSimpleStatus(rnum, 80, CENTER_Y * 2 - 150);
   RecordFreshScreen(100, 50, 200, 300);
   UpdateAllScreen;
   menu := 0;
@@ -6155,7 +6162,7 @@ var
   str: WideString;
 begin
   rnum := Brole[bnum].rnum;
-  ShowSimpleStatus(rnum, 80, CENTER_Y * 2 - 130);
+  ShowSimpleStatus(rnum, 80, CENTER_Y * 2 - 150);
   UpdateAllScreen;
   SDL_Delay(450);
   if Brole[bnum].AutoMode = 3 then
