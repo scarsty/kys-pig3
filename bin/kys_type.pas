@@ -614,6 +614,7 @@ var
   VirtualKeyX: integer = 150;
   VirtualKeyY: integer = 250;
   VIrtualKeySize: integer = 60;
+  VirtualKeySpace: integer = 25;
 
 const
   //色值蒙版, 注意透明蒙版在创建表面时需设为0而不应用此值

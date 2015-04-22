@@ -186,6 +186,7 @@
       <Unit7>
         <Filename Value="kys_type.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="kys_type"/>
       </Unit7>
       <Unit8>
         <Filename Value="macro.inc"/>

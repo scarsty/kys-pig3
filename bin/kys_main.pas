@@ -205,6 +205,7 @@ begin
 {$ENDIF}
   //versionstr :=  SDL_AndroidGetExternalStoragePath();
   //test;
+  //cellphone:=1;
   ReadFiles;
 
   ConsoleLog('Read ini and data files ended');
@@ -941,6 +942,8 @@ begin
       ShowVirtualKey := Kys_ini.ReadInteger('system', 'Virtual_Key', 1);
       VirtualKeyX := Kys_ini.ReadInteger('system', 'Virtual_Key_X', 150);
       VirtualKeyY := Kys_ini.ReadInteger('system', 'Virtual_Key_Y', 250);
+      VirtualKeySize:=Kys_ini.ReadInteger('system', 'Virtual_Key_Size', 60);
+      VirtualKeySpace:= Kys_ini.ReadInteger('system', 'Virtual_Key_Space', 25);
     end
     else
       ShowVirtualKey := 0;
