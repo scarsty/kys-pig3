@@ -1288,13 +1288,11 @@ begin
       maxRealspeed := max(maxRealspeed, Brole[i].RealSpeed);
       //if Brole[i].RealSpeed > 200 then
       //Brole[i].RealSpeed := 200 + (Brole[i].RealSpeed - 200) div 3;
-      writeln(Brole[i].RealSpeed);
     end;
   end;
   for i := 0 to BRoleAmount - 1 do
   begin
     Brole[i].RealSpeed := trunc(Brole[i].RealSpeed * 200.0 / maxRealspeed);
-    writeln(Brole[i].RealSpeed);
   end;
 end;
 

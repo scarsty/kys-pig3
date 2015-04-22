@@ -512,6 +512,7 @@ var
   ZIP_SAVE: integer = 1;  //使用zip存档
 
   OPEN_MOVIE: integer = 1;
+  OPEN_RECITATION: integer = 1;
   THREAD_READ_MOVIE: integer = 1;
   KEEP_SCREEN_RATIO: integer = 1;  //保持拉伸时的长宽比
 
