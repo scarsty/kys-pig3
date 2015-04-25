@@ -164,6 +164,7 @@ type
     procedure SA2_9(bnum, mnum, mnum2, level: integer);
     procedure SA2_10(bnum, mnum, mnum2, level: integer);
     procedure SA2_11(bnum, mnum, mnum2, level: integer);
+    procedure SA2_12(bnum, mnum, mnum2, level: integer);
     procedure SA2_100(bnum, mnum, mnum2, level: integer);
     procedure SA2_101(bnum, mnum, mnum2, level: integer);
   end;
@@ -9248,6 +9249,39 @@ begin
       end;
     end;
     PlayActionAmination(bnum, Rmagic[mnum].MagicType); //动作效果
+    PlayMagicAmination(bnum, Rmagic[mnum2].AmiNum);
+    ShowHurtValue(0); //显示数字
+  end;
+end;
+
+//天王托塔 增加我方攻擊 降低對方防禦
+//30%
+procedure TSpecialAbility2.SA2_12(bnum, mnum, mnum2, level: integer);
+var
+  str: WideString;
+  i, rnum, hurt, l: integer;
+begin
+  if (Rmagic[mnum].MagicType = 1) then
+  begin
+    ShowMagicName(mnum2);
+    l := Rrole[Brole[bnum].rnum].Level;
+    FillChar(BField[4, 0, 0], 4096 * 2, 0);
+    for i := 0 to BRoleAmount - 1 do
+    begin
+      Brole[i].ShowNumber := -1;
+      if (Brole[i].Dead = 0) then
+      begin
+        BField[4, Brole[i].x, Brole[i].y] := 1 + random(6);
+        if (Brole[i].Team = Brole[bnum].Team) then
+          ModifyState(i, 0, 30 + l, 3)
+        else
+          ModifyState(i, 1, -30 + l, 3);
+      end;
+    end;
+    //Rmagic[0].Attack[0] := 100 * level + Rrole[Brole[bnum].rnum].Level * 10;
+    //Rmagic[0].Attack[1] := 200 * level + Rrole[Brole[bnum].rnum].Level * 20;
+    PlayActionAmination(bnum, Rmagic[mnum].MagicType); //动作效果
+    //CalHurtRole(bnum, 0, level, 1); //计算被打到的人物
     PlayMagicAmination(bnum, Rmagic[mnum2].AmiNum);
     ShowHurtValue(0); //显示数字
   end;

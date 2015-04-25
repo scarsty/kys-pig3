@@ -430,7 +430,7 @@ begin
   case MODVersion of
     0:
     begin
-      versionstr := versionstr + '-演示版';
+      versionstr := versionstr + '-金庸群俠傳';
       BEGIN_EVENT := 691;
       BEGIN_SCENCE := 70;
       MONEY_ID := 174;
@@ -1340,6 +1340,13 @@ begin
           Rrole[0].AmiFrameNum[0] := 2;
           if MODVersion = 13 then
             Rrole[0].HeadNum := 435;
+        end;
+
+        if (Name = '晁蓋') then
+        begin
+          Rrole[0].Aptitude := 100;
+          Rrole[0].MagLevel[0] := 999;
+          Rrole[0].AmiFrameNum[0] := 12;
         end;
 
         if (Name = '筷子') then
