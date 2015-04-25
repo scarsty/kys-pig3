@@ -5771,7 +5771,7 @@ begin
     addnum[0] := addnum[0] + Ritem[Rrole[rnum].Equip[0]].AddAttack;
     addnum[1] := addnum[1] + Ritem[Rrole[rnum].Equip[0]].AddDefence;
     addnum[2] := addnum[2] + Ritem[Rrole[rnum].Equip[0]].AddSpeed;
-    addnum[3] := addnum[3] + Ritem[Rrole[rnum].Equip[0]].AddMove;
+    addnum[3] := addnum[3] + Ritem[Rrole[rnum].Equip[0]].AddMove * 10;
   end;
 
   if Rrole[rnum].Equip[1] >= 0 then
@@ -5779,7 +5779,7 @@ begin
     addnum[0] := addnum[0] + Ritem[Rrole[rnum].Equip[1]].AddAttack;
     addnum[1] := addnum[1] + Ritem[Rrole[rnum].Equip[1]].AddDefence;
     addnum[2] := addnum[2] + Ritem[Rrole[rnum].Equip[1]].AddSpeed;
-    addnum[3] := addnum[3] + Ritem[Rrole[rnum].Equip[1]].AddMove;
+    addnum[3] := addnum[3] + Ritem[Rrole[rnum].Equip[1]].AddMove * 10;
   end;
 
   if (where = 2) and (bnum >= 0) then
@@ -5799,7 +5799,7 @@ begin
     w := 120;
     if i <= 9 then
       if addnum[i - 6] <> 0 then
-        w := 180;
+        w := 190;
     if bnum = -1 then
       w := 240;
     if bnum <> -2 then
@@ -5842,7 +5842,7 @@ begin
   //其他属性
   //移动的增加是乘以10
   str := format('%4d', [Rrole[rnum].Movestep + addnum[3]]);
-  SetColorByPro(Rrole[rnum].Movestep + addnum[3] * 10, 100, color1, color2);
+  SetColorByPro(Rrole[rnum].Movestep + addnum[3], 100, color1, color2);
   DrawEngShadowText(@str[1], x + 280 + 100, y + 5 + h * 3, color1, color2);
 
   str := format('%4d', [Rrole[rnum].Medcine]);

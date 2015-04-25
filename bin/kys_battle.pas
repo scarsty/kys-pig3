@@ -9264,18 +9264,27 @@ begin
   if (Rmagic[mnum].MagicType = 1) then
   begin
     ShowMagicName(mnum2);
-    l := Rrole[Brole[bnum].rnum].Level;
+    Ax := Bx;
+    Ay := By;
+    SetAminationPosition(3, 0, 4);
     FillChar(BField[4, 0, 0], 4096 * 2, 0);
     for i := 0 to BRoleAmount - 1 do
     begin
       Brole[i].ShowNumber := -1;
       if (Brole[i].Dead = 0) then
       begin
-        BField[4, Brole[i].x, Brole[i].y] := 1 + random(6);
+        if (Brole[bnum].Team <> Brole[i].Team) and (BField[4, Brole[i].X, Brole[i].Y] > 0) then
+        begin
+          hurt := Rrole[Brole[bnum].rnum].Defence * 3 + random(10);
+          hurt := max(0, hurt);
+          Rrole[rnum].CurrentHP := max(Rrole[rnum].CurrentHP - hurt, 0);
+          Brole[i].ShowNumber := hurt;
+        end;
         if (Brole[i].Team = Brole[bnum].Team) then
-          ModifyState(i, 0, 30 + l, 3)
-        else
-          ModifyState(i, 1, -30 + l, 3);
+        begin
+          BField[4, Brole[i].x, Brole[i].y] := 1 + random(6);
+          ModifyState(i, 1, 30 + Rrole[Brole[bnum].rnum].Level, 3);
+        end;
       end;
     end;
     //Rmagic[0].Attack[0] := 100 * level + Rrole[Brole[bnum].rnum].Level * 10;
