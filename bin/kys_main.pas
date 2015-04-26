@@ -1347,6 +1347,8 @@ begin
           Rrole[0].Aptitude := 100;
           Rrole[0].MagLevel[0] := 999;
           Rrole[0].AmiFrameNum[0] := 12;
+           if MODVersion = 13 then
+            Rrole[0].HeadNum := 454;
         end;
 
         if (Name = '筷子') then

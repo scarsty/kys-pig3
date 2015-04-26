@@ -21,11 +21,12 @@
     </i18n>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
+      <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="3"/>
       <MinorVersionNr Value="5"/>
       <BuildNr Value="4"/>
       <Language Value="0804"/>
-      <StringTable Comments="108 Brothers and Sisters" CompanyName="http://www.txdx.net" LegalCopyright="no" ProductName="kys_pig3.exe" ProductVersion="3.5"/>
+      <StringTable Comments="108 Brothers and Sisters" CompanyName="http://www.txdx.net" LegalCopyright="no" ProductName="kys_pig3.exe" ProductVersion="3.6"/>
     </VersionInfo>
     <BuildModes Count="3">
       <Item1 Name="Debug" Default="True"/>
@@ -150,7 +151,7 @@
         <PackageName Value="LazUtils"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="10">
+    <Units Count="11">
       <Unit0>
         <Filename Value="kys_pig3.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -198,6 +199,10 @@
         <Filename Value="lib\mythoutput.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit9>
+      <Unit10>
+        <Filename Value="unit1.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit10>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
