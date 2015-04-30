@@ -1856,7 +1856,7 @@ begin
       if (y > CENTER_Y * 2 - 100) then
         Result := SDLK_DOWN;
       if (x < 100) and (y > CENTER_Y * 2 - 100) then
-        Result := SDLK_RETURN;
+        Result := SDLK_y;
       if (x > CENTER_X * 2 - 100) and (y > CENTER_Y * 2 - 100) then
         Result := SDLK_RETURN;
     end;
