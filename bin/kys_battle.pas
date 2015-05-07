@@ -100,6 +100,8 @@ procedure CheckAttackAttachment(bnum, mnum, level: integer);
 procedure CheckDefenceAttachment(bnum, mnum, level: integer);
 function CanSelectAim(bnum, aimbnum, mnum, aimMode: integer): boolean;
 
+procedure GiveUp(bnum: integer);
+
 
 type
 {$M+}
@@ -992,6 +994,7 @@ begin
             7: SelectShowStatus(i);
             8, 9: Rest(i);
             10: Auto(i);
+            11: GiveUp(i);
             else
             begin
               BField[2, tempBrole.X, tempBrole.Y] := i;
@@ -1330,7 +1333,7 @@ var
   i, p, MenuStatus, menu, max, rnum, menup, xm, ym, step, x, y, h, l: integer;
   realmenu: array[0..10] of integer;
   str: WideString;
-  word: array[0..10] of WideString;
+  word: array[0..11] of WideString;
   num: array[0..9] of WideString;
   //显示战斗主选单
   procedure ShowBMenu(MenuStatus, menu, max: integer);
@@ -1340,7 +1343,7 @@ var
     LoadFreshScreen(x, y);
     //DrawRectangle(100, 50, 47, max * 22 + 28, 0, ColColor(255), 30);
     p := 0;
-    for i := 0 to 10 do
+    for i := 0 to 11 do
     begin
       if (p = menu) and ((MenuStatus and (1 shl i) > 0)) then
       begin
@@ -1362,8 +1365,8 @@ var
   end;
 
 begin
-  MenuStatus := $7E0;
-  max := 5;
+  MenuStatus := $FE0;
+  max := 6;
   //for i := 0 to 9 do
   word[0] := '移動';
   word[1] := '武學';
@@ -1376,6 +1379,7 @@ begin
   word[8] := '調息';
   word[9] := '結束';
   word[10] := '自動';
+  word[11] := '認輸';
   num[0] := '零';
   num[1] := '一';
   num[2] := '二';
@@ -1548,7 +1552,7 @@ begin
   end;
   //result:=0;
   p := 0;
-  for i := 0 to 10 do
+  for i := 0 to high(word) do
   begin
     if (MenuStatus and (1 shl i)) > 0 then
     begin
@@ -6685,6 +6689,20 @@ begin
     end;
   end;
 
+end;
+
+procedure GiveUp(bnum: integer);
+var
+  j: integer;
+  menustring: array [0..1] of widestring;
+begin
+  menuString[0] := '取消';
+  menuString[1] := '確認';
+  if CommonMenu(CENTER_X * 2 - 100, 10, 47, 1, 0, menuString) = 0 then
+    exit;
+  for j := 0 to BRoleAmount - 1 do
+    if Brole[bnum].Team = Brole[j].Team then
+      Brole[j].Dead:=1;
 end;
 
 function UseSpecialAbility(bnum, mnum, level: integer): boolean;
