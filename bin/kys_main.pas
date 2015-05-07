@@ -1315,11 +1315,42 @@ begin
           Rrole[0].Aptitude := 100;
           Rrole[0].MagLevel[0] := 999;
         end;
+         if Name = '小小豬' then
+        begin
+          Rrole[0].MaxHP := 255;
+          Rrole[0].CurrentHP := 255;
+          Rrole[0].MaxMP := 255;
+          Rrole[0].CurrentMP := 255;
+          Rrole[0].MPType := 2;
+          Rrole[0].IncLife := 28;
+          Rrole[0].AddMP := 28;
+          Rrole[0].AddAtk := 8;
+          Rrole[0].AddDef := 8;
+          Rrole[0].AddSpeed := 4;
+
+          Rrole[0].Attack := 255;
+          Rrole[0].Speed := 255;
+          Rrole[0].Defence := 255;
+          Rrole[0].Medcine := 100;
+          Rrole[0].UsePoi := 100;
+          Rrole[0].MedPoi := 100;
+          Rrole[0].Fist := 100;
+          Rrole[0].Sword := 99;
+          Rrole[0].Knife := 99;
+          Rrole[0].Unusual := 99;
+          Rrole[0].HidWeapon := 99;
+
+          Rrole[0].Aptitude := 100;
+          Rrole[0].MagLevel[0] := 999;
+          if MODVersion = 31 then
+            Rrole[0].HeadNum := 448;
+        end;
 
         if Name = '風劍琴' then
         begin
           Rrole[0].addnum := 1;
           Rrole[0].AmiFrameNum[0] := 0;
+
         end;
 
         if (Name = '阮小二') then
@@ -1328,7 +1359,7 @@ begin
           Rrole[0].Aptitude := 100;
           Rrole[0].MagLevel[0] := 999;
           Rrole[0].AmiFrameNum[0] := 1;
-          if MODVersion = 13 then
+          if MODVersion = 31 then
             Rrole[0].HeadNum := 434;
         end;
 
@@ -1338,7 +1369,7 @@ begin
           Rrole[0].Aptitude := 100;
           Rrole[0].MagLevel[0] := 999;
           Rrole[0].AmiFrameNum[0] := 2;
-          if MODVersion = 13 then
+          if MODVersion = 31 then
             Rrole[0].HeadNum := 435;
         end;
 
@@ -1347,7 +1378,7 @@ begin
           Rrole[0].Aptitude := 100;
           Rrole[0].MagLevel[0] := 999;
           Rrole[0].AmiFrameNum[0] := 12;
-           if MODVersion = 13 then
+           if MODVersion = 31 then
             Rrole[0].HeadNum := 454;
         end;
 
