@@ -2009,12 +2009,12 @@ var
 
   function inEscape(x, y: integer): boolean; inline;
   begin
-    Result := (x < 100) and (y > CENTER_Y * 2 - 100);
+    Result := (x > CENTER_X * 2 - 100) and (y < 100);
   end;
 
   function inSwitchShowVirtualKey(x, y: integer): boolean; inline;
   begin
-    Result := (x > CENTER_X * 2 - 100) and (y < 100);
+    Result := (x < 100) and (y<100);
   end;
 
   function inVirtualKey(x, y: integer; var key: uint32): uint32;
@@ -2022,11 +2022,11 @@ var
     Result := 0;
     if inregion(x, y, VirtualKeyX, VirtualKeyY, VirtualKeySize, VirtualKeySize) then
       Result := sdlk_up;
-    if inregion(x, y, VirtualKeyX - VirtualKeySize, VirtualKeyY + VirtualKeySize, VirtualKeySize, VirtualKeySize) then
+    if inregion(x, y, VirtualKeyX - VirtualKeySize-VirtualKeySpace, VirtualKeyY + VirtualKeySize+VirtualKeySpace, VirtualKeySize, VirtualKeySize) then
       Result := sdlk_left;
-    if inregion(x, y, VirtualKeyX, VirtualKeyY + VirtualKeySize, VirtualKeySize, VirtualKeySize) then
+    if inregion(x, y, VirtualKeyX, VirtualKeyY + VirtualKeySize*2+VirtualKeySpace*2, VirtualKeySize, VirtualKeySize) then
       Result := sdlk_down;
-    if inregion(x, y, VirtualKeyX + VirtualKeySize, VirtualKeyY + VirtualKeySize, VirtualKeySize, VirtualKeySize) then
+    if inregion(x, y, VirtualKeyX + VirtualKeySize+VirtualKeySpace, VirtualKeyY + VirtualKeySize, VirtualKeySize+VirtualKeySpace, VirtualKeySize) then
       Result := sdlk_right;
     key := Result;
   end;
@@ -2183,7 +2183,17 @@ begin
         end
         else if inSwitchShowVirtualKey(x, y) then
         begin
-          ShowVirtualKey := not ShowVirtualKey;
+          if ShowVirtualKey <> 0 then
+            ShowVirtualKey := 0
+          else
+            ShowVirtualKey := 1;
+          event.type_ := SDL_RELEASED;
+          event.key.keysym.sym := 0;
+        end
+        else if (showVirtualKey <> 0) and (inVirtualKey(x, y, VirtualKeyValue) = 0) then
+        begin
+          event.type_ := SDL_RELEASED;
+          event.key.keysym.sym := 0;
         end
         //手机在战场仅有确认键有用
         else if (where = 2) and (BattleSelecting) then
@@ -4529,4 +4539,4 @@ begin
 {$endif}
 end;
 
-end.
+end.

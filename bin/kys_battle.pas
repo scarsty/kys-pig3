@@ -100,6 +100,8 @@ procedure CheckAttackAttachment(bnum, mnum, level: integer);
 procedure CheckDefenceAttachment(bnum, mnum, level: integer);
 function CanSelectAim(bnum, aimbnum, mnum, aimMode: integer): boolean;
 
+procedure GiveUp(bnum: integer);
+
 
 type
 {$M+}
@@ -164,6 +166,7 @@ type
     procedure SA2_9(bnum, mnum, mnum2, level: integer);
     procedure SA2_10(bnum, mnum, mnum2, level: integer);
     procedure SA2_11(bnum, mnum, mnum2, level: integer);
+    procedure SA2_12(bnum, mnum, mnum2, level: integer);
     procedure SA2_100(bnum, mnum, mnum2, level: integer);
     procedure SA2_101(bnum, mnum, mnum2, level: integer);
   end;
@@ -821,7 +824,7 @@ begin
   //战斗未分出胜负则继续
   while BStatus = 0 do
   begin
-    //CalMoveAbility; //计算移动能力, 因此有些移动能力的状态可能会推迟生效
+    CalMoveAbility; //计算移动能力, 因此有些移动能力的状态可能会推迟生效
 
     if SEMIREAL = 0 then
       ReArrangeBRole; //排列角色顺序
@@ -991,6 +994,7 @@ begin
             7: SelectShowStatus(i);
             8, 9: Rest(i);
             10: Auto(i);
+            11: GiveUp(i);
             else
             begin
               BField[2, tempBrole.X, tempBrole.Y] := i;
@@ -1273,22 +1277,27 @@ end;
 
 procedure CalMoveAbility;
 var
-  i, rnum: integer;
+  i, rnum, maxRealspeed: integer;
 begin
+  maxRealspeed := 1;
   for i := 0 to BRoleAmount - 1 do
   begin
-    //rnum := Brole[i].rnum;
+    rnum := Brole[i].rnum;
     //Brole[i].Step := CalBroleMoveAbility(i);
-    if SEMIREAL = 1 then
+    if (SEMIREAL = 1) and (Brole[i].Dead = 0) then
     begin
-      Brole[i].RealSpeed := trunc((Rrole[rnum].Speed) + 175) - Rrole[rnum].Hurt div 10 -
+      Brole[i].RealSpeed := trunc(Rrole[rnum].Speed + 100) - Rrole[rnum].Hurt div 10 -
         Rrole[rnum].Poison div 30;
-      Brole[i].RealSpeed := Brole[i].RealSpeed div 3;
+      Brole[i].RealSpeed := Brole[i].RealSpeed;
+      maxRealspeed := max(maxRealspeed, Brole[i].RealSpeed);
       //if Brole[i].RealSpeed > 200 then
       //Brole[i].RealSpeed := 200 + (Brole[i].RealSpeed - 200) div 3;
     end;
   end;
-
+  for i := 0 to BRoleAmount - 1 do
+  begin
+    Brole[i].RealSpeed := trunc(Brole[i].RealSpeed * 200.0 / maxRealspeed);
+  end;
 end;
 
 //0: Continue; 1: Victory; 2:Failed.
@@ -1324,7 +1333,7 @@ var
   i, p, MenuStatus, menu, max, rnum, menup, xm, ym, step, x, y, h, l: integer;
   realmenu: array[0..10] of integer;
   str: WideString;
-  word: array[0..10] of WideString;
+  word: array[0..11] of WideString;
   num: array[0..9] of WideString;
   //显示战斗主选单
   procedure ShowBMenu(MenuStatus, menu, max: integer);
@@ -1334,7 +1343,7 @@ var
     LoadFreshScreen(x, y);
     //DrawRectangle(100, 50, 47, max * 22 + 28, 0, ColColor(255), 30);
     p := 0;
-    for i := 0 to 10 do
+    for i := 0 to 11 do
     begin
       if (p = menu) and ((MenuStatus and (1 shl i) > 0)) then
       begin
@@ -1356,8 +1365,8 @@ var
   end;
 
 begin
-  MenuStatus := $7E0;
-  max := 5;
+  MenuStatus := $FE0;
+  max := 6;
   //for i := 0 to 9 do
   word[0] := '移動';
   word[1] := '武學';
@@ -1370,6 +1379,7 @@ begin
   word[8] := '調息';
   word[9] := '結束';
   word[10] := '自動';
+  word[11] := '認輸';
   num[0] := '零';
   num[1] := '一';
   num[2] := '二';
@@ -1456,7 +1466,7 @@ begin
   h := 28;
 
   Redraw;
-  ShowSimpleStatus(Brole[bnum].rnum, 80, CENTER_Y * 2 - 130);
+  ShowSimpleStatus(Brole[bnum].rnum, 80, CENTER_Y * 2 - 150);
   //str := UTF8Decode(format('回合%d', [BattleRound]));
   //DrawTextWithRect(puint16(str), 160, 50, DrawLength(str) * 10 + 7, ColColor($21), ColColor($23), 30);
   //DrawMPic(2121, 160, 50);
@@ -1542,7 +1552,7 @@ begin
   end;
   //result:=0;
   p := 0;
-  for i := 0 to 10 do
+  for i := 0 to high(word) do
   begin
     if (MenuStatus and (1 shl i)) > 0 then
     begin
@@ -1755,7 +1765,7 @@ begin
     begin
       DrawBFieldWithCursor(AttAreaType, step, range);
       if BField[2, Ax, Ay] >= 0 then
-        ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, 80, CENTER_Y * 2 - 130);
+        ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, 80, CENTER_Y * 2 - 150);
       UpdateAllScreen;
       pAx := Ax;
       pAy := Ay;
@@ -1778,7 +1788,7 @@ begin
   BattleSelecting := True;
   DrawBFieldWithCursor(0, step, 0);
   if (BField[2, Ax, Ay] >= 0) then
-    ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 130);
+    ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 150);
   UpdateAllScreen;
   while (SDL_WaitEvent(@event) >= 0) do
   begin
@@ -1858,7 +1868,7 @@ begin
     end;
     DrawBFieldWithCursor(0, step, 0);
     if BField[2, Ax, Ay] >= 0 then
-      ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 130);
+      ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 150);
     UpdateAllScreen;
   end;
   BattleSelecting := False;
@@ -1922,7 +1932,7 @@ begin
   BattleSelecting := True;
   DrawBFieldWithCursor(AttAreaType, step, range);
   if (BField[2, Ax, Ay] >= 0) then
-    ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 130);
+    ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 150);
   UpdateAllScreen;
   while (SDL_WaitEvent(@event) >= 0) do
   begin
@@ -1971,7 +1981,7 @@ begin
         end;
         DrawBFieldWithCursor(AttAreaType, step, range);
         if (BField[2, Ax, Ay] >= 0) then
-          ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 130);
+          ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 150);
         UpdateAllScreen;
       end;
       SDL_MOUSEBUTTONUP:
@@ -2000,7 +2010,7 @@ begin
           Ay := Ayp;
           DrawBFieldWithCursor(AttAreaType, step, range);
           if (BField[2, Ax, Ay] >= 0) then
-            ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 130);
+            ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 150);
           UpdateAllScreen;
         end;
       end;
@@ -3021,7 +3031,7 @@ begin
   max := max - 1;
 
   Redraw;
-  ShowSimpleStatus(rnum, 80, CENTER_Y * 2 - 130);
+  ShowSimpleStatus(rnum, 80, CENTER_Y * 2 - 150);
   RecordFreshScreen(100, 50, 200, 300);
   UpdateAllScreen;
   menu := 0;
@@ -6155,7 +6165,7 @@ var
   str: WideString;
 begin
   rnum := Brole[bnum].rnum;
-  ShowSimpleStatus(rnum, 80, CENTER_Y * 2 - 130);
+  ShowSimpleStatus(rnum, 80, CENTER_Y * 2 - 150);
   UpdateAllScreen;
   SDL_Delay(450);
   if Brole[bnum].AutoMode = 3 then
@@ -6679,6 +6689,20 @@ begin
     end;
   end;
 
+end;
+
+procedure GiveUp(bnum: integer);
+var
+  j: integer;
+  menustring: array [0..1] of widestring;
+begin
+  menuString[0] := '取消';
+  menuString[1] := '確認';
+  if CommonMenu(CENTER_X * 2 - 100, 10, 47, 1, 0, menuString) = 0 then
+    exit;
+  for j := 0 to BRoleAmount - 1 do
+    if Brole[bnum].Team = Brole[j].Team then
+      Brole[j].Dead:=1;
 end;
 
 function UseSpecialAbility(bnum, mnum, level: integer): boolean;
@@ -9243,6 +9267,48 @@ begin
       end;
     end;
     PlayActionAmination(bnum, Rmagic[mnum].MagicType); //动作效果
+    PlayMagicAmination(bnum, Rmagic[mnum2].AmiNum);
+    ShowHurtValue(0); //显示数字
+  end;
+end;
+
+//天王托塔 增加我方攻擊 降低對方防禦
+//30%
+procedure TSpecialAbility2.SA2_12(bnum, mnum, mnum2, level: integer);
+var
+  str: WideString;
+  i, rnum, hurt, l: integer;
+begin
+  if (Rmagic[mnum].MagicType = 1) then
+  begin
+    ShowMagicName(mnum2);
+    Ax := Bx;
+    Ay := By;
+    SetAminationPosition(3, 0, 4);
+    FillChar(BField[4, 0, 0], 4096 * 2, 0);
+    for i := 0 to BRoleAmount - 1 do
+    begin
+      Brole[i].ShowNumber := -1;
+      if (Brole[i].Dead = 0) then
+      begin
+        if (Brole[bnum].Team <> Brole[i].Team) and (BField[4, Brole[i].X, Brole[i].Y] > 0) then
+        begin
+          hurt := Rrole[Brole[bnum].rnum].Defence * 3 + random(10);
+          hurt := max(0, hurt);
+          Rrole[rnum].CurrentHP := max(Rrole[rnum].CurrentHP - hurt, 0);
+          Brole[i].ShowNumber := hurt;
+        end;
+        if (Brole[i].Team = Brole[bnum].Team) then
+        begin
+          BField[4, Brole[i].x, Brole[i].y] := 1 + random(6);
+          ModifyState(i, 1, 30 + Rrole[Brole[bnum].rnum].Level, 3);
+        end;
+      end;
+    end;
+    //Rmagic[0].Attack[0] := 100 * level + Rrole[Brole[bnum].rnum].Level * 10;
+    //Rmagic[0].Attack[1] := 200 * level + Rrole[Brole[bnum].rnum].Level * 20;
+    PlayActionAmination(bnum, Rmagic[mnum].MagicType); //动作效果
+    //CalHurtRole(bnum, 0, level, 1); //计算被打到的人物
     PlayMagicAmination(bnum, Rmagic[mnum2].AmiNum);
     ShowHurtValue(0); //显示数字
   end;
