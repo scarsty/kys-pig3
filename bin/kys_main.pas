@@ -205,7 +205,6 @@ begin
 {$ENDIF}
   //versionstr :=  SDL_AndroidGetExternalStoragePath();
   //test;
-  //cellphone:=1;
   ReadFiles;
 
   ConsoleLog('Read ini and data files ended');
@@ -430,7 +429,7 @@ begin
   case MODVersion of
     0:
     begin
-      versionstr := versionstr + '-金庸群俠傳';
+      versionstr := versionstr + '-演示版';
       BEGIN_EVENT := 691;
       BEGIN_SCENCE := 70;
       MONEY_ID := 174;
@@ -831,8 +830,6 @@ var
   i: integer;
   words: TStringList;
 begin
-  if OPEN_RECITATION = 0 then
-    exit;
   words := TStringList.Create;
   words.LoadFromFile(AppPath + 'txt/start.txt');
   CleanTextScreen;
@@ -913,7 +910,6 @@ begin
     TEXT_LAYER := Kys_ini.ReadInteger('system', 'Text_Layer', 0);
     ZIP_SAVE := Kys_ini.ReadInteger('system', 'ZIP_SAVE', 1);
     OPEN_MOVIE := Kys_ini.ReadInteger('system', 'OPEN_MOVIE', 1);
-    OPEN_RECITATION := Kys_ini.ReadInteger('system', 'OPEN_RECITATION', 1);
     THREAD_READ_MOVIE := Kys_ini.ReadInteger('system', 'THREAD_READ_MOVIE', 1);
     THREAD_READ_PNG := Kys_ini.ReadInteger('system', 'THREAD_READ_PNG', 0);
     DISABLE_MENU_AMI := Kys_ini.ReadInteger('system', 'DISABLE_MENU_AMI', 0);
@@ -945,8 +941,6 @@ begin
       ShowVirtualKey := Kys_ini.ReadInteger('system', 'Virtual_Key', 1);
       VirtualKeyX := Kys_ini.ReadInteger('system', 'Virtual_Key_X', 150);
       VirtualKeyY := Kys_ini.ReadInteger('system', 'Virtual_Key_Y', 250);
-      VirtualKeySize:=Kys_ini.ReadInteger('system', 'Virtual_Key_Size', 60);
-      VirtualKeySpace:= Kys_ini.ReadInteger('system', 'Virtual_Key_Space', 25);
     end
     else
       ShowVirtualKey := 0;
@@ -1315,42 +1309,11 @@ begin
           Rrole[0].Aptitude := 100;
           Rrole[0].MagLevel[0] := 999;
         end;
-         if Name = '小小豬' then
-        begin
-          Rrole[0].MaxHP := 255;
-          Rrole[0].CurrentHP := 255;
-          Rrole[0].MaxMP := 255;
-          Rrole[0].CurrentMP := 255;
-          Rrole[0].MPType := 2;
-          Rrole[0].IncLife := 28;
-          Rrole[0].AddMP := 28;
-          Rrole[0].AddAtk := 8;
-          Rrole[0].AddDef := 8;
-          Rrole[0].AddSpeed := 4;
-
-          Rrole[0].Attack := 255;
-          Rrole[0].Speed := 255;
-          Rrole[0].Defence := 255;
-          Rrole[0].Medcine := 100;
-          Rrole[0].UsePoi := 100;
-          Rrole[0].MedPoi := 100;
-          Rrole[0].Fist := 100;
-          Rrole[0].Sword := 99;
-          Rrole[0].Knife := 99;
-          Rrole[0].Unusual := 99;
-          Rrole[0].HidWeapon := 99;
-
-          Rrole[0].Aptitude := 100;
-          Rrole[0].MagLevel[0] := 999;
-          if MODVersion = 31 then
-            Rrole[0].HeadNum := 448;
-        end;
 
         if Name = '風劍琴' then
         begin
           Rrole[0].addnum := 1;
           Rrole[0].AmiFrameNum[0] := 0;
-
         end;
 
         if (Name = '阮小二') then
@@ -1359,7 +1322,7 @@ begin
           Rrole[0].Aptitude := 100;
           Rrole[0].MagLevel[0] := 999;
           Rrole[0].AmiFrameNum[0] := 1;
-          if MODVersion = 31 then
+          if MODVersion = 13 then
             Rrole[0].HeadNum := 434;
         end;
 
@@ -1369,17 +1332,8 @@ begin
           Rrole[0].Aptitude := 100;
           Rrole[0].MagLevel[0] := 999;
           Rrole[0].AmiFrameNum[0] := 2;
-          if MODVersion = 31 then
+          if MODVersion = 13 then
             Rrole[0].HeadNum := 435;
-        end;
-
-        if (Name = '晁蓋') then
-        begin
-          Rrole[0].Aptitude := 100;
-          Rrole[0].MagLevel[0] := 999;
-          Rrole[0].AmiFrameNum[0] := 12;
-           if MODVersion = 31 then
-            Rrole[0].HeadNum := 454;
         end;
 
         if (Name = '筷子') then
@@ -1887,7 +1841,7 @@ begin
       if (y > CENTER_Y * 2 - 100) then
         Result := SDLK_DOWN;
       if (x < 100) and (y > CENTER_Y * 2 - 100) then
-        Result := SDLK_y;
+        Result := SDLK_RETURN;
       if (x > CENTER_X * 2 - 100) and (y > CENTER_Y * 2 - 100) then
         Result := SDLK_RETURN;
     end;
@@ -5804,7 +5758,7 @@ begin
     addnum[0] := addnum[0] + Ritem[Rrole[rnum].Equip[0]].AddAttack;
     addnum[1] := addnum[1] + Ritem[Rrole[rnum].Equip[0]].AddDefence;
     addnum[2] := addnum[2] + Ritem[Rrole[rnum].Equip[0]].AddSpeed;
-    addnum[3] := addnum[3] + Ritem[Rrole[rnum].Equip[0]].AddMove * 10;
+    addnum[3] := addnum[3] + Ritem[Rrole[rnum].Equip[0]].AddMove;
   end;
 
   if Rrole[rnum].Equip[1] >= 0 then
@@ -5812,7 +5766,7 @@ begin
     addnum[0] := addnum[0] + Ritem[Rrole[rnum].Equip[1]].AddAttack;
     addnum[1] := addnum[1] + Ritem[Rrole[rnum].Equip[1]].AddDefence;
     addnum[2] := addnum[2] + Ritem[Rrole[rnum].Equip[1]].AddSpeed;
-    addnum[3] := addnum[3] + Ritem[Rrole[rnum].Equip[1]].AddMove * 10;
+    addnum[3] := addnum[3] + Ritem[Rrole[rnum].Equip[1]].AddMove;
   end;
 
   if (where = 2) and (bnum >= 0) then
@@ -5832,7 +5786,7 @@ begin
     w := 120;
     if i <= 9 then
       if addnum[i - 6] <> 0 then
-        w := 190;
+        w := 180;
     if bnum = -1 then
       w := 240;
     if bnum <> -2 then
@@ -5875,7 +5829,7 @@ begin
   //其他属性
   //移动的增加是乘以10
   str := format('%4d', [Rrole[rnum].Movestep + addnum[3]]);
-  SetColorByPro(Rrole[rnum].Movestep + addnum[3], 100, color1, color2);
+  SetColorByPro(Rrole[rnum].Movestep + addnum[3] * 10, 100, color1, color2);
   DrawEngShadowText(@str[1], x + 280 + 100, y + 5 + h * 3, color1, color2);
 
   str := format('%4d', [Rrole[rnum].Medcine]);

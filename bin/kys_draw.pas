@@ -1501,9 +1501,9 @@ begin
       SDLK_RIGHT: r := 0;
     end;
     DrawTPic(27, VirtualKeyX, VirtualKeyY, nil, 0, u);
-    DrawTPic(29, VirtualKeyX - VirtualKeySize-VirtualKeySpace, VirtualKeyY + VirtualKeySize+VirtualKeySpace, nil, 0, l);
-    DrawTPic(28, VirtualKeyX, VirtualKeyY + VirtualKeySize*2+VirtualKeySpace*2, nil, 0, d);
-    DrawTPic(30, VirtualKeyX + VirtualKeySize+VirtualKeySpace, VirtualKeyY + VirtualKeySize+VirtualKeySpace, nil, 0, r);
+    DrawTPic(29, VirtualKeyX - VirtualKeySize, VirtualKeyY + VirtualKeySize, nil, 0, l);
+    DrawTPic(28, VirtualKeyX, VirtualKeyY + VirtualKeySize, nil, 0, d);
+    DrawTPic(30, VirtualKeyX + VirtualKeySize, VirtualKeyY + VirtualKeySize, nil, 0, r);
   end;
 end;
 

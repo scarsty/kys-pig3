@@ -512,7 +512,6 @@ var
   ZIP_SAVE: integer = 1;  //使用zip存档
 
   OPEN_MOVIE: integer = 1;
-  OPEN_RECITATION: integer = 1;
   THREAD_READ_MOVIE: integer = 1;
   KEEP_SCREEN_RATIO: integer = 1;  //保持拉伸时的长宽比
 
@@ -615,7 +614,6 @@ var
   VirtualKeyX: integer = 150;
   VirtualKeyY: integer = 250;
   VIrtualKeySize: integer = 60;
-  VirtualKeySpace: integer = 25;
 
 const
   //色值蒙版, 注意透明蒙版在创建表面时需设为0而不应用此值
