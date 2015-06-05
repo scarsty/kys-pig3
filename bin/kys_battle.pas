@@ -4326,13 +4326,13 @@ begin
     Rrole[rnum].Movestep:=Rrole[rnum].Speed * 10 div 15;
   end;
 
-  for i := 46 to 54 do
+  for i := 46 to 49 do
   begin
     //抗毒不增加
     if (Rrole[rnum].Data[i] > 20) and (i <> 49) then
       Rrole[rnum].Data[i] := Rrole[rnum].Data[i] + random(3);
   end;
-  for i := 43 to 54 do
+  for i := 43 to 49 do
   begin
     if Rrole[rnum].Data[i] > MaxProList[i] then
       Rrole[rnum].Data[i] := MaxProList[i];
@@ -4827,7 +4827,7 @@ begin
           str := pWideChar(@Ritem[inum].Name);
           ShowMagicName(inum, str);
           PlayActionAmination(bnum, 0);
-          PlayMagicAmination(bnum, Ritem[inum].AmiNum);
+          //PlayMagicAmination(bnum, Ritem[inum].AmiNum);
           Rmagic[0].HurtType := 0;
           Rmagic[0].MagicType := 5;
           Rmagic[0].Attack[0] := -Ritem[inum].AddCurrentHP;

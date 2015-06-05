@@ -1317,31 +1317,10 @@ begin
         end;
          if Name = '小小豬' then
         begin
-          Rrole[0].MaxHP := 255;
-          Rrole[0].CurrentHP := 255;
-          Rrole[0].MaxMP := 255;
-          Rrole[0].CurrentMP := 255;
-          Rrole[0].MPType := 2;
-          Rrole[0].IncLife := 28;
-          Rrole[0].AddMP := 28;
-          Rrole[0].AddAtk := 8;
-          Rrole[0].AddDef := 8;
-          Rrole[0].AddSpeed := 4;
-
-          Rrole[0].Attack := 255;
-          Rrole[0].Speed := 255;
-          Rrole[0].Defence := 255;
-          Rrole[0].Medcine := 100;
-          Rrole[0].UsePoi := 100;
-          Rrole[0].MedPoi := 100;
-          Rrole[0].Fist := 100;
-          Rrole[0].Sword := 99;
-          Rrole[0].Knife := 99;
-          Rrole[0].Unusual := 99;
-          Rrole[0].HidWeapon := 99;
-
+          Rrole[0].addnum := 1;
           Rrole[0].Aptitude := 100;
           Rrole[0].MagLevel[0] := 999;
+          Rrole[0].AmiFrameNum[0] := 2;
           if MODVersion = 31 then
             Rrole[0].HeadNum := 448;
         end;
@@ -1595,7 +1574,7 @@ begin
     else
       p1 := p1 + ScenceOffset - ItemOffset;
     BufferRead(p1, @Rscence[0], MagicOffset - ScenceOffset);
-    if num = 0 then
+    if (num = 0) or (MODVersion = 31) then
       BufferRead(p1, @Rmagic[0], WeiShopOffset - MagicOffset)
     else
       p1 := p1 + WeiShopOffset - MagicOffset;
@@ -8794,12 +8773,14 @@ end;
 
 function IsCave(snum: integer): boolean;
 begin
-  case MODVersion of
+ case MODVersion of
     13: Result := snum in [6, 10, 26, 35, 52, 71, 72, 78, 87, 107];
+    31: Result := false;
     else
       Result := snum in [5, 7, 10, 41, 42, 46, 65, 66, 67, 72, 79];
       //Result := False;
   end;
+
 end;
 
 function CheckString(str: string): boolean;
