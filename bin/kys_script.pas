@@ -507,7 +507,7 @@ begin
       Script[3] := ' ';
     end;
     Script := LowerCase(Script);
-    //ConsoleLog(script);
+    //ConsoleLog(utf8decode(script));
     Result := lual_loadbuffer(Lua_script, @script[1], length(script), 'code');
     if Result = 0 then
     begin
