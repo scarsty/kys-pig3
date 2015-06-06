@@ -199,7 +199,7 @@ function SetScreenBlendMode(L: Plua_state): integer; cdecl;
 
 function PlayMovieScript(L: Plua_state): integer; cdecl;
 
-
+ function SetPro(L: Plua_state; pos: puint16): integer;
 
 implementation
 
@@ -728,18 +728,18 @@ begin
       istr:=istr+1;
     end;}
   end;
-  if lua_type(L, -n + 1)<>LUA_TNUMBER then
+  if lua_type(L, -n + 1) <> LUA_TNUMBER then
   begin
     strs[0] := UTF8Decode(lua_tostring(L, -n + 1));
   end;
-  if lua_type(L, -n + 2)<>LUA_TNUMBER then
+  if lua_type(L, -n + 2) <> LUA_TNUMBER then
   begin
     strs[1] := UTF8Decode(lua_tostring(L, -n + 2));
   end;
   if nums[3] < 0 then
     nums[3] := abs(nums[3]);
   NewTalk(nums[0], nums[1], nums[2], nums[3], nums[4], nums[5], 0, strs[0], strs[1]);
-  result := 0;
+  Result := 0;
   //writeln(strs[0]);
   //writeln(strs[1]);
   {Width := 48;
@@ -1358,9 +1358,8 @@ end;
 
 function SetRolePro(L: Plua_state): integer; cdecl;
 begin
-  Rrole[lua_tointeger(L, -2)].Data[lua_tointeger(L, -1)] := lua_tointeger(L, -3);
+  setpro(L, @Rrole[lua_tointeger(L, -2)].Data[lua_tointeger(L, -1)]);
   Result := 0;
-
 end;
 
 //读物品信息
@@ -1369,16 +1368,14 @@ function GetItemPro(L: Plua_state): integer; cdecl;
 begin
   lua_pushinteger(L, Ritem[lua_tointeger(L, -2)].Data[lua_tointeger(L, -1)]);
   Result := 1;
-
 end;
 
 //写物品信息
 
 function SetItemPro(L: Plua_state): integer; cdecl;
 begin
-  Ritem[lua_tointeger(L, -2)].Data[lua_tointeger(L, -1)] := lua_tointeger(L, -3);
+  setpro(L, @Ritem[lua_tointeger(L, -2)].Data[lua_tointeger(L, -1)]);
   Result := 0;
-
 end;
 
 //读武功信息
@@ -1387,16 +1384,14 @@ function GetMagicPro(L: Plua_state): integer; cdecl;
 begin
   lua_pushinteger(L, Rmagic[lua_tointeger(L, -2)].Data[lua_tointeger(L, -1)]);
   Result := 1;
-
 end;
 
 //写武功信息
 
 function SetMagicPro(L: Plua_state): integer; cdecl;
 begin
-  Rmagic[lua_tointeger(L, -2)].Data[lua_tointeger(L, -1)] := lua_tointeger(L, -3);
+  setpro(L, @Rmagic[lua_tointeger(L, -2)].Data[lua_tointeger(L, -1)]);
   Result := 0;
-
 end;
 
 //读场景信息
@@ -1412,9 +1407,8 @@ end;
 
 function SetScencePro(L: Plua_state): integer; cdecl;
 begin
-  Rscence[lua_tointeger(L, -2)].Data[lua_tointeger(L, -1)] := lua_tointeger(L, -3);
+  setpro(L, @Rscence[lua_tointeger(L, -2)].Data[lua_tointeger(L, -1)]);
   Result := 0;
-
 end;
 
 //读场景图信息
@@ -1454,10 +1448,12 @@ function GetScenceEventPro(L: Plua_state): integer; cdecl;
 var
   snum, enum: integer;
 begin
-  snum :=   lua_tointeger(L, -3);
-  enum :=   lua_tointeger(L, -2);
-  if snum =-2 then snum := CurScence;
-  if enum =-2 then enum := CurEvent;
+  snum := lua_tointeger(L, -3);
+  enum := lua_tointeger(L, -2);
+  if snum = -2 then
+    snum := CurScence;
+  if enum = -2 then
+    enum := CurEvent;
   lua_pushinteger(L, ddata[snum, enum, lua_tointeger(L, -1)]);
   Result := 1;
 
@@ -1469,10 +1465,12 @@ function SetScenceEventPro(L: Plua_state): integer; cdecl;
 var
   snum, enum: integer;
 begin
-  snum :=   lua_tointeger(L, -3);
-  enum :=   lua_tointeger(L, -2);
-  if snum =-2 then snum := CurScence;
-  if enum =-2 then enum := CurEvent;
+  snum := lua_tointeger(L, -3);
+  enum := lua_tointeger(L, -2);
+  if snum = -2 then
+    snum := CurScence;
+  if enum = -2 then
+    enum := CurEvent;
   ddata[snum, enum, lua_tointeger(L, -1)] :=
     lua_tointeger(L, -4);
   Result := 0;
@@ -2234,6 +2232,29 @@ begin
   Redraw;
   //UpdateAllScreen;
   Result := 0;
+end;
+
+function SetPro(L: Plua_state; pos: puint16): integer;
+var
+  i: integer;
+  str: WideString;
+begin
+  Result := 1;
+  if lua_isnumber(L, -3) then
+  begin
+    pos^ := lua_tointeger(L, -3);
+  end
+  else if lua_isstring(L, -3) then
+  begin
+    str := utf8decode(lua_tostring(L, -3));
+    writeln(str);
+    Result := length(str);
+    for i := 0 to Result - 1 do
+    begin
+      pwidechar(pos)^ := str[i + 1];
+      Inc(pos);
+    end;
+  end;
 end;
 
 end.
