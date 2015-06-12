@@ -1335,7 +1335,7 @@ begin
             PutPixel(tempsur, i1, i2, MapRGBA(r, g, b, a));
           end;
       end;
-      if SW_OUTPUT = 0 then
+      if SW_SURFACE = 0 then
       begin
         temptex := SDL_CreateTextureFromSurface(render, tempsur);
         SDL_SetTextureBlendMode(temptex, SDL_BLENDMODE_BLEND);
@@ -3611,8 +3611,10 @@ begin
 
           SDL_RenderClear(render);
           SDL_RenderCopy(render, bmp, nil, @rect);
-          UpdateAllScreen;
-
+          if sw_surface = 0 then
+            UpdateAllScreen
+          else
+            SDL_Renderpresent(render);
           //av_free_packet(@packet);
           timerA := BASS_ChannelBytes2Seconds(openAudio, BASS_ChannelGetPosition(openAudio, BASS_POS_BYTE)) * 1e3;
           //音频的时间为标准
@@ -4108,6 +4110,7 @@ end;
 procedure UpdateAllScreen;
 var
   src, dest, destfull: TSDL_Rect;
+  prect: PSDL_Rect;
   scr: PSDL_Texture;
   r, g, b: byte;
   degree: float;
@@ -4184,17 +4187,23 @@ begin
   begin
     if (where < 5) then
     begin
+      if KEEP_SCREEN_RATIO = 1 then
+      begin
       src.x := 0;
       src.y := 0;
       src.w := CENTER_X * 2;
       src.h := CENTER_Y * 2;
       dest := GetRealRect(src, 1);
+      prect := @dest;
+      end
+      else
+      prect:=nil;
       if SW_OUTPUT = 0 then
       begin
         SDL_UpdateTexture(screenTex, nil, screen.pixels, screen.pitch);
         SDL_RenderClear(render);
         SDL_SetTextureColorMod(screenTex, r, g, b);
-        SDL_RenderCopy(render, screenTex, nil, @dest);
+        SDL_RenderCopy(render, screenTex, nil, prect);
         SDL_SetTextureColorMod(screenTex, 255, 255, 255);
         if (TEXT_LAYER = 1) and (HaveText = 1) then
         begin
@@ -4207,7 +4216,7 @@ begin
       end
       else
       begin
-        SDL_BlitSurface(screen, nil, RealScreen, @dest);
+        SDL_BlitSurface(screen, nil, RealScreen, prect);
         SDL_UpdateWindowSurface(window);
       end;
     end;
