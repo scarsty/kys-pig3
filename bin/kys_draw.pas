@@ -1307,7 +1307,11 @@ begin
             MixColor2 := MapRGBA(255 - Rrole[rnum].AttPoi * 2, 255, 255 - Rrole[rnum].AttPoi * 2);
             MixAlpha2 := -1 * random(2);
           end;
-          DrawEPic(k, pos.x, pos.y, shadow, 25, MixColor2, MixAlpha2, index);
+          //软件绘图去掉一些效果
+          if sw_surface = 0 then
+            DrawEPic(k, pos.x, pos.y, shadow, 25, MixColor2, MixAlpha2, index)
+          else
+            DrawEPic(k, pos.x, pos.y, 0, 0, 0, 0, index);
         end;
       end;
     end;
