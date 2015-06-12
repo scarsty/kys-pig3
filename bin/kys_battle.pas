@@ -682,7 +682,7 @@ begin
         if MouseInRegion(x, y, 150, (max + 1) * h, xm, ym) then
         begin
           menup := menu;
-          menu := (ym - 150) div h;
+          menu := (ym - y) div h;
           if menup <> menu then
             ShowMultiMenu;
         end;
