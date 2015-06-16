@@ -49,14 +49,14 @@ procedure PlaySound(filename: PChar; times: integer); overload;
 //基本绘图子程
 function GetPixel(surface: PSDL_Surface; x: integer; y: integer): uint32;
 procedure PutPixel(surface: PSDL_Surface; x: integer; y: integer; pixel: uint32);
-function ColColor(num: integer): uint32;
+function ColColor(num: integer): uint32; inline;
 procedure DrawRectangle(x, y, w, h: integer; colorin, colorframe: uint32; alpha: integer; trans: integer = 1);
 procedure DrawRectangleWithoutFrame(x, y, w, h: integer; colorin: uint32; alpha: integer);
 procedure DrawItemFrame(x, y: integer; realcoord: integer = 0);
 
 //画RLE8图片的子程
-function JudgeInScreen(px, py, w, h, xs, ys: integer): boolean; overload;
-function JudgeInScreen(px, py, w, h, xs, ys, xx, yy, xw, yh: integer): boolean; overload;
+function JudgeInScreen(px, py, w, h, xs, ys: integer): boolean; overload; inline;
+function JudgeInScreen(px, py, w, h, xs, ys, xx, yy, xw, yh: integer): boolean; overload; inline;
 function GetPositionOnScreen(x, y, CenterX, CenterY: integer): TPosition;
 
 //显示文字的子程
@@ -598,22 +598,19 @@ end;
 
 //判断像素是否在屏幕内
 
-function JudgeInScreen(px, py, w, h, xs, ys: integer): boolean; overload;
+function JudgeInScreen(px, py, w, h, xs, ys: integer): boolean;
 begin
-  Result := False;
+  //Result := False;
   //if (px - xs + w >= 0) and (px - xs < screen.w) and (py - ys + h >= 0) and (py - ys < screen.h) then
   Result := True;
-
 end;
 
 //判断像素是否在指定范围内(重载)
 
-function JudgeInScreen(px, py, w, h, xs, ys, xx, yy, xw, yh: integer): boolean; overload;
+function JudgeInScreen(px, py, w, h, xs, ys, xx, yy, xw, yh: integer): boolean;
 begin
-  Result := False;
-  if (px - xs + w >= xx) and (px - xs < xx + xw) and (py - ys + h >= yy) and (py - ys < yy + yh) then
-    Result := True;
-
+  //Result := False;
+  Result :=  (px - xs + w >= xx) and (px - xs < xx + xw) and (py - ys + h >= yy) and (py - ys < yy + yh);
 end;
 
 //获取游戏中坐标在屏幕上的位置
