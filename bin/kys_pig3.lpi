@@ -144,15 +144,12 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="2">
+    <RequiredPackages Count="1">
       <Item1>
         <PackageName Value="LCL"/>
       </Item1>
-      <Item2>
-        <PackageName Value="bs_Utils"/>
-      </Item2>
     </RequiredPackages>
-    <Units Count="11">
+    <Units Count="10">
       <Unit0>
         <Filename Value="kys_pig3.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -160,37 +157,30 @@
       <Unit1>
         <Filename Value="kys_main.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="kys_main"/>
       </Unit1>
       <Unit2>
         <Filename Value="kys_event.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="kys_event"/>
       </Unit2>
       <Unit3>
         <Filename Value="kys_battle.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="kys_battle"/>
       </Unit3>
       <Unit4>
         <Filename Value="kys_engine.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="kys_engine"/>
       </Unit4>
       <Unit5>
         <Filename Value="kys_script.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="kys_script"/>
       </Unit5>
       <Unit6>
         <Filename Value="kys_draw.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="kys_draw"/>
       </Unit6>
       <Unit7>
         <Filename Value="kys_type.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="kys_type"/>
       </Unit7>
       <Unit8>
         <Filename Value="macro.inc"/>
@@ -200,10 +190,6 @@
         <Filename Value="lib\mythoutput.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit9>
-      <Unit10>
-        <Filename Value="unit1.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit10>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

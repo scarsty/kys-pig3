@@ -1,0 +1,4 @@
+bin/lib/release/*
+bin/lib/debug/*
+*.dbg
+*.lps
