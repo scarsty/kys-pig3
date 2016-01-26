@@ -240,7 +240,7 @@ begin
     if info.flags and SDL_RENDERER_TARGETTEXTURE <> 0 then
       ConsoleLog('texture rendering, ', False);
     ConsoleLog('...end');
-    if (info.Name = 'opengl') or (info.Name = 'opengles2') then
+    if ((info.Name = 'opengl') or (info.Name = 'opengles2')) and (rendernum = -1) then
     begin
       if (RENDERER = 1) then
       begin
