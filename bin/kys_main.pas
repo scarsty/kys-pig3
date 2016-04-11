@@ -1178,11 +1178,11 @@ begin
   //if FULLSCREEN = 1 then
   //RealScreen := SDL_SetVideoMode(RESOLUTIONX, RESOLUTIONY, 32, ScreenFlag);
 
-  Name := '蕭笑竹'; //默认名
+  Name := '大碼美衣'; //默认名
   str := '請輸入主角之姓名';
   if SIMPLE = 1 then
   begin
-    Name := '萧笑竹'; //默认名
+    Name := '大码美衣'; //默认名
     str := '请输入主角之姓名';
   end;
 
