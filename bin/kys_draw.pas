@@ -504,7 +504,7 @@ begin
   DrawClouds;
   if HaveText = 1 then
     CleanTextScreen;
-      DrawVirtualKey;
+  DrawVirtualKey;
 end;
 
 //画场景到屏幕
@@ -625,7 +625,7 @@ begin
     DrawBlackScreen;
   if HaveText = 1 then
     CleanTextScreen;
-      DrawVirtualKey;
+  DrawVirtualKey;
   //if (blackscreen > 0) and (CurEvent > 0) then
   //DrawRectangleWithoutFrame(screen, 0, 0, screen.w, screen.h, 0, 100 - blackscreen * 10);
 end;
@@ -1230,7 +1230,7 @@ begin
         HighLight := False;
       end;
     end;
-      DrawVirtualKey;
+  DrawVirtualKey;
 end;
 
 procedure DrawBFieldWithEft(Epicnum, beginpic, endpic, curlevel, bnum, SelectAimMode, flash: integer;
@@ -1308,7 +1308,7 @@ begin
             MixAlpha2 := -1 * random(2);
           end;
           //软件绘图去掉一些效果
-          if sw_surface = 0 then
+          if SW_SURFACE = 0 then
             DrawEPic(k, pos.x, pos.y, shadow, 25, MixColor2, MixAlpha2, index)
           else
             DrawEPic(k, pos.x, pos.y, 0, 0, 0, 0, index);
@@ -1475,7 +1475,7 @@ procedure DrawTextWithRect(word: puint16; x, y, w: integer; color1, color2: uint
   alpha: integer = 0; Refresh: integer = 1);
 var
   len, j: integer;
-  p: pchar;
+  p: PChar;
 begin
   //DrawRectangle(x, y, w, 26, 0, ColColor(255), alpha);
   len := DrawLength(pWideChar(word));
@@ -1500,14 +1500,16 @@ begin
     r := 50;
     case VirtualKeyValue of
       SDLK_UP: u := 0;
-      SDLK_Left: l := 0;
-      SDLK_down: d := 0;
+      SDLK_LEFT: l := 0;
+      SDLK_DOWN: d := 0;
       SDLK_RIGHT: r := 0;
     end;
     DrawTPic(27, VirtualKeyX, VirtualKeyY, nil, 0, u);
-    DrawTPic(29, VirtualKeyX - VirtualKeySize-VirtualKeySpace, VirtualKeyY + VirtualKeySize+VirtualKeySpace, nil, 0, l);
-    DrawTPic(28, VirtualKeyX, VirtualKeyY + VirtualKeySize*2+VirtualKeySpace*2, nil, 0, d);
-    DrawTPic(30, VirtualKeyX + VirtualKeySize+VirtualKeySpace, VirtualKeyY + VirtualKeySize+VirtualKeySpace, nil, 0, r);
+    DrawTPic(29, VirtualKeyX - VirtualKeySize - VirtualKeySpace, VirtualKeyY +
+      VirtualKeySize + VirtualKeySpace, nil, 0, l);
+    DrawTPic(28, VirtualKeyX, VirtualKeyY + VirtualKeySize * 2 + VirtualKeySpace * 2, nil, 0, d);
+    DrawTPic(30, VirtualKeyX + VirtualKeySize + VirtualKeySpace, VirtualKeyY +
+      VirtualKeySize + VirtualKeySpace, nil, 0, r);
   end;
 end;
 

@@ -199,7 +199,7 @@ function SetScreenBlendMode(L: Plua_state): integer; cdecl;
 
 function PlayMovieScript(L: Plua_state): integer; cdecl;
 
- function SetPro(L: Plua_state; pos: puint16): integer;
+function SetPro(L: Plua_state; pos: puint16): integer;
 
 implementation
 
@@ -2246,12 +2246,12 @@ begin
   end
   else if lua_isstring(L, -3) then
   begin
-    str := utf8decode(lua_tostring(L, -3));
+    str := UTF8Decode(lua_tostring(L, -3));
     writeln(str);
     Result := length(str);
     for i := 0 to Result - 1 do
     begin
-      pwidechar(pos)^ := str[i + 1];
+      pWideChar(pos)^ := str[i + 1];
       Inc(pos);
     end;
   end;

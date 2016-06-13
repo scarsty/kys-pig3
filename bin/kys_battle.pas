@@ -4151,7 +4151,7 @@ begin
 
   for i := 0 to High(Rmagic) do
   begin
-    if rmagic[i].ScriptNum = 31 then
+    if Rmagic[i].ScriptNum = 31 then
     begin
       Rrole[0].Magic[0] := i;
       break;
@@ -6694,7 +6694,7 @@ end;
 procedure GiveUp(bnum: integer);
 var
   j: integer;
-  menustring: array [0..1] of WideString;
+  menuString: array [0..1] of WideString;
 begin
   menuString[0] := '取消';
   menuString[1] := '確認';

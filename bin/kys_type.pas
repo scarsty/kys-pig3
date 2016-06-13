@@ -58,7 +58,7 @@ type
   //该组用于保存效果和战斗
   TPNGIndexes = record
     Amount, Loaded: integer;
-    FightFrame: array [0..4]of smallint;
+    FightFrame: array [0..4] of smallint;
     PNGIndexArray: array of TPNGIndex;
   end;
 
@@ -611,7 +611,7 @@ var
 
   //虚拟按键相关
   ShowVirtualKey: integer = 0;
-  VirtualKeyValue: Uint32 = 0;
+  VirtualKeyValue: uint32 = 0;
   VirtualKeyX: integer = 150;
   VirtualKeyY: integer = 250;
   VIrtualKeySize: integer = 60;
