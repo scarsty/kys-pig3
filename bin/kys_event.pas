@@ -1063,6 +1063,7 @@ begin
     end;
   end
   else
+  begin
     p:=-1;
     pm:=-1;
     for i := 0 to 9 do
@@ -1086,6 +1087,7 @@ begin
         //break;
       end;
     end;
+  end;
   //if i = 10 then rrole[rnum].data[i+63] := magicnum;
   if dismode = 0 then
   begin

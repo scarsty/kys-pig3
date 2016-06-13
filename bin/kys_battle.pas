@@ -6698,7 +6698,7 @@ var
 begin
   menuString[0] := '取消';
   menuString[1] := '確認';
-  if CommonMenu(CENTER_X * 2 - 100, 10, 47, 1, 0, menuString) = 0 then
+  if CommonMenu(CENTER_X * 2 - 100, 10, 47, 1, 0, menuString) <> 1 then
     exit;
   for j := 0 to BRoleAmount - 1 do
     if Brole[bnum].Team = Brole[j].Team then
