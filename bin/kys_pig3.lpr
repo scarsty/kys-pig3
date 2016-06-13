@@ -5,11 +5,11 @@ library kys_pig3;
 program kys_pig3;
 {$ENDIF}
 
-{$ifdef darwin}
+{$IFDEF darwin}
 {$linklib bass}
 {$linklib bassmidi}
 {$linklib lua}
-{$endif}
+{$ENDIF}
 
 //{$APPTYPE CONSOLE}
 
@@ -30,11 +30,11 @@ uses
 exports
   Run,
   SendKeyEvent;
-{$endif}
+{$ENDIF}
 
 begin
 {$IFNDEF android}
   Application.Initialize;
   Run;
 {$ENDIF}
-end.
+end.

@@ -488,7 +488,7 @@ function instruct_5(jump1, jump2: integer): integer;
 var
   menu: integer;
   menuString: array[0..1] of WideString;
-    str: widestring;
+  str: WideString;
 begin
   menuString[0] := '取消';
   menuString[1] := '戰鬥';
@@ -525,7 +525,7 @@ function instruct_9(jump1, jump2: integer): integer;
 var
   menu: integer;
   menuString: array[0..1] of WideString;
-    str: widestring;
+  str: WideString;
 begin
   menuString[0] := '取消';
   menuString[1] := '要求';
@@ -576,16 +576,16 @@ function instruct_11(jump1, jump2: integer): integer;
 var
   menu: integer;
   menuString: array[0..1] of WideString;
-  str: widestring;
+  str: WideString;
 begin
-  menuString[0] :='取消';
+  menuString[0] := '取消';
   menuString[1] := '住宿';
-  str:='是否需要住宿？'     ;
+  str := '是否需要住宿？';
   if (MODVersion = 31) or (MODVersion = 12) then
   begin
-  menuString[0] :='N-否';
-  menuString[1] := 'Y-是';
-  str := '請作出您的選擇';
+    menuString[0] := 'N-否';
+    menuString[1] := 'Y-是';
+    str := '請作出您的選擇';
   end;
   DrawTextWithRect(@str[1], CENTER_X - 75, CENTER_Y - 85, 0, 0, $202020);
   menu := CommonMenu2(CENTER_X - 49, CENTER_Y - 50, 48, menuString);
@@ -614,7 +614,7 @@ begin
       Rrole[rnum].PhyPower := MAX_PHYSICAL_POWER;
     end;
   end;
-  for i:=0 to High(rrole) do
+  for i := 0 to High(Rrole) do
     correctmagic(i);
 end;
 
@@ -1038,18 +1038,20 @@ var
 begin
   if Rmagic[mnum].HurtType = 3 then
   begin
-    p:=-1;
-    pm:=-1;
+    //找第一个空位，或者是已经学到的武学
+    p := -1;
+    pm := -1;
     for i := 0 to 3 do
     begin
-      if (Rrole[rnum].neigong[i] <= 0) and (p<0) then
+      if (Rrole[rnum].neigong[i] <= 0) and (p < 0) then
         p := i;
       if (Rrole[rnum].neigong[i] = mnum) then
         pm := i;
     end;
-    i:=pm;
-    if i<0 then i:=p;
-    if (i>=0) then
+    i := pm;
+    if i < 0 then
+      i := p;
+    if (i >= 0) then
     begin
       if (Rrole[rnum].neigong[i] <= 0) or (Rrole[rnum].neigong[i] = mnum) then
       begin
@@ -1064,18 +1066,19 @@ begin
   end
   else
   begin
-    p:=-1;
-    pm:=-1;
+    p := -1;
+    pm := -1;
     for i := 0 to 9 do
     begin
-      if (Rrole[rnum].Magic[i] <= 0) and (p<0) then
+      if (Rrole[rnum].Magic[i] <= 0) and (p < 0) then
         p := i;
       if (Rrole[rnum].Magic[i] = mnum) then
         pm := i;
     end;
-    i:=pm;
-    if i<0 then i:=p;
-    if (i>=0) then
+    i := pm;
+    if i < 0 then
+      i := p;
+    if (i >= 0) then
     begin
       if (Rrole[rnum].Magic[i] <= 0) or (Rrole[rnum].Magic[i] = mnum) then
       begin
@@ -2819,7 +2822,7 @@ begin
   Name_Y := Frame_Y + 7;
 
   if place > 2 then
-  place := 5 - place;
+    place := 5 - place;
 
   if place = 0 then //头像在左
   begin
@@ -5941,43 +5944,43 @@ begin
   //调整错位的内功
   for i1 := 0 to 9 do
   begin
-    if (rrole[rnum].Magic[i1] > 0) and (rmagic[rrole[rnum].Magic[i1]].HurtType = 3) then
+    if (Rrole[rnum].Magic[i1] > 0) and (Rmagic[Rrole[rnum].Magic[i1]].HurtType = 3) then
+    begin
+      for i2 := 0 to 3 do
+      begin
+        if (Rrole[rnum].NeiGong[i2] = Rrole[rnum].Magic[i1]) then
+          break;
+        if (Rrole[rnum].NeiGong[i2] <= 0) then
         begin
-          for i2:= 0 to 3 do
-          begin
-            if (rrole[rnum].NeiGong[i2]=rrole[rnum].Magic[i1]) then
-              break;
-            if (rrole[rnum].NeiGong[i2]<=0) then
-            begin
-              rrole[rnum].NeiGong[i2] := rrole[rnum].Magic[i1];
-              rrole[rnum].NGLevel[i2] := rrole[rnum].MagLevel[i1];
-              break;
-            end;
-          end;
-          rrole[rnum].Magic[i1]:=0;
-          rrole[rnum].MagLevel[i1]:=0;
+          Rrole[rnum].NeiGong[i2] := Rrole[rnum].Magic[i1];
+          Rrole[rnum].NGLevel[i2] := Rrole[rnum].MagLevel[i1];
+          break;
         end;
       end;
+      Rrole[rnum].Magic[i1] := 0;
+      Rrole[rnum].MagLevel[i1] := 0;
+    end;
+  end;
 
   for i1 := 0 to 3 do
   begin
-    if (rrole[rnum].NeiGong[i1] > 0) and (rmagic[rrole[rnum].NeiGong[i1]].HurtType <> 3) then
+    if (Rrole[rnum].NeiGong[i1] > 0) and (Rmagic[Rrole[rnum].NeiGong[i1]].HurtType <> 3) then
+    begin
+      for i2 := 0 to 9 do
+      begin
+        if (Rrole[rnum].Magic[i2] = Rrole[rnum].NeiGong[i1]) then
+          break;
+        if (Rrole[rnum].Magic[i2] <= 0) then
         begin
-          for i2:= 0 to 9 do
-          begin
-            if (rrole[rnum].Magic[i2]=rrole[rnum].NeiGong[i1]) then
-              break;
-            if (rrole[rnum].Magic[i2]<=0) then
-            begin
-              rrole[rnum].Magic[i2] := rrole[rnum].NeiGong[i1];
-              rrole[rnum].magLevel[i2] := rrole[rnum].NGLevel[i1];
-              break;
-            end;
-          end;
-          rrole[rnum].NeiGong[i1]:=0;
-          rrole[rnum].ngLevel[i1]:=0;
+          Rrole[rnum].Magic[i2] := Rrole[rnum].NeiGong[i1];
+          Rrole[rnum].magLevel[i2] := Rrole[rnum].NGLevel[i1];
+          break;
         end;
       end;
+      Rrole[rnum].NeiGong[i1] := 0;
+      Rrole[rnum].ngLevel[i1] := 0;
+    end;
+  end;
 end;
 
 procedure BookList;
@@ -6131,7 +6134,8 @@ begin
     end;}
     offset := TDEF.IDX[talknum];
     len := TDEF.IDX[talknum + 1] - offset;
-    if len < 0 then exit;
+    if len < 0 then
+      exit;
     setlength(talk, len + 1);
     move(TDEF.GRP[offset], talk[0], len);
     if needxor = 1 then
