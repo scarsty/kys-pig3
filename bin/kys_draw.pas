@@ -1478,7 +1478,7 @@ var
   p: PChar;
 begin
   //DrawRectangle(x, y, w, 26, 0, ColColor(255), alpha);
-  len := DrawLength(pWideChar(word));
+  len := DrawLength(PWideChar(word));
   len := max((w + 9) div 10, len);
   DrawTextFrame(x, y, len, alpha);
   DrawShadowText(word, x + 19, y + 3, color1, color2);
@@ -1505,11 +1505,11 @@ begin
       SDLK_RIGHT: r := 0;
     end;
     DrawTPic(27, VirtualKeyX, VirtualKeyY, nil, 0, u);
-    DrawTPic(29, VirtualKeyX - VirtualKeySize - VirtualKeySpace, VirtualKeyY +
-      VirtualKeySize + VirtualKeySpace, nil, 0, l);
+    DrawTPic(29, VirtualKeyX - VirtualKeySize - VirtualKeySpace, VirtualKeyY + VirtualKeySize +
+      VirtualKeySpace, nil, 0, l);
     DrawTPic(28, VirtualKeyX, VirtualKeyY + VirtualKeySize * 2 + VirtualKeySpace * 2, nil, 0, d);
-    DrawTPic(30, VirtualKeyX + VirtualKeySize + VirtualKeySpace, VirtualKeyY +
-      VirtualKeySize + VirtualKeySpace, nil, 0, r);
+    DrawTPic(30, VirtualKeyX + VirtualKeySize + VirtualKeySpace, VirtualKeyY + VirtualKeySize +
+      VirtualKeySpace, nil, 0, r);
   end;
 end;
 

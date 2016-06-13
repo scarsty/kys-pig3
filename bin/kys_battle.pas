@@ -213,7 +213,7 @@ begin
   if (battlenum <= high(BattleNames)) then
     str := BattleNames[battlenum]
   else
-    str := pWideChar(@warsta.Name[0]);
+    str := PWideChar(@warsta.Name[0]);
   DrawTextWithRect(puint16(str), CENTER_X - DrawLength(str) * 5 - 24, CENTER_Y - 150, 0,
     ColColor($14), ColColor($16));
   UpdateAllScreen;
@@ -309,7 +309,7 @@ begin
   if (battlenum <= high(BattleNames)) then
     str := BattleNames[battlenum]
   else
-    str := pWideChar(@warsta.Name[0]);
+    str := PWideChar(@warsta.Name[0]);
   DrawTextWithRect(puint16(str), CENTER_X - DrawLength(str) * 5 - 24, CENTER_Y - 150, 0,
     ColColor($14), ColColor($16));
   //DrawTitlePic(8, CENTER_X - 30, TitlePosition.y + 20);
@@ -580,7 +580,7 @@ begin
   begin
     if Teamlist[i] >= 0 then
     begin
-      menuString[i + 1] := pWideChar(@Rrole[Teamlist[i]].Name);
+      menuString[i + 1] := PWideChar(@Rrole[Teamlist[i]].Name);
       max := max + 1;
     end;
   end;
@@ -1064,7 +1064,7 @@ begin
                       if pnum > Rrole[Brole[bnum].rnum].DefPoi then
                       begin
                         Rrole[Brole[bnum].rnum].Poison := Rrole[Brole[bnum].rnum].Poison + pnum;
-                        ShowStringOnBrole(pWideChar(@Rmagic[neinum].Name) + UTF8Decode('·群毒'), i, 2);
+                        ShowStringOnBrole(PWideChar(@Rmagic[neinum].Name) + UTF8Decode('·群毒'), i, 2);
                         //if Rrole[brole[bnum].rnum].Poison>100 then Rrole[brole[bnum].rnum].Poison:=100;
                       end;
                     end;
@@ -1079,7 +1079,7 @@ begin
               if curepoi > Rrole[Brole[i].rnum].Poison then
                 curepoi := Rrole[Brole[i].rnum].Poison;
               if curepoi > 0 then
-                ShowStringOnBrole(pWideChar(@Rmagic[neinum].Name) + UTF8Decode('·化毒'), i, 4);
+                ShowStringOnBrole(PWideChar(@Rmagic[neinum].Name) + UTF8Decode('·化毒'), i, 4);
               Rrole[Brole[i].rnum].Poison := Rrole[Brole[i].rnum].Poison - curepoi;
               Rrole[Brole[i].rnum].CurrentMP := Rrole[Brole[i].rnum].CurrentMP + curepoi * neilevel;
               if Rrole[Brole[i].rnum].CurrentMP > Rrole[Brole[i].rnum].MaxMP then
@@ -1093,19 +1093,19 @@ begin
               begin
                 Brole[i].StateLevel[2] := 50;
                 Brole[i].StateRound[2] := 3;
-                ShowStringOnBrole(pWideChar(@Rmagic[neinum].Name) + UTF8Decode('·身輕'), i, 3);
+                ShowStringOnBrole(PWideChar(@Rmagic[neinum].Name) + UTF8Decode('·身輕'), i, 3);
               end;
               if random(100) > 50 then
               begin
                 Brole[i].StateLevel[3] := 5;
                 Brole[i].StateRound[3] := 3;
-                ShowStringOnBrole(pWideChar(@Rmagic[neinum].Name) + UTF8Decode('·速行'), i, 3);
+                ShowStringOnBrole(PWideChar(@Rmagic[neinum].Name) + UTF8Decode('·速行'), i, 3);
               end;
               if random(100) > 50 then
               begin
                 Brole[i].StateLevel[16] := 50;
                 Brole[i].StateRound[16] := 3;
-                ShowStringOnBrole(pWideChar(@Rmagic[neinum].Name) + UTF8Decode('·閃避'), i, 3);
+                ShowStringOnBrole(PWideChar(@Rmagic[neinum].Name) + UTF8Decode('·閃避'), i, 3);
               end;
             end;
 
@@ -1116,13 +1116,13 @@ begin
               begin
                 Brole[i].StateLevel[0] := 10 * neilevel;
                 Brole[i].StateRound[0] := 3;
-                ShowStringOnBrole(pWideChar(@Rmagic[neinum].Name) + UTF8Decode('·威力'), i, 3);
+                ShowStringOnBrole(PWideChar(@Rmagic[neinum].Name) + UTF8Decode('·威力'), i, 3);
               end;
               if random(100) > 50 then
               begin
                 Brole[i].StateLevel[1] := 10 * neilevel;
                 Brole[i].StateRound[1] := 3;
-                ShowStringOnBrole(pWideChar(@Rmagic[neinum].Name) + UTF8Decode('·剛體'), i, 3);
+                ShowStringOnBrole(PWideChar(@Rmagic[neinum].Name) + UTF8Decode('·剛體'), i, 3);
               end;
               Rrole[Brole[i].rnum].Hurt := Rrole[Brole[i].rnum].Hurt - 10 * neilevel;
               if Rrole[Brole[i].rnum].Hurt < 0 then
@@ -1150,7 +1150,7 @@ begin
                       Rrole[Brole[i].rnum].currentMP := Rrole[Brole[i].rnum].currentMP + pnum;
                       if Rrole[Brole[i].rnum].currentMP > Rrole[Brole[i].rnum].maxMP then
                         Rrole[Brole[i].rnum].currentMP := Rrole[Brole[i].rnum].maxMP;
-                      ShowStringOnBrole(pWideChar(@Rmagic[neinum].Name) + UTF8Decode('·納氣'), i, 1);
+                      ShowStringOnBrole(PWideChar(@Rmagic[neinum].Name) + UTF8Decode('·納氣'), i, 1);
                     end;
                   end;
                 end;
@@ -2803,36 +2803,36 @@ begin
       //特定武功加成
       if Rmagic[neinum].AttDistance[4] = mnum then
       begin
-        ShowStringOnBrole(pWideChar(@Rmagic[neinum].Name) + UTF8Decode('·威力'), bnum, 3);
+        ShowStringOnBrole(PWideChar(@Rmagic[neinum].Name) + UTF8Decode('·威力'), bnum, 3);
       end;
 
       //资质对武功加成, 段家心法
       if Rmagic[neinum].AttDistance[7] > 0 then
       begin
-        ShowStringOnBrole(pWideChar(@Rmagic[neinum].Name) + UTF8Decode('·威力'), bnum, 3);
+        ShowStringOnBrole(PWideChar(@Rmagic[neinum].Name) + UTF8Decode('·威力'), bnum, 3);
       end;
 
       //我方剩余人数加成, 神龙吟
       if Rmagic[neinum].AttDistance[9] > 0 then
       begin
-        ShowStringOnBrole(pWideChar(@Rmagic[neinum].Name) + UTF8Decode('·神威'), bnum, 3);
+        ShowStringOnBrole(PWideChar(@Rmagic[neinum].Name) + UTF8Decode('·神威'), bnum, 3);
       end;
 
       //对轻功加成的加成, 玉女心经
       if Rmagic[neinum].MoveDistance[8] > 0 then
       begin
-        ShowStringOnBrole(pWideChar(@Rmagic[neinum].Name) + UTF8Decode('·輕力'), bnum, 3);
+        ShowStringOnBrole(PWideChar(@Rmagic[neinum].Name) + UTF8Decode('·輕力'), bnum, 3);
       end;
 
       //对内功加成的加成
       if Rmagic[neinum].MoveDistance[6] > 0 then
       begin
-        ShowStringOnBrole(pWideChar(@Rmagic[neinum].Name) + UTF8Decode('·強内'), bnum, 3);
+        ShowStringOnBrole(PWideChar(@Rmagic[neinum].Name) + UTF8Decode('·強内'), bnum, 3);
       end;
     end;
 
     if lastng > 0 then
-      ShowStringOnBrole(pWideChar(@Rmagic[lastng].Name) + UTF8Decode('·加力'), bnum, 3);
+      ShowStringOnBrole(PWideChar(@Rmagic[lastng].Name) + UTF8Decode('·加力'), bnum, 3);
 
     ShowMagicName(mnum);
     PlaySoundA(Rmagic[mnum].SoundNum, 0);
@@ -2945,7 +2945,7 @@ begin
   Redraw;
   if (str = '') and (mnum >= 0) then
   begin
-    str := pWideChar(@Rmagic[mnum].Name);
+    str := PWideChar(@Rmagic[mnum].Name);
     color1 := ColColor($14);
     color2 := ColColor($16);
   end
@@ -3019,7 +3019,7 @@ begin
         ((Rmagic[Rrole[rnum].Magic[i]].NeedMP <= Rrole[rnum].CurrentMP)) then
       begin
         MenuStatus := MenuStatus or (1 shl i);
-        menuString[i] := pWideChar(@Rmagic[Rrole[rnum].Magic[i]].Name);
+        menuString[i] := PWideChar(@Rmagic[Rrole[rnum].Magic[i]].Name);
         menuEngString[i] := format('%3d', [Rrole[rnum].MagLevel[i] div 100 + 1]);
         max := max + 1;
       end;
@@ -3439,7 +3439,7 @@ begin
             hurt := hurt div 2;
             Rrole[Brole[i].rnum].CurrentMP := Rrole[Brole[i].rnum].CurrentMP + hurt;
             if mode = 1 then
-              ShowStringOnBrole(pWideChar(@Rmagic[neinum].Name) + UTF8Decode('·融功'), i, 1);
+              ShowStringOnBrole(PWideChar(@Rmagic[neinum].Name) + UTF8Decode('·融功'), i, 1);
             if Rrole[Brole[i].rnum].CurrentMP > Rrole[Brole[i].rnum].MaxMP then
               Rrole[Brole[i].rnum].CurrentMP := Rrole[Brole[i].rnum].MaxMP;
           end;
@@ -3481,7 +3481,7 @@ begin
                 Rrole[Brole[i].rnum].PhyPower :=
                   Rrole[Brole[i].rnum].PhyPower - Rmagic[neinum].AttDistance[6] * neilevel;
                 if mode = 1 then
-                  ShowStringOnBrole(pWideChar(@Rmagic[neinum].Name) + UTF8Decode('·殺體'), i, 2);
+                  ShowStringOnBrole(PWideChar(@Rmagic[neinum].Name) + UTF8Decode('·殺體'), i, 2);
                 if Rrole[Brole[i].rnum].PhyPower < 1 then
                   Rrole[Brole[i].rnum].PhyPower := 1;
               end;
@@ -3490,7 +3490,7 @@ begin
                 Rrole[Brole[i].rnum].CurrentMP :=
                   Rrole[Brole[i].rnum].CurrentMP - Rmagic[neinum].AttDistance[8] * neilevel;
                 if mode = 1 then
-                  ShowStringOnBrole(pWideChar(@Rmagic[neinum].Name) + UTF8Decode('·殺内'), i, 1);
+                  ShowStringOnBrole(PWideChar(@Rmagic[neinum].Name) + UTF8Decode('·殺内'), i, 1);
                 if Rrole[Brole[i].rnum].CurrentMP < 1 then
                   Rrole[Brole[i].rnum].CurrentMP := 1;
               end;
@@ -3499,7 +3499,7 @@ begin
                 Rrole[Brole[i].rnum].Hurt :=
                   Rrole[Brole[i].rnum].Hurt + 3 * neilevel;
                 if mode = 1 then
-                  ShowStringOnBrole(pWideChar(@Rmagic[neinum].Name) + UTF8Decode('·重傷'), i, 1);
+                  ShowStringOnBrole(PWideChar(@Rmagic[neinum].Name) + UTF8Decode('·重傷'), i, 1);
                 if Rrole[Brole[i].rnum].Hurt > 100 then
                   Rrole[Brole[i].rnum].Hurt := 100;
               end;
@@ -3747,7 +3747,7 @@ begin
       def := def * (100 + Rmagic[neinum].MoveDistance[4] + (Rmagic[neinum].MoveDistance[5] -
         Rmagic[neinum].MoveDistance[4]) * neilevel div 10) div 100;
       if mode = 1 then
-        ShowStringOnBrole(pWideChar(@Rmagic[neinum].Name) + UTF8Decode('·剛體'), bnum2, 3);
+        ShowStringOnBrole(PWideChar(@Rmagic[neinum].Name) + UTF8Decode('·剛體'), bnum2, 3);
     end;
   end;
 
@@ -4826,7 +4826,7 @@ begin
           Rrole[rnum1].Poison := min(Rrole[rnum1].Poison + Ritem[inum].AddPoi *
             (100 - Rrole[rnum1].DefPoi) div 100, 99);
           SetAminationPosition(0, 0, 0);
-          str := pWideChar(@Ritem[inum].Name);
+          str := PWideChar(@Ritem[inum].Name);
           ShowMagicName(inum, str);
           PlayActionAmination(bnum, 0);
           PlayMagicAmination(bnum, Ritem[inum].AmiNum);
@@ -4894,7 +4894,7 @@ begin
           Rrole[Brole[bnum].rnum].CurrentMP + Rrole[Brole[bnum].rnum].MaxMP *
           (Rmagic[neinum].AttDistance[0] + (Rmagic[neinum].AttDistance[1] - Rmagic[neinum].AttDistance[0]) *
           neilevel div 10) div 100;
-        ShowStringOnBrole(pWideChar(@Rmagic[neinum].Name) + UTF8Decode('·回内'), bnum, 3);
+        ShowStringOnBrole(PWideChar(@Rmagic[neinum].Name) + UTF8Decode('·回内'), bnum, 3);
       end;
       Rrole[Brole[bnum].rnum].CurrentMP := min(Rrole[Brole[bnum].rnum].CurrentMP, Rrole[Brole[bnum].rnum].MaxMP);
       if Rmagic[neinum].AttDistance[2] > 0 then
@@ -4903,13 +4903,13 @@ begin
           Rrole[Brole[bnum].rnum].CurrentHP + Rrole[Brole[bnum].rnum].MaxHP *
           (Rmagic[neinum].AttDistance[2] + (Rmagic[neinum].AttDistance[3] - Rmagic[neinum].AttDistance[2]) *
           neilevel div 10) div 100;
-        ShowStringOnBrole(pWideChar(@Rmagic[neinum].Name) + UTF8Decode('·回命'), bnum, 3);
+        ShowStringOnBrole(PWideChar(@Rmagic[neinum].Name) + UTF8Decode('·回命'), bnum, 3);
       end;
       Rrole[Brole[bnum].rnum].CurrentHP := min(Rrole[Brole[bnum].rnum].CurrentHP, Rrole[Brole[bnum].rnum].MaxHP);
       if Rmagic[neinum].AddMP[4] > 0 then
       begin
         Rrole[Brole[bnum].rnum].PhyPower := Rrole[Brole[bnum].rnum].PhyPower + Rmagic[neinum].AddMP[4];
-        ShowStringOnBrole(pWideChar(@Rmagic[neinum].Name) + UTF8Decode('·回體'), bnum, 3);
+        ShowStringOnBrole(PWideChar(@Rmagic[neinum].Name) + UTF8Decode('·回體'), bnum, 3);
       end;
       Rrole[Brole[bnum].rnum].PhyPower := min(Rrole[Brole[bnum].rnum].PhyPower, MAX_PHYSICAL_POWER);
     end;
@@ -5984,7 +5984,7 @@ begin
       amount := amount + 1;
       setlength(namestr, amount);
       setlength(a, amount);
-      namestr[amount - 1] := pWideChar(@Rrole[Brole[i].rnum].Name[0]);
+      namestr[amount - 1] := PWideChar(@Rrole[Brole[i].rnum].Name[0]);
       a[amount - 1] := i;
     end;
   end;
@@ -7733,7 +7733,7 @@ begin
     begin
       if (Brole[i].Team = Brole[bnum].Team) and (Brole[i].Dead = 1) then
       begin
-        menuString[amount] := pWideChar(@Rrole[Brole[i].rnum].Name);
+        menuString[amount] := PWideChar(@Rrole[Brole[i].rnum].Name);
         bnumarray[amount] := i;
         amount := amount + 1;
       end;
@@ -8525,8 +8525,8 @@ begin
           if Rrole[Brole[i].rnum].magic[i1] > 0 then
           begin
             mnumarray[amount] := Rrole[Brole[i].rnum].magic[i1];
-            namemagic := pWideChar(@Rrole[Brole[i].rnum].Name) + StringOfChar(' ', 10 -
-              DrawLength(PChar(@Rrole[Brole[i].rnum].Name))) + pWideChar(@Rmagic[Rrole[Brole[i].rnum].magic[i1]].Name);
+            namemagic := PWideChar(@Rrole[Brole[i].rnum].Name) + StringOfChar(' ', 10 -
+              DrawLength(PChar(@Rrole[Brole[i].rnum].Name))) + PWideChar(@Rmagic[Rrole[Brole[i].rnum].magic[i1]].Name);
             //menustring[amount] := pwidechar(@namemagic);
             menuString[amount] := namemagic;
             ConsoleLog(menuString[amount]);
@@ -8551,8 +8551,8 @@ begin
           if Rmagic[Rrole[rnum].magic[0]].HurtType = 2 then
           begin
             mnumarray[amount] := Rrole[rnum].magic[0];
-            namemagic := pWideChar(@Rrole[rnum].Name) + StringOfChar(' ', 10 -
-              DrawLength(pWideChar(@Rrole[rnum].Name))) + pWideChar(@Rmagic[Rrole[rnum].magic[0]].Name);
+            namemagic := PWideChar(@Rrole[rnum].Name) + StringOfChar(' ', 10 -
+              DrawLength(PWideChar(@Rrole[rnum].Name))) + PWideChar(@Rmagic[Rrole[rnum].magic[0]].Name);
             menuString[amount] := namemagic;
             ConsoleLog(menuString[amount]);
             amount := amount + 1;

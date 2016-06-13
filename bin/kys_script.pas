@@ -663,7 +663,7 @@ function SetItemIntro(L: Plua_state): integer; cdecl;
 var
   n, itemnum, i, len: integer;
   str: WideString;
-  p: pWideChar;
+  p: PWideChar;
 begin
   itemnum := lua_tointeger(L, -2);
   str := UTF8Decode(lua_tostring(L, -1));
@@ -1542,7 +1542,7 @@ function GetNameAsString(L: Plua_state): integer; cdecl;
 var
   str: string;
   typenum, num: integer;
-  p1: pWideChar;
+  p1: PWideChar;
 begin
   typenum := lua_tointeger(L, -2);
   num := lua_tointeger(L, -1);
@@ -1567,12 +1567,12 @@ var
   str: string;
   strw: WideString;
   typenum, num: integer;
-  p1: pWideChar;
+  p1: PWideChar;
   a: array of byte;
 begin
   num := lua_tointeger(L, -1);
   ReadTalk(num, a);
-  strw := pWideChar(a);
+  strw := PWideChar(a);
 
 {$IFDEF fpc}
   str := UTF8Encode(strw);
@@ -2251,7 +2251,7 @@ begin
     Result := length(str);
     for i := 0 to Result - 1 do
     begin
-      pWideChar(pos)^ := str[i + 1];
+      PWideChar(pos)^ := str[i + 1];
       Inc(pos);
     end;
   end;

@@ -1161,7 +1161,7 @@ var
   str0, str2: WideString;
   str, str1, Name: string;
   str3: string;
-  p0, p1: pWideChar;
+  p0, p1: PWideChar;
 {$ifdef android}
   env: PJNIEnv;
   jstr: jstring;
@@ -1231,8 +1231,8 @@ begin
       Inc(p0);
       Inc(p1);
     end;
-    DivideName(pWideChar(@Rrole[0].Name[0]), str2, str0);
-    ConsoleLog('%s, %s, %s', [WideString(pWideChar(@Rrole[0].Name[0])), str2, str0]);
+    DivideName(PWideChar(@Rrole[0].Name[0]), str2, str0);
+    ConsoleLog('%s, %s, %s', [WideString(PWideChar(@Rrole[0].Name[0])), str2, str0]);
     Redraw;
     str2 := '資質';
     repeat
@@ -1523,8 +1523,8 @@ begin
     if (zfile <> nil) then
     begin
       if (unzLocateFile(zfile, PChar(filenamer), 2) = UNZ_OK) and
-        (unzLocateFile(zfile, PChar(filenames), 2) = UNZ_OK) and (unzLocateFile(zfile, PChar(filenamed), 2) =
-        UNZ_OK) then
+        (unzLocateFile(zfile, PChar(filenames), 2) = UNZ_OK) and
+        (unzLocateFile(zfile, PChar(filenamed), 2) = UNZ_OK) then
       begin
         unzLocateFile(zfile, PChar(filenamer), 2);
         unzOpenCurrentFile(zfile);
@@ -1608,7 +1608,7 @@ begin
 
     ReSetEntrance;
 
-    RoleName[0] := pWideChar(@Rrole[0].Name[0]);
+    RoleName[0] := PWideChar(@Rrole[0].Name[0]);
     if MODVersion = 13 then
     begin
       BEGIN_MISSION_NUM := Rrole[650].Data[0];
@@ -1617,7 +1617,7 @@ begin
       for i := 0 to MISSION_AMOUNT - 1 do
       begin
         ReadTalk(BEGIN_MISSION_NUM + i, talkarray);
-        MissionStr[i] := pWideChar(@talkarray[0]);
+        MissionStr[i] := PWideChar(@talkarray[0]);
       end;
     end;
   end;
@@ -4289,7 +4289,7 @@ var
       end
       else
       begin
-        len := length(pWideChar(@Ritem[item].Introduction));
+        len := length(PWideChar(@Ritem[item].Introduction));
         DrawU16ShadowText(@Ritem[item].Introduction, 8 + xp, 47 + dt + yp, 0, $202020);
         //如有人使用则显示
         if Ritem[item].User >= 0 then
@@ -5085,7 +5085,7 @@ begin
           TransBlackScreen;
           UpdateAllScreen;
           str := '誰要裝備';
-          str1 := pWideChar(@Ritem[inum].Name);
+          str1 := PWideChar(@Ritem[inum].Name);
           off := DrawTextFrame(CENTER_X - 275, CENTER_Y - 193, 8 + DrawLength(str1));
           //DrawTextWithRect(@str[1], CENTER_X - 275, CENTER_Y - 193, length(str1) * 22 + 80, 0, $202020);
           DrawShadowText(@str[1], CENTER_X - 275 + off, CENTER_Y - 193 + 3,{160, 32,} 0, $202020);
@@ -5151,7 +5151,7 @@ begin
           TransBlackScreen;
           UpdateAllScreen;
           str := '誰要修煉';
-          str1 := pWideChar(@Ritem[inum].Name);
+          str1 := PWideChar(@Ritem[inum].Name);
           //DrawTextWithRect(@str[1], CENTER_X - 275, CENTER_Y - 193, length(str1) * 22 + 80, 0, $202020);
           off := DrawTextFrame(CENTER_X - 275, CENTER_Y - 193, 8 + DrawLength(str1));
           //DrawTextWithRect(@str[1], CENTER_X - 275, CENTER_Y - 193, length(str1) * 22 + 80, 0, $202020);
@@ -5211,7 +5211,7 @@ begin
         if teammate = -1 then
         begin
           str := '誰要服用';
-          str1 := pWideChar(@Ritem[inum].Name);
+          str1 := PWideChar(@Ritem[inum].Name);
           DrawTextWithRect(@str[1], CENTER_X - 275, CENTER_Y - 193, DrawLength(str1) * 10 + 80,
             0, $202020);
           DrawShadowText(@str1[1], CENTER_X - 275 + 99, CENTER_Y - 193 + 2,{160, 32,} ColColor($64), ColColor($66));
@@ -5635,7 +5635,7 @@ begin
     y := yp - 15;
 
     //显示姓名
-    Name := pWideChar(@Rrole[rnum].Name);
+    Name := PWideChar(@Rrole[rnum].Name);
     DrawTextWithRect(@Name[1], x + 58 - DrawLength(PChar(@Rrole[rnum].Name)) * 5, y + 180, 0,
       ColColor($64), ColColor($66), 0, 0);
 
@@ -7842,7 +7842,7 @@ begin
   yp := CENTER_Y - 240 + 70;
 
   //DrawRectangle(30 + xp, 100 + yp, 200, 25, 0, ColColor(255), 25);
-  DrawTextFrame(14 + xp, 99 + yp, 4 + DrawLength(pWideChar(@Ritem[inum].Name)));
+  DrawTextFrame(14 + xp, 99 + yp, 4 + DrawLength(PWideChar(@Ritem[inum].Name)));
   str := '服用';
   if Ritem[inum].ItemType = 2 then
     str := '練成';

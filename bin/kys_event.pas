@@ -64,7 +64,7 @@ function instruct_42(jump1, jump2: integer): integer;
 function instruct_43(inum, jump1, jump2: integer): integer;
 procedure instruct_44(enum1, beginpic1, endpic1, enum2, beginpic2, endpic2: integer);
 procedure instruct_44e(enum1, beginpic1, endpic1, enum2, beginpic2, enum3, beginpic3: integer);
-procedure Show3HintString(str1, str2, str3: pWideChar);
+procedure Show3HintString(str1, str2, str3: PWideChar);
 procedure AddRoleProWithHint(rnum, datalist, num: integer; word: WideString = '');
 procedure instruct_45(rnum, speed: integer);
 procedure instruct_46(rnum, mp: integer);
@@ -315,7 +315,7 @@ begin
 
   //DrawRectangle(x - 85, y, 170, 76, 0, ColColor(255), 30);
   word := UTF8Decode(format('%d', [amount]));
-  l1 := DrawLength(pWideChar(@Ritem[inum].Name));
+  l1 := DrawLength(PWideChar(@Ritem[inum].Name));
   l2 := DrawLength(word);
   DrawTextFrame(CENTER_X - (6 + l1 + l2) * 5 - 20, y, 6 + l1 + l2);
   x := CENTER_X - (6 + l1 + l2) * 5 + 1;
@@ -1115,7 +1115,7 @@ begin
   if iq > 0 then
   begin
     word := UTF8Decode('資質增加');
-    Show3HintString(@Rrole[rnum].Name, @word[1], pWideChar(UTF8Decode(format('%3d', [iq]))));
+    Show3HintString(@Rrole[rnum].Name, @word[1], PWideChar(UTF8Decode(format('%3d', [iq]))));
   end;
 end;
 
@@ -1290,7 +1290,7 @@ begin
   //SData[CurScence, 3, DData[CurScence, [enum,10],DData[CurScence, [enum,9]]:=-1;
 end;
 
-procedure Show3HintString(str1, str2, str3: pWideChar);
+procedure Show3HintString(str1, str2, str3: PWideChar);
 var
   l, l1, l2, l3, x: integer;
 begin
@@ -1317,7 +1317,7 @@ begin
   Rrole[rnum].Data[datalist] := Rrole[rnum].Data[datalist] + num;
   if word <> '' then
   begin
-    Show3HintString((@Rrole[rnum].Name), @word[1], pWideChar(UTF8Decode(format('%d', [num]))));
+    Show3HintString((@Rrole[rnum].Name), @word[1], PWideChar(UTF8Decode(format('%d', [num]))));
   end;
 end;
 
@@ -1380,7 +1380,7 @@ end;
 procedure ShowRolePro(rnum, datalist: integer; word: WideString);
 begin
   Redraw;
-  Show3HintString(pWideChar(''), pWideChar(word), pWideChar(UTF8Decode(format('%4d', [Rrole[rnum].Data[datalist]]))));
+  Show3HintString(PWideChar(''), PWideChar(word), PWideChar(UTF8Decode(format('%4d', [Rrole[rnum].Data[datalist]]))));
   //Redraw;
 end;
 
@@ -1814,7 +1814,7 @@ begin
       e4 := e_GetValue(0, e1, e4);
       pw := @x50[e2];
       pw1 := @x50[e3];
-      word := format(pWideChar(pw1), [e4]);
+      word := format(PWideChar(pw1), [e4]);
       //showmessage(pwidechar(pw1)+word);
       for i := 0 to length(word) - 1 do
       begin
@@ -1825,21 +1825,21 @@ begin
     end;
     10: //Get the length of a string.
     begin
-      x50[e2] := DrawLength(pWideChar(@x50[e1]));
+      x50[e2] := DrawLength(PWideChar(@x50[e1]));
       //showmessage(inttostr(x50[e2]));
     end;
     11: //Combine 2 strings.
     begin
       pw := @x50[e1];
       pw1 := @x50[e2];
-      for i := 0 to length(pWideChar(pw1)) - 1 do
+      for i := 0 to length(PWideChar(pw1)) - 1 do
       begin
         pw^ := pw1^;
         Inc(pw);
         Inc(pw1);
       end;
       pw1 := @x50[e3];
-      for i := 0 to length(pWideChar(pw1)) do
+      for i := 0 to length(PWideChar(pw1)) do
       begin
         pw^ := pw1^;
         Inc(pw);
@@ -2232,8 +2232,8 @@ begin
       for i := 0 to e2 - 1 do
       begin
         menuString[i] := '';
-        menuString[i] := pWideChar(@x50[x50[e3 + i]]);
-        i1 := DrawLength(pWideChar(@x50[x50[e3 + i]]));
+        menuString[i] := PWideChar(@x50[x50[e3 + i]]);
+        i1 := DrawLength(PWideChar(@x50[x50[e3 + i]]));
         if i1 > t1 then
           t1 := i1;
       end;
@@ -2250,8 +2250,8 @@ begin
       for i := 0 to e2 - 1 do
       begin
         menuString[i] := '';
-        menuString[i] := pWideChar(@x50[x50[e3 + i]]);
-        i1 := DrawLength(pWideChar(@x50[x50[e3 + i]]));
+        menuString[i] := PWideChar(@x50[x50[e3 + i]]);
+        i1 := DrawLength(PWideChar(@x50[x50[e3 + i]]));
         if i1 > i2 then
           i2 := i1;
       end;
@@ -2890,14 +2890,14 @@ begin
       ReadTalk(talknum, talk);
       //转为Unicode
       if length(Talk) > 0 then
-        TalkStr := pWideChar(@Talk[0])
+        TalkStr := PWideChar(@Talk[0])
       else
         TalkStr := '';
     end
     else
     begin
       if (-talknum >= low(x50)) and (-talknum <= high(x50)) then
-        TalkStr := pWideChar(@x50[-talknum])
+        TalkStr := PWideChar(@x50[-talknum])
       else
         TalkStr := '';
     end;
@@ -2946,11 +2946,11 @@ begin
     end;
 
     if (namenum = -2) or (namenum > 0) then
-      NameStr := pWideChar(@Name[0])
+      NameStr := PWideChar(@Name[0])
     else if (namenum = -1) or (namenum = 0) then
       NameStr := '';
     if {(MODVersion in [0, 31]) and} (namenum = 0) then
-      NameStr := pWideChar(@Rrole[0].Name);
+      NameStr := PWideChar(@Rrole[0].Name);
   end
   else
     NameStr := disname;
@@ -2966,7 +2966,7 @@ begin
   setlength(Name, 10);
   Move(Rrole[0].Name[0], Name[0], 10);
   //FullNameStr := UTF8Decode(CP950ToUTF8(PChar(@Name[0])));
-  FullNameStr := pWideChar(@Name[0]);
+  FullNameStr := PWideChar(@Name[0]);
 
 {$IFDEF fpc}
   //FullNameUTF8Str := UTF8Encode(FullNameStr);
@@ -3671,7 +3671,7 @@ begin
         temp := '  ';
       if TeamList[i] <> -1 then
       begin
-        temp := temp + pWideChar(@Rrole[TeamList[i]].Name[0]);
+        temp := temp + PWideChar(@Rrole[TeamList[i]].Name[0]);
         temp := temp + StringOfChar(' ', 12 - DrawLength(temp)) + IntToStr(Rrole[TeamList[i]].Level);
       end
       else
@@ -4021,7 +4021,7 @@ begin
     3: p := @Rmagic[inum].Name; //武功
     4: p := @Ritem[inum].Introduction; //物品说明
   end;
-  for i := 0 to length(pWideChar(talkarray)) * 2 - 1 do
+  for i := 0 to length(PWideChar(talkarray)) * 2 - 1 do
   begin
     (p + i)^ := (np + i)^;
   end;
@@ -4127,7 +4127,7 @@ var
 
       //简介
       ReadTalk(menu + 600, talkarray);
-      str1 := ' ' + pWideChar(@talkarray[0]);
+      str1 := ' ' + PWideChar(@talkarray[0]);
       pw := @str1[1];
       for i := 0 to length(str1) - 1 do
       begin
@@ -4141,7 +4141,7 @@ var
       i := 0;
       r1 := 0;
       c1 := 0;
-      len := length(pWideChar(pw));
+      len := length(PWideChar(pw));
       while i < len do
       begin
         pword[0] := puint16(pw)^;
@@ -5069,8 +5069,8 @@ begin
   if status > 0 then
   begin
     ReadTalk(talknum, talkarray);
-    namestr := pWideChar(@Rrole[0].Name[0]);
-    talkstr := ' ' + pWideChar(@talkarray[0]);
+    namestr := PWideChar(@Rrole[0].Name[0]);
+    talkstr := ' ' + PWideChar(@talkarray[0]);
     talkstr := ReplaceStr(talkstr, '&&', namestr);
     tp := @talkstr[1];
     ch := 0;
@@ -6004,7 +6004,7 @@ begin
       if Ritem[Ritemlist[i].Number].Magic >= 0 then
       begin
         j := j + 1;
-        menuString[j - 1] := ' ' + pWideChar(@Ritem[Ritemlist[i].Number].Name[0]);
+        menuString[j - 1] := ' ' + PWideChar(@Ritem[Ritemlist[i].Number].Name[0]);
         itemlist[j - 1] := Ritemlist[i].Number;
       end;
     end;
@@ -6263,7 +6263,7 @@ begin
     buy.BuyAmount[i] := 0;
     totalbuy[i] := 0;
     buy.HoldAmount[i] := GetItemAmount(sell.Item[i]);
-    menuString[i] := pWideChar(@Ritem[sell.Item[i]].Name);
+    menuString[i] := PWideChar(@Ritem[sell.Item[i]].Name);
   end;
 
   x := CENTER_X - 190;

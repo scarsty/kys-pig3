@@ -63,8 +63,8 @@ function GetPositionOnScreen(x, y, CenterX, CenterY: integer): TPosition;
 function Big5ToUnicode(str: PChar): WideString;
 function GBKToUnicode(str: PChar): WideString;
 function PCharToUnicode(str: PChar; len: integer = -1): WideString;
-function UnicodeToBig5(str: pWideChar): string;
-function UnicodeToGBK(str: pWideChar): string;
+function UnicodeToBig5(str: PWideChar): string;
+function UnicodeToGBK(str: PWideChar): string;
 procedure DrawText(word: puint16; x_pos, y_pos: integer; color: uint32; engwidth: integer = -1);
 procedure DrawEngText(word: puint16; x_pos, y_pos: integer; color: uint32);
 procedure DrawShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32;
@@ -137,7 +137,7 @@ procedure Big5ToU16(p: PChar);
 
 //字串的绘制长度
 function DrawLength(str: WideString): integer; overload;
-function DrawLength(p: pWideChar): integer; overload;
+function DrawLength(p: PWideChar): integer; overload;
 function DrawLength(p: PChar): integer; overload;
 //颜色
 function MapRGBA(r, g, b: byte; a: byte = 255): uint32;
@@ -642,7 +642,7 @@ begin
 {$ELSE}
   len := MultiByteToWideChar(950, 0, PChar(str), -1, nil, 0);
   setlength(Result, len - 1);
-  MultiByteToWideChar(950, 0, PChar(str), length(str), pWideChar(Result), len + 1);
+  MultiByteToWideChar(950, 0, PChar(str), length(str), PWideChar(Result), len + 1);
 {$ENDIF}
 end;
 
@@ -655,13 +655,13 @@ begin
 {$ELSE}
   len := MultiByteToWideChar(950, 0, PChar(str), -1, nil, 0);
   setlength(Result, len - 1);
-  MultiByteToWideChar(950, 0, PChar(str), length(str), pWideChar(Result), len + 1);
+  MultiByteToWideChar(950, 0, PChar(str), length(str), PWideChar(Result), len + 1);
 {$ENDIF}
 end;
 
 function PCharToUnicode(str: PChar; len: integer = -1): WideString;
 begin
-  Result := pWideChar(str);
+  Result := PWideChar(str);
   if len >= 0 then
   begin
     if length(Result) > len then
@@ -671,32 +671,32 @@ end;
 
 //unicode转为big5, 仅用于输入姓名
 
-function UnicodeToBig5(str: pWideChar): string;
+function UnicodeToBig5(str: PWideChar): string;
 var
   len: integer;
 begin
 {$IFDEF fpc}
   Result := UTF8ToCP950((str));
 {$ELSE}
-  len := WideCharToMultiByte(950, 0, pWideChar(str), -1, nil, 0, nil, nil);
+  len := WideCharToMultiByte(950, 0, PWideChar(str), -1, nil, 0, nil, nil);
   setlength(Result, len + 1);
-  WideCharToMultiByte(950, 0, pWideChar(str), -1, PChar(Result), len + 1, nil, nil);
+  WideCharToMultiByte(950, 0, PWideChar(str), -1, PChar(Result), len + 1, nil, nil);
 {$ENDIF}
 
 end;
 
 //unicode转为GBK, 仅用于输入姓名
 
-function UnicodeToGBK(str: pWideChar): string;
+function UnicodeToGBK(str: PWideChar): string;
 var
   len: integer;
 begin
 {$IFDEF fpc}
   Result := UTF8ToCP936((str));
 {$ELSE}
-  len := WideCharToMultiByte(936, 0, pWideChar(str), -1, nil, 0, nil, nil);
+  len := WideCharToMultiByte(936, 0, PWideChar(str), -1, nil, 0, nil, nil);
   setlength(Result, len + 1);
-  WideCharToMultiByte(936, 0, pWideChar(str), -1, PChar(Result), len + 1, nil, nil);
+  WideCharToMultiByte(936, 0, PWideChar(str), -1, PChar(Result), len + 1, nil, nil);
 {$ENDIF}
 
 end;
@@ -859,7 +859,7 @@ begin
   //此处删除这些0, 同时统计这些0的数目, 若与字串长度相同
   //即认为是一个纯英文字串, 或者是一个直接赋值的widestring,
   //需要再编码为Unicode, 否则即认为已经是Unicode
-  len := length(pWideChar(word));
+  len := length(PWideChar(word));
   setlength(word1, len * 2 + 1);
   p1 := @word1[1];
   p2 := pbyte(word);
@@ -903,7 +903,7 @@ begin
 
   if SIMPLE = 1 then
   begin
-    t := Traditional2Simplified(pWideChar(word));
+    t := Traditional2Simplified(PWideChar(word));
     word := puint16(t);
   end;
 
@@ -1056,7 +1056,7 @@ begin
 {$ELSE}
   len := MultiByteToWideChar(950, 0, PChar(str), -1, nil, 0);
   setlength(words, len - 1);
-  MultiByteToWideChar(950, 0, PChar(str), length(str), pWideChar(words), len + 1);
+  MultiByteToWideChar(950, 0, PChar(str), length(str), PWideChar(words), len + 1);
 {$ENDIF}
   DrawText(@words[1], x_pos, y_pos, color);
 
@@ -1074,7 +1074,7 @@ begin
 {$ELSE}
   len := MultiByteToWideChar(950, 0, PChar(word), -1, nil, 0);
   setlength(words, len - 1);
-  MultiByteToWideChar(950, 0, PChar(word), length(word), pWideChar(words), len + 1);
+  MultiByteToWideChar(950, 0, PChar(word), length(word), PWideChar(words), len + 1);
 {$ENDIF}
   DrawShadowText(@words[1], x_pos + 1, y_pos, color1, color2);
 
@@ -1092,7 +1092,7 @@ begin
 {$ELSE}
   len := MultiByteToWideChar(950, 0, PChar(word), -1, nil, 0);
   setlength(words, len - 1);
-  MultiByteToWideChar(950, 0, PChar(word), length(word), pWideChar(words), len + 1);
+  MultiByteToWideChar(950, 0, PChar(word), length(word), PWideChar(words), len + 1);
 {$ENDIF}
   DrawShadowText(@words[1], x_pos + 1, y_pos, color1, color2);
 
@@ -1104,7 +1104,7 @@ procedure DrawU16ShadowText(word: PChar; x_pos, y_pos: integer; color1, color2: 
 var
   words: WideString;
 begin
-  words := pWideChar(word);
+  words := PWideChar(word);
   DrawShadowText(@words[1], x_pos + 1, y_pos, color1, color2);
 
 end;
@@ -3720,10 +3720,10 @@ function DrawLength(str: WideString): integer; overload;
 var
   l, i: integer;
 begin
-  Result := DrawLength(pWideChar(@str[1]));
+  Result := DrawLength(PWideChar(@str[1]));
 end;
 
-function DrawLength(p: pWideChar): integer; overload;
+function DrawLength(p: PWideChar): integer; overload;
 var
   l, i, Count, c: integer;
   str: string;
@@ -3764,7 +3764,7 @@ end;
 
 function DrawLength(p: PChar): integer; overload;
 begin
-  Result := DrawLength(pWideChar(p));
+  Result := DrawLength(PWideChar(p));
 end;
 
 //顺序ARGB
