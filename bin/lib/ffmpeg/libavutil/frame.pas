@@ -281,7 +281,7 @@ type
     pict_type: TAVPictureType;
 
 {$IFDEF FF_API_AVFRAME_LAVC}
-    base: array [0..AV_NUM_DATA_POINTERS - 1] of pbyte; {deprecated}
+    //base: array [0..AV_NUM_DATA_POINTERS - 1] of pbyte; {deprecated}
 {$ENDIF}
 
     (**
@@ -322,24 +322,24 @@ type
     quality: cint;
 
 {$IFDEF FF_API_AVFRAME_LAVC}
-    reference: cint; {deprecated}
+    //reference: cint; {deprecated}
 
     (**
      * QP table
      *)
-    qscale_table: pbyte; {deprecated}
+    //qscale_table: pbyte; {deprecated}
 
     (**
      * QP store stride
      *)
-    qstride: cint; {deprecated}
-    qscale_type: cint; {deprecated}
+    //qstride: cint; {deprecated}
+    //qscale_type: cint; {deprecated}
 
     (**
      * mbskip_table[mb]>=1 if MB didn't change
      * stride= mb_width = (width+15)>>4
      *)
-    mbskip_table: pbyte; {deprecated}
+    //mbskip_table: pbyte; {deprecated}
 
     (**
      * motion vector table
@@ -351,24 +351,24 @@ type
      * motion_val[direction][x + y*mv_stride][0->mv_x, 1->mv_y];
      * @endcode
      *)
-    motion_val: array [0..1] of pointer;
+    //motion_val: array [0..1] of pointer;
 
     (**
      * macroblock type table
      * mb_type_base + mb_width + 2
      *)
-    mb_type: PCuint; {deprecated}
+    //mb_type: PCuint; {deprecated}
 
     (**
      * DCT coefficients
      *)
-    dct_coeff: PsmallInt; {deprecated}
+    //dct_coeff: PsmallInt; {deprecated}
 
     (**
      * motion reference frame index
      * the order in which these are stored can depend on the codec.
      *)
-    ref_index: array [0..1] of pbyte; {deprecated}
+    //ref_index: array [0..1] of pbyte; {deprecated}
 {$ENDIF}
 
     (**
@@ -382,7 +382,7 @@ type
     error: array [0..AV_NUM_DATA_POINTERS - 1] of cuint64;
 
 {$IFDEF FF_API_AVFRAME_LAVC}
-    type_: cint; {deprecated}
+    //type_: cint; {deprecated}
 {$ENDIF}
 
     (**
@@ -407,11 +407,11 @@ type
     palette_has_changed: cint;
 
 {$IFDEF FF_API_AVFRAME_LAVC}
-    buffer_hints: cint; {deprecated}
+    //buffer_hints: cint; {deprecated}
     (**
      * Pan scan.
      *)
-    pan_scan: PAVPanScan; {deprecated}
+    //pan_scan: PAVPanScan; {deprecated}
 {$ENDIF}
 
     (**
@@ -429,15 +429,15 @@ type
     (**
      * @deprecated this field is unused
      *)
-    hwaccel_picture_private: pointer; {deprecated}
-    owner: pointer; {deprecated} (** Note: Should be a PAVCodecContext, but a type pointer is used to avoid a reference problem. *)
-    thread_opaque: pointer; {deprecated}
+    //hwaccel_picture_private: pointer; {deprecated}
+    //owner: pointer; {deprecated} (** Note: Should be a PAVCodecContext, but a type pointer is used to avoid a reference problem. *)
+    //thread_opaque: pointer; {deprecated}
 
     (**
      * log2 of the size of the block which a single vector in motion_val represents:
      * (4->16x16, 3->8x8, 2-> 4x4, 1-> 2x2)
      *)
-    motion_subsample_log2: cuint8; {deprecated}
+    //motion_subsample_log2: cuint8; {deprecated}
 {$ENDIF}
 
     (**

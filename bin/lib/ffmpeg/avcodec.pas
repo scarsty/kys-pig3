@@ -2203,7 +2203,7 @@ type
      * - encoding: Set by user; unused for constant quantizer encoding.
      * - decoding: Set by libavcodec. 0 or some bitrate if this info is available in the stream.
      *)
-    bit_rate: cint;
+    bit_rate: cint64;
 
     (**
      * number of bits the bitstream is allowed to diverge from the reference.

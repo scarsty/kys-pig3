@@ -104,22 +104,22 @@ const
   // with IncludeConstants undefined and in UConfig.pas with
   // IncludeConstants defined (see the note above).
 {$IF Defined(MSWindows)}
-  av__codec = 'avcodec-56';
+  av__codec = 'ffmpeg';
   LIBAVCODEC_VERSION_MAJOR   = 56;
   LIBAVCODEC_VERSION_MINOR   = 21;
   LIBAVCODEC_VERSION_RELEASE = 102;
 
-  av__format = 'avformat-56';
+  av__format = 'ffmpeg';
   LIBAVFORMAT_VERSION_MAJOR   = 56;
   LIBAVFORMAT_VERSION_MINOR   = 19;
   LIBAVFORMAT_VERSION_RELEASE = 100;
 
-  av__util = 'avutil-54';
+  av__util = 'ffmpeg';
   LIBAVUTIL_VERSION_MAJOR   = 54;
   LIBAVUTIL_VERSION_MINOR   = 18;
   LIBAVUTIL_VERSION_RELEASE = 100;
 
-  sw__resample = 'swresample-1';
+  sw__resample = 'ffmpeg';
   LIBRESAMPLE_VERSION_MAJOR = 1;
   LIBRESAMPLE_VERSION_MINOR = 1;
   LIBRESAMPLE_VERSION_RELEASE = 100;
