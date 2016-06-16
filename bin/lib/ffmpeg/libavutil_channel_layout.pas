@@ -1,4 +1,7 @@
 (*
+ * Copyright (c) 2006 Michael Niedermayer <michaelni@gmx.at>
+ * Copyright (c) 2008 Peter Ross
+ *
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -14,22 +17,67 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with FFmpeg; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- *
- * This is a part of the Pascal port of ffmpeg.
- * - Changes and updates by the UltraStar Deluxe Team
- *
- * Conversion of libavutil/channel_layout.h and libavcodec/audioconvert.h
- * avutil version 52.66.100; avcodec version 55.52.102
- *
  *)
-
-(** libavutil/channel_layout.h **)
 
 (**
  * @file
- * audio  channel layout utility functions
+ * audio channel layout utility functions
  *)
 
+(*
+ * FFVCL - Delphi FFmpeg VCL Components
+ * http://www.DelphiFFmpeg.com
+ *
+ * Original file: libavcore/audioconvert.h
+ * Ported by CodeCoolie@CNSW 2010/11/24 -> 2011-01-21
+ * Original file: libavutil/audioconvert.h
+ * Ported by CodeCoolie@CNSW 2011/07/02 -> 2013-01-19
+ * Original file: libavutil/channel_layout.h
+ * Ported by CodeCoolie@CNSW 2013/01/14 -> $Date:: 2014-08-22 #$
+ *)
+
+(*
+FFmpeg Delphi/Pascal Headers and Examples License Agreement
+
+A modified part of FFVCL - Delphi FFmpeg VCL Components.
+Copyright (c) 2008-2014 DelphiFFmpeg.com
+All rights reserved.
+http://www.DelphiFFmpeg.com
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+This source code is provided "as is" by DelphiFFmpeg.com without
+warranty of any kind, either expressed or implied, including but not
+limited to the implied warranties of merchantability and/or fitness
+for a particular purpose.
+
+Please also notice the License agreement of FFmpeg libraries.
+*)
+
+unit libavutil_channel_layout;
+
+interface
+
+{$I CompilerDefines.inc}
+
+uses
+  libavutil_bprint;
+
+{$I libversion.inc}
+
+(**
+ * @addtogroup lavu_audio
+ * @{
+ *)
+
+const
 (**
  * @defgroup channel_masks Audio channel masks
  *
@@ -40,10 +88,8 @@
  * combinations that have the same channel multiple times, such as
  * dual-mono.
  *
+ * @{
  *)
-
-const
-  {* Audio channel masks *}
   AV_CH_FRONT_LEFT             = $00000001;
   AV_CH_FRONT_RIGHT            = $00000002;
   AV_CH_FRONT_CENTER           = $00000004;
@@ -64,21 +110,20 @@ const
   AV_CH_TOP_BACK_RIGHT         = $00020000;
   AV_CH_STEREO_LEFT            = $20000000;  ///< Stereo downmix.
   AV_CH_STEREO_RIGHT           = $40000000;  ///< See AV_CH_STEREO_LEFT.
-  AV_CH_WIDE_LEFT: cuint64             = $0000000080000000;
-  AV_CH_WIDE_RIGHT: cuint64            = $0000000100000000;
-  AV_CH_SURROUND_DIRECT_LEFT: cuint64  = $0000000200000000;
-  AV_CH_SURROUND_DIRECT_RIGHT: cuint64 = $0000000400000000;
-  AV_CH_LOW_FREQUENCY_2: cuint64       = $0000000800000000;
+  AV_CH_WIDE_LEFT              = Int64($0000000080000000);
+  AV_CH_WIDE_RIGHT             = Int64($0000000100000000);
+  AV_CH_SURROUND_DIRECT_LEFT   = Int64($0000000200000000);
+  AV_CH_SURROUND_DIRECT_RIGHT  = Int64($0000000400000000);
+  AV_CH_LOW_FREQUENCY_2        = Int64($0000000800000000);
 
 (** Channel mask value used for AVCodecContext.request_channel_layout
- *  to indicate that the user requests the channel order of the decoder output
- *  to be the native codec channel order.
- *)
-  AV_CH_LAYOUT_NATIVE          = $8000000000000000;
+    to indicate that the user requests the channel order of the decoder output
+    to be the native codec channel order. *)
+  AV_CH_LAYOUT_NATIVE          = Int64($8000000000000000);
 
 (**
  * @}
- * @defgroup channel_mask_c Audio channel convenience macros
+ * @defgroup channel_mask_c Audio channel layouts
  * @{
  * *)
   AV_CH_LAYOUT_MONO            = (AV_CH_FRONT_CENTER);
@@ -93,28 +138,24 @@ const
   AV_CH_LAYOUT_QUAD            = (AV_CH_LAYOUT_STEREO or AV_CH_BACK_LEFT or AV_CH_BACK_RIGHT);
   AV_CH_LAYOUT_5POINT0         = (AV_CH_LAYOUT_SURROUND or AV_CH_SIDE_LEFT or AV_CH_SIDE_RIGHT);
   AV_CH_LAYOUT_5POINT1         = (AV_CH_LAYOUT_5POINT0 or AV_CH_LOW_FREQUENCY);
-  AV_CH_LAYOUT_5POINT0_BACK    = (AV_CH_LAYOUT_SURROUND or AV_CH_BACK_LEFT or 
-                                  AV_CH_BACK_RIGHT);
+  AV_CH_LAYOUT_5POINT0_BACK    = (AV_CH_LAYOUT_SURROUND or AV_CH_BACK_LEFT or AV_CH_BACK_RIGHT);
   AV_CH_LAYOUT_5POINT1_BACK    = (AV_CH_LAYOUT_5POINT0_BACK or AV_CH_LOW_FREQUENCY);
   AV_CH_LAYOUT_6POINT0         = (AV_CH_LAYOUT_5POINT0 or AV_CH_BACK_CENTER);
-  AV_CH_LAYOUT_6POINT0_FRONT   = (AV_CH_LAYOUT_2_2 or AV_CH_FRONT_LEFT_OF_CENTER or 
-                                  AV_CH_FRONT_RIGHT_OF_CENTER);
+  AV_CH_LAYOUT_6POINT0_FRONT   = (AV_CH_LAYOUT_2_2 or AV_CH_FRONT_LEFT_OF_CENTER or AV_CH_FRONT_RIGHT_OF_CENTER);
   AV_CH_LAYOUT_HEXAGONAL       = (AV_CH_LAYOUT_5POINT0_BACK or AV_CH_BACK_CENTER);
   AV_CH_LAYOUT_6POINT1         = (AV_CH_LAYOUT_5POINT1 or AV_CH_BACK_CENTER);
   AV_CH_LAYOUT_6POINT1_BACK    = (AV_CH_LAYOUT_5POINT1_BACK or AV_CH_BACK_CENTER);
   AV_CH_LAYOUT_6POINT1_FRONT   = (AV_CH_LAYOUT_6POINT0_FRONT or AV_CH_LOW_FREQUENCY);
   AV_CH_LAYOUT_7POINT0         = (AV_CH_LAYOUT_5POINT0 or AV_CH_BACK_LEFT or AV_CH_BACK_RIGHT);
-  AV_CH_LAYOUT_7POINT0_FRONT   = (AV_CH_LAYOUT_5POINT0 or AV_CH_FRONT_LEFT_OF_CENTER or 
-                                  AV_CH_FRONT_RIGHT_OF_CENTER);
+  AV_CH_LAYOUT_7POINT0_FRONT   = (AV_CH_LAYOUT_5POINT0 or AV_CH_FRONT_LEFT_OF_CENTER or AV_CH_FRONT_RIGHT_OF_CENTER);
   AV_CH_LAYOUT_7POINT1         = (AV_CH_LAYOUT_5POINT1 or AV_CH_BACK_LEFT or AV_CH_BACK_RIGHT);
-  AV_CH_LAYOUT_7POINT1_WIDE    = (AV_CH_LAYOUT_5POINT1 or AV_CH_FRONT_LEFT_OF_CENTER or 
-                                  AV_CH_FRONT_RIGHT_OF_CENTER);
-  AV_CH_LAYOUT_OCTAGONAL       = (AV_CH_LAYOUT_5POINT0 or AV_CH_BACK_LEFT or AV_CH_BACK_CENTER or 
-                                  AV_CH_BACK_RIGHT);
+  AV_CH_LAYOUT_7POINT1_WIDE    = (AV_CH_LAYOUT_5POINT1 or AV_CH_FRONT_LEFT_OF_CENTER or AV_CH_FRONT_RIGHT_OF_CENTER);
+  AV_CH_LAYOUT_7POINT1_WIDE_BACK=(AV_CH_LAYOUT_5POINT1_BACK or AV_CH_FRONT_LEFT_OF_CENTER or AV_CH_FRONT_RIGHT_OF_CENTER);
+  AV_CH_LAYOUT_OCTAGONAL       = (AV_CH_LAYOUT_5POINT0 or AV_CH_BACK_LEFT or AV_CH_BACK_CENTER or AV_CH_BACK_RIGHT);
   AV_CH_LAYOUT_STEREO_DOWNMIX  = (AV_CH_STEREO_LEFT or AV_CH_STEREO_RIGHT);
 
 type
-  AVMatrixEncoding = (
+  TAVMatrixEncoding = (
     AV_MATRIX_ENCODING_NONE,
     AV_MATRIX_ENCODING_DOLBY,
     AV_MATRIX_ENCODING_DPLII,
@@ -123,7 +164,7 @@ type
     AV_MATRIX_ENCODING_DOLBYEX,
     AV_MATRIX_ENCODING_DOLBYHEADPHONE,
     AV_MATRIX_ENCODING_NB
-    );
+  );
 
 (**
  * Return a channel layout id that matches name, or 0 if no match is found.
@@ -140,10 +181,14 @@ type
  * - a channel layout mask, in hexadecimal starting with "0x" (see the
  *   AV_CH_* macros).
  *
- * Example: "stereo+FC" = "2+FC" = "2c+1c" = "0x7"
+ * @warning Starting from the next major bump the trailing character
+ * 'c' to specify a number of channels will be required, while a
+ * channel layout mask could also be specified as a decimal number
+ * (if and only if not followed by "c").
+ *
+ * Example: "stereo+FC" = "2c+FC" = "2c+1c" = "0x7"
  *)
-function av_get_channel_layout(name: {const} PAnsiChar): cuint64;
-  cdecl; external av__util;
+function av_get_channel_layout(const name: PAnsiChar): Int64; cdecl; external AVUTIL_LIBNAME name _PU + 'av_get_channel_layout';
 
 (**
  * Return a description of a channel layout.
@@ -152,43 +197,28 @@ function av_get_channel_layout(name: {const} PAnsiChar): cuint64;
  * @param buf put here the string containing the channel layout
  * @param buf_size size in bytes of the buffer
  *)
-procedure av_get_channel_layout_string(buf: PAnsiChar; buf_size: cint; nb_channels: cint; channel_layout: cuint64);
-  cdecl; external av__util;
+procedure av_get_channel_layout_string(buf: PAnsiChar; buf_size, nb_channels: Integer; channel_layout: Int64); cdecl; external AVUTIL_LIBNAME name _PU + 'av_get_channel_layout_string';
 
-type
-// Type definition from libavutil/bprint.h
-// The actual record is padded to a certain number of bytes.
-// As of now (2013) this number is 1024.
-  PAVBPrint = ^TAVBPrint;
-  TAVBPrint = record
-    //case integer of
-    //0 : paddedRecord: array[1..1024] of byte;
-    //1 : begin
-        str: PAnsiChar;  //** string so far */
-        len: cuint;      //** length so far */
-        size: cuint;     //** allocated memory */
-        size_max: cuint; //** maximum allocated memory */
-        reserved_internal_buffer: Pchar;	
-//	end;
-  end;
+//  PAVBPrint = ^TAVBPrint;
+//  TAVBPrint = record
+    // need {$ALIGN 8}
+    // defined in libavutil/bprint.h
+//  end;
 
 (**
  * Append a description of a channel layout to a bprint buffer.
  *)
-procedure av_bprint_channel_layout(bp: PAVBPrint; nb_channels: cint; channel_layout: cuint64);
-  cdecl; external av__util;
+procedure av_bprint_channel_layout(bp: PAVBPrint; nb_channels: Integer; channel_layout: Int64); cdecl; external AVUTIL_LIBNAME name _PU + 'av_bprint_channel_layout';
 
 (**
  * Return the number of channels in the channel layout.
  *)
-function av_get_channel_layout_nb_channels(channel_layout: cuint64): cint;
-  cdecl; external av__util;
+function av_get_channel_layout_nb_channels(channel_layout: Int64): Integer; cdecl; external AVUTIL_LIBNAME name _PU + 'av_get_channel_layout_nb_channels';
 
 (**
  * Return default channel layout for a given number of channels.
  *)
-function av_get_default_channel_layout(nb_channels: cint): cint64;
-  cdecl; external av__util;
+function av_get_default_channel_layout(nb_channels: Integer): Int64; cdecl; external AVUTIL_LIBNAME name _PU + 'av_get_default_channel_layout';
 
 (**
  * Get the index of a channel in channel_layout.
@@ -199,23 +229,19 @@ function av_get_default_channel_layout(nb_channels: cint): cint64;
  * @return index of channel in channel_layout on success, a negative AVERROR
  *         on error.
  *)
-function av_get_channel_layout_channel_index(channel_layout: cuint64;
-                                             channel: cuint64): cint;
-  cdecl; external av__util;
+function av_get_channel_layout_channel_index(channel_layout, channel: Int64): Integer; cdecl; external AVUTIL_LIBNAME name _PU + 'av_get_channel_layout_channel_index';
 
 (**
  * Get the channel with the given index in channel_layout.
  *)
-function av_channel_layout_extract_channel(channel_layout: cuint64; index: cint): cuint64;
-  cdecl; external av__util;
+function av_channel_layout_extract_channel(channel_layout: Int64; index: Integer): Int64; cdecl; external AVUTIL_LIBNAME name _PU + 'av_channel_layout_extract_channel';
 
 (**
  * Get the name of a given channel.
  *
  * @return channel name on success, NULL on error.
  *)
-function av_get_channel_name(channel: cuint64): PAnsiChar;
-  cdecl; external av__util;
+function av_get_channel_name(channel: Int64): PAnsiChar; cdecl; external AVUTIL_LIBNAME name _PU + 'av_get_channel_name';
 
 (**
  * Get the description of a given channel.
@@ -223,8 +249,7 @@ function av_get_channel_name(channel: cuint64): PAnsiChar;
  * @param channel  a channel layout with a single channel
  * @return  channel description on success, NULL on error
  *)
-function av_get_channel_description(channel: cuint64): PAnsiChar;
-  cdecl; external av__util;
+function av_get_channel_description(channel: Int64): PAnsiChar; cdecl; external AVUTIL_LIBNAME name _PU + 'av_get_channel_description';
 
 (**
  * Get the value and name of a standard channel layout.
@@ -235,58 +260,14 @@ function av_get_channel_description(channel: cuint64): PAnsiChar;
  * @return  0  if the layout exists,
  *          <0 if index is beyond the limits
  *)
-function av_get_standard_channel_layout(index: cuint; layout: Pcuint64;
-                                   name: {const} PPAnsiChar): cint;
-  cdecl; external av__util;
-
-{$IFDEF FF_API_AUDIO_CONVERT}
-  
-(** libavcodec/audioconvert.h **)
-
-// type definition from libavcodec/audioconvert.c
-type
-  PAVAudioConvert = ^TAVAudioConvert;
-  TAVAudioConvert = record
-    in_channels, out_channels: cint;
-    fmt_pair: cint;
-  end;
+function av_get_standard_channel_layout(index: Cardinal; layout: PInt64;
+                                                  const name: PPAnsiChar): Integer; cdecl; external AVUTIL_LIBNAME name _PU + 'av_get_standard_channel_layout';
 
 (**
- * Create an audio sample format converter context
- * @param out_fmt Output sample format
- * @param out_channels Number of output channels
- * @param in_fmt Input sample format
- * @param in_channels Number of input channels
- * @param[in] matrix Channel mixing matrix (of dimension in_channel*out_channels). Set to NULL to ignore.
- * @param flags See AV_CPU_FLAG_xx
- * @return NULL on error
+ * @}
+ * @}
  *)
-function av_audio_convert_alloc(out_fmt: TAVSampleFormat; out_channels: cint;
-                                in_fmt:  TAVSampleFormat; in_channels:  cint;
-                                matrix: {const} Pcfloat; flags: cint): PAVAudioConvert;
-  cdecl; external av__codec;
 
-(**
- * Free audio sample format converter context
- *)
-procedure av_audio_convert_free(ctx: PAVAudioConvert);
-  cdecl; external av__codec;
+implementation
 
-type
-  P6 = array [1..6] of pointer;
-  I6 = array [1..6] of cint;
-
-(**
- * Convert between audio sample formats
- * @param[in] out array of output buffers for each channel. set to NULL to ignore processing of the given channel.
- * @param[in] out_stride distance between consecutive output samples (measured in bytes)
- * @param[in] in array of input buffers for each channel
- * @param[in] in_stride distance between consecutive input samples (measured in bytes)
- * @param len length of audio frame size (measured in samples)
- *)
-function av_audio_convert(ctx: PAVAudioConvert;
-                          out_: {const} P6; out_stride: {const} I6;
-                           in_: {const} P6;  in_stride: {const} I6; len: cint): cint;
-  cdecl; external av__codec;
-
-{$IFEND}
+end.

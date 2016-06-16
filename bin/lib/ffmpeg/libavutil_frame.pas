@@ -1,102 +1,92 @@
 (*
- * AVOptions
- * copyright (c) 2005 Michael Niedermayer <michaelni@gmx.at>
  *
- * This library is free software; you can redistribute it and/or
+ * This file is part of FFmpeg.
+ *
+ * FFmpeg is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  *
- * This library is distributed in the hope that it will be useful,
+ * FFmpeg is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
+ * License along with FFmpeg; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ *)
+
+(**
+ * @file
+ * @ingroup lavu_frame
+ * reference-counted frame API
+ *)
+
+(*
+ * FFVCL - Delphi FFmpeg VCL Components
+ * http://www.DelphiFFmpeg.com
  *
- * This is a part of Pascal porting of ffmpeg.
- * - Originally by Victor Zinetz for Delphi and Free Pascal on Windows.
- * - For Mac OS X, some modifications were made by The Creative CAT, denoted as CAT
- *   in the source codes.
- * - Changes and updates by the UltraStar Deluxe Team
- *
- * Conversion of libavutil/frame.h
- * avutil version 54.7.100
- *
+ * Original file: libavutil/frame.h
+ * Ported by CodeCoolie@CNSW 2013/10/22 -> $Date:: 2015-03-24 #$
+ *)
+
+(*
+FFmpeg Delphi/Pascal Headers and Examples License Agreement
+
+A modified part of FFVCL - Delphi FFmpeg VCL Components.
+Copyright (c) 2008-2014 DelphiFFmpeg.com
+All rights reserved.
+http://www.DelphiFFmpeg.com
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+This source code is provided "as is" by DelphiFFmpeg.com without
+warranty of any kind, either expressed or implied, including but not
+limited to the implied warranties of merchantability and/or fitness
+for a particular purpose.
+
+Please also notice the License agreement of FFmpeg libraries.
 *)
+
+unit libavutil_frame;
+
+interface
+
+{$I CompilerDefines.inc}
+
+uses
+  FFTypes,
+  libavutil,
+  libavutil_buffer,
+  libavutil_dict,
+  libavutil_pixfmt,
+  libavutil_rational;
+
+{$I libversion.inc}
 
 const
   AV_NUM_DATA_POINTERS = 8;
-
-    (** from the definitions of TAVFrame *)
-
-    (**
-     * The frame data may be corrupted, e.g. due to decoding errors.
-     *)
-  AV_FRAME_FLAG_CORRUPT = (1 << 0);
-
+  AV_FRAME_FLAG_CORRUPT     =  (1 shl 0);
   FF_DECODE_ERROR_INVALID_BITSTREAM = 1;
   FF_DECODE_ERROR_MISSING_REFERENCE = 2;
 
-
 type
-(* is already in pixfmt.pas
-  TAVColorSpace = (
-    AVCOL_SPC_RGB         = 0,
-    AVCOL_SPC_BT709       = 1,  ///< also ITU-R BT1361 / IEC 61966-2-4 xvYCC709 / SMPTE RP177 Annex B
-    AVCOL_SPC_UNSPECIFIED = 2,
-    AVCOL_SPC_FCC         = 4,
-    AVCOL_SPC_BT470BG     = 5,  ///< also ITU-R BT601-6 625 / ITU-R BT1358 625 / ITU-R BT1700 625 PAL & SECAM / IEC 61966-2-4 xvYCC601
-    AVCOL_SPC_SMPTE170M   = 6,  ///< also ITU-R BT601-6 525 / ITU-R BT1358 525 / ITU-R BT1700 NTSC / functionally identical to above
-    AVCOL_SPC_SMPTE240M_  = 7,
-    AVCOL_SPC_YCGCO       = 8,  ///< Used by Dirac / VC-2 and H.264 FRext, see ITU-T SG16
-    AVCOL_SPC_BT2020_NCL  = 9,  ///< ITU-R BT2020 non-constant luminance system
-    AVCOL_SPC_BT2020_CL   = 10, ///< ITU-R BT2020 constant luminance system
-    AVCOL_SPC_NB                ///< Not part of ABI
-  );
-
-  TAVColorRange = (
-    AVCOL_RANGE_UNSPECIFIED = 0,
-    AVCOL_RANGE_MPEG        = 1, ///< the normal 219*2^(n-8) "MPEG" YUV ranges
-    AVCOL_RANGE_JPEG        = 2, ///< the normal     2^n-1   "JPEG" YUV ranges
-    AVCOL_RANGE_NB               ///< Not part of ABI
-  );
-*)
-
-(* Note: AVPanScan is defined in avcodec.h but is here to avoid reference problems - Brian-ch 28/09/2014
+(**
+ * @defgroup lavu_frame AVFrame
+ * @ingroup lavu_data
  *
- * Pan Scan area.
- * This specifies the area which should be displayed.
- * Note there may be multiple such areas for one frame.
+ * @{
+ * AVFrame is an abstraction for reference-counted raw multimedia data.
  *)
-  PAVPanScan = ^TAVPanScan;
-  TAVPanScan = record {24}
-    (*** id.
-     * - encoding: set by user.
-     * - decoding: set by libavcodec. *)
-    id: cint;
 
-    (*** width and height in 1/16 pel
-     * - encoding: set by user.
-     * - decoding: set by libavcodec. *)
-    width: cint;
-    height: cint;
-
-    (*** position of the top left corner in 1/16 pel for up to 3 fields/frames.
-     * - encoding: set by user.
-     * - decoding: set by libavcodec. *)
-    position: array [0..2] of array [0..1] of cint16;
-  end; {TAVPanScan}
-  
-  (**
-   * @defgroup lavu_frame AVFrame
-   * @ingroup lavu_data
-   *
-   * @
-   * AVFrame is an abstraction for reference-counted raw multimedia data.
-   *)  
   TAVFrameSideDataType = (
     (**
      * The data is the AVPanScan struct defined in libavcodec.
@@ -157,10 +147,16 @@ type
      * u8    reason for end   skip (0=padding silence, 1=convergence)
      * @endcode
      *)
-    AV_FRAME_DATA_SKIP_SAMPLES
+    AV_FRAME_DATA_SKIP_SAMPLES,
+
+    (**
+     * This side data must be associated with an audio frame and corresponds to
+     * enum AVAudioServiceType defined in avcodec.h.
+     *)
+    AV_FRAME_DATA_AUDIO_SERVICE_TYPE
   );
 
-	TAVActiveFormatDescription = (
+  TAVActiveFormatDescription = (
     AV_AFD_SAME         = 8,
     AV_AFD_4_3          = 9,
     AV_AFD_16_9         = 10,
@@ -168,15 +164,15 @@ type
     AV_AFD_4_3_SP_14_9  = 13,
     AV_AFD_16_9_SP_14_9 = 14,
     AV_AFD_SP_4_3       = 15
-	); {TAVActiveFormatDescription}
-
+  );
+  PPAVFrameSideData = ^PAVFrameSideData;
   PAVFrameSideData = ^TAVFrameSideData;
   TAVFrameSideData = record
     type_: TAVFrameSideDataType;
-    data:  PByte;
-    size:  cint;
-    metadata: TAVDictionary;
-  end; {TAVFrameSideData}
+    data: PByte;
+    size: Integer;
+    metadata: PAVDictionary;
+  end;
 
 (**
  * This structure describes decoded (raw) audio or video data.
@@ -206,10 +202,11 @@ type
  * Similarly fields that are marked as to be only accessed by
  * av_opt_ptr() can be reordered. This allows 2 forks to add fields
  * without breaking compatibility with each other.
-*)
+ *)
   PPAVFrame = ^PAVFrame;
   PAVFrame = ^TAVFrame;
   TAVFrame = record
+//#define AV_NUM_DATA_POINTERS 8
     (**
      * pointer to the picture/channel planes.
      * This might be different from the first allocated byte
@@ -219,7 +216,7 @@ type
      * up to 16 bytes beyond the planes, if these filters are to be used,
      * then 16 extra bytes must be allocated.
      *)
-    data: array [0..AV_NUM_DATA_POINTERS - 1] of pbyte;
+    data: array[0..AV_NUM_DATA_POINTERS-1] of PByte;
 
     (**
      * For video, size in bytes of each picture line.
@@ -236,7 +233,7 @@ type
      * @note The linesize may be larger than the size of usable data -- there
      * may be extra padding present for performance reasons.
      *)
-    linesize: array [0..AV_NUM_DATA_POINTERS - 1] of cint;
+    linesize: array[0..AV_NUM_DATA_POINTERS-1] of Integer;
 
     (**
      * pointers to the data planes/channels.
@@ -248,98 +245,98 @@ type
      * For packed audio, there is just one data pointer, and linesize[0]
      * contains the total size of the buffer for all channels.
      *
-     * Note: Both data and extended_data will always be set by get_buffer(),
+     * Note: Both data and extended_data should always be set in a valid frame,
      * but for planar audio with more channels that can fit in data,
      * extended_data must be used in order to access all channels.
      *)
-    extended_data: ^pbyte;
+    extended_data: PPByte;
 
     (**
      * width and height of the video frame
      *)
-    width, height: cint;
+    width, height: Integer;
+
     (**
      * number of audio samples (per channel) described by this frame
      *)
-    nb_samples: cint;
+    nb_samples: Integer;
 
     (**
      * format of the frame, -1 if unknown or unset
      * Values correspond to enum AVPixelFormat for video frames,
      * enum AVSampleFormat for audio)
      *)
-    format: cint;
+    format: Integer;
 
     (**
      * 1 -> keyframe, 0-> not
      *)
-    key_frame: cint;
+    key_frame: Integer;
 
     (**
-     * Picture type of the frame
+     * Picture type of the frame.
      *)
     pict_type: TAVPictureType;
 
 {$IFDEF FF_API_AVFRAME_LAVC}
-    //base: array [0..AV_NUM_DATA_POINTERS - 1] of pbyte; {deprecated}
+    base: array[0..AV_NUM_DATA_POINTERS-1] of PByte;
 {$ENDIF}
 
     (**
-     * sample aspect ratio for the video frame, 0/1 if unknown/unspecified
+     * Sample aspect ratio for the video frame, 0/1 if unknown/unspecified.
      *)
     sample_aspect_ratio: TAVRational;
 
     (**
-     * presentation timestamp in time_base units (time when frame should be shown to user)
+     * Presentation timestamp in time_base units (time when frame should be shown to user).
      *)
-    pts: cint64;
+    pts: Int64;
 
     (**
-     * pts copied from the AVPacket that was decoded to produce this frame
+     * PTS copied from the AVPacket that was decoded to produce this frame.
      *)
-    pkt_pts: cint64;
+    pkt_pts: Int64;
 
     (**
      * DTS copied from the AVPacket that triggered returning this frame. (if frame threading isn't used)
      * This is also the Presentation time of this AVFrame calculated from
      * only AVPacket.dts values without pts values.
      *)
-    pkt_dts: cint64;
+    pkt_dts: Int64;
 
     (**
      * picture number in bitstream order
      *)
-    coded_picture_number: cint;
-
+    coded_picture_number: Integer;
     (**
      * picture number in display order
      *)
-    display_picture_number: cint;
+    display_picture_number: Integer;
 
     (**
      * quality (between 1 (good) and FF_LAMBDA_MAX (bad))
      *)
-    quality: cint;
+    quality: Integer;
 
 {$IFDEF FF_API_AVFRAME_LAVC}
-    //reference: cint; {deprecated}
+    reference: Integer;
 
     (**
      * QP table
      *)
-    //qscale_table: pbyte; {deprecated}
-
+    qscale_table: PByte;
     (**
      * QP store stride
      *)
-    //qstride: cint; {deprecated}
-    //qscale_type: cint; {deprecated}
+    qstride: Integer;
+
+    qscale_type: Integer;
 
     (**
      * mbskip_table[mb]>=1 if MB didn't change
      * stride= mb_width = (width+15)>>4
      *)
-    //mbskip_table: pbyte; {deprecated}
+    mbskip_table: PByte;
 
     (**
      * motion vector table
@@ -351,67 +348,68 @@ type
      * motion_val[direction][x + y*mv_stride][0->mv_x, 1->mv_y];
      * @endcode
      *)
-    //motion_val: array [0..1] of pointer;
+    motion_val: array[0..1] of Pointer; // int16_t (*motion_val[2])[2];
 
     (**
      * macroblock type table
      * mb_type_base + mb_width + 2
      *)
-    //mb_type: PCuint; {deprecated}
+    mb_type: PCardinal; // uint32_t *mb_type;
 
     (**
      * DCT coefficients
      *)
-    //dct_coeff: PsmallInt; {deprecated}
+    dct_coeff: PSmallInt;
 
     (**
      * motion reference frame index
      * the order in which these are stored can depend on the codec.
      *)
-    //ref_index: array [0..1] of pbyte; {deprecated}
+    ref_index: array[0..1] of PByte;
 {$ENDIF}
 
     (**
      * for some private data of the user
      *)
-    opaque: pointer;
+    opaque: Pointer;
 
     (**
      * error
      *)
-    error: array [0..AV_NUM_DATA_POINTERS - 1] of cuint64;
+    error: array[0..AV_NUM_DATA_POINTERS-1] of Int64;
 
 {$IFDEF FF_API_AVFRAME_LAVC}
-    //type_: cint; {deprecated}
+    ttype: Integer;
 {$ENDIF}
 
     (**
      * When decoding, this signals how much the picture must be delayed.
      * extra_delay = repeat_pict / (2*fps)
      *)
-    repeat_pict: cint;
+    repeat_pict: Integer;
 
     (**
      * The content of the picture is interlaced.
      *)
-    interlaced_frame: cint;
+    interlaced_frame: Integer;
 
     (**
      * If the content is interlaced, is top field displayed first.
      *)
-    top_field_first: cint;
+    top_field_first: Integer;
 
     (**
      * Tell user application that palette has changed from previous frame.
      *)
-    palette_has_changed: cint;
+    palette_has_changed: Integer;
 
 {$IFDEF FF_API_AVFRAME_LAVC}
-    //buffer_hints: cint; {deprecated}
+    buffer_hints: Integer;
+
     (**
      * Pan scan.
      *)
-    //pan_scan: PAVPanScan; {deprecated}
+    pan_scan: Pointer; // libavcodec.PAVPanScan;
 {$ENDIF}
 
     (**
@@ -423,36 +421,39 @@ type
      * to exactly one of the values provided by the user through AVCodecContext.reordered_opaque
      * @deprecated in favor of pkt_pts
      *)
-    reordered_opaque: cint64;
+    reordered_opaque: Int64;
 
 {$IFDEF FF_API_AVFRAME_LAVC}
     (**
      * @deprecated this field is unused
      *)
-    //hwaccel_picture_private: pointer; {deprecated}
-    //owner: pointer; {deprecated} (** Note: Should be a PAVCodecContext, but a type pointer is used to avoid a reference problem. *)
-    //thread_opaque: pointer; {deprecated}
+    hwaccel_picture_private: Pointer;
+
+    owner: Pointer; // libavcodec.PAVCodecContext;
+    thread_opaque: Pointer;
 
     (**
      * log2 of the size of the block which a single vector in motion_val represents:
      * (4->16x16, 3->8x8, 2-> 4x4, 1-> 2x2)
      *)
-    //motion_subsample_log2: cuint8; {deprecated}
+    motion_subsample_log2: Byte;
 {$ENDIF}
 
     (**
      * Sample rate of the audio data.
      *)
-    sample_rate: cint;
+    sample_rate: Integer;
 
     (**
      * Channel layout of the audio data.
      *)
-    channel_layout: cuint64;
+    channel_layout: Int64;
 
     (**
      * AVBuffer references backing the data for this frame. If all elements of
-     * this array are NULL, then this frame is not reference counted.
+     * this array are NULL, then this frame is not reference counted. This array
+     * must be filled contiguously -- if buf[i] is non-NULL then buf[j] must
+     * also be non-NULL for all j < i.
      *
      * There may be at most one AVBuffer per data plane, so for video this array
      * always contains all the references. For planar audio with more than
@@ -460,7 +461,7 @@ type
      * this array. Then the extra AVBufferRef pointers are stored in the
      * extended_buf array.
      *)
-    buf: array [0..AV_NUM_DATA_POINTERS - 1] of PAVBufferRef;
+    buf: array[0..AV_NUM_DATA_POINTERS - 1] of PAVBufferRef;
 
     (**
      * For planar audio which requires more than AV_NUM_DATA_POINTERS
@@ -475,26 +476,33 @@ type
      * the frame. It is freed in av_frame_unref().
      *)
     extended_buf: PPAVBufferRef;
-
     (**
      * Number of elements in extended_buf.
      *)
-    nb_extended_buf: cint;
+    nb_extended_buf: Integer;
 
-    side_data: ^PAVFrameSideData;
-    nb_side_data: cint;
+    side_data: PPAVFrameSideData;
+    nb_side_data: Integer;
 
-    (**
-     * @defgroup lavu_frame_flags AV_FRAME_FLAGS
-     * Flags describing additional frame properties.
-     *
-     * @
-     *)
+(**
+ * @defgroup lavu_frame_flags AV_FRAME_FLAGS
+ * Flags describing additional frame properties.
+ *
+ * @{
+ *)
+
+(**
+ * The frame data may be corrupted, e.g. due to decoding errors.
+ *)
+//#define AV_FRAME_FLAG_CORRUPT       (1 << 0)
+(**
+ * @}
+ *)
 
     (**
      * Frame flags, a combination of @ref lavu_frame_flags
      *)
-    flags: cint;
+    flags: Integer;
 
     (**
      * MPEG vs JPEG YUV range.
@@ -527,7 +535,7 @@ type
      * - encoding: unused
      * - decoding: set by libavcodec, read by user.
      *)
-    best_effort_timestamp: cint64;
+    best_effort_timestamp: Int64;
 
     (**
      * reordered pos from the last AVPacket that has been input into the decoder
@@ -536,7 +544,7 @@ type
      * - encoding: unused
      * - decoding: Read by user.
      *)
-    pkt_pos: cint64;
+    pkt_pos: Int64;
 
     (**
      * duration of the corresponding packet, expressed in
@@ -546,7 +554,7 @@ type
      * - encoding: unused
      * - decoding: Read by user.
      *)
-    pkt_duration: cint64;
+    pkt_duration: Int64;
 
     (**
      * metadata.
@@ -566,7 +574,9 @@ type
      * - encoding: unused
      * - decoding: set by libavcodec, read by user.
      *)
-    decode_error_flags: cint;
+    decode_error_flags: Integer;
+//#define FF_DECODE_ERROR_INVALID_BITSTREAM   1
+//#define FF_DECODE_ERROR_MISSING_REFERENCE   2
 
     (**
      * number of audio channels, only used for audio.
@@ -575,7 +585,7 @@ type
      * - encoding: unused
      * - decoding: Read by user.
      *)
-    channels: cint;
+    channels: Integer;
 
     (**
      * size of the corresponding packet containing the compressed
@@ -585,74 +595,50 @@ type
      * - encoding: unused
      * - decoding: set by libavcodec, read by user.
      *)
-    pkt_size: cint;
+    pkt_size: Integer;
 
     (**
      * Not to be accessed directly from outside libavutil
      *)
     qp_table_buf: PAVBufferRef;
-  end; {TAVFrame}
+  end;
 
 (**
  * Accessors for some AVFrame fields.
  * The position of these field in the structure is not part of the ABI,
  * they should not be accessed directly outside libavcodec.
  *)
-function  av_frame_get_best_effort_timestamp(frame: {const} PAVFrame): cint64;
-  cdecl; external av__codec; overload;
-procedure av_frame_set_best_effort_timestamp(frame: PAVFrame; val: cint64);
-  cdecl; external av__codec; overload;
-function  av_frame_get_pkt_duration         (frame: {const} PAVFrame): cint64;
-  cdecl; external av__codec; overload;
-procedure av_frame_get_pkt_duration         (frame: PAVFrame; val: cint64);
-  cdecl; external av__codec; overload;
-function  av_frame_get_pkt_pos              (frame: {const} PAVFrame): cint64;
-  cdecl; external av__codec; overload;
-procedure av_frame_get_pkt_pos              (frame: PAVFrame; val: cint64);
-  cdecl; external av__codec; overload;
-function  av_frame_get_channel_layout       (frame: {const} PAVFrame): cint64;
-  cdecl; external av__codec; overload;
-procedure av_frame_get_channel_layout       (frame: PAVFrame; val: cint64);
-  cdecl; external av__codec; overload;
-function  av_frame_get_channels             (frame: {const} PAVFrame): cint;
-  cdecl; external av__codec;
-procedure av_frame_set_channels             (frame: PAVFrame; val: cint);
-  cdecl; external av__codec;
-function  av_frame_get_sample_rate          (frame: {const} PAVFrame): cint;
-  cdecl; external av__codec;
-procedure av_frame_set_sample_rate          (frame: PAVFrame; val: cint);
-  cdecl; external av__codec;
-function  av_frame_get_metadata             (frame: {const} PAVFrame): PAVDictionary;
-  cdecl; external av__codec;
-procedure av_frame_set_metadata             (frame: PAVFrame; val: PAVDictionary);
-  cdecl; external av__codec;
-function  av_frame_get_decode_error_flags   (frame: {const} PAVFrame): cint;
-  cdecl; external av__codec;
-procedure av_frame_set_decode_error_flags   (frame: PAVFrame; val: cint);
-  cdecl; external av__codec;
-function  av_frame_get_pkt_size             (frame: {const} PAVFrame): cint;
-  cdecl; external av__codec;
-procedure av_frame_set_pkt_size             (frame: PAVFrame; val: cint);
-  cdecl; external av__codec;
-function avpriv_frame_get_metadatap(frame: PAVFrame): PPAVDictionary;
-  cdecl; external av__codec;
-function av_frame_get_qp_table(f: PAVFrame; stride: pcint; type_: pcint): PByte;
-  cdecl; external av__codec;
-function av_frame_set_qp_table(f: PAVFrame; buf: PAVBufferRef; stride: cint; type_: cint): cint;
-  cdecl; external av__codec;
-function av_frame_get_colorspace(frame: {const} PAVFrame): TAVColorSpace;
-  cdecl; external av__codec;
-procedure av_frame_set_colorspace(frame: PAVFrame; val: TAVColorSpace);
-  cdecl; external av__codec;
-procedure av_frame_set_color_range(frame: PAVFrame; val: TAVColorSpace);
-  cdecl; external av__codec;
+function av_frame_get_best_effort_timestamp(const frame: PAVFrame): Int64; cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_get_best_effort_timestamp';
+procedure av_frame_set_best_effort_timestamp(frame: PAVFrame; val: Int64); cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_set_best_effort_timestamp';
+function av_frame_get_pkt_duration(const frame: PAVFrame): Int64; cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_get_pkt_duration';
+procedure av_frame_set_pkt_duration(frame: PAVFrame; val: Int64); cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_set_pkt_duration';
+function av_frame_get_pkt_pos(const frame: PAVFrame): Int64; cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_get_pkt_pos';
+procedure av_frame_set_pkt_pos(frame: PAVFrame; val: Int64); cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_set_pkt_pos';
+function av_frame_get_channel_layout(const frame: PAVFrame): Int64; cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_get_channel_layout';
+procedure av_frame_set_channel_layout(frame: PAVFrame; val: Int64); cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_set_channel_layout';
+function av_frame_get_channels(const frame: PAVFrame): Integer; cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_get_channels';
+procedure av_frame_set_channels(frame: PAVFrame; val: Integer); cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_set_channels';
+function av_frame_get_sample_rate(const frame: PAVFrame): Integer; cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_get_sample_rate';
+procedure av_frame_set_sample_rate(frame: PAVFrame; val: Integer); cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_set_sample_rate';
+function av_frame_get_metadata(const frame: PAVFrame): PAVDictionary; cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_get_metadata';
+procedure av_frame_set_metadata(frame: PAVFrame; val: PAVDictionary); cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_set_metadata';
+function av_frame_get_decode_error_flags(const frame: PAVFrame): Integer; cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_get_decode_error_flags';
+procedure av_frame_set_decode_error_flags(frame: PAVFrame; val: Integer); cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_set_decode_error_flags';
+function av_frame_get_pkt_size(const frame: PAVFrame): Integer; cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_get_pkt_size';
+procedure av_frame_set_pkt_size(frame: PAVFrame; val: Integer); cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_set_pkt_size';
+function avpriv_frame_get_metadatap(frame: PAVFrame): PPAVDictionary; cdecl; external AVUTIL_LIBNAME name _PU + 'avpriv_frame_get_metadatap';
+function av_frame_get_qp_table(f: PAVFrame; stride, type_: PInteger): PByte; cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_get_qp_table';
+function av_frame_set_qp_table(f: PAVFrame; buf: PAVBufferRef; stride, type_: Integer): Integer; cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_set_qp_table';
+function av_frame_get_colorspace(const frame: PAVFrame): TAVColorSpace; cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_get_colorspace';
+procedure av_frame_set_colorspace(frame: PAVFrame; val: TAVColorSpace); cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_set_colorspace';
+function av_frame_get_color_range(const frame: PAVFrame): TAVColorRange; cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_get_color_range';
+procedure av_frame_set_color_range(frame: PAVFrame; val: TAVColorRange); cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_set_color_range';
 
 (**
  * Get the name of a colorspace.
  * @return a static string identifying the colorspace; can be NULL.
  *)
-function av_get_colorspace_name(val: TAVColorSpace): PAnsiChar;
-  cdecl; external av__codec;
+function av_get_colorspace_name(val: TAVColorSpace): PAnsiChar; cdecl; external AVUTIL_LIBNAME name _PU + 'av_get_colorspace_name';
 
 (**
  * Allocate an AVFrame and set its fields to default values.  The resulting
@@ -664,8 +650,7 @@ function av_get_colorspace_name(val: TAVColorSpace): PAnsiChar;
  * must be allocated through other means, e.g. with av_frame_get_buffer() or
  * manually.
  *)
-function av_frame_alloc(): PAVFrame;
-  cdecl; external av__codec;
+function av_frame_alloc(): PAVFrame; cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_alloc';
 
 (**
  * Free the frame and any dynamically allocated objects in it,
@@ -674,8 +659,7 @@ function av_frame_alloc(): PAVFrame;
  *
  * @param frame frame to be freed. The pointer will be set to NULL.
  *)
-procedure av_frame_free(frame: PPAVFrame);
-  cdecl; external av__codec;
+procedure av_frame_free(frame: PPAVFrame); cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_free';
 
 (**
  * Set up a new reference to the data described by the source frame.
@@ -688,8 +672,7 @@ procedure av_frame_free(frame: PPAVFrame);
  *
  * @return 0 on success, a negative AVERROR on error
  *)
-function av_frame_ref(dst: PAVFrame; src: {const} PAVFrame): cint;
-  cdecl; external av__codec;
+function av_frame_ref(dst: PAVFrame; const src: PAVFrame): Integer; cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_ref';
 
 (**
  * Create a new frame that references the same data as src.
@@ -698,20 +681,17 @@ function av_frame_ref(dst: PAVFrame; src: {const} PAVFrame): cint;
  *
  * @return newly created AVFrame on success, NULL on error.
  *)
-function av_frame_clone(src: {const} PAVFrame): PAVFrame;
-  cdecl; external av__codec;
+function av_frame_clone(const src: PAVFrame): PAVFrame; cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_clone';
 
 (**
  * Unreference all the buffers referenced by frame and reset the frame fields.
  *)
-procedure av_frame_unref(frame: PAVFrame);
-  cdecl; external av__codec;
+procedure av_frame_unref(frame: PAVFrame); cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_unref';
 
 (**
  * Move everythnig contained in src to dst and reset src.
  *)
-procedure av_frame_move_ref(dst, src: PAVFrame);
-  cdecl; external av__codec;
+procedure av_frame_move_ref(dst, src: PAVFrame); cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_move_ref';
 
 (**
  * Allocate new buffer(s) for audio or video data.
@@ -730,8 +710,7 @@ procedure av_frame_move_ref(dst, src: PAVFrame);
  *
  * @return 0 on success, a negative AVERROR on error.
  *)
-function av_frame_get_buffer(frame: PAVFrame; align: cint): cint;
-  cdecl; external av__codec;
+function av_frame_get_buffer(frame: PAVFrame; align: Integer): Integer; cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_get_buffer';
 
 (**
  * Check if the frame data is writable.
@@ -745,8 +724,7 @@ function av_frame_get_buffer(frame: PAVFrame; align: cint): cint;
  *
  * @see av_frame_make_writable(), av_buffer_is_writable()
  *)
-function av_frame_is_writable(frame: PAVFrame): cint;
-  cdecl; external av__codec;
+function av_frame_is_writable(frame: PAVFrame): Integer; cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_is_writable';
 
 (**
  * Ensure that the frame data is writable, avoiding data copy if possible.
@@ -759,8 +737,7 @@ function av_frame_is_writable(frame: PAVFrame): cint;
  * @see av_frame_is_writable(), av_buffer_is_writable(),
  * av_buffer_make_writable()
  *)
-function av_frame_make_writable(frame: PAVFrame): cint;
-  cdecl; external av__codec;
+function av_frame_make_writable(frame: PAVFrame): Integer; cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_make_writable';
 
 (**
  * Copy the frame data from src to dst.
@@ -773,9 +750,8 @@ function av_frame_make_writable(frame: PAVFrame): cint;
  *
  * @return >= 0 on success, a negative AVERROR on error.
  *)
-function av_frame_copy(dst: PAVFrame; src: {const} PAVFrame): cint;
-  cdecl; external av__codec;
-  
+function av_frame_copy(dst: PAVFrame; const src: PAVFrame): Integer; cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_copy';
+
 (**
  * Copy only "metadata" fields from src to dst.
  *
@@ -784,8 +760,7 @@ function av_frame_copy(dst: PAVFrame; src: {const} PAVFrame): cint;
  * aspect ratio (for video), but not width/height or channel layout.
  * Side data is also copied.
  *)
-function av_frame_copy_props(dst: PAVFrame; src: {const} PAVFrame): cint;
-  cdecl; external av__codec;
+function av_frame_copy_props(dst: PAVFrame; const src: PAVFrame): Integer; cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_copy_props';
 
 (**
  * Get the buffer reference a given data plane is stored in.
@@ -795,8 +770,7 @@ function av_frame_copy_props(dst: PAVFrame; src: {const} PAVFrame): cint;
  * @return the buffer reference that contains the plane or NULL if the input
  * frame is not valid.
  *)
-function av_frame_get_plane_buffer(frame: PAVFrame; plane: cint): PAVBufferRef;
-  cdecl; external av__codec;
+function av_frame_get_plane_buffer(frame: PAVFrame; plane: Integer): PAVBufferRef; cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_get_plane_buffer';
 
 (**
  * Add a new side data to a frame.
@@ -808,27 +782,31 @@ function av_frame_get_plane_buffer(frame: PAVFrame; plane: cint): PAVBufferRef;
  * @return newly added side data on success, NULL on error
  *)
 function av_frame_new_side_data(frame: PAVFrame;
-                                          type_: TAVFrameSideDataType;
-                                          size: cint): PAVFrameSideData;
-  cdecl; external av__codec;
+                                         type_: TAVFrameSideDataType;
+                                         size: Integer): PAVFrameSideData; cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_new_side_data';
 
 (**
  * @return a pointer to the side data of a given type on success, NULL if there
  * is no side data with such type in this frame.
  *)
-function av_frame_get_side_data(frame: {const} PAVFrame; type_: TAVFrameSideDataType): PAVFrameSideData;
-  cdecl; external av__codec;
+function av_frame_get_side_data(const frame: PAVFrame;
+                                         type_: TAVFrameSideDataType): PAVFrameSideData; cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_get_side_data';
 
 (**
  * If side data of the supplied type exists in the frame, free it and remove it
  * from the frame.
  *)
-procedure av_frame_remove_side_data(frame: PAVFrame; type_: TAVFrameSideDataType);
-  cdecl; external av__codec;
+procedure av_frame_remove_side_data(frame: PAVFrame; type_: TAVFrameSideDataType); cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_remove_side_data';
 
 (**
  * @return a string identifying the side data type
  *)
-function av_frame_side_data_name(type_: TAVFrameSideDataType): PAnsiChar;
-  cdecl; external av__codec;
+function av_frame_side_data_name(type_: TAVFrameSideDataType): PAnsiChar; cdecl; external AVUTIL_LIBNAME name _PU + 'av_frame_side_data_name';
 
+(**
+ * @}
+ *)
+
+implementation
+
+end.

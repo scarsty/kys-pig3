@@ -3,3 +3,4 @@ bin/lib/debug/*
 *.dbg
 *.lps
 game/*
+*.ppu

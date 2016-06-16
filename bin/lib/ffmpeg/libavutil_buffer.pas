@@ -1,45 +1,73 @@
 (*
- * AVOptions
- * copyright (c) 2005 Michael Niedermayer <michaelni@gmx.at>
+ * This file is part of FFmpeg.
  *
- * This library is free software; you can redistribute it and/or
+ * FFmpeg is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  *
- * This library is distributed in the hope that it will be useful,
+ * FFmpeg is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
+ * License along with FFmpeg; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- *
- * This is a part of Pascal porting of ffmpeg.
- * - Originally by Victor Zinetz for Delphi and Free Pascal on Windows.
- * - For Mac OS X, some modifications were made by The Creative CAT, denoted as CAT
- *   in the source codes.
- * - Changes and updates by the UltraStar Deluxe Team
- *
- * Conversion of libavutil/buffer.h
- * avutil version 54.7.100
- *
  *)
 
-const
 (**
- * Always treat the buffer as read-only, even when it has only one
- * reference.
+ * @file
+ * @ingroup lavu_buffer
+ * refcounted data buffer API
  *)
-  AV_BUFFER_FLAG_READONLY = (1 << 0);
 
-type
+(*
+ * FFVCL - Delphi FFmpeg VCL Components
+ * http://www.DelphiFFmpeg.com
+ *
+ * Original file: libavutil/buffer.h
+ * Ported by CodeCoolie@CNSW 2013/10/22 -> $Date:: 2014-07-23 #$
+ *)
+
+(*
+FFmpeg Delphi/Pascal Headers and Examples License Agreement
+
+A modified part of FFVCL - Delphi FFmpeg VCL Components.
+Copyright (c) 2008-2014 DelphiFFmpeg.com
+All rights reserved.
+http://www.DelphiFFmpeg.com
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+This source code is provided "as is" by DelphiFFmpeg.com without
+warranty of any kind, either expressed or implied, including but not
+limited to the implied warranties of merchantability and/or fitness
+for a particular purpose.
+
+Please also notice the License agreement of FFmpeg libraries.
+*)
+
+unit libavutil_buffer;
+
+interface
+
+{$I CompilerDefines.inc}
+
+{$I libversion.inc}
+
 (**
  * @defgroup lavu_buffer AVBuffer
  * @ingroup lavu_data
  *
- * @
+ * @{
  * AVBuffer is an API for reference-counted data buffers.
  *
  * There are two core objects in this API -- AVBuffer and AVBufferRef. AVBuffer
@@ -78,7 +106,11 @@ type
  * A reference counted buffer type. It is opaque and is meant to be used through
  * references (AVBufferRef).
  *)
+type
+  PAVBuffer = ^TAVBuffer;
   TAVBuffer = record
+    // need {$ALIGN 8}
+    // defined libavutil/buffer_internal.h
   end;
 
 (**
@@ -90,7 +122,8 @@ type
   PPAVBufferRef = ^PAVBufferRef;
   PAVBufferRef = ^TAVBufferRef;
   TAVBufferRef = record
-    buffer: TAVBuffer;
+    buffer: PAVBuffer;
+
     (**
      * The data buffer. It is considered writable if and only if
      * this is the only reference to the buffer, in which case
@@ -100,21 +133,7 @@ type
     (**
      * Size of data in bytes.
      *)
-    size: cint;
-  end;
-
-  //callbacks used in the functions av_buffer_create and av_buffer_pool_init respectively
-  TFree  = procedure(opaque: pointer; data: pbyte);
-  TAlloc = function(size: cint): PAVBufferRef;
-
-(**
- * The buffer pool. This structure is opaque and not meant to be accessed
- * directly. It is allocated with av_buffer_pool_init() and freed with
- * av_buffer_pool_uninit().
- *)
-  PPAVBufferPool = ^PAVBufferPool;
-  PAVBufferPool = ^TAVBufferPool;
-  TAVBufferPool = record
+    size: Integer;
   end;
 
 (**
@@ -122,15 +141,20 @@ type
  *
  * @return an AVBufferRef of given size or NULL when out of memory
  *)
-function av_buffer_alloc(size: cint): PAVBufferRef;
-  cdecl; external av__util;
+function av_buffer_alloc(size: Integer): PAVBufferRef; cdecl; external AVUTIL_LIBNAME name _PU + 'av_buffer_alloc';
 
 (**
  * Same as av_buffer_alloc(), except the returned buffer will be initialized
  * to zero.
  *)
-function av_buffer_allocz(size: cint): PAVBufferRef;
-  cdecl; external av__util;
+function av_buffer_allocz(size: Integer): PAVBufferRef; cdecl; external AVUTIL_LIBNAME name _PU + 'av_buffer_allocz';
+
+(**
+ * Always treat the buffer as read-only, even when it has only one
+ * reference.
+ *)
+const
+  AV_BUFFER_FLAG_READONLY = (1 shl 0);
 
 (**
  * Create an AVBuffer from an existing array.
@@ -147,19 +171,17 @@ function av_buffer_allocz(size: cint): PAVBufferRef;
  *
  * @return an AVBufferRef referring to data on success, NULL on failure.
  *)
-
-function av_buffer_create(data: PByte; size: cint;
-                          free: TFree;
-                          opaque: pointer; flags: cint): PAVBufferRef;
-  cdecl; external av__util;
+type
+  TfreeCall = procedure(opaque: Pointer; data: PByte); cdecl;
+function av_buffer_create(data: PByte; size: Integer; free: TfreeCall;
+                              opaque: Pointer; flags: Integer): PAVBufferRef; cdecl; external AVUTIL_LIBNAME name _PU + 'av_buffer_create';
 
 (**
  * Default free callback, which calls av_free() on the buffer data.
  * This function is meant to be passed to av_buffer_create(), not called
  * directly.
  *)
-procedure av_buffer_default_free(opaque: pointer; data: pbyte);
-  cdecl; external av__util;
+procedure av_buffer_default_free(opaque: Pointer; data: PByte); cdecl; external AVUTIL_LIBNAME name _PU + 'av_buffer_default_free';
 
 (**
  * Create a new reference to an AVBuffer.
@@ -167,8 +189,7 @@ procedure av_buffer_default_free(opaque: pointer; data: pbyte);
  * @return a new AVBufferRef referring to the same AVBuffer as buf or NULL on
  * failure.
  *)
-function av_buffer_ref(buf: PAVBufferRef): PAVBufferRef;
-  cdecl; external av__util;
+function av_buffer_ref(buf: PAVBufferRef): PAVBufferRef; cdecl; external AVUTIL_LIBNAME name _PU + 'av_buffer_ref';
 
 (**
  * Free a given reference and automatically free the buffer if there are no more
@@ -176,8 +197,7 @@ function av_buffer_ref(buf: PAVBufferRef): PAVBufferRef;
  *
  * @param buf the reference to be freed. The pointer is set to NULL on return.
  *)
-procedure av_buffer_unref(buf: PPAVBufferRef);
-  cdecl; external av__util;
+procedure av_buffer_unref(buf: PPAVBufferRef); cdecl; external AVUTIL_LIBNAME name _PU + 'av_buffer_unref';
 
 (**
  * @return 1 if the caller may write to the data referred to by buf (which is
@@ -185,17 +205,14 @@ procedure av_buffer_unref(buf: PPAVBufferRef);
  * Return 0 otherwise.
  * A positive answer is valid until av_buffer_ref() is called on buf.
  *)
-function av_buffer_is_writable(buf: {const} PAVBufferRef): cint;
-  cdecl; external av__util;
+function av_buffer_is_writable(const buf: PAVBufferRef): Integer; cdecl; external AVUTIL_LIBNAME name _PU + 'av_buffer_is_writable';
 
 (**
  * @return the opaque parameter set by av_buffer_create.
  *)
-procedure av_buffer_get_opaque(buf: {const} PAVBufferRef);
-  cdecl; external av__util;
+function av_buffer_get_opaque(const buf: PAVBufferRef): Pointer; cdecl; external AVUTIL_LIBNAME name _PU + 'av_buffer_get_opaque';
 
-function av_buffer_get_ref_count(buf: {const} PAVBufferRef): cint;
-  cdecl; external av__util;
+function av_buffer_get_ref_count(const buf: PAVBufferRef): Integer; cdecl; external AVUTIL_LIBNAME name _PU + 'av_buffer_get_ref_count';
 
 (**
  * Create a writable reference from a given buffer reference, avoiding data copy
@@ -206,8 +223,7 @@ function av_buffer_get_ref_count(buf: {const} PAVBufferRef): cint;
  *            written in its place. On failure, buf is left untouched.
  * @return 0 on success, a negative AVERROR on failure.
  *)
-function av_buffer_make_writable(buf: PPAVBufferRef): cint;
-  cdecl; external av__util;
+function av_buffer_make_writable(buf: PPAVBufferRef): Integer; cdecl; external AVUTIL_LIBNAME name _PU + 'av_buffer_make_writable';
 
 (**
  * Reallocate a given buffer.
@@ -224,14 +240,17 @@ function av_buffer_make_writable(buf: PPAVBufferRef): cint;
  * reference to it (i.e. the one passed to this function). In all other cases
  * a new buffer is allocated and the data is copied.
  *)
-function av_buffer_realloc(buf: PPAVBufferRef; size: cint): cint;
-  cdecl; external av__util;
+function av_buffer_realloc(buf: PPAVBufferRef; size: Integer): Integer; cdecl; external AVUTIL_LIBNAME name _PU + 'av_buffer_realloc';
+
+(**
+ * @}
+ *)
 
 (**
  * @defgroup lavu_bufferpool AVBufferPool
  * @ingroup lavu_data
  *
- * @
+ * @{
  * AVBufferPool is an API for a lock-free thread-safe pool of AVBuffers.
  *
  * Frequently allocating and freeing large buffers may be slow. AVBufferPool is
@@ -257,6 +276,19 @@ function av_buffer_realloc(buf: PPAVBufferRef; size: cint): cint;
  *)
 
 (**
+ * The buffer pool. This structure is opaque and not meant to be accessed
+ * directly. It is allocated with av_buffer_pool_init() and freed with
+ * av_buffer_pool_uninit().
+ *)
+type
+  PPAVBufferPool = ^PAVBufferPool;
+  PAVBufferPool = ^TAVBufferPool;
+  TAVBufferPool = record
+    // need {$ALIGN 8}
+    // defined libavutil/buffer_internal.h
+  end;
+
+(**
  * Allocate and initialize a buffer pool.
  *
  * @param size size of each buffer in this pool
@@ -265,8 +297,8 @@ function av_buffer_realloc(buf: PPAVBufferRef; size: cint): cint;
  * (av_buffer_alloc()).
  * @return newly created buffer pool on success, NULL on error.
  *)
-function av_buffer_pool_init(size: cint; alloc: TAlloc): PAVBufferRef;
-  cdecl; external av__util;
+  TallocCall = function(size: Integer): PAVBufferRef; cdecl;
+function av_buffer_pool_init(size: Integer; alloc: TallocCall): PAVBufferPool; cdecl; external AVUTIL_LIBNAME name _PU + 'av_buffer_pool_init';
 
 (**
  * Mark the pool as being available for freeing. It will actually be freed only
@@ -277,8 +309,7 @@ function av_buffer_pool_init(size: cint; alloc: TAlloc): PAVBufferRef;
  * @param pool pointer to the pool to be freed. It will be set to NULL.
  * @see av_buffer_pool_can_uninit()
  *)
-procedure av_buffer_pool_uninit(pool: PPAVBufferPool);
-  cdecl; external av__util;
+procedure av_buffer_pool_uninit(pool: PPAVBufferPool); cdecl; external AVUTIL_LIBNAME name _PU + 'av_buffer_pool_uninit';
 
 (**
  * Allocate a new AVBuffer, reusing an old buffer from the pool when available.
@@ -286,5 +317,12 @@ procedure av_buffer_pool_uninit(pool: PPAVBufferPool);
  *
  * @return a reference to the new buffer on success, NULL on error.
  *)
-function av_buffer_pool_get(pool: PAVBufferPool): PAVBufferRef;
-  cdecl; external av__util;
+function av_buffer_pool_get(pool: PAVBufferPool): PAVBufferRef; cdecl; external AVUTIL_LIBNAME name _PU + 'av_buffer_pool_get';
+
+(**
+ * @}
+ *)
+
+implementation
+
+end.

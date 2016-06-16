@@ -1,4 +1,6 @@
 (*
+ * copyright (c) 2006 Michael Niedermayer <michaelni@gmx.at>
+ *
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -14,122 +16,53 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with FFmpeg; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- *
- * This is a part of the Pascal port of ffmpeg.
- * - Changes and updates by the UltraStar Deluxe Team
- *
- * Conversion of libavutil/log.h
- * avutil version 54.7.100
- *
  *)
 
-(**
- * @file
- * log
+(*
+ * FFVCL - Delphi FFmpeg VCL Components
+ * http://www.DelphiFFmpeg.com
+ *
+ * Original file: libavutil/log.h
+ * Ported by CodeCoolie@CNSW 2008/03/18 -> $Date:: 2015-03-24 #$
  *)
 
-type
-  (* from opt.h *)
-  TAVOptionType = (
-{$IFDEF FF_API_OLD_AVOPTIONS}
-    FF_OPT_TYPE_FLAGS = 0,
-    FF_OPT_TYPE_INT,
-    FF_OPT_TYPE_INT64,
-    FF_OPT_TYPE_DOUBLE,
-    FF_OPT_TYPE_FLOAT,
-    FF_OPT_TYPE_STRING,
-    FF_OPT_TYPE_RATIONAL,
-    FF_OPT_TYPE_BINARY,  ///< offset must point to a pointer immediately followed by an int for the length
-    FF_OPT_TYPE_CONST = 128
-{$ELSE}
-    AV_OPT_TYPE_FLAGS,
-    AV_OPT_TYPE_INT,
-    AV_OPT_TYPE_INT64,
-    AV_OPT_TYPE_DOUBLE,
-    AV_OPT_TYPE_FLOAT,
-    AV_OPT_TYPE_STRING,
-    AV_OPT_TYPE_RATIONAL,
-    AV_OPT_TYPE_BINARY,  ///< offset must point to a pointer immediately followed by an int for the length
-    AV_OPT_TYPE_DICT,
-    AV_OPT_TYPE_CONST = 128,
-    AV_OPT_TYPE_IMAGE_SIZE     = $53495A45,  ///< MKBETAG('S','I','Z','E'), offset must point to two consecutive integers    
-    AV_OPT_TYPE_PIXEL_FMT      = $50464D54,  ///< MKBETAG('P','F','M','T') 
-    AV_OPT_TYPE_SAMPLE_FMT     = $53464D54,  ///< MKBETAG('S','F','M','T') 
-    AV_OPT_TYPE_VIDEO_RATE     = $56524154,  ///< MKBETAG('V','R','A','T'), offset must point to TAVRational
-    AV_OPT_TYPE_DURATION       = $44555220,  ///< MKBETAG('D','U','R',' '),
-    AV_OPT_TYPE_COLOR          = $434F4C52,  ///< MKBETAG('C','O','L','R'),    
-    AV_OPT_TYPE_CHANNEL_LAYOUT = $43484C41   ///< MKBETAG('C','H','L','A'),
-{$ENDIF}
-  );
+(*
+FFmpeg Delphi/Pascal Headers and Examples License Agreement
 
-const
-  AV_OPT_FLAG_ENCODING_PARAM  = 1;   ///< a generic parameter which can be set by the user for muxing or encoding
-  AV_OPT_FLAG_DECODING_PARAM  = 2;   ///< a generic parameter which can be set by the user for demuxing or decoding
-{$IFDEF FF_API_OPT_TYPE_METADATA}
-  AV_OPT_FLAG_METADATA        = 4;   ///< some data extracted or inserted into the file like title, comment, ...
-{$ENDIF}
-  AV_OPT_FLAG_AUDIO_PARAM     = 8;
-  AV_OPT_FLAG_VIDEO_PARAM     = 16;
-  AV_OPT_FLAG_SUBTITLE_PARAM  = 32;
-  (**
-   * The option is inteded for exporting values to the caller.
-   *)
-  AV_OPT_FLAG_EXPORT          = 64;
-  (**
-   * The option may not be set through the AVOptions API, only read.
-   * This flag only makes sense when AV_OPT_FLAG_EXPORT is also set.
-   *)
-  AV_OPT_FLAG_READONLY        = 128;
-  AV_OPT_FLAG_FILTERING_PARAM = 1 shl 16; ///< a generic parameter which can be set by the user for filtering
+A modified part of FFVCL - Delphi FFmpeg VCL Components.
+Copyright (c) 2008-2014 DelphiFFmpeg.com
+All rights reserved.
+http://www.DelphiFFmpeg.com
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+This source code is provided "as is" by DelphiFFmpeg.com without
+warranty of any kind, either expressed or implied, including but not
+limited to the implied warranties of merchantability and/or fitness
+for a particular purpose.
+
+Please also notice the License agreement of FFmpeg libraries.
+*)
+
+unit libavutil_log;
+
+interface
+
+{$I CompilerDefines.inc}
+
+uses
+  libavutil_opt;
+
+{$I libversion.inc}
 
 type
-  (**
-   * AVOption
-   *)
-  PAVOption = ^TAVOption;
-  TAVOption = record
-    name: {const} PAnsiChar;
-    
-    (**
-     * short English help text
-     * @todo What about other languages?
-     *)
-    help: {const} PAnsiChar;
-
-    (**
-     * The offset relative to the context structure where the option
-     * value is stored. It should be 0 for named constants.
-     *)
-    offset: cint;
-    type_: TAVOptionType;
-
-    (**
-     * the default value for scalar options
-     *)
-    default_val: record
-      case cint of
-        0: (i64: cint64);
-        1: (dbl: cdouble);
-        2: (str: PAnsiChar);
-        (* TODO those are unused now *)
-        3: (q: TAVRational);
-      end;
-    min: cdouble;                ///< minimum valid value for the option
-    max: cdouble;                ///< maximum valid value for the option
-
-    flags: cint;
-//FIXME think about enc-audio, ... style flags
-
-    (**
-     * The logical unit to which the option belongs. Non-constant
-     * options and corresponding named constants share the same
-     * unit. May be NULL.
-     *)
-    unit_: {const} PAnsiChar;
-  end;
-
-type
-  PAVClassCategory = ^TAVClassCategory;
   TAVClassCategory = (
     AV_CLASS_CATEGORY_NA = 0,
     AV_CLASS_CATEGORY_INPUT,
@@ -148,10 +81,10 @@ type
     AV_CLASS_CATEGORY_DEVICE_AUDIO_INPUT,
     AV_CLASS_CATEGORY_DEVICE_OUTPUT,
     AV_CLASS_CATEGORY_DEVICE_INPUT,
-    AV_CLASS_CATEGORY_NB ///< not part of ABI/API
+    AV_CLASS_CATEGORY_NB  ///< not part of ABI/API
   );
 
-(*
+{
 #define AV_IS_INPUT_DEVICE(category) \
     (((category) == AV_CLASS_CATEGORY_DEVICE_VIDEO_INPUT) || \
      ((category) == AV_CLASS_CATEGORY_DEVICE_AUDIO_INPUT) || \
@@ -161,87 +94,24 @@ type
     (((category) == AV_CLASS_CATEGORY_DEVICE_VIDEO_OUTPUT) || \
      ((category) == AV_CLASS_CATEGORY_DEVICE_AUDIO_OUTPUT) || \
      ((category) == AV_CLASS_CATEGORY_DEVICE_OUTPUT))
-*)
+}
 
-// struct AVOptionRanges;
-
-  (**
-   * A single allowed range of values, or a single allowed value.
-   *)
-  PAVOptionRange  = ^TAVOptionRange;
-  PPAVOptionRange = ^PAVOptionRange;
-  TAVOptionRange = record
-    str: {const} PAnsiChar;
-    (**
-     * Value range.
-     * For string ranges this represents the min/max length.
-     * For dimensions this represents the min/max pixel count or width/height in multi-component case.
-     *)
-    value_min, value_max: cdouble;
-		(**
-     * Value's component range.
-     * For string this represents the unicode range for chars, 0-127 limits to ASCII.
-     *)
-    component_min, component_max: cdouble;
-		(**
-     * Range flag.
-     * If set to 1 the struct encodes a range, if set to 0 a single value.
-     *)
-    is_range: cint;
-  end;
-
-  (**
-   * List of AVOptionRange structs.
-   *)
-  PAVOptionRanges  = ^TAVOptionRanges;
+(*
   PPAVOptionRanges = ^PAVOptionRanges;
+  PAVOptionRanges = ^TAVOptionRanges;
   TAVOptionRanges = record
-    (**
-     * Array of option ranges.
-     *
-     * Most of option types use just one component.
-     * Following describes multi-component option types:
-     *
-     * AV_OPT_TYPE_IMAGE_SIZE:
-     * component index 0: range of pixel count (width * height).
-     * component index 1: range of width.
-     * component index 2: range of height.
-     *
-     * @note To obtain multi-component version of this structure, user must
-     *       provide AV_OPT_MULTI_COMPONENT_RANGE to av_opt_query_ranges or
-     *       av_opt_query_ranges_default function.
-     *
-     * Multi-component range can be read as in following example:
-     *
-     * @code
-     * int range_index, component_index;
-     * AVOptionRanges *ranges;
-     * AVOptionRange *range[3]; //may require more than 3 in the future.
-     * av_opt_query_ranges(&ranges, obj, key, AV_OPT_MULTI_COMPONENT_RANGE);
-     * for (range_index = 0; range_index < ranges->nb_ranges; range_index++) {
-     *     for (component_index = 0; component_index < ranges->nb_components; component_index++)
-     *         range[component_index] = ranges->range[ranges->nb_ranges * component_index + range_index];
-     *     //do something with range here.
-     * }
-     * av_opt_freep_ranges(&ranges);
-     * @endcode
-     *)
-    range:     PPAVOptionRange;
-    (**
-     * Number of ranges per component.
-     *)
-    nb_ranges: cint;
-    (**
-     * Number of componentes.
-     *)
-    nb_components: cint;
+    // need {$ALIGN 8}
+    // defined in libavutil/opt.h
   end;
+*)
 
 (**
  * Describe the class of an AVClass context structure. That is an
  * arbitrary struct of which the first field is a pointer to an
  * AVClass struct (e.g. AVCodecContext, AVFormatContext etc.).
  *)
+  PPPAVClass = ^PPAVClass;
+  PPAVClass = ^PAVClass;
   PAVClass = ^TAVClass;
   TAVClass = record
     (**
@@ -254,7 +124,7 @@ type
      * A pointer to a function which returns the name of a context
      * instance ctx associated with the class.
      *)
-    item_name: function(ctx: pointer): PAnsiChar; cdecl;
+    item_name: function(ctx: Pointer): PAnsiChar; cdecl;
 
     (**
      * a pointer to the first option specified in the class if any or NULL
@@ -268,13 +138,13 @@ type
      * This is used to allow fields to be added without requiring major
      * version bumps everywhere.
      *)
-    version: cint;
+    version: Integer;
 
     (**
      * Offset in the structure where log_level_offset is stored.
      * 0 means there is no such variable
      *)
-    log_level_offset_offset: cint;
+    log_level_offset_offset: Integer;
 
     (**
      * Offset in the structure where a pointer to the parent context for
@@ -283,12 +153,12 @@ type
      * could then leverage to display the parent context.
      * The offset can be NULL.
      *)
-    parent_log_context_offset: cint;
-    
+    parent_log_context_offset: Integer;
+
     (**
      * Return next AVOptions-enabled child or NULL
      *)
-    child_next: function (obj: pointer; prev: pointer): pointer; cdecl;
+    child_next: function(obj, prev: Pointer): Pointer; cdecl;
 
     (**
      * Return an AVClass corresponding to the next potential
@@ -298,7 +168,7 @@ type
      * child_next iterates over _already existing_ objects, while
      * child_class_next iterates over _all possible_ children.
      *)
-    child_class_next: function (prev: {const} PAVClass): {const} PAVClass; cdecl;
+    child_class_next: function(const prev: PAVClass): PAVClass; cdecl;
 
     (**
      * Category used for visualization (like color)
@@ -311,61 +181,75 @@ type
      * Callback to return the category.
      * available since version (51 << 16 | 59 << 8 | 100)
      *)
-    get_category: function (ctx: pointer): PAVClassCategory; cdecl;
+    get_category: function(ctx: Pointer): TAVClassCategory; cdecl;
 
     (**
      * Callback to return the supported/allowed ranges.
      * available since version (52.12)
      *)
-    query_ranges: function (P: PPAVOptionRanges; obj: pointer; key: {const} PAnsiChar; flags: cint): cint; cdecl;
-end;
+    query_ranges: function(ranges: PPAVOptionRanges; obj: Pointer; const key: PAnsiChar; flags: Integer): Integer; cdecl;
+  end;
 
-const
+(**
+ * @addtogroup lavu_log
+ *
+ * @{
+ *
+ * @defgroup lavu_log_constants Logging Constants
+ *
+ * @{
+ *)
+
 (**
  * Print no output.
  *)
-  AV_LOG_QUIET   = -8;
+const
+  AV_LOG_QUIET    = -8;
 
 (**
  * Something went really wrong and we will crash now.
  *)
-  AV_LOG_PANIC   =  0;
+  AV_LOG_PANIC    = 0;
 
 (**
  * Something went wrong and recovery is not possible.
  * For example, no header was found for a format which depends
  * on headers or an illegal combination of parameters is used.
  *)
-  AV_LOG_FATAL   =  8;
+  AV_LOG_FATAL    = 8;
 
 (**
  * Something went wrong and cannot losslessly be recovered.
  * However, not all future data is affected.
  *)
-  AV_LOG_ERROR   = 16;
+  AV_LOG_ERROR    = 16;
 
 (**
  * Something somehow does not look correct. This may or may not
  * lead to problems. An example would be the use of '-vstrict -2'.
  *)
-  AV_LOG_WARNING = 24;
+  AV_LOG_WARNING  = 24;
 
 (**
  * Standard information.
  *)
-  AV_LOG_INFO    = 32;
+  AV_LOG_INFO     = 32;
 
 (**
  * Detailed information.
  *)
-	AV_LOG_VERBOSE = 40;
+  AV_LOG_VERBOSE  = 40;
 
 (**
  * Stuff which is only useful for libav* developers.
  *)
-  AV_LOG_DEBUG   = 48;
+  AV_LOG_DEBUG    = 48;
 
   AV_LOG_MAX_OFFSET = (AV_LOG_DEBUG - AV_LOG_QUIET);
+
+(**
+ * @}
+ *)
 
 (**
  * Sets additional colors for extended debugging sessions.
@@ -375,9 +259,8 @@ const
  * Requires 256color terminal support. Uses outside debugging is not
  * recommended.
  *)
-{** to be translated if needed
-  AV_LOG_C(x) (x << 8)
-**}
+//#define AV_LOG_C(x) ((x) << 8)
+function AV_LOG_C(x: Integer): Integer; {$IFDEF USE_INLINE}inline;{$ENDIF}
 
 (**
  * Send the specified message to the log if the level is less than or equal
@@ -393,12 +276,8 @@ const
  * @param fmt The format string (printf-compatible) that specifies how
  *        subsequent arguments are converted to output.
  *)
-{** to be translated if needed
-void av_log(void *avcl, int level, const char *fmt, ...) av_printf_format(3, 4);
-**}
+procedure av_log(avcl: Pointer; level: Integer; const fmt: PAnsiChar); cdecl varargs; external AVUTIL_LIBNAME name _PU + 'av_log';
 
-type
-  va_list = pointer;
 
 (**
  * Send the specified message to the log if the level is less than or equal
@@ -415,8 +294,9 @@ type
  *        subsequent arguments are converted to output.
  * @param vl The arguments referenced by the format string.
  *)
-procedure av_vlog(avcl: pointer; level: cint; fmt: {const} PAnsiChar; vl: va_list);
-  cdecl; external av__util;
+type
+  Tav_vlogCall = procedure(avcl: Pointer; level: Integer; const fmt: PAnsiChar; vl: PAnsiChar); cdecl;
+procedure av_vlog(avcl: Pointer; level: Integer; const fmt: PAnsiChar; vl: PAnsiChar); cdecl; external AVUTIL_LIBNAME name _PU + 'av_vlog';
 
 (**
  * Get the current log level
@@ -425,8 +305,7 @@ procedure av_vlog(avcl: pointer; level: cint; fmt: {const} PAnsiChar; vl: va_lis
  *
  * @return Current log level
  *)
-function av_log_get_level(): cint;
-  cdecl; external av__util;
+function av_log_get_level: Integer; cdecl; external AVUTIL_LIBNAME name _PU + 'av_log_get_level';
 
 (**
  * Set the log level
@@ -435,8 +314,7 @@ function av_log_get_level(): cint;
  *
  * @param level Logging level
  *)
-procedure av_log_set_level(level: cint);
-  cdecl; external av__util;
+procedure av_log_set_level(level: Integer); cdecl; external AVUTIL_LIBNAME name _PU + 'av_log_set_level';
 
 (**
  * Set the logging callback
@@ -448,9 +326,7 @@ procedure av_log_set_level(level: cint);
  *
  * @param callback A logging function with a compatible signature.
  *)
-{** to be translated if needed
-void av_log_set_callback(void (*callback)(void*, int, const char*, va_list));
-**}
+procedure av_log_set_callback(callback: Tav_vlogCall); cdecl; external AVUTIL_LIBNAME name _PU + 'av_log_set_callback';
 
 (**
  * Default logging callback
@@ -465,9 +341,8 @@ void av_log_set_callback(void (*callback)(void*, int, const char*, va_list));
  *        subsequent arguments are converted to output.
  * @param vl The arguments referenced by the format string.
  *)
-{** to be translated if needed
-void av_log_default_callback(void* avcl, int level, const char *fmt, va_list vl);
-**}
+procedure av_log_default_callback(avcl: Pointer; level: Integer; const fmt: PAnsiChar;
+                             vl: PAnsiChar); cdecl; external AVUTIL_LIBNAME name _PU + 'av_log_default_callback';
 
 (**
  * Return the context name
@@ -476,10 +351,8 @@ void av_log_default_callback(void* avcl, int level, const char *fmt, va_list vl)
  *
  * @return The AVClass class_name
  *)
-function av_default_item_name(ctx: pointer): PAnsiChar;
-  cdecl; external av__util;
-function av_default_get_category(ptr: pointer): TAVClassCategory;
-  cdecl; external av__util;
+function av_default_item_name(ctx: Pointer): PAnsiChar; cdecl; external AVUTIL_LIBNAME name _PU + 'av_default_item_name';
+function av_default_get_category(ptr: Pointer): TAVClassCategory; cdecl; external AVUTIL_LIBNAME name _PU + 'av_default_get_category';
 
 (**
  * Format a line of log the same way as the default callback.
@@ -488,21 +361,22 @@ function av_default_get_category(ptr: pointer): TAVClassCategory;
  * @param print_prefix  used to store whether the prefix must be printed;
  *                      must point to a persistent integer initially set to 1
  *)
-procedure av_log_format_line(ptr: pointer; level: cint; fmt: {const} PAnsiChar; vl: va_list;
-                        line: PAnsiChar; line_size: cint; print_prefix: Pcint);
-  cdecl; external av__util;
+procedure av_log_format_line(ptr: Pointer; level: Integer; const fmt: PAnsiChar; vl: Pointer;{va_list}
+                        line: PAnsiChar; line_size: Integer; print_prefix: PInteger); cdecl; external AVUTIL_LIBNAME name _PU + 'av_log_format_line';
 
 (**
  * av_dlog macros
  * Useful to print debug messages that shouldn't get compiled in normally.
  *)
-(** to be translated if needed
-#ifdef DEBUG
-#    define av_dlog(pctx, ...) av_log(pctx, AV_LOG_DEBUG, __VA_ARGS__)
-#else
-#    define av_dlog(pctx, ...) do { if (0) av_log(pctx, AV_LOG_DEBUG, __VA_ARGS__); } while (0)
-#endif
-**)
+
+//#ifdef DEBUG
+//#    define av_dlog(pctx, ...) av_log(pctx, AV_LOG_DEBUG, __VA_ARGS__)
+//#else
+//#    define av_dlog(pctx, ...) do { if (0) av_log(pctx, AV_LOG_DEBUG, __VA_ARGS__); } while (0)
+//#endif
+
+procedure av_log_set_flags(arg: Integer); cdecl; external AVUTIL_LIBNAME name _PU + 'av_log_set_flags';
+function av_log_get_flags: Integer; cdecl; external AVUTIL_LIBNAME name _PU + 'av_log_get_flags';
 
 const
 (**
@@ -515,6 +389,7 @@ const
  *)
   AV_LOG_SKIP_REPEATED = 1;
 
+
 (**
  * Include the log severity in messages originating from codecs.
  *
@@ -523,8 +398,15 @@ const
  *)
   AV_LOG_PRINT_LEVEL = 2;
 
-procedure av_log_set_flags(arg: cint);
-  cdecl; external av__util;
+(**
+ * @}
+ *)
 
-function av_log_get_flags: cint;
-  cdecl; external av__util;
+implementation
+
+function AV_LOG_C(x: Integer): Integer;
+begin
+  Result := x shl 8;
+end;
+
+end.

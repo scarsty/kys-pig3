@@ -1,41 +1,96 @@
 (*
- * SampleFormat
- * copyright (c) 2011 Karl-Michael Schindler <karl-michael.schindler@web.de>
+ * This file is part of FFmpeg.
  *
- * This library is free software; you can redistribute it and/or
+ * FFmpeg is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  *
- * This library is distributed in the hope that it will be useful,
+ * FFmpeg is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
+ * License along with FFmpeg; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- *
- * This is a part of the Pascal port of ffmpeg.
- *
- * Conversion of libavutil/samplefmt.h
- * avutil version 54.7.100
- *
  *)
+
+(*
+ * FFVCL - Delphi FFmpeg VCL Components
+ * http://www.DelphiFFmpeg.com
+ *
+ * Original file: libavcore/samplefmt.h
+ * Ported by CodeCoolie@CNSW 2010/11/24 -> 2010-11-30
+ * Original file: libavutil/samplefmt.h
+ * Ported by CodeCoolie@CNSW 2011/07/02 -> $Date:: 2014-12-19 #$
+ *)
+
+(*
+FFmpeg Delphi/Pascal Headers and Examples License Agreement
+
+A modified part of FFVCL - Delphi FFmpeg VCL Components.
+Copyright (c) 2008-2014 DelphiFFmpeg.com
+All rights reserved.
+http://www.DelphiFFmpeg.com
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+This source code is provided "as is" by DelphiFFmpeg.com without
+warranty of any kind, either expressed or implied, including but not
+limited to the implied warranties of merchantability and/or fitness
+for a particular purpose.
+
+Please also notice the License agreement of FFmpeg libraries.
+*)
+
+unit libavutil_samplefmt;
+
+interface
+
+{$I CompilerDefines.inc}
+
+uses
+  FFTypes;
+
+{$I libversion.inc}
+
+{$IF Defined(BCB) and Defined(VER140)} // C++Builder 6
+const
+  AV_SAMPLE_FMT_NONE=-1;
+  AV_SAMPLE_FMT_U8=0;
+  AV_SAMPLE_FMT_S16=1;
+  AV_SAMPLE_FMT_S32=2;
+  AV_SAMPLE_FMT_FLT=3;
+  AV_SAMPLE_FMT_DBL=4;
+  AV_SAMPLE_FMT_U8P=5;
+  AV_SAMPLE_FMT_S16P=6;
+  AV_SAMPLE_FMT_S32P=7;
+  AV_SAMPLE_FMT_FLTP=8;
+  AV_SAMPLE_FMT_DBLP=9;
+  AV_SAMPLE_FMT_NB=10;
+{$IFEND}
 
 type
 (**
  * @addtogroup lavu_audio
- * @
+ * @{
  *
  * @defgroup lavu_sampfmts Audio sample formats
  *
  * Audio sample format enumeration and related convenience functions.
- * @
+ * @{
  *
- *)
+ */
 
-(**
+/**
  * Audio sample formats
  *
  * - The data described by the sample format is always in native-endian order.
@@ -56,6 +111,10 @@ type
  * linesize is the buffer size, in bytes, for the 1 plane.
  *
  *)
+  PAVSampleFormat = ^TAVSampleFormat;
+{$IF Defined(BCB) and Defined(VER140)} // C++Builder 6
+  TAVSampleFormat = Integer;
+{$ELSE}
   TAVSampleFormat = (
     AV_SAMPLE_FMT_NONE = -1,
     AV_SAMPLE_FMT_U8,          ///< unsigned 8 bits
@@ -72,22 +131,19 @@ type
 
     AV_SAMPLE_FMT_NB           ///< Number of sample formats. DO NOT USE if linking dynamically
   );
-  TAVSampleFormatArray = array [0 .. MaxInt div SizeOf(TAVSampleFormat) - 1] of TAVSampleFormat;
-  PAVSampleFormatArray = ^TAVSampleFormatArray;
+{$IFEND}
 
 (**
  * Return the name of sample_fmt, or NULL if sample_fmt is not
  * recognized.
  *)
-function av_get_sample_fmt_name(sample_fmt: TAVSampleFormat): {const} PAnsiChar;
-  cdecl; external av__util;
+function av_get_sample_fmt_name(sample_fmt: TAVSampleFormat): PAnsiChar; cdecl; external AVUTIL_LIBNAME name _PU + 'av_get_sample_fmt_name';
 
 (**
  * Return a sample format corresponding to name, or AV_SAMPLE_FMT_NONE
  * on error.
  *)
-function av_get_sample_fmt(name: {const} PAnsiChar): TAVSampleFormat;
-  cdecl; external av__util;
+function av_get_sample_fmt(const name: PAnsiChar): TAVSampleFormat; cdecl; external AVUTIL_LIBNAME name _PU + 'av_get_sample_fmt';
 
 (**
  * Return the planar<->packed alternative form of the given sample format, or
@@ -95,8 +151,7 @@ function av_get_sample_fmt(name: {const} PAnsiChar): TAVSampleFormat;
  * requested planar/packed format, the format returned is the same as the
  * input.
  *)
-function av_get_alt_sample_fmt(sample_fmt: TAVSampleFormat; planar: cint): TAVSampleFormat;
-  cdecl; external av__util;
+function av_get_alt_sample_fmt(sample_fmt: TAVSampleFormat; planar: Integer): TAVSampleFormat; cdecl; external AVUTIL_LIBNAME name _PU + 'av_get_alt_sample_fmt';
 
 (**
  * Get the packed alternative form of the given sample format.
@@ -107,8 +162,7 @@ function av_get_alt_sample_fmt(sample_fmt: TAVSampleFormat; planar: cint): TAVSa
  * @return  the packed alternative form of the given sample format or
             AV_SAMPLE_FMT_NONE on error.
  *)
-function av_get_packed_sample_fmt(sample_fmt: TAVSampleFormat): TAVSampleFormat;
-  cdecl; external av__util;
+function av_get_packed_sample_fmt(sample_fmt: TAVSampleFormat): TAVSampleFormat; cdecl; external AVUTIL_LIBNAME name _PU + 'av_get_packed_sample_fmt';
 
 (**
  * Get the planar alternative form of the given sample format.
@@ -119,8 +173,7 @@ function av_get_packed_sample_fmt(sample_fmt: TAVSampleFormat): TAVSampleFormat;
  * @return  the planar alternative form of the given sample format or
             AV_SAMPLE_FMT_NONE on error.
  *)
-function av_get_planar_sample_fmt(sample_fmt: TAVSampleFormat): TAVSampleFormat;
-  cdecl; external av__util;
+function av_get_planar_sample_fmt(sample_fmt: TAVSampleFormat): TAVSampleFormat; cdecl; external AVUTIL_LIBNAME name _PU + 'av_get_planar_sample_fmt';
 
 (**
  * Generate a string corresponding to the sample format with
@@ -134,8 +187,7 @@ function av_get_planar_sample_fmt(sample_fmt: TAVSampleFormat): TAVSampleFormat;
  * @return the pointer to the filled buffer or NULL if sample_fmt is
  * unknown or in case of other errors
  *)
-function av_get_sample_fmt_string(buf: PAnsiChar; buf_size: cint; sample_fmt: TAVSampleFormat): PAnsiChar;
-  cdecl; external av__util;
+function av_get_sample_fmt_string(buf: PAnsiChar; buf_size: Integer; sample_fmt: TAVSampleFormat): PAnsiChar; cdecl; external AVUTIL_LIBNAME name _PU + 'av_get_sample_fmt_string';
 
 (**
  * Return number of bytes per sample.
@@ -144,12 +196,7 @@ function av_get_sample_fmt_string(buf: PAnsiChar; buf_size: cint; sample_fmt: TA
  * @return number of bytes per sample or zero if unknown for the given
  * sample format
  *)
-function av_get_bytes_per_sample(sample_fmt: TAVSampleFormat): cint;
-  cdecl; external av__util;
-
-type
-  OctArrayOfPcuint8 = array[0..7] of Pcuint8;
-  OctArrayOfcint    = array[0..7] of cint;
+function av_get_bytes_per_sample(sample_fmt: TAVSampleFormat): Integer; cdecl; external AVUTIL_LIBNAME name _PU + 'av_get_bytes_per_sample';
 
 (**
  * Check if the sample format is planar.
@@ -157,8 +204,7 @@ type
  * @param sample_fmt the sample format to inspect
  * @return 1 if the sample format is planar, 0 if it is interleaved
  *)
-function av_sample_fmt_is_planar(sample_fmt: TAVSampleFormat): cint;
-  cdecl; external av__util;
+function av_sample_fmt_is_planar(sample_fmt: TAVSampleFormat): Integer; cdecl; external AVUTIL_LIBNAME name _PU + 'av_sample_fmt_is_planar';
 
 (**
  * Get the required buffer size for the given audio parameters.
@@ -170,17 +216,16 @@ function av_sample_fmt_is_planar(sample_fmt: TAVSampleFormat): cint;
  * @param align         buffer size alignment (0 = default, 1 = no alignment)
  * @return              required buffer size, or negative error code on failure
  *)
-function av_samples_get_buffer_size(linesize: Pcint; nb_channels: cint; nb_samples: cint;
-                                    sample_fmt: TAVSampleFormat; align: cint): cint;
-  cdecl; external av__util;
+function av_samples_get_buffer_size(linesize: PInteger; nb_channels, nb_samples: Integer;
+                               sample_fmt: TAVSampleFormat; align: Integer): Integer; cdecl; external AVUTIL_LIBNAME name _PU + 'av_samples_get_buffer_size';
 
 (**
- * @
+ * @}
  *
  * @defgroup lavu_sampmanip Samples manipulation
  *
  * Functions that manipulate audio samples
- * @
+ * @{
  *)
 
 (**
@@ -213,16 +258,15 @@ function av_samples_get_buffer_size(linesize: Pcint; nb_channels: cint; nb_sampl
  * @todo return minimum size in bytes required for the buffer in case
  * of success at the next bump
  *)
-function av_samples_fill_arrays(var audio_data: Pcuint8; linesize: Pcint;
-                                buf: Pcuint8;
-				nb_channels: cint; nb_samples: cint; 
-                                sample_fmt: TAVSampleFormat; align: cint): cint;
-  cdecl; external av__util;
+function av_samples_fill_arrays(audio_data: PPByte; linesize: PInteger;
+                           const buf: PByte; nb_channels, nb_samples: Integer;
+                           sample_fmt: TAVSampleFormat; align: Integer): Integer; cdecl; external AVUTIL_LIBNAME name _PU + 'av_samples_fill_arrays';
 
 (**
  * Allocate a samples buffer for nb_samples samples, and fill data pointers and
  * linesize accordingly.
  * The allocated samples buffer can be freed by using av_freep(&audio_data[0])
+ * Allocated data will be initialized to silence.
  *
  * @see enum AVSampleFormat
  * The documentation for AVSampleFormat describes the data layout.
@@ -237,10 +281,9 @@ function av_samples_fill_arrays(var audio_data: Pcuint8; linesize: Pcint;
  * @see av_samples_fill_arrays()
  * @see av_samples_alloc_array_and_samples()
  *)
-function av_samples_alloc(audio_data: PPcuint8; linesize: Pcint;
-                          nb_channels: cint; nb_samples: cint;
-			  sample_fmt: TAVSampleFormat; align: cint): cint;
-  cdecl; external av__util;
+function av_samples_alloc(audio_data: PPByte; linesize: PInteger;
+                     nb_channels, nb_samples: Integer;
+                     sample_fmt: TAVSampleFormat; align: Integer): Integer; cdecl; external AVUTIL_LIBNAME name _PU + 'av_samples_alloc';
 
 (**
  * Allocate a data pointers array, samples buffer for nb_samples
@@ -251,10 +294,8 @@ function av_samples_alloc(audio_data: PPcuint8; linesize: Pcint;
  *
  * @see av_samples_alloc()
  *)
-function av_samples_alloc_array_and_samples(audio_data: PPPcuint8; linesize: Pcint;
-                                            nb_channels: cint; nb_samples: cint;
-			                    sample_fmt: TAVSampleFormat; align: cint): cint;
-  cdecl; external av__util;
+function av_samples_alloc_array_and_samples(audio_data: PPPByte; linesize: PInteger; nb_channels: Integer;
+                                       nb_samples: Integer; sample_fmt: TAVSampleFormat; align: Integer): Integer; cdecl; external AVUTIL_LIBNAME name _PU + 'av_samples_alloc_array_and_samples';
 
 (**
  * Copy samples from src to dst.
@@ -267,10 +308,9 @@ function av_samples_alloc_array_and_samples(audio_data: PPPcuint8; linesize: Pci
  * @param nb_channels number of audio channels
  * @param sample_fmt audio sample format
  *)
-function av_samples_copy(var dst: Pcuint8; src: {const} Pcuint8; dst_offset: cint;
-                         src_offset: cint; nb_samples: cint; nb_channels: cint;
-                         sample_fmt: TAVSampleFormat): cint;
-  cdecl; external av__util;
+function av_samples_copy(dst: PPByte; const src: PPByte;
+                    dst_offset, src_offset, nb_samples, nb_channels: Integer;
+                    sample_fmt: TAVSampleFormat): Integer; cdecl; external AVUTIL_LIBNAME name _PU + 'av_samples_copy';
 
 (**
  * Fill an audio buffer with silence.
@@ -281,6 +321,15 @@ function av_samples_copy(var dst: Pcuint8; src: {const} Pcuint8; dst_offset: cin
  * @param nb_channels number of audio channels
  * @param sample_fmt  audio sample format
  *)
-function av_samples_set_silence(var audio_data: Pcuint8; offset: cint; nb_samples: cint;
-                                nb_channels: cint; sample_fmt: TAVSampleFormat): cint;
-  cdecl; external av__util;
+function av_samples_set_silence(audio_data: PPByte;
+                            offset, nb_samples, nb_channels: Integer;
+                            sample_fmt: TAVSampleFormat): Integer; cdecl; external AVUTIL_LIBNAME name _PU + 'av_samples_set_silence';
+
+(**
+ * @}
+ * @}
+ *)
+
+implementation
+
+end.

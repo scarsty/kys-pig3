@@ -12,10 +12,16 @@ uses
   Windows,
   //xVideo,
 {$ENDIF}
-  avcodec,
-  avformat,
-  avutil,
-  swresample,
+libavcodec,
+libavformat,
+libavutil,
+libswresample,
+libavutil_frame,
+libavutil_samplefmt,
+libavutil_channel_layout,
+libavutil_opt,
+libavutil_mathematics,
+libavutil_mem,
   Classes,
   SysUtils,
   SDL2_ttf,
@@ -3476,17 +3482,17 @@ var
       BASS_ChannelPlay(openAudio, False);
     //在副线程中生成完整音频
     //packetA := av_mallocz(sizeof(AVPacket));
-    pframe := avcodec_alloc_frame();
+    pframe := av_frame_alloc();
     bufferA := av_mallocz(192000);
     ConsoleLog('Decode audio...');
     while True do
     begin
-      if av_read_frame(pFormatCtxA, packetA) < 0 then
+      if av_read_frame(pFormatCtxA, @packetA) < 0 then
         break;
       if (packetA.stream_index = audioStream) then
       begin
         avcodec_decode_audio4(pCodecCtxA, pframe, @sizeA, @packetA);
-        len := AudioResampling(pCodecCtxA, pframe, AV_SAMPLE_FMT_S16, pframe.channels, pframe.sample_rate, bufferA);
+        len := AudioResampling(pCodecCtxA, pframe, AV_SAMPLE_FMT_S16, pCodecCtxA.channels, pCodecCtxA.sample_rate, bufferA);
         if openAudio <> 0 then
           BASS_StreamPutData(openAudio, bufferA, len);
       end;
@@ -3575,13 +3581,13 @@ begin
     end;
     //pCodecCtx := pFormatCtx.streams[videoStream].codec;
     frametime := 1e3 / 25;
-    if ppStream^.r_frame_rate.num > 0 then
-      frametime := 1e3 * ppStream^.r_frame_rate.den / ppStream^.r_frame_rate.num;  //每帧的时间(毫秒)
+    if ppStream^.avg_frame_rate.num > 0 then
+      frametime := 1e3 * ppStream^.avg_frame_rate.den / ppStream^.avg_frame_rate.num;  //每帧的时间(毫秒)
     //writeln(1 / frametime);
     maxdelay := round(frametime);
     pCodec := avcodec_find_decoder(pCodecCtx.codec_id);
     avcodec_open2(pCodecCtx, pCodec, nil);
-    pFrame := avcodec_alloc_frame();
+    pFrame := av_frame_alloc();
     //pFrameRGB := avcodec_alloc_frame();
     //size := avpicture_get_size(AV_PIX_FMT_YUV420P16, pCodecCtx.Width, pCodecCtx.Height);
     //buffer := av_malloc(size);
@@ -3608,11 +3614,11 @@ begin
       if ((event.key.keysym.sym = SDLK_ESCAPE) or (event.button.button = SDL_BUTTON_RIGHT)) then
         break;
       CheckBasicEvent;
-      if av_read_frame(pFormatCtx, packet) < 0 then
+      if av_read_frame(pFormatCtx, @packet) < 0 then
         break;
       if (packet.stream_index = videoStream) then
       begin
-        avcodec_decode_video2(pCodecCtx, pFrame, frameFinished, @packet);
+        avcodec_decode_video2(pCodecCtx, pFrame, @frameFinished, @packet);
         if (frameFinished <> 0) then
         begin
           //img_convert_ctx :=

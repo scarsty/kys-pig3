@@ -1,4 +1,6 @@
 (*
+ * copyright (c) 2006 Michael Niedermayer <michaelni@gmx.at>
+ *
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -14,27 +16,62 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with FFmpeg; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- *
- * This is a part of the Pascal port of ffmpeg.
- * - Changes and updates by the UltraStar Deluxe Team
- *
- * Conversion of libavutil/pixfmt.h
- * avutil version 54.7.100
- *
  *)
 
 (**
  * @file
- * Pixel format
+ * pixel format definitions
+ *
  *)
 
+(*
+ * FFVCL - Delphi FFmpeg VCL Components
+ * http://www.DelphiFFmpeg.com
+ *
+ * Original file: libavutil/pixfmt.h
+ * Ported by CodeCoolie@CNSW 2009/03/18 -> $Date:: 2015-03-24 #$
+ *)
+
+(*
+FFmpeg Delphi/Pascal Headers and Examples License Agreement
+
+A modified part of FFVCL - Delphi FFmpeg VCL Components.
+Copyright (c) 2008-2014 DelphiFFmpeg.com
+All rights reserved.
+http://www.DelphiFFmpeg.com
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+This source code is provided "as is" by DelphiFFmpeg.com without
+warranty of any kind, either expressed or implied, including but not
+limited to the implied warranties of merchantability and/or fitness
+for a particular purpose.
+
+Please also notice the License agreement of FFmpeg libraries.
+*)
+
+unit libavutil_pixfmt;
+
+interface
+
+{$I CompilerDefines.inc}
+
+{$I libversion.inc}
+
 const
-  AVPALETTE_SIZE  = 1024;
-  AVPALETTE_COUNT =  256;
+  AVPALETTE_SIZE = 1024;
+  AVPALETTE_COUNT = 256;
 
 type
 (**
- * Pixel format. Notes:
+ * Pixel format.
  *
  * @note
  * AV_PIX_FMT_RGB32 is handled in an endian-specific manner. An RGBA
@@ -44,11 +81,11 @@ type
  * big-endian CPUs.
  *
  * @par
- * When the pixel format is palettized RGB (AV_PIX_FMT_PAL8), the palettized
+ * When the pixel format is palettized RGB32 (AV_PIX_FMT_PAL8), the palettized
  * image data is stored in AVFrame.data[0]. The palette is transported in
  * AVFrame.data[1], is 1024 bytes long (256 4-byte entries) and is
  * formatted the same as in AV_PIX_FMT_RGB32 described above (i.e., it is
- * also endian-specific). Note also that the individual RGB palette
+ * also endian-specific). Note also that the individual RGB32 palette
  * components stored in AVFrame.data[1] should be in the range 0..255.
  * This is important as many custom PAL8 video codecs that were designed
  * to run on the IBM VGA graphics adapter use 6-bit palette components.
@@ -63,7 +100,6 @@ type
  * and that all newly added little-endian formats have (pix_fmt & 1) == 0.
  * This allows simpler detection of big vs little-endian.
  *)
-
   PAVPixelFormat = ^TAVPixelFormat;
   TAVPixelFormat = (
     AV_PIX_FMT_NONE = -1,
@@ -81,11 +117,11 @@ type
     AV_PIX_FMT_PAL8,      ///< 8 bit with PIX_FMT_RGB32 palette
     AV_PIX_FMT_YUVJ420P,  ///< planar YUV 4:2:0, 12bpp, full scale (JPEG), deprecated in favor of PIX_FMT_YUV420P and setting color_range
     AV_PIX_FMT_YUVJ422P,  ///< planar YUV 4:2:2, 16bpp, full scale (JPEG), deprecated in favor of PIX_FMT_YUV422P and setting color_range
-    AV_PIX_FMT_YUVJ444P,  ///< planar YUV 4:4:4, 24bpp, full scale (JPEG), deprecated in favor of PIX_FMT_YUV444P and setting color_range    
+    AV_PIX_FMT_YUVJ444P,  ///< planar YUV 4:4:4, 24bpp, full scale (JPEG), deprecated in favor of PIX_FMT_YUV444P and setting color_range
 {$IFDEF FF_API_XVMC}
     AV_PIX_FMT_XVMC_MPEG2_MC,///< XVideo Motion Acceleration via common packet passing
     AV_PIX_FMT_XVMC_MPEG2_IDCT,
-    {$define AV_PIX_FMT_XVMC := (AV_PIX_FMT_XVMC_MPEG2_IDCT)}
+//#define AV_PIX_FMT_XVMC AV_PIX_FMT_XVMC_MPEG2_IDCT
 {$ENDIF}
     AV_PIX_FMT_UYVY422,   ///< packed YUV 4:2:2, 16bpp, Cb Y0 Cr Y1
     AV_PIX_FMT_UYYVYY411, ///< packed YUV 4:1:1, 12bpp, Cb Y0 Y1 Cr Y2 Y3
@@ -120,13 +156,13 @@ type
 
     AV_PIX_FMT_RGB565BE,  ///< packed RGB 5:6:5, 16bpp, (msb)   5R 6G 5B(lsb), big-endian
     AV_PIX_FMT_RGB565LE,  ///< packed RGB 5:6:5, 16bpp, (msb)   5R 6G 5B(lsb), little-endian
-    AV_PIX_FMT_RGB555BE,  ///< packed RGB 5:5:5, 16bpp, (msb)1A 5R 5G 5B(lsb), big-endian, most significant bit to 0
-    AV_PIX_FMT_RGB555LE,  ///< packed RGB 5:5:5, 16bpp, (msb)1A 5R 5G 5B(lsb), little-endian, most significant bit to 0
+    AV_PIX_FMT_RGB555BE,  ///< packed RGB 5:5:5, 16bpp, (msb)1X 5R 5G 5B(lsb), big-endian   , X=unused/undefined
+    AV_PIX_FMT_RGB555LE,  ///< packed RGB 5:5:5, 16bpp, (msb)1X 5R 5G 5B(lsb), little-endian, X=unused/undefined
 
     AV_PIX_FMT_BGR565BE,  ///< packed BGR 5:6:5, 16bpp, (msb)   5B 6G 5R(lsb), big-endian
     AV_PIX_FMT_BGR565LE,  ///< packed BGR 5:6:5, 16bpp, (msb)   5B 6G 5R(lsb), little-endian
-    AV_PIX_FMT_BGR555BE,  ///< packed BGR 5:5:5, 16bpp, (msb)1A 5B 5G 5R(lsb), big-endian, most significant bit to 1
-    AV_PIX_FMT_BGR555LE,  ///< packed BGR 5:5:5, 16bpp, (msb)1A 5B 5G 5R(lsb), little-endian, most significant bit to 1
+    AV_PIX_FMT_BGR555BE,  ///< packed BGR 5:5:5, 16bpp, (msb)1X 5B 5G 5R(lsb), big-endian   , X=unused/undefined
+    AV_PIX_FMT_BGR555LE,  ///< packed BGR 5:5:5, 16bpp, (msb)1X 5B 5G 5R(lsb), little-endian, X=unused/undefined
 
     AV_PIX_FMT_VAAPI_MOCO, ///< HW acceleration through VA API at motion compensation entry-point, Picture.data[3] contains a vaapi_render_state struct which contains macroblocks as well as various fields extracted from headers
     AV_PIX_FMT_VAAPI_IDCT, ///< HW acceleration through VA API at IDCT entry-point, Picture.data[3] contains a vaapi_render_state struct which contains fields extracted from headers
@@ -143,15 +179,15 @@ type
 {$ENDIF}
     AV_PIX_FMT_DXVA2_VLD,    ///< HW decoding through DXVA2, Picture.data[3] contains a LPDIRECT3DSURFACE9 pointer
 
-    AV_PIX_FMT_RGB444LE,  ///< packed RGB 4:4:4, 16bpp, (msb)4A 4R 4G 4B(lsb), little-endian, most significant bits to 0
-    AV_PIX_FMT_RGB444BE,  ///< packed RGB 4:4:4, 16bpp, (msb)4A 4R 4G 4B(lsb), big-endian, most significant bits to 0
-    AV_PIX_FMT_BGR444LE,  ///< packed BGR 4:4:4, 16bpp, (msb)4A 4B 4G 4R(lsb), little-endian, most significant bits to 1
-    AV_PIX_FMT_BGR444BE,  ///< packed BGR 4:4:4, 16bpp, (msb)4A 4B 4G 4R(lsb), big-endian, most significant bits to 1
+    AV_PIX_FMT_RGB444LE,  ///< packed RGB 4:4:4, 16bpp, (msb)4X 4R 4G 4B(lsb), little-endian, X=unused/undefined
+    AV_PIX_FMT_RGB444BE,  ///< packed RGB 4:4:4, 16bpp, (msb)4X 4R 4G 4B(lsb), big-endian,    X=unused/undefined
+    AV_PIX_FMT_BGR444LE,  ///< packed BGR 4:4:4, 16bpp, (msb)4X 4B 4G 4R(lsb), little-endian, X=unused/undefined
+    AV_PIX_FMT_BGR444BE,  ///< packed BGR 4:4:4, 16bpp, (msb)4X 4B 4G 4R(lsb), big-endian,    X=unused/undefined
     AV_PIX_FMT_YA8,       ///< 8bit gray, 8bit alpha
-(* see const declaration way down
+
     AV_PIX_FMT_Y400A = AV_PIX_FMT_YA8, ///< alias for AV_PIX_FMT_YA8
     AV_PIX_FMT_GRAY8A= AV_PIX_FMT_YA8, ///< alias for AV_PIX_FMT_YA8
-*)
+
     AV_PIX_FMT_BGR48BE,   ///< packed RGB 16:16:16, 48bpp, 16B, 16G, 16R, the 2-byte value for each R/G/B component is stored as big-endian
     AV_PIX_FMT_BGR48LE,   ///< packed RGB 16:16:16, 48bpp, 16B, 16G, 16R, the 2-byte value for each R/G/B component is stored as little-endian
 
@@ -215,7 +251,7 @@ type
     AV_PIX_FMT_YUVA444P16BE, ///< planar YUV 4:4:4 64bpp, (1 Cr & Cb sample per 1x1 Y & A samples, big-endian)
     AV_PIX_FMT_YUVA444P16LE, ///< planar YUV 4:4:4 64bpp, (1 Cr & Cb sample per 1x1 Y & A samples, little-endian)
 
-    AV_PIX_FMT_VDPAU,        ///< HW acceleration through VDPAU, Picture.data[3] contains a VdpVideoSurface
+    AV_PIX_FMT_VDPAU,     ///< HW acceleration through VDPAU, Picture.data[3] contains a VdpVideoSurface
 
     AV_PIX_FMT_XYZ12LE,      ///< packed XYZ 4:4:4, 36 bpp, (msb) 12X, 12Y, 12Z (lsb), the 2-byte value for each X/Y/Z is stored as little-endian, the 4 lower bits are set to 0
     AV_PIX_FMT_XYZ12BE,      ///< packed XYZ 4:4:4, 36 bpp, (msb) 12X, 12Y, 12Z (lsb), the 2-byte value for each X/Y/Z is stored as big-endian, the 4 lower bits are set to 0
@@ -241,19 +277,32 @@ type
     AV_PIX_FMT_YA16BE,       ///< 16bit gray, 16bit alpha (big-endian)
     AV_PIX_FMT_YA16LE,       ///< 16bit gray, 16bit alpha (little-endian)
 
+    (**
+     * duplicated pixel formats for compatibility with libav.
+     * FFmpeg supports these formats since May 3 2013 (commit e6d4e687558d08187e7a415a7725e4b1a416f782)
+     * Libav added them Jan 14 2015 with incompatible values (commit 0e6c7dfa650e8b0497bfa7a06394b7a462ddc33a)
+     *)
+    AV_PIX_FMT_GBRAP_LIBAV,        ///< planar GBRA 4:4:4:4 32bpp
+    AV_PIX_FMT_GBRAP16BE_LIBAV,    ///< planar GBRA 4:4:4:4 64bpp, big-endian
+    AV_PIX_FMT_GBRAP16LE_LIBAV,    ///< planar GBRA 4:4:4:4 64bpp, little-endian
+    (**
+     *  HW acceleration through QSV, data[3] contains a pointer to the
+     *  mfxFrameSurface1 structure.
+     *)
+    AV_PIX_FMT_QSV,
 
 {$IFNDEF AV_PIX_FMT_ABI_GIT_MASTER}
-    AV_PIX_FMT_RGBA64BE = $123,  ///< packed RGBA 16:16:16:16, 64bpp, 16R, 16G, 16B, 16A, the 2-byte value for each R/G/B/A component is stored as big-endian
-    AV_PIX_FMT_RGBA64LE,  ///< packed RGBA 16:16:16:16, 64bpp, 16R, 16G, 16B, 16A, the 2-byte value for each R/G/B/A component is stored as little-endian
-    AV_PIX_FMT_BGRA64BE,  ///< packed RGBA 16:16:16:16, 64bpp, 16B, 16G, 16R, 16A, the 2-byte value for each R/G/B/A component is stored as big-endian
-    AV_PIX_FMT_BGRA64LE,  ///< packed RGBA 16:16:16:16, 64bpp, 16B, 16G, 16R, 16A, the 2-byte value for each R/G/B/A component is stored as little-endian
+    AV_PIX_FMT_RGBA64BE=$123,  ///< packed RGBA 16:16:16:16, 64bpp, 16R, 16G, 16B, 16A, the 2-byte value for each R/G/B/A component is stored as big-endian
+    AV_PIX_FMT_RGBA64LE,    ///< packed RGBA 16:16:16:16, 64bpp, 16R, 16G, 16B, 16A, the 2-byte value for each R/G/B/A component is stored as little-endian
+    AV_PIX_FMT_BGRA64BE,    ///< packed RGBA 16:16:16:16, 64bpp, 16B, 16G, 16R, 16A, the 2-byte value for each R/G/B/A component is stored as big-endian
+    AV_PIX_FMT_BGRA64LE,    ///< packed RGBA 16:16:16:16, 64bpp, 16B, 16G, 16R, 16A, the 2-byte value for each R/G/B/A component is stored as little-endian
 {$ENDIF}
-    AV_PIX_FMT_0RGB = $123 + 4,      ///< packed RGB 8:8:8, 32bpp, 0RGB0RGB...
-    AV_PIX_FMT_RGB0,      ///< packed RGB 8:8:8, 32bpp, RGB0RGB0...
-    AV_PIX_FMT_0BGR,      ///< packed BGR 8:8:8, 32bpp, 0BGR0BGR...
-    AV_PIX_FMT_BGR0,      ///< packed BGR 8:8:8, 32bpp, BGR0BGR0...
-    AV_PIX_FMT_YUVA444P,  ///< planar YUV 4:4:4 32bpp, (1 Cr & Cb sample per 1x1 Y & A samples)
-    AV_PIX_FMT_YUVA422P,  ///< planar YUV 4:2:2 24bpp, (1 Cr & Cb sample per 2x1 Y & A samples)
+    AV_PIX_FMT_0RGB=$123+4, ///< packed RGB 8:8:8, 32bpp, XRGBXRGB...   X=unused/undefined
+    AV_PIX_FMT_RGB0,        ///< packed RGB 8:8:8, 32bpp, RGBXRGBX...   X=unused/undefined
+    AV_PIX_FMT_0BGR,        ///< packed BGR 8:8:8, 32bpp, XBGRXBGR...   X=unused/undefined
+    AV_PIX_FMT_BGR0,        ///< packed BGR 8:8:8, 32bpp, BGRXBGRX...   X=unused/undefined
+    AV_PIX_FMT_YUVA444P,    ///< planar YUV 4:4:4 32bpp, (1 Cr & Cb sample per 1x1 Y & A samples)
+    AV_PIX_FMT_YUVA422P,    ///< planar YUV 4:2:2 24bpp, (1 Cr & Cb sample per 2x1 Y & A samples)
 
     AV_PIX_FMT_YUV420P12BE, ///< planar YUV 4:2:0,18bpp, (1 Cr & Cb sample per 2x2 Y samples), big-endian
     AV_PIX_FMT_YUV420P12LE, ///< planar YUV 4:2:0,18bpp, (1 Cr & Cb sample per 2x2 Y samples), little-endian
@@ -288,159 +337,108 @@ type
     AV_PIX_FMT_BAYER_GBRG16BE, ///< bayer, GBGB..(odd line), RGRG..(even line), 16-bit samples, big-endian */
     AV_PIX_FMT_BAYER_GRBG16LE, ///< bayer, GRGR..(odd line), BGBG..(even line), 16-bit samples, little-endian */
     AV_PIX_FMT_BAYER_GRBG16BE, ///< bayer, GRGR..(odd line), BGBG..(even line), 16-bit samples, big-endian */
-{$ifndef FF_API_XVMC}
-    AV_PIX_FMT_XVMC,           ///< XVideo Motion Acceleration via common packet passing
-{$endif}
-    AV_PIX_FMT_NB        ///< number of pixel formats, DO NOT USE THIS if you want to link with shared libav* because the number of formats might differ between versions
+{$IFNDEF FF_API_XVMC}
+    AV_PIX_FMT_XVMC,///< XVideo Motion Acceleration via common packet passing
+{$ENDIF}
+
+    AV_PIX_FMT_NB         ///< number of pixel formats, DO NOT USE THIS if you want to link with shared libav* because the number of formats might differ between versions
+{$IFDEF FF_API_PIX_FMT}
+//  TODO: #include "old_pix_fmts.h"
+{$ENDIF}
   );
 
+const
 {$IFDEF AV_HAVE_INCOMPATIBLE_LIBAV_ABI}
-const
-    AV_PIX_FMT_YUVA422P = AV_PIX_FMT_YUVA422P_LIBAV;
-    AV_PIX_FMT_YUVA444P = AV_PIX_FMT_YUVA444P_LIBAV;
-    AV_PIX_FMT_RGBA64BE = AV_PIX_FMT_RGBA64BE_LIBAV;
-    AV_PIX_FMT_RGBA64LE = AV_PIX_FMT_RGBA64LE_LIBAV;
-    AV_PIX_FMT_BGRA64BE = AV_PIX_FMT_BGRA64BE_LIBAV;
-    AV_PIX_FMT_BGRA64LE = AV_PIX_FMT_BGRA64LE_LIBAV;
+  AV_PIX_FMT_YUVA422P = AV_PIX_FMT_YUVA422P_LIBAV;
+  AV_PIX_FMT_YUVA444P = AV_PIX_FMT_YUVA444P_LIBAV;
+  AV_PIX_FMT_RGBA64BE = AV_PIX_FMT_RGBA64BE_LIBAV;
+  AV_PIX_FMT_RGBA64LE = AV_PIX_FMT_RGBA64LE_LIBAV;
+  AV_PIX_FMT_BGRA64BE = AV_PIX_FMT_BGRA64BE_LIBAV;
+  AV_PIX_FMT_BGRA64LE = AV_PIX_FMT_BGRA64LE_LIBAV;
+  AV_PIX_FMT_GBRAP    = AV_PIX_FMT_GBRAP_LIBAV;
+  AV_PIX_FMT_GBRAP16BE= AV_PIX_FMT_GBRAP16BE_LIBAV;
+  AV_PIX_FMT_GBRAP16LE= AV_PIX_FMT_GBRAP16LE_LIBAV
 {$ENDIF}
 
-const
-    AV_PIX_FMT_Y400A = AV_PIX_FMT_YA8; ///< alias for AV_PIX_FMT_YA8
-    AV_PIX_FMT_GRAY8A= AV_PIX_FMT_YA8; ///< alias for AV_PIX_FMT_YA8
-		AV_PIX_FMT_GBR24P = AV_PIX_FMT_GBRP;
-
-{$IFDEF WORDS_BIGENDIAN}
-    AV_PIX_FMT_RGB32   = AV_PIX_FMT_ARGB;
-    AV_PIX_FMT_RGB32_1 = AV_PIX_FMT_RGBA;
-    AV_PIX_FMT_BGR32   = AV_PIX_FMT_ABGR;
-    AV_PIX_FMT_BGR32_1 = AV_PIX_FMT_BGRA;
-    AV_PIX_FMT_0RGB32  = AV_PIX_FMT_0RGB;
-    AV_PIX_FMT_0BGR32  = AV_PIX_FMT_0BGR;
-
-    AV_PIX_FMT_GRAY16  = AV_PIX_FMT_GRAY16BE;
-		AV_PIX_FMT_YA16    = AV_PIX_FMT_YA16BE;
-    AV_PIX_FMT_RGB48   = AV_PIX_FMT_RGB48BE;
-    AV_PIX_FMT_RGB565  = AV_PIX_FMT_RGB565BE;
-    AV_PIX_FMT_RGB555  = AV_PIX_FMT_RGB555BE;
-    AV_PIX_FMT_RGB444  = AV_PIX_FMT_RGB444BE;
-		AV_PIX_FMT_RGBA64  = AV_PIX_FMT_RGBA64BE;
-    AV_PIX_FMT_BGR48   = AV_PIX_FMT_BGR48BE;
-    AV_PIX_FMT_BGR565  = AV_PIX_FMT_BGR565BE;
-    AV_PIX_FMT_BGR555  = AV_PIX_FMT_BGR555BE;
-    AV_PIX_FMT_BGR444  = AV_PIX_FMT_BGR444BE;
-		AV_PIX_FMT_BGRA64  = AV_PIX_FMT_BGRA64BE;
-
-    AV_PIX_FMT_YUV420P9  = AV_PIX_FMT_YUV420P9BE;
-    AV_PIX_FMT_YUV422P9  = AV_PIX_FMT_YUV422P9BE;
-    AV_PIX_FMT_YUV444P9  = AV_PIX_FMT_YUV444P9BE;
-    AV_PIX_FMT_YUV420P10 = AV_PIX_FMT_YUV420P10BE;
-    AV_PIX_FMT_YUV422P10 = AV_PIX_FMT_YUV422P10BE;
-    AV_PIX_FMT_YUV444P10 = AV_PIX_FMT_YUV444P10BE;
-    AV_PIX_FMT_YUV420P12 = AV_PIX_FMT_YUV420P12BE;
-    AV_PIX_FMT_YUV422P12 = AV_PIX_FMT_YUV422P12BE;
-    AV_PIX_FMT_YUV444P12 = AV_PIX_FMT_YUV444P12BE;
-    AV_PIX_FMT_YUV420P14 = AV_PIX_FMT_YUV420P14BE;
-    AV_PIX_FMT_YUV422P14 = AV_PIX_FMT_YUV422P14BE;
-    AV_PIX_FMT_YUV444P14=  AV_PIX_FMT_YUV444P14BE;
-    AV_PIX_FMT_YUV420P16 = AV_PIX_FMT_YUV420P16BE;
-    AV_PIX_FMT_YUV422P16 = AV_PIX_FMT_YUV422P16BE;
-    AV_PIX_FMT_YUV444P16 = AV_PIX_FMT_YUV444P16BE;
- 
-    AV_PIX_FMT_GBRP9  = AV_PIX_FMT_GBRP9BE;
-    AV_PIX_FMT_GBRP10 = AV_PIX_FMT_GBRP10BE;
-    AV_PIX_FMT_GBRP12 = AV_PIX_FMT_GBRP12BE;
-    AV_PIX_FMT_GBRP14 = AV_PIX_FMT_GBRP14BE;
-    AV_PIX_FMT_GBRP16 = AV_PIX_FMT_GBRP16BE;
-    AV_PIX_FMT_GBRAP16 = AV_PIX_FMT_GBRAP16BE;
-
-    AV_PIX_FMT_BAYER_BGGR16 = AV_PIX_FMT_BAYER_BGGR16BE;
-    AV_PIX_FMT_BAYER_RGGB16 = AV_PIX_FMT_BAYER_RGGB16BE;
-    AV_PIX_FMT_BAYER_GBRG16 = AV_PIX_FMT_BAYER_GBRG16BE;
-    AV_PIX_FMT_BAYER_GRBG16 = AV_PIX_FMT_BAYER_GRBG16BE;
-
-    AV_PIX_FMT_YUVA420P9  = AV_PIX_FMT_YUVA420P9BE;
-    AV_PIX_FMT_YUVA422P9  = AV_PIX_FMT_YUVA422P9BE;
-    AV_PIX_FMT_YUVA444P9  = AV_PIX_FMT_YUVA444P9BE;
-    AV_PIX_FMT_YUVA420P10 = AV_PIX_FMT_YUVA420P10BE;
-    AV_PIX_FMT_YUVA422P10 = AV_PIX_FMT_YUVA422P10BE;
-    AV_PIX_FMT_YUVA444P10 = AV_PIX_FMT_YUVA444P10BE;
-    AV_PIX_FMT_YUVA420P16 = AV_PIX_FMT_YUVA420P16BE;
-    AV_PIX_FMT_YUVA422P16 = AV_PIX_FMT_YUVA422P16BE;
-    AV_PIX_FMT_YUVA444P16 = AV_PIX_FMT_YUVA444P16BE;
-
-    AV_PIX_FMT_XYZ12      = AV_PIX_FMT_XYZ12BE;
-    AV_PIX_FMT_NV20       = AV_PIX_FMT_NV20BE;
-
-{$ELSE}
-    AV_PIX_FMT_RGB32   = AV_PIX_FMT_BGRA;
-    AV_PIX_FMT_RGB32_1 = AV_PIX_FMT_ABGR;
-    AV_PIX_FMT_BGR32   = AV_PIX_FMT_RGBA;
-    AV_PIX_FMT_BGR32_1 = AV_PIX_FMT_ARGB;
-    AV_PIX_FMT_0RGB32  = AV_PIX_FMT_BGR0;
-    AV_PIX_FMT_0BGR32  = AV_PIX_FMT_RGB0;
-
-    AV_PIX_FMT_GRAY16  = AV_PIX_FMT_GRAY16LE;
-		AV_PIX_FMT_YA16    = AV_PIX_FMT_YA16LE;
-    AV_PIX_FMT_RGB48   = AV_PIX_FMT_RGB48LE;
-    AV_PIX_FMT_RGB565  = AV_PIX_FMT_RGB565LE;
-    AV_PIX_FMT_RGB555  = AV_PIX_FMT_RGB555LE;
-    AV_PIX_FMT_RGB444  = AV_PIX_FMT_RGB444LE;
-		AV_PIX_FMT_RGBA64  = AV_PIX_FMT_RGBA64LE;
-    AV_PIX_FMT_BGR48   = AV_PIX_FMT_BGR48LE;
-    AV_PIX_FMT_BGR565  = AV_PIX_FMT_BGR565LE;
-    AV_PIX_FMT_BGR555  = AV_PIX_FMT_BGR555LE;
-    AV_PIX_FMT_BGR444  = AV_PIX_FMT_BGR444LE;
-		AV_PIX_FMT_BGRA64  = AV_PIX_FMT_BGRA64LE;
-
-    AV_PIX_FMT_YUV420P9  = AV_PIX_FMT_YUV420P9LE;
-    AV_PIX_FMT_YUV422P9  = AV_PIX_FMT_YUV422P9LE;
-    AV_PIX_FMT_YUV444P9  = AV_PIX_FMT_YUV444P9LE;
-    AV_PIX_FMT_YUV420P10 = AV_PIX_FMT_YUV420P10LE;
-    AV_PIX_FMT_YUV422P10 = AV_PIX_FMT_YUV422P10LE;
-    AV_PIX_FMT_YUV444P10 = AV_PIX_FMT_YUV444P10LE;
-    AV_PIX_FMT_YUV420P12 = AV_PIX_FMT_YUV420P12LE;
-    AV_PIX_FMT_YUV422P12 = AV_PIX_FMT_YUV422P12LE;
-    AV_PIX_FMT_YUV444P12 = AV_PIX_FMT_YUV444P12LE;
-    AV_PIX_FMT_YUV420P14 = AV_PIX_FMT_YUV420P14LE;
-    AV_PIX_FMT_YUV422P14 = AV_PIX_FMT_YUV422P14LE;
-    AV_PIX_FMT_YUV444P14=  AV_PIX_FMT_YUV444P14LE;
-    AV_PIX_FMT_YUV420P16 = AV_PIX_FMT_YUV420P16LE;
-    AV_PIX_FMT_YUV422P16 = AV_PIX_FMT_YUV422P16LE;
-    AV_PIX_FMT_YUV444P16 = AV_PIX_FMT_YUV444P16LE;
-
-    AV_PIX_FMT_GBRP9  = AV_PIX_FMT_GBRP9LE;
-    AV_PIX_FMT_GBRP10 = AV_PIX_FMT_GBRP10LE;
-    AV_PIX_FMT_GBRP12 = AV_PIX_FMT_GBRP12LE;
-    AV_PIX_FMT_GBRP14 = AV_PIX_FMT_GBRP14LE;
-    AV_PIX_FMT_GBRP16 = AV_PIX_FMT_GBRP16LE;
-    AV_PIX_FMT_GBRAP16 = AV_PIX_FMT_GBRAP16LE;
-
-    AV_PIX_FMT_BAYER_BGGR16 = AV_PIX_FMT_BAYER_BGGR16LE;
-    AV_PIX_FMT_BAYER_RGGB16 = AV_PIX_FMT_BAYER_RGGB16LE;
-    AV_PIX_FMT_BAYER_GBRG16 = AV_PIX_FMT_BAYER_GBRG16LE;
-    AV_PIX_FMT_BAYER_GRBG16 = AV_PIX_FMT_BAYER_GRBG16LE;
-
-    AV_PIX_FMT_YUVA420P9  = AV_PIX_FMT_YUVA420P9LE;
-    AV_PIX_FMT_YUVA422P9  = AV_PIX_FMT_YUVA422P9LE;
-    AV_PIX_FMT_YUVA444P9  = AV_PIX_FMT_YUVA444P9LE;
-    AV_PIX_FMT_YUVA420P10 = AV_PIX_FMT_YUVA420P10LE;
-    AV_PIX_FMT_YUVA422P10 = AV_PIX_FMT_YUVA422P10LE;
-    AV_PIX_FMT_YUVA444P10 = AV_PIX_FMT_YUVA444P10LE;
-    AV_PIX_FMT_YUVA420P16 = AV_PIX_FMT_YUVA420P16LE;
-    AV_PIX_FMT_YUVA422P16 = AV_PIX_FMT_YUVA422P16LE;
-    AV_PIX_FMT_YUVA444P16 = AV_PIX_FMT_YUVA444P16LE;
-
-    AV_PIX_FMT_XYZ12      = AV_PIX_FMT_XYZ12LE;
-    AV_PIX_FMT_NV20       = AV_PIX_FMT_NV20LE;
-
+{$IFDEF FF_API_XVMC}
+  AV_PIX_FMT_XVMC = AV_PIX_FMT_XVMC_MPEG2_IDCT;
 {$ENDIF}
+
+//  AV_PIX_FMT_Y400A   = AV_PIX_FMT_GRAY8A;
+  AV_PIX_FMT_GBR24P  = AV_PIX_FMT_GBRP;
+
+{
+#if AV_HAVE_BIGENDIAN
+#   define AV_PIX_FMT_NE(be, le) AV_PIX_FMT_##be
+#else
+#   define AV_PIX_FMT_NE(be, le) AV_PIX_FMT_##le
+#endif
+}
+  AV_PIX_FMT_RGB32   = AV_PIX_FMT_BGRA;
+  AV_PIX_FMT_RGB32_1 = AV_PIX_FMT_ABGR;
+  AV_PIX_FMT_BGR32   = AV_PIX_FMT_RGBA;
+  AV_PIX_FMT_BGR32_1 = AV_PIX_FMT_ARGB;
+  AV_PIX_FMT_0RGB32  = AV_PIX_FMT_BGR0;
+  AV_PIX_FMT_0BGR32  = AV_PIX_FMT_RGB0;
+
+  AV_PIX_FMT_GRAY16 = AV_PIX_FMT_GRAY16LE;
+  AV_PIX_FMT_YA16   = AV_PIX_FMT_YA16LE;
+  AV_PIX_FMT_RGB48  = AV_PIX_FMT_RGB48LE;
+  AV_PIX_FMT_RGB565 = AV_PIX_FMT_RGB565LE;
+  AV_PIX_FMT_RGB555 = AV_PIX_FMT_RGB555LE;
+  AV_PIX_FMT_RGB444 = AV_PIX_FMT_RGB444LE;
+  AV_PIX_FMT_RGBA64 = AV_PIX_FMT_RGBA64LE;
+  AV_PIX_FMT_BGR48  = AV_PIX_FMT_BGR48LE;
+  AV_PIX_FMT_BGR565 = AV_PIX_FMT_BGR565LE;
+  AV_PIX_FMT_BGR555 = AV_PIX_FMT_BGR555LE;
+  AV_PIX_FMT_BGR444 = AV_PIX_FMT_BGR444LE;
+  AV_PIX_FMT_BGRA64 = AV_PIX_FMT_BGRA64LE;
+
+  AV_PIX_FMT_YUV420P9  = AV_PIX_FMT_YUV420P9LE;
+  AV_PIX_FMT_YUV422P9  = AV_PIX_FMT_YUV422P9LE;
+  AV_PIX_FMT_YUV444P9  = AV_PIX_FMT_YUV444P9LE;
+  AV_PIX_FMT_YUV420P10 = AV_PIX_FMT_YUV420P10LE;
+  AV_PIX_FMT_YUV422P10 = AV_PIX_FMT_YUV422P10LE;
+  AV_PIX_FMT_YUV444P10 = AV_PIX_FMT_YUV444P10LE;
+  AV_PIX_FMT_YUV420P12 = AV_PIX_FMT_YUV420P12LE;
+  AV_PIX_FMT_YUV422P12 = AV_PIX_FMT_YUV422P12LE;
+  AV_PIX_FMT_YUV444P12 = AV_PIX_FMT_YUV444P12LE;
+  AV_PIX_FMT_YUV420P14 = AV_PIX_FMT_YUV420P14LE;
+  AV_PIX_FMT_YUV422P14 = AV_PIX_FMT_YUV422P14LE;
+  AV_PIX_FMT_YUV444P14 = AV_PIX_FMT_YUV444P14LE;
+  AV_PIX_FMT_YUV420P16 = AV_PIX_FMT_YUV420P16LE;
+  AV_PIX_FMT_YUV422P16 = AV_PIX_FMT_YUV422P16LE;
+  AV_PIX_FMT_YUV444P16 = AV_PIX_FMT_YUV444P16LE;
+
+  AV_PIX_FMT_GBRP9  = AV_PIX_FMT_GBRP9LE;
+  AV_PIX_FMT_GBRP10 = AV_PIX_FMT_GBRP10LE;
+  AV_PIX_FMT_GBRP12 = AV_PIX_FMT_GBRP12LE;
+  AV_PIX_FMT_GBRP14 = AV_PIX_FMT_GBRP14LE;
+  AV_PIX_FMT_GBRP16 = AV_PIX_FMT_GBRP16LE;
+  AV_PIX_FMT_GBRAP16 = AV_PIX_FMT_GBRAP16LE;
+
+  AV_PIX_FMT_BAYER_BGGR16 = AV_PIX_FMT_BAYER_BGGR16LE;
+  AV_PIX_FMT_BAYER_RGGB16 = AV_PIX_FMT_BAYER_RGGB16LE;
+  AV_PIX_FMT_BAYER_GBRG16 = AV_PIX_FMT_BAYER_GBRG16LE;
+  AV_PIX_FMT_BAYER_GRBG16 = AV_PIX_FMT_BAYER_GRBG16LE;
+
+
+  AV_PIX_FMT_YUVA420P9  = AV_PIX_FMT_YUVA420P9LE;
+  AV_PIX_FMT_YUVA422P9  = AV_PIX_FMT_YUVA422P9LE;
+  AV_PIX_FMT_YUVA444P9  = AV_PIX_FMT_YUVA444P9LE;
+  AV_PIX_FMT_YUVA420P10 = AV_PIX_FMT_YUVA420P10LE;
+  AV_PIX_FMT_YUVA422P10 = AV_PIX_FMT_YUVA422P10LE;
+  AV_PIX_FMT_YUVA444P10 = AV_PIX_FMT_YUVA444P10LE;
+  AV_PIX_FMT_YUVA420P16 = AV_PIX_FMT_YUVA420P16LE;
+  AV_PIX_FMT_YUVA422P16 = AV_PIX_FMT_YUVA422P16LE;
+  AV_PIX_FMT_YUVA444P16 = AV_PIX_FMT_YUVA444P16LE;
+
+  AV_PIX_FMT_XYZ12      = AV_PIX_FMT_XYZ12LE;
+  AV_PIX_FMT_NV20       = AV_PIX_FMT_NV20LE;
 
 {$IFDEF FF_API_PIX_FMT}
-type
-  TPixelFormat = TAVPixelFormat;
-
-const
-  PIX_FMT_Y400A  = AV_PIX_FMT_Y400A;
+{
+  PIX_FMT_Y400A = AV_PIX_FMT_Y400A;
   PIX_FMT_GBR24P = AV_PIX_FMT_GBR24P;
 
   PIX_FMT_RGB32   = AV_PIX_FMT_RGB32;
@@ -483,18 +481,80 @@ const
   PIX_FMT_GBRP12 = AV_PIX_FMT_GBRP12;
   PIX_FMT_GBRP14 = AV_PIX_FMT_GBRP14;
   PIX_FMT_GBRP16 = AV_PIX_FMT_GBRP16;
+}
 {$ENDIF}
+
+{$IF Defined(BCB) and Defined(VER140)} // C++Builder 6
+  AVCOL_PRI_RESERVED0   = 0;
+  AVCOL_PRI_BT709       = 1;
+  AVCOL_PRI_UNSPECIFIED = 2;
+  AVCOL_PRI_RESERVED    = 3;
+  AVCOL_PRI_BT470M      = 4;
+  AVCOL_PRI_BT470BG     = 5;
+  AVCOL_PRI_SMPTE170M   = 6;
+  AVCOL_PRI_SMPTE240M   = 7;
+  AVCOL_PRI_FILM        = 8;
+  AVCOL_PRI_BT2020      = 9;
+  AVCOL_PRI_NB          = 10;
+
+  AVCOL_TRC_RESERVED0    = 0;
+  AVCOL_TRC_BT709        = 1;
+  AVCOL_TRC_UNSPECIFIED  = 2;
+  AVCOL_TRC_RESERVED     = 3,
+  AVCOL_TRC_GAMMA22      = 4;
+  AVCOL_TRC_GAMMA28      = 5;
+  AVCOL_TRC_SMPTE170M    = 6;
+  AVCOL_TRC_SMPTE240M    = 7;
+  AVCOL_TRC_LINEAR       = 8;
+  AVCOL_TRC_LOG          = 9;
+  AVCOL_TRC_LOG_SQRT     = 10;
+  AVCOL_TRC_IEC61966_2_4 = 11;
+  AVCOL_TRC_BT1361_ECG   = 12;
+  AVCOL_TRC_IEC61966_2_1 = 13;
+  AVCOL_TRC_BT2020_10    = 14;
+  AVCOL_TRC_BT2020_12    = 15;
+  AVCOL_TRC_NB           = 16;
+
+  AVCOL_SPC_RGB         = 0;
+  AVCOL_SPC_BT709       = 1;
+  AVCOL_SPC_UNSPECIFIED = 2;
+  AVCOL_SPC_RESERVED    = 3,
+  AVCOL_SPC_FCC         = 4;
+  AVCOL_SPC_BT470BG     = 5;
+  AVCOL_SPC_SMPTE170M   = 6;
+  AVCOL_SPC_SMPTE240M   = 7;
+  AVCOL_SPC_YCGCO       = 8;
+  AVCOL_SPC_NB          = 9;
+
+  AVCOL_RANGE_UNSPECIFIED = 0;
+  AVCOL_RANGE_MPEG        = 1;
+  AVCOL_RANGE_JPEG        = 2;
+  AVCOL_RANGE_NB          = 3;
+
+  AVCHROMA_LOC_UNSPECIFIED = 0;
+  AVCHROMA_LOC_LEFT        = 1;
+  AVCHROMA_LOC_CENTER      = 2;
+  AVCHROMA_LOC_TOPLEFT     = 3;
+  AVCHROMA_LOC_TOP         = 4;
+  AVCHROMA_LOC_BOTTOMLEFT  = 5;
+  AVCHROMA_LOC_BOTTOM      = 6;
+  AVCHROMA_LOC_NB          = 7;
+{$IFEND}
 
 type
 (**
   * Chromaticity coordinates of the source primaries.
   *)
+{$IF Defined(BCB) and Defined(VER140)} // C++Builder 6
+  TAVColorPrimaries = Integer;
+{$ELSE}
   TAVColorPrimaries = (
     AVCOL_PRI_RESERVED0   = 0,
     AVCOL_PRI_BT709       = 1, ///< also ITU-R BT1361 / IEC 61966-2-4 / SMPTE RP177 Annex B
     AVCOL_PRI_UNSPECIFIED = 2,
     AVCOL_PRI_RESERVED    = 3,
     AVCOL_PRI_BT470M      = 4, ///< also FCC Title 47 Code of Federal Regulations 73.682 (a)(20)
+
     AVCOL_PRI_BT470BG     = 5, ///< also ITU-R BT601-6 625 / ITU-R BT1358 625 / ITU-R BT1700 625 PAL & SECAM
     AVCOL_PRI_SMPTE170M   = 6, ///< also ITU-R BT601-6 525 / ITU-R BT1358 525 / ITU-R BT1700 NTSC
     AVCOL_PRI_SMPTE240M   = 7, ///< functionally identical to above
@@ -502,10 +562,14 @@ type
     AVCOL_PRI_BT2020      = 9, ///< ITU-R BT2020
     AVCOL_PRI_NB               ///< Not part of ABI
   );
+{$IFEND}
 
 (**
  * Color Transfer Characteristic.
  *)
+{$IF Defined(BCB) and Defined(VER140)} // C++Builder 6
+  TAVColorTransferCharacteristic = Integer;
+{$ELSE}
   TAVColorTransferCharacteristic = (
     AVCOL_TRC_RESERVED0    = 0,
     AVCOL_TRC_BT709        = 1,  ///< also ITU-R BT1361
@@ -517,7 +581,7 @@ type
     AVCOL_TRC_SMPTE240M    = 7,
     AVCOL_TRC_LINEAR       = 8,  ///< "Linear transfer characteristics"
     AVCOL_TRC_LOG          = 9,  ///< "Logarithmic transfer characteristic (100:1 range)"
-    AVCOL_TRC_LOG_SQRT     = 10, ///< "Logarithmic transfer characteristic (100 * Sqrt(10) : 1 range)"
+    AVCOL_TRC_LOG_SQRT     = 10, ///< "Logarithmic transfer characteristic (100 * Sqrt( 10 ) : 1 range)"
     AVCOL_TRC_IEC61966_2_4 = 11, ///< IEC 61966-2-4
     AVCOL_TRC_BT1361_ECG   = 12, ///< ITU-R BT1361 Extended Colour Gamut
     AVCOL_TRC_IEC61966_2_1 = 13, ///< IEC 61966-2-1 (sRGB or sYCC)
@@ -525,10 +589,15 @@ type
     AVCOL_TRC_BT2020_12    = 15, ///< ITU-R BT2020 for 12 bit system
     AVCOL_TRC_NB                 ///< Not part of ABI
   );
+{$IFEND}
 
+type
 (**
  * YUV colorspace type.
  *)
+{$IF Defined(BCB) and Defined(VER140)} // C++Builder 6
+  TAVColorSpace = Integer;
+{$ELSE}
   TAVColorSpace = (
     AVCOL_SPC_RGB         = 0,  ///< order of coefficients is actually GBR, also IEC 61966-2-1 (sRGB)
     AVCOL_SPC_BT709       = 1,  ///< also ITU-R BT1361 / IEC 61966-2-4 xvYCC709 / SMPTE RP177 Annex B
@@ -543,6 +612,7 @@ type
     AVCOL_SPC_BT2020_CL   = 10, ///< ITU-R BT2020 constant luminance system
     AVCOL_SPC_NB                ///< Not part of ABI
   );
+{$IFEND}
 
 const
   AVCOL_SPC_YCGCO = AVCOL_SPC_YCOCG;
@@ -551,12 +621,16 @@ type
 (**
  * MPEG vs JPEG YUV range.
  *)
+{$IF Defined(BCB) and Defined(VER140)} // C++Builder 6
+  TAVColorRange = Integer;
+{$ELSE}
   TAVColorRange = (
     AVCOL_RANGE_UNSPECIFIED = 0,
     AVCOL_RANGE_MPEG        = 1, ///< the normal 219*2^(n-8) "MPEG" YUV ranges
     AVCOL_RANGE_JPEG        = 2, ///< the normal     2^n-1   "JPEG" YUV ranges
     AVCOL_RANGE_NB               ///< Not part of ABI
   );
+{$IFEND}
 
 (**
  * Location of chroma samples.
@@ -565,6 +639,9 @@ type
  *             1 2        1-6 are possible chroma positions
  *  X   X      5 6 X      0 is undefined/unknown position
  *)
+{$IF Defined(BCB) and Defined(VER140)} // C++Builder 6
+  TAVChromaLocation = Integer;
+{$ELSE}
   TAVChromaLocation = (
     AVCHROMA_LOC_UNSPECIFIED = 0,
     AVCHROMA_LOC_LEFT        = 1, ///< mpeg2/4, h264 default
@@ -575,3 +652,8 @@ type
     AVCHROMA_LOC_BOTTOM      = 6,
     AVCHROMA_LOC_NB               ///< Not part of ABI
   );
+{$IFEND}
+
+implementation
+
+end.
