@@ -3433,7 +3433,7 @@ var
   audioStream, sizeA: integer;
 
   ppStream: PPAVstream;
-
+       pStream: PAVstream;
   bmp: PSDL_Texture;
 
   timerid: TSDL_TimerID;
@@ -3581,8 +3581,9 @@ begin
     end;
     //pCodecCtx := pFormatCtx.streams[videoStream].codec;
     frametime := 1e3 / 25;
-    if ppStream^.avg_frame_rate.num > 0 then
-      frametime := 1e3 * ppStream^.avg_frame_rate.den / ppStream^.avg_frame_rate.num;  //每帧的时间(毫秒)
+    pstream:=ppstream^;
+    if ppStream^.r_frame_rate.num > 0 then
+      frametime := 1e3 * ppStream^.r_frame_rate.den / ppStream^.r_frame_rate.num;  //每帧的时间(毫秒)
     //writeln(1 / frametime);
     maxdelay := round(frametime);
     pCodec := avcodec_find_decoder(pCodecCtx.codec_id);

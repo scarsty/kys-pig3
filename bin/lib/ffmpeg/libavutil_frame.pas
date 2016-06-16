@@ -279,7 +279,7 @@ type
     pict_type: TAVPictureType;
 
 {$IFDEF FF_API_AVFRAME_LAVC}
-    base: array[0..AV_NUM_DATA_POINTERS-1] of PByte;
+    //base: array[0..AV_NUM_DATA_POINTERS-1] of PByte;
 {$ENDIF}
 
     (**
@@ -319,7 +319,7 @@ type
     quality: Integer;
 
 {$IFDEF FF_API_AVFRAME_LAVC}
-    reference: Integer;
+    {reference: Integer;
 
     (**
      * QP table
@@ -365,7 +365,7 @@ type
      * motion reference frame index
      * the order in which these are stored can depend on the codec.
      *)
-    ref_index: array[0..1] of PByte;
+    ref_index: array[0..1] of PByte;}
 {$ENDIF}
 
     (**

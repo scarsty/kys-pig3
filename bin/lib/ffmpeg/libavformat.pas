@@ -509,7 +509,7 @@ type
 
 (*************************************************)
 (* input/output formats *)
-
+type
   PPAVCodecTag = ^PAVCodecTag;
   PAVCodecTag = ^TAVCodecTag;
   TAVCodecTag = record

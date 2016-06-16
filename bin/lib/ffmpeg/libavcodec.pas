@@ -2009,8 +2009,8 @@ type
      *)
     duration: Integer;
 {$IFDEF FF_API_DESTRUCT_PACKET}
-    destruct: procedure(pkt: PAVPacket); cdecl;
-    priv: Pointer;
+    //destruct: procedure(pkt: PAVPacket); cdecl;
+    //priv: Pointer;
 {$ENDIF}
     pos: Int64;             ///< byte position in stream, -1 if unknown
 
