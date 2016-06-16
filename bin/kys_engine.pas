@@ -12,16 +12,16 @@ uses
   Windows,
   //xVideo,
 {$ENDIF}
-libavcodec,
-libavformat,
-libavutil,
-libswresample,
-libavutil_frame,
-libavutil_samplefmt,
-libavutil_channel_layout,
-libavutil_opt,
-libavutil_mathematics,
-libavutil_mem,
+  libavcodec,
+  libavformat,
+  libavutil,
+  libswresample,
+  libavutil_frame,
+  libavutil_samplefmt,
+  libavutil_channel_layout,
+  libavutil_opt,
+  libavutil_mathematics,
+  libavutil_mem,
   Classes,
   SysUtils,
   SDL2_ttf,
@@ -137,6 +137,7 @@ procedure DrawPNGTileS(scr: PSDL_Surface; PNGIndex: TPNGIndex; FrameNum: integer
 function CopyIndexSurface(PNGIndexArray: TPNGIndexArray; i: integer): PSDL_Surface;
 
 function PlayMovie(filename: string; fullwindow: integer = 0): boolean;
+function LoadAudioThread(Data: pointer): longint; cdecl;
 
 procedure Big5ToGBK(p: PChar);
 procedure Big5ToU16(p: PChar);
@@ -3420,11 +3421,6 @@ var
   f: integer;
   LoadAudio: PSDL_Thread;
   s: TStretchInfo;
-  {Channel: HSTREAM;
-  pos: real;
-  rect1: TRect;
-  info: xVideo_ChannelInfo;}
-
   pFormatCtxA: pAVFormatContext;
   pCodecCtxA: pAVCodecContext;
   pCodecA: pAVCodec;
@@ -3433,111 +3429,11 @@ var
   audioStream, sizeA: integer;
 
   ppStream: PPAVstream;
-       pStream: PAVstream;
+  pStream: PAVstream;
   bmp: PSDL_Texture;
 
   timerid: TSDL_TimerID;
-
-  //info: SDL_SysWMinfo;
-
-  function LoadAudioThread(Data: pointer): longint; cdecl;
-  var
-    pFormatCtxA: pAVFormatContext;
-    pCodecCtxA: pAVCodecContext;
-    pCodecA: pAVCodec;
-    packetA: TAVPacket;
-    bufferA: pbyte;
-    audioStream, sizeA: integer;
-    i: integer;
-    ppStream: PPAVstream;
-    len: integer;
-    pframe: PAVFrame;
-
-  begin
-    Result := 0;
-    //另开一个寻找音频
-    pFormatCtxA := avformat_alloc_context();
-    avformat_open_input(@pFormatCtxA, PChar(movieName), nil, nil);
-    //pFormatCtxA := pFormatCtx;
-    avformat_find_stream_info(pFormatCtxA, nil);
-    audioStream := -1;
-    ppStream := pFormatCtxA.streams;
-    for i := 0 to pFormatCtxA.nb_streams - 1 do
-    begin
-      if ppStream^.codec.codec_type = AVMEDIA_TYPE_AUDIO then
-      begin
-        audioStream := i;
-        pCodecCtxA := ppStream^.codec;
-        break;
-      end;
-      Inc(ppStream);
-    end;
-    //pCodecCtxA := pFormatCtxA.streams[audioStream].codec;
-    pCodecA := avcodec_find_decoder(pCodecCtxA.codec_id);
-    avcodec_open2(pCodecCtxA, pCodecA, nil);
-    //push模式的全局bass音频流
-    openAudio := BASS_StreamCreate(pCodecCtxA.sample_rate, pCodecCtxA.channels, 0, STREAMPROC_PUSH, nil);
-    BASS_ChannelSetAttribute(openAudio, BASS_ATTRIB_VOL, VOLUME / 100.0);
-    if THREAD_READ_MOVIE <> 0 then
-      BASS_ChannelPlay(openAudio, False);
-    //在副线程中生成完整音频
-    //packetA := av_mallocz(sizeof(AVPacket));
-    pframe := av_frame_alloc();
-    bufferA := av_mallocz(192000);
-    ConsoleLog('Decode audio...');
-    while True do
-    begin
-      if av_read_frame(pFormatCtxA, @packetA) < 0 then
-        break;
-      if (packetA.stream_index = audioStream) then
-      begin
-        avcodec_decode_audio4(pCodecCtxA, pframe, @sizeA, @packetA);
-        len := AudioResampling(pCodecCtxA, pframe, AV_SAMPLE_FMT_S16, pCodecCtxA.channels, pCodecCtxA.sample_rate, bufferA);
-        if openAudio <> 0 then
-          BASS_StreamPutData(openAudio, bufferA, len);
-      end;
-      av_free_packet(@packetA);
-    end;
-    ConsoleLog('Decode audio end.');
-    av_free(bufferA);
-    avcodec_close(pCodecCtxA);
-    avformat_close_input(@pFormatCtxA);
-    if THREAD_READ_MOVIE = 0 then
-      BASS_ChannelPlay(openAudio, False);
-
-  end;
-
 begin
-  {xVideo_Init(0, 0);
-  Channel := xVideo_StreamCreateFile(PChar(filename), 0, 0, 0);
-  if Channel <> 0 then
-  begin
-    xVideo_ChannelSetAttribute(Channel, xVideo_ATTRIB_VOL, VOLUME);
-    xVideo_ChannelGetInfo(Channel, @Info);
-    if fullwindow = 0 then
-      xVideo_ChannelResizeWindow(Channel, 0, (RealScreen.w - Info.Width) div 2,
-        (RealScreen.h - Info.Height) div 2, Info.Width, Info.Height);
-    pos := xVideo_ChannelGetLength(Channel, xVideo_POS_MILISEC);
-    xVideo_ChannelPlay(Channel);
-    while SDL_PollEvent(@event) >= 0 do
-    begin
-      CheckBasicEvent;
-      if (event.type_ = SDL_QUITEV) and (EXIT_GAME = 1) then
-        break;
-      if ((event.key.keysym.sym = SDLK_ESCAPE) or (event.button.button = SDL_BUTTON_RIGHT)) then
-        break;
-      if xVideo_ChannelGetPosition(Channel, xVideo_POS_MILISEC) >= pos then
-        break;
-      SDL_Delay(40);
-    end;
-    xVideo_StreamFree(Channel);
-  end;
-  xVideo_Free();}
-  //openAudio := BASS_StreamCreateFile(False, PChar(filename), 0, 0, 0);
-
-  //sdl_setrendertarget(render,nil);
-
-
   //where := 5;
   Result := False;
 
@@ -3581,7 +3477,7 @@ begin
     end;
     //pCodecCtx := pFormatCtx.streams[videoStream].codec;
     frametime := 1e3 / 25;
-    pstream:=ppstream^;
+    pstream := ppstream^;
     if ppStream^.r_frame_rate.num > 0 then
       frametime := 1e3 * ppStream^.r_frame_rate.den / ppStream^.r_frame_rate.num;  //每帧的时间(毫秒)
     //writeln(1 / frametime);
@@ -3690,7 +3586,73 @@ begin
 
 end;
 
+function LoadAudioThread(Data: pointer): longint; cdecl;
+var
+  pFormatCtxA: pAVFormatContext;
+  pCodecCtxA: pAVCodecContext;
+  pCodecA: pAVCodec;
+  packetA: TAVPacket;
+  bufferA: pbyte;
+  audioStream, sizeA: integer;
+  i: integer;
+  ppStream: PPAVstream;
+  len: integer;
+  pframe: PAVFrame;
 
+begin
+  Result := 0;
+  //另开一个寻找音频
+  pFormatCtxA := avformat_alloc_context();
+  avformat_open_input(@pFormatCtxA, PChar(movieName), nil, nil);
+  //pFormatCtxA := pFormatCtx;
+  avformat_find_stream_info(pFormatCtxA, nil);
+  audioStream := -1;
+  ppStream := pFormatCtxA.streams;
+  for i := 0 to pFormatCtxA.nb_streams - 1 do
+  begin
+    if ppStream^.codec.codec_type = AVMEDIA_TYPE_AUDIO then
+    begin
+      audioStream := i;
+      pCodecCtxA := ppStream^.codec;
+      break;
+    end;
+    Inc(ppStream);
+  end;
+  //pCodecCtxA := pFormatCtxA.streams[audioStream].codec;
+  pCodecA := avcodec_find_decoder(pCodecCtxA.codec_id);
+  avcodec_open2(pCodecCtxA, pCodecA, nil);
+  //push模式的全局bass音频流
+  openAudio := BASS_StreamCreate(pCodecCtxA.sample_rate, pCodecCtxA.channels, 0, STREAMPROC_PUSH, nil);
+  BASS_ChannelSetAttribute(openAudio, BASS_ATTRIB_VOL, VOLUME / 100.0);
+  if THREAD_READ_MOVIE <> 0 then
+    BASS_ChannelPlay(openAudio, False);
+  //在副线程中生成完整音频
+  //packetA := av_mallocz(sizeof(AVPacket));
+  pframe := av_frame_alloc();
+  bufferA := av_mallocz(192000);
+  ConsoleLog('Decode audio...');
+  while True do
+  begin
+    if av_read_frame(pFormatCtxA, @packetA) < 0 then
+      break;
+    if (packetA.stream_index = audioStream) then
+    begin
+      avcodec_decode_audio4(pCodecCtxA, pframe, @sizeA, @packetA);
+      len := AudioResampling(pCodecCtxA, pframe, AV_SAMPLE_FMT_S16, pCodecCtxA.channels,
+        pCodecCtxA.sample_rate, bufferA);
+      if openAudio <> 0 then
+        BASS_StreamPutData(openAudio, bufferA, len);
+    end;
+    av_free_packet(@packetA);
+  end;
+  ConsoleLog('Decode audio end.');
+  av_free(bufferA);
+  avcodec_close(pCodecCtxA);
+  avformat_close_input(@pFormatCtxA);
+  if THREAD_READ_MOVIE = 0 then
+    BASS_ChannelPlay(openAudio, False);
+
+end;
 
 procedure Big5ToGBK(p: PChar);
 var
