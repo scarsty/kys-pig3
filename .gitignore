@@ -4,3 +4,7 @@ bin/lib/debug/*
 *.lps
 game/*
 *.ppu
+*.o
+*.a
+*.so
+*.dylib

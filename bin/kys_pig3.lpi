@@ -21,12 +21,11 @@
     </i18n>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
-      <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="3"/>
       <MinorVersionNr Value="5"/>
-      <BuildNr Value="11"/>
+      <RevisionNr Value="1"/>
+      <BuildNr Value="18"/>
       <Language Value="0804"/>
-      <Attributes pvaDebug="True" pvaPreRelease="True"/>
       <StringTable Comments="108 Brothers and Sisters" CompanyName="http://www.txdx.net" LegalCopyright="no" ProductName="kys_pig3.exe" ProductVersion="3.6"/>
     </VersionInfo>
     <BuildModes Count="3">
@@ -52,6 +51,7 @@
           </Parsing>
           <CodeGeneration>
             <SmartLinkUnit Value="True"/>
+            <TargetCPU Value="i386"/>
             <Optimizations>
               <OptimizationLevel Value="3"/>
             </Optimizations>
@@ -216,6 +216,7 @@
         <IOChecks Value="True"/>
         <StackChecks Value="True"/>
       </Checks>
+      <TargetCPU Value="i386"/>
     </CodeGeneration>
     <Linking>
       <Debugging>
