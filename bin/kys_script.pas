@@ -108,6 +108,7 @@ function WalkFromTo(L: Plua_state): integer; cdecl;
 function ScenceFromTo(L: Plua_state): integer; cdecl;
 function PlayAnimation(L: Plua_state): integer; cdecl;
 function GetNameAsString(L: Plua_state): integer; cdecl;
+function SetNameAsString(L: Plua_state): integer; cdecl;
 function ChangeScence(L: Plua_state): integer; cdecl;
 function ShowPicture(L: Plua_state): integer; cdecl;
 function GetItemList(L: Plua_state): integer; cdecl;
@@ -430,6 +431,7 @@ begin
   lua_register(Lua_script, 'showstatus', ShowStatusScript);
   lua_register(Lua_script, 'showstring', ShowString);
   lua_register(Lua_script, 'showstringwithbox', ShowStringWithBox);
+  lua_register(Lua_script, 'setnameasstring', SetNameAsString);
   lua_register(Lua_script, 'talk', Talk);
   lua_register(Lua_script, 'instruct_20', TeamIsFull);
   lua_register(Lua_script, 'teamisfull', TeamIsFull);
@@ -663,7 +665,7 @@ function SetItemIntro(L: Plua_state): integer; cdecl;
 var
   n, itemnum, i, len: integer;
   str: WideString;
-  p: PWideChar;
+  p: pWideChar;
 begin
   itemnum := lua_tointeger(L, -2);
   str := UTF8Decode(lua_tostring(L, -1));
@@ -1542,7 +1544,7 @@ function GetNameAsString(L: Plua_state): integer; cdecl;
 var
   str: string;
   typenum, num: integer;
-  p1: PWideChar;
+  p1: pWideChar;
 begin
   typenum := lua_tointeger(L, -2);
   num := lua_tointeger(L, -1);
@@ -1562,17 +1564,43 @@ begin
 
 end;
 
+function SetNameAsString(L: Plua_state): integer; cdecl;
+var
+  str: string;
+  strw: widestring;
+  typenum, num, i: integer;
+  p1: pWideChar;
+begin
+  typenum := lua_tointeger(L, -2);
+  num := lua_tointeger(L, -1);
+  case typenum of
+    0: p1 := @Rrole[num].Name;
+    1: p1 := @Ritem[num].Name;
+    2: p1 := @Rscence[num].Name;
+    3: p1 := @Rmagic[num].Name;
+  end;
+  strw := UTF8Decode(lua_tostring(L, -3));;
+  Result := 0;
+
+  for i:= 0 to 4 do
+  begin
+    (p1 + i)^ := widechar(0);
+    if i < length(strw) then (p1 + i)^ := strw[i + 1];
+  end;
+
+end;
+
 function ReadTalkAsString(L: Plua_state): integer; cdecl;
 var
   str: string;
   strw: WideString;
   typenum, num: integer;
-  p1: PWideChar;
+  p1: pWideChar;
   a: array of byte;
 begin
   num := lua_tointeger(L, -1);
   ReadTalk(num, a);
-  strw := PWideChar(a);
+  strw := pWideChar(a);
 
 {$IFDEF fpc}
   str := UTF8Encode(strw);
@@ -1815,8 +1843,14 @@ begin
 end;
 
 function WeiShop(L: Plua_state): integer; cdecl;
+var
+  n: integer;
 begin
-  instruct_64;
+  n := lua_gettop(L);
+  if n = 0 then
+      instruct_64
+  else
+      NewShop(lua_tointeger(L, -1));
   Result := 0;
 end;
 
@@ -2246,12 +2280,12 @@ begin
   end
   else if lua_isstring(L, -3) then
   begin
-    str := UTF8Decode(lua_tostring(L, -3));
+    str := utf8decode(lua_tostring(L, -3));
     writeln(str);
     Result := length(str);
     for i := 0 to Result - 1 do
     begin
-      PWideChar(pos)^ := str[i + 1];
+      pwidechar(pos)^ := str[i + 1];
       Inc(pos);
     end;
   end;
