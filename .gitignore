@@ -8,3 +8,8 @@ game/*
 *.a
 *.so
 *.dylib
+*.bat
+*.compiled
+*.identcache
+*.cmd
+*.zip
