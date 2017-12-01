@@ -5,7 +5,7 @@ All heros in Kam Yung stories - 108 brothers and sisters
 
 *The final edition*
 
-<img src='https://raw.githubusercontent.com/scarsty/hugebase/master/12.png'/>
+<img src='https://raw.githubusercontent.com/scarsty/hugebase/master/13.png'/>
 
 The codes can be complied with free pascal 3.0.0 under lazarus 1.6, or free pascal 3.1.1 under CodeTyphon for Windows, MacOSX, linux and Android (please see <https://github.com/godka/pig3android> to get more information). 
 Another project kys-cpp <https://github.com/scarsty/kys-cpp> is much more strongly recommended.
