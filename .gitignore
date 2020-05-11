@@ -58,3 +58,8 @@
 *.dev
 *.layout
 *.rar
+*.orig
+hugebase/pig3-c/Debug/
+hugebase/pig3-c/lib/
+hugebase/pig3-c/include/
+hugebase/pig3-c/Release/
