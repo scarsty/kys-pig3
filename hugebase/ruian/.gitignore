@@ -1,0 +1,6 @@
+bin/lib/release/*
+bin/lib/debug/*
+*.dbg
+*.lps
+game/*
+*.dylib
