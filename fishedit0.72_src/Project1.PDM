@@ -1,0 +1,386 @@
+[Root]
+Most Recent Package=fisheditV0.71
+
+[Package|标准安装软件包 1|Root]
+SubWizProgID=PDWizard.SetupPkgSubWiz
+BuildFolder=E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\release
+
+[Package|标准安装软件包 1|Configure DAO ISAMs]
+Applicable=No
+
+[Package|标准安装软件包 1|Configure DAO ODBC]
+JetWorkspace=
+ODBCDirect=
+
+[Package|标准安装软件包 1|Files Found]
+
+[Package|标准安装软件包 1|Files Released]
+
+[Package|标准安装软件包 1|Missing Dependency Information]
+
+[Package|标准安装软件包 1|Out-of-Date Dependency Information]
+D:\WINNT\system32\mscomctl.ocx=
+
+[Package|标准安装软件包 1|Files Added]
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\evtlist.ini=
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\FishEdit.ini=
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\kdef.ini=
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\kdefV0.3.ini=
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\mb.dat=
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\readme.txt=
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\z_modify.txt=
+
+[Package|标准安装软件包 1|Files Removed]
+
+[Package|标准安装软件包 1|Files In Project]
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\JYFishEditV0.65.exe=Yes
+D:\WINNT\system32\msvbvm60.dll=Yes
+D:\WINNT\system32\oleaut32.dll=Yes
+D:\WINNT\system32\olepro32.dll=Yes
+D:\WINNT\system32\asycfilt.dll=Yes
+D:\WINNT\system32\stdole2.tlb=Yes
+D:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\COMCAT.DLL=Yes
+D:\WINNT\system32\VB6CHS.DLL=Yes
+D:\WINNT\system32\mscomctl.ocx=Yes
+D:\WINNT\system32\MSCMCCHS.DLL=Yes
+D:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP.EXE=Yes
+D:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP1.EXE=Yes
+D:\WINNT\system32\VB6STKIT.DLL=Yes
+D:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\ST6UNST.EXE=Yes
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\evtlist.ini=Yes
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\FishEdit.ini=Yes
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\kdef.ini=Yes
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\kdefV0.3.ini=Yes
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\mb.dat=Yes
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\readme.txt=Yes
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\z_modify.txt=Yes
+
+[Package|标准安装软件包 1|Configure Registry Files]
+Applicable=No
+
+[Package|标准安装软件包 1|Configure Remote Servers]
+Applicable=No
+
+[Package|标准安装软件包 1|Install Locations]
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\JYFishEditV0.65.exe=$(AppPath)
+D:\WINNT\system32\msvbvm60.dll=$(WinSysPathSysFile)
+D:\WINNT\system32\oleaut32.dll=$(WinSysPathSysFile)
+D:\WINNT\system32\olepro32.dll=$(WinSysPathSysFile)
+D:\WINNT\system32\asycfilt.dll=$(WinSysPathSysFile)
+D:\WINNT\system32\stdole2.tlb=$(WinSysPathSysFile)
+D:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\COMCAT.DLL=$(WinSysPathSysFile)
+D:\WINNT\system32\VB6CHS.DLL=$(WinSysPath)
+D:\WINNT\system32\mscomctl.ocx=$(WinSysPath)
+D:\WINNT\system32\MSCMCCHS.DLL=$(WinSysPath)
+D:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP.EXE=$(AppPath)
+D:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP1.EXE=$(WinPath)
+D:\WINNT\system32\VB6STKIT.DLL=$(WinSysPathSysFile)
+D:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\ST6UNST.EXE=$(WinPath)
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\evtlist.ini=$(AppPath)
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\FishEdit.ini=$(AppPath)
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\kdef.ini=$(AppPath)
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\kdefV0.3.ini=$(AppPath)
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\mb.dat=$(AppPath)
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\readme.txt=$(AppPath)
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\z_modify.txt=$(AppPath)
+
+[Package|标准安装软件包 1|Configure Shared Files]
+Applicable=Yes
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\JYFishEditV0.65.exe=No
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\evtlist.ini=No
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\FishEdit.ini=No
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\kdef.ini=No
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\kdefV0.3.ini=No
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\mb.dat=No
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\readme.txt=No
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\z_modify.txt=No
+
+[Package|标准安装软件包 1|Distribution]
+Type=single
+Size=
+Title=FishEdit
+
+[Package|标准安装软件包 1|IconGroups]
+Group0=FishEdit
+PrivateGroup0=True
+Parent0=$(Programs)
+
+[Package|标准安装软件包 1|FishEdit]
+Icon1=JYFishEditV0.65.exe
+Title1=FishEdit
+StartIn1=$(AppPath)
+Key1=Icon1
+
+
+[Package|FishEdit V0.71安装程序|Root]
+SubWizProgID=PDWizard.SetupPkgSubWiz
+BuildFolder=d:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061101\release
+
+[Package|FishEdit V0.71安装程序|Configure DAO ISAMs]
+Applicable=No
+
+[Package|FishEdit V0.71安装程序|Configure DAO ODBC]
+JetWorkspace=
+ODBCDirect=
+
+[Package|FishEdit V0.71安装程序|Files Found]
+
+[Package|FishEdit V0.71安装程序|Files Released]
+z_modify.txt=
+readme.txt=
+mb.dat=
+kdefV0.3.ini=
+kdef.ini=
+FishEdit.ini=
+evtlist.ini=
+
+[Package|FishEdit V0.71安装程序|Missing Dependency Information]
+
+[Package|FishEdit V0.71安装程序|Out-of-Date Dependency Information]
+D:\WINNT\system32\mscomctl.ocx=
+C:\WINNT\system32\mscomctl.ocx=
+
+[Package|FishEdit V0.71安装程序|Files Added]
+evtlist.ini=
+fishedit.ini=
+kdef.ini=
+kdefv0.3.ini=
+mb.dat=
+readme.txt=
+z_modify.txt=
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061101\FishEdit.ini=
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061101\mb.dat=
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061101\z.dat=
+
+[Package|FishEdit V0.71安装程序|Files Removed]
+
+[Package|FishEdit V0.71安装程序|Files In Project]
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061101\JYFishEditV0.71.exe=Yes
+C:\WINNT\system32\msvbvm60.dll=Yes
+C:\WINNT\system32\oleaut32.dll=Yes
+C:\WINNT\system32\olepro32.dll=Yes
+C:\WINNT\system32\asycfilt.dll=Yes
+C:\WINNT\system32\stdole2.tlb=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\COMCAT.DLL=Yes
+C:\WINNT\system32\VB6CHS.DLL=Yes
+C:\WINNT\system32\mscomctl.ocx=Yes
+C:\WINNT\system32\MSCMCCHS.DLL=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP.EXE=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP1.EXE=Yes
+C:\WINNT\system32\VB6STKIT.DLL=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\ST6UNST.EXE=Yes
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061101\FishEdit.ini=Yes
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061101\mb.dat=Yes
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061101\z.dat=Yes
+
+[Package|FishEdit V0.71安装程序|Configure Registry Files]
+Applicable=No
+
+[Package|FishEdit V0.71安装程序|Configure Remote Servers]
+Applicable=No
+
+[Package|FishEdit V0.71安装程序|Install Locations]
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\JYFishEditV0.65.exe=$(AppPath)
+D:\WINNT\system32\msvbvm60.dll=$(WinSysPathSysFile)
+D:\WINNT\system32\oleaut32.dll=$(WinSysPathSysFile)
+D:\WINNT\system32\olepro32.dll=$(WinSysPathSysFile)
+D:\WINNT\system32\asycfilt.dll=$(WinSysPathSysFile)
+D:\WINNT\system32\stdole2.tlb=$(WinSysPathSysFile)
+D:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\COMCAT.DLL=$(WinSysPathSysFile)
+D:\WINNT\system32\VB6CHS.DLL=$(WinSysPath)
+D:\WINNT\system32\mscomctl.ocx=$(WinSysPath)
+D:\WINNT\system32\MSCMCCHS.DLL=$(WinSysPath)
+D:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP.EXE=$(AppPath)
+D:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP1.EXE=$(WinPath)
+D:\WINNT\system32\VB6STKIT.DLL=$(WinSysPathSysFile)
+D:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\ST6UNST.EXE=$(WinPath)
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\evtlist.ini=$(AppPath)
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\FishEdit.ini=$(AppPath)
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\kdef.ini=$(AppPath)
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\kdefV0.3.ini=$(AppPath)
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\mb.dat=$(AppPath)
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\readme.txt=$(AppPath)
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\z_modify.txt=$(AppPath)
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061101\JYFishEditV0.71.exe=$(AppPath)
+C:\WINNT\system32\msvbvm60.dll=$(WinSysPathSysFile)
+C:\WINNT\system32\oleaut32.dll=$(WinSysPathSysFile)
+C:\WINNT\system32\olepro32.dll=$(WinSysPathSysFile)
+C:\WINNT\system32\asycfilt.dll=$(WinSysPathSysFile)
+C:\WINNT\system32\stdole2.tlb=$(WinSysPathSysFile)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\COMCAT.DLL=$(WinSysPathSysFile)
+C:\WINNT\system32\VB6CHS.DLL=$(WinSysPath)
+C:\WINNT\system32\mscomctl.ocx=$(WinSysPath)
+C:\WINNT\system32\MSCMCCHS.DLL=$(WinSysPath)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP.EXE=$(AppPath)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP1.EXE=$(WinPath)
+C:\WINNT\system32\VB6STKIT.DLL=$(WinSysPathSysFile)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\ST6UNST.EXE=$(WinPath)
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061101\FishEdit.ini=$(AppPath)
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061101\mb.dat=$(AppPath)
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061101\z.dat=$(AppPath)
+
+[Package|FishEdit V0.71安装程序|Configure Shared Files]
+Applicable=Yes
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\JYFishEditV0.65.exe=No
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\evtlist.ini=No
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\FishEdit.ini=No
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\kdef.ini=No
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\kdefV0.3.ini=No
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\mb.dat=No
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\readme.txt=No
+E:\zg\jinyong\kdefedit\JYFishEditV0.66-20060208\FishEdit0.66\z_modify.txt=No
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061101\JYFishEditV0.71.exe=No
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061101\FishEdit.ini=No
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061101\mb.dat=No
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061101\z.dat=No
+
+[Package|FishEdit V0.71安装程序|Distribution]
+Type=single
+Size=
+Title=FishEdit
+
+[Package|FishEdit V0.71安装程序|IconGroups]
+Group0=FishEdit
+PrivateGroup0=True
+Parent0=$(Programs)
+
+[Package|FishEdit V0.71安装程序|FishEdit]
+Icon1=JYFishEditV0.65.exe
+Title1=FishEdit
+StartIn1=$(AppPath)
+Key1=Icon1
+
+[Package|FishEdit V0.71安装程序|Package]
+PackageFolder=d:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061101\release
+ProjectFolder=D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061101
+ServerSideCab=
+File1=d:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061101\release\setup.exe
+File2=d:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061101\release\Setup.Lst
+File3=d:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061101\release\JYFishEditV0.71.CAB
+Handler1=PDWizard.FolderDplySubWiz
+Handler2=PDWizard.WebPostDplySubWiz
+
+
+[Package|fisheditV0.71|Root]
+SubWizProgID=PDWizard.SetupPkgSubWiz
+BuildFolder=D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\包
+
+[Package|fisheditV0.71|Configure DAO ISAMs]
+Applicable=No
+
+[Package|fisheditV0.71|Configure DAO ODBC]
+JetWorkspace=
+ODBCDirect=
+
+[Package|fisheditV0.71|Files Found]
+
+[Package|fisheditV0.71|Files Released]
+
+[Package|fisheditV0.71|Missing Dependency Information]
+
+[Package|fisheditV0.71|Out-of-Date Dependency Information]
+C:\WINNT\system32\mscomctl.ocx=
+
+[Package|fisheditV0.71|Files Added]
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\FishEdit.ini=
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\mb.dat=
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\readme.txt=
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\z.dat=
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\AddKdefV1.1.doc=
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\evtlist.ini=
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\kdefV0.3.ini=
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\z_modify.txt=
+
+[Package|fisheditV0.71|Files Removed]
+
+[Package|fisheditV0.71|Files In Project]
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\JYFishEditV0.71.exe=Yes
+C:\WINNT\system32\msvbvm60.dll=Yes
+C:\WINNT\system32\oleaut32.dll=Yes
+C:\WINNT\system32\olepro32.dll=Yes
+C:\WINNT\system32\asycfilt.dll=Yes
+C:\WINNT\system32\stdole2.tlb=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\COMCAT.DLL=Yes
+C:\WINNT\system32\VB6CHS.DLL=Yes
+C:\WINNT\system32\mscomctl.ocx=Yes
+C:\WINNT\system32\MSCMCCHS.DLL=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP.EXE=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP1.EXE=Yes
+C:\WINNT\system32\VB6STKIT.DLL=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\ST6UNST.EXE=Yes
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\FishEdit.ini=Yes
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\mb.dat=Yes
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\readme.txt=Yes
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\z.dat=Yes
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\AddKdefV1.1.doc=Yes
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\evtlist.ini=Yes
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\kdefV0.3.ini=Yes
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\z_modify.txt=Yes
+
+[Package|fisheditV0.71|Configure Registry Files]
+Applicable=No
+
+[Package|fisheditV0.71|Configure Remote Servers]
+Applicable=No
+
+[Package|fisheditV0.71|Install Locations]
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\JYFishEditV0.71.exe=$(AppPath)
+C:\WINNT\system32\msvbvm60.dll=$(WinSysPathSysFile)
+C:\WINNT\system32\oleaut32.dll=$(WinSysPathSysFile)
+C:\WINNT\system32\olepro32.dll=$(WinSysPathSysFile)
+C:\WINNT\system32\asycfilt.dll=$(WinSysPathSysFile)
+C:\WINNT\system32\stdole2.tlb=$(WinSysPathSysFile)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\COMCAT.DLL=$(WinSysPathSysFile)
+C:\WINNT\system32\VB6CHS.DLL=$(WinSysPath)
+C:\WINNT\system32\mscomctl.ocx=$(WinSysPath)
+C:\WINNT\system32\MSCMCCHS.DLL=$(WinSysPath)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP.EXE=$(AppPath)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP1.EXE=$(WinPath)
+C:\WINNT\system32\VB6STKIT.DLL=$(WinSysPathSysFile)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\ST6UNST.EXE=$(WinPath)
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\FishEdit.ini=$(AppPath)
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\mb.dat=$(AppPath)
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\readme.txt=$(AppPath)
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\z.dat=$(AppPath)
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\AddKdefV1.1.doc=$(AppPath)
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\evtlist.ini=$(AppPath)
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\kdefV0.3.ini=$(AppPath)
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\z_modify.txt=$(AppPath)
+
+[Package|fisheditV0.71|Configure Shared Files]
+Applicable=Yes
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\JYFishEditV0.71.exe=No
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\FishEdit.ini=No
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\mb.dat=No
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\readme.txt=No
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\z.dat=No
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\AddKdefV1.1.doc=No
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\evtlist.ini=No
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\kdefV0.3.ini=No
+D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\z_modify.txt=No
+
+[Package|fisheditV0.71|Distribution]
+Type=single
+Size=
+Title=FishEdit V0.71
+
+[Package|fisheditV0.71|IconGroups]
+Group0=FishEdit V0.71
+PrivateGroup0=True
+Parent0=$(Programs)
+
+[Package|fisheditV0.71|FishEdit V0.71]
+Icon1=JYFishEditV0.71.exe
+Title1=FishEdit V0.71
+StartIn1=$(AppPath)
+Key1=Icon1
+
+[Package|fisheditV0.71|Package]
+PackageFolder=D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\包
+ProjectFolder=D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221
+ServerSideCab=
+File1=D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\包\setup.exe
+File2=D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\包\Setup.Lst
+File3=D:\zg\jinyong\jyfishedit\JYFishEditV0.71-20061221\包\JYFishEditV0.71.CAB
+Handler1=PDWizard.FolderDplySubWiz
+Handler2=PDWizard.WebPostDplySubWiz

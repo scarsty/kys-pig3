@@ -1,0 +1,3561 @@
+ 
+
+; 说明
+; eax,ecx,edx是可以随便使用的
+; ebx,esi,edi,ebp要使用必须压栈
+
+; 常数的含义
+; 120000 变量起始地址
+;  0-3fff用户使用，4000-6fff内部变量,7000-7fff内部常数
+; 7000H 跳转变量编号
+
+; 常规修改
+; 分配内存
+Start 20d41
+    00 12 7a 00
+Start 31cf2
+    00 00 24 00
+Start 385d4
+    00 00 33 00
+; 修改场景文件名
+Start 55090
+    73 64 78 00
+Start 54b7c
+    73 6d 70 00
+; 修改场景文件长度系数，修改后任何场景只读取第一个文件了。
+Start 26e06
+    00
+Start 28efe 
+    00
+Start 29262
+    00
+Start 31d54
+    00
+; 修改战斗场景文件  长度系数
+Start 31cd0
+    00  
+; 修改战斗场景文件名
+Start 55880
+    77 64 78 00
+Start 556fa
+    77 6d 70 00
+
+;  可以显示四个汉字人名
+Start 21812
+    90 90
+Start 21963
+    90 90    
+Start 21e3c
+    90 90    
+Start 21f8d
+    90 90    
+Start 22ba8
+    90 90  
+Start 23590
+    90 90        
+Start 322fa
+    90 90        
+Start 3246f
+    90 90        
+
+Start 2252a
+    90 90 90 90 90 90
+Start 2261b
+    90 90   
+Start 2289b
+    90 90 90 90 90 90 
+Start 228fe
+    90 90
+
+; 升级899改为900
+Start 3c17a
+    84 03
+
+
+; 修改山洞程序中的个数
+Start 28e68
+    83 f8 1e   ; cmp eax,0b     山洞个数修改为30个
+Start 291ec
+    83 f8 1e   ; cmp eax,0b    山洞个数修改为30个
+
+; 修改离队程序中人员个数，改为100个人
+Start 25bcb
+    b9 5f a3 03 00 ; mov ecx,3a35f  此处fixup为16B，应改为32B，懒得改，从这里加上
+start 25bd7    
+    03 f1          ; add esi,ecx
+    90 90          ; nop
+Start 25c85
+    0f bf 14 46    ; movsx edx,[esi+eax*2]  直接从esi指向的数组读       
+Start 25c8f
+    b8 64 00 00 00 ; mov eax,19H   19改为64 即100
+    40             ; inc eax
+    83 f8 64       ; cmp eax,19h     
+
+
+; 修改武功武器配合列表的个数(50)个
+Start 34d00
+    66 83 fa 64    ; cmp dx,07     
+Start 37832
+    66 83 7c 24 10 64  ; cmp word ptr [esp+10], 07 
+
+
+; 修改读取xmi个数99个。
+Start 3dbbf
+    67 61 6d 65 25 30 32 64 2e 78 6d 69 00
+Start 3e1d0
+    eb 13     ; jmp short xx
+Start 3e1f4
+    6b 84 24 a8 01 00 00 01 ;imul eax,[esp+1a4+arg_0],0    
+    8d 54 24 04             ;lea edx,[esp+1a4+var_1a0]
+    40                      ; inc eax
+    50                      ; push eax
+    56                      ; push esi
+    e8 "sub_readfile        ; call sub_readfile
+    83 c4 0c                ; add esp,0c
+    90 90 90 90 90 90 90
+    90 90 90 90 90 90 
+    50
+    
+; 修改读取atk**和e**    
+Start 3e2fd
+    e9 "loc_ReadWav         ; jmp loc_readWav    跳转到新增程序片断
+Start 56d30
+    61 74 6b 25 30 32 64 2e 77 61 76 00    ; atk%02d.wav
+Start 56e75
+    65 25 30 32 64 2e 77 61 76 00    ; e%02d.wav
+Start 3e299
+    31 c0               ; xor eax,eax
+    90 90    
+Start 3e2be
+    31 c0               ; xor eax,eax
+    90 90        
+
+; 修改读取fight***.idx/grp
+Start 385ed
+    50                   ; push eax
+    90 90 
+    ba fa 63 05 00         ; mov edx,offset fight000.idx
+    31 c0                  ; xor eax,eax
+    52                     ; push edx
+    05 62 5b 05 00         ; add eax,offset fight000.grp
+    50                     ; push eax
+    e8 "sub_newReadfight   ; call sub_newReadfight
+    83 c4 14               ; add esp,14h
+Start 563fa
+    66 69 67 68 74 25 30 33 64 2e 69 64 78 00    ; fight%03d.idx    
+Start 55b62
+    66 69 67 68 74 25 30 33 64 2e 67 72 70 00    ; fight%03d.grp    
+
+; 修改属性大小控制
+
+Start 2fcd5
+    e8 "Sub_ModifyPerson    ; call Sub_ModifyPerson
+    90 90 90
+Start 2fce5
+    eb 09               ;    jmp xx
+Start 3b990
+    eb 09               ; jmp xx
+Start 3b9a9
+    eb 09               ; jmp xx
+Start 3b9b4
+    e8 "Sub_ModifyPerson    ; call Sub_ModifyPerson
+    90
+Start 3b9c2
+    eb 09
+Start 3b9cd
+    e9 &39a3e          ; jmp xxx
+    90     
+Start 3bcfd
+    eb 09
+Start 3bd43
+    eb 09
+Start 3bd89
+    eb 09
+Start 3bdcf
+    eb 09
+Start 3be15
+    eb 09
+Start 3be5b
+    eb 09
+Start 3bea1
+    eb 09
+Start 3bee7
+    eb 09
+Start 3bf2d
+    eb 09
+Start 3bf73
+    eb 09
+Start 3bfb9
+    eb 09
+Start 3bfff
+    eb 09
+Start 3c045
+    eb 09
+Start 3c08b
+    eb 09
+Start 3c0f5
+    eb 09
+Start 3c100    
+    e8 "Sub_ModifyPerson    ; call Sub_ModifyPerson
+    90
+                            
+; 640*480
+Start 20dd9
+    e8 "sub_SetVidioMode
+Start 3d6db
+    e9 "sub_movetoVRAM    
+; 主地图
+Start 2560c
+    e8 "sub_drawSurf
+Start 256b0
+    e8 "sub_drawSurf
+Start 2580d
+    e8 "sub_drawSurf
+; 主地图人
+Start 25728
+    e9 "Sub_DrawMMapPerson    
+
+;场景地图
+
+ 
+Start 29dc0
+    e8 "sub_drawSurf
+Start 29e30
+    e8 "sub_drawSurf
+Start 29eaa
+    e8 "sub_drawSurf
+Start 29f28
+    e8 "sub_drawSurf 
+Start 29fc2
+    e8 "sub_drawSurf        
+Start 2a031
+    e8 "sub_drawSurf
+
+;场景地图人
+Start 29fa9
+    e8 "Sub_DrawSMapPerson
+
+;战斗地图
+
+Start 3aaef
+    e8 "sub_drawSurf
+Start 3ace4
+    e8 "sub_drawSurf
+Start 3ae2a
+    e8 "sub_drawSurf
+Start 3aea2
+    e8 "sub_drawSurf
+
+;战斗地图人
+Start 3ad7a
+    e8 "Sub_DrawWMapPerson
+    90 90 90 90
+
+;战斗半透明
+Start 3ab84
+    e8 "sub_drawWarSurf
+Start 3ac04
+    e8 "sub_drawWarSurf
+Start 3ac73
+    e8 "sub_drawWarSurf
+
+;战斗文字
+Start 3af5f
+    e8 "sub_drawWarStr
+Start 3affa
+    e8 "sub_drawWarStr
+Start 3b08f
+    e8 "sub_drawWarStr
+Start 3b124
+    e8 "sub_drawWarStr
+Start 3b1c0
+    e8 "sub_drawWarStr
+    
+; 加密kdef    
+Start 2c343
+    e8 "sub_ReadKDEFIDX    
+    
+Start 2c3B3
+    e8 "sub_CloseKDEFGRP
+    
+    
+Section 61    ; 新Page 5b000
+
+00 00 00 00    ; 保留四个字节，以便空的fixup可以指向这个地址
+; 山洞   5b004    山洞列表（30个）
+05 00 07 00 0a 00 29 00 2a 00         ;5
+2e 00 41 00 42 00 43 00 48 00         ;10
+4f 00 ff ff ff ff ff ff ff ff         ;15
+ff ff ff ff ff ff ff ff ff ff         ;20
+ff ff ff ff ff ff ff ff ff ff         ;25
+ff ff ff ff ff ff ff ff ff ff         ;30
+00 00 00 00
+
+; 离队人员 5b044
+01 00 02 00 09 00 10 00 11 00
+19 00 1c 00 1d 00 23 00 24 00
+25 00 26 00 2c 00 2d 00 2f 00 
+30 00 31 00 33 00 35 00 36 00
+3a 00 3b 00 3d 00 3f 00 4c 00  ;25
+ff ff ff ff ff ff ff ff ff ff 
+ff ff ff ff ff ff ff ff ff ff 
+ff ff ff ff ff ff ff ff ff ff 
+ff ff ff ff ff ff ff ff ff ff 
+ff ff ff ff ff ff ff ff ff ff  ;50
+ff ff ff ff ff ff ff ff ff ff 
+ff ff ff ff ff ff ff ff ff ff 
+ff ff ff ff ff ff ff ff ff ff 
+ff ff ff ff ff ff ff ff ff ff 
+ff ff ff ff ff ff ff ff ff ff  ;75
+ff ff ff ff ff ff ff ff ff ff 
+ff ff ff ff ff ff ff ff ff ff 
+ff ff ff ff ff ff ff ff ff ff 
+ff ff ff ff ff ff ff ff ff ff 
+ff ff ff ff ff ff ff ff ff ff  ;100
+00 00 00 00
+
+; 武功武器配合列表(手持物品，武功，增加攻击力) 5b110
+6a 00 39 00 64 00
+6b 00 31 00 32 00
+6c 00 31 00 32 00
+6e 00 36 00 50 00
+73 00 3f 00 32 00   ;5
+74 00 43 00 46 00
+77 00 44 00 64 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00   ;10
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00   ;15
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00   ;20
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00   ;25
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00   ;30
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00   ;35
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00   ;40
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00   ;45
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00   ;50
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00   ;55
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00   ;60
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00   ;65
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00   ;70
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00   ;75
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00   ;80
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00   ;85
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00   ;90
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00   ;95
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00
+00 00 00 00 00 00   ;100
+00 00 00 00
+
+
+; 武功效果动画帧数  5b36c
+0a 00 0e 00 11 00 09 00 0d 00  
+11 00 11 00 11 00 12 00 13 00   ;10
+13 00 0f 00 0d 00 0a 00 0a 00
+0f 00 15 00 10 00 09 00 0b 00    ;20
+08 00 09 00 08 00 08 00 07 00
+08 00 08 00 09 00 0c 00 13 00   ;30
+0b 00 0e 00 0c 00 11 00 08 00  
+0b 00 09 00 0d 00 0a 00 13 00   ;40
+0e 00 11 00 13 00 0e 00 15 00 
+10 00 0d 00 12 00 0e 00 11 00   ;50
+11 00 10 00 07 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00   ;60
+00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00   ;70
+00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00   ;80
+00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00   ;90
+00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00   ;100
+00 00 00 00
+
+
+; 升级经验列表   5b438
+00 00 32 00 96 00 2c 01 f4 01
+ee 02 1a 04 78 05 08 07 ca 08   ;10
+be 0a 0a 0f ba 13 ce 18 46 1e
+22 24 62 2a 06 31 0e 38 6e 41   ;20
+4a 47 98 53 7c 60 f6 6d 6c 7c
+ac 8a e8 99 ba a9 22 ba 20 cb   ;30
+00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00   ;40
+00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00   ;50
+00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00   ;60
+00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00   ;70
+00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00   ;80
+00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00   ;90
+00 00 00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 00 00   ;100
+00 00 00 00 
+
+:Var_Person            ;属性最大值    5b504
+    64 00              ;攻击力
+    64 00              ;轻功
+    64 00              ;防御
+    64 00              ;医疗
+    64 00              ;用毒
+    64 00              ;解毒
+    64 00              ;抗毒
+    64 00              ;拳掌
+    64 00              ;御剑
+    64 00              ;刷刀
+    64 00              ;特殊
+    64 00              ;暗器
+    64 00              ;武学
+    64 00              ;品德
+    64 00              ;攻读
+    64 00              ;互搏
+    00 70              ;声望
+    64 00              ;资质
+
+    00 00 00 00 00 00 
+    00 00 00 00 00 00 
+    
+    36 34 30 00 00 00
+    ; 640*480
+:Var_640480          ;  5b53a          
+    00 00 00 00                     
+    00 00 00 00
+     
+    6b 64 65 66 00 00
+; 解密kdef
+:Var_Kdef    ; 0 直接读 1 解密读            5b548
+  00 00 00 00 00 
+
+;                    20*8             ; 5b54d
+  00 00 00 00 00 00 00 00
+  00 00 00 00 00 00 00 00 
+  00 00 00 00 00 00 00 00 
+:Var_StrKdefOffset                    ;  5b565
+  00 00 00 00 00 00 00 00 
+  00 00 00 00 00 00 00 00 
+:Addr_StrKdefIDX   ; idx 解密字符串   5b575
+  00 00 00 00 00 00 00 00 
+  00 00 00 00 00 00 00 00 
+  00 00 00 00 00 00 00 00 
+  00 00 00 00 00 00 00 00 
+  00 00 00 00 00 00 00 00 
+  00 00 00 00 00 00 00 00 
+  00 00 00 00 00 00 00 00 
+  00 00 00 00 00 00 00 00 
+:Addr_strKdefGRP   ; grp 解密字符串     5b5b5
+  00 00 00 00 00 00 00 00 
+  00 00 00 00 00 00 00 00 
+  00 00 00 00 00 00 00 00 
+  00 00 00 00 00 00 00 00 
+  00 00 00 00 00 00 00 00 
+  00 00 00 00 00 00 00 00 
+  00 00 00 00 00 00 00 00 
+  00 00 00 00 00 00 00 00 
+  00 00
+
+
+Section 62    ; 新Page 5c000
+    00 00 00 00 
+
+; 新的读取文件函数
+:sub_Readfile
+; arg_0 format (game%02d.xmi)
+; arg_4 x  第几个
+; arg_8 Addr
+    
+    ff 74 24 08                ; push [esp+xx+arg_4]
+    ff 74 24 08                ; push [esp+xx+arg_0]
+    68 *1c07c4                 ;push offset byte_c07c4
+    e8 &3ef4a                  ;call sprintf
+    83 c4 0c                   ;add esp c
+
+    ff 74 24 0c                ; push [esp+xx+arg_8]
+    68 *1c07c4                 ;push offset byte_c07c4
+    e8 &3cf45                  ;call sprintf
+    83 c4 08                   ;add esp 8
+    c3                         ;retn                        
+
+; 增加的读取wav的程序片断
+:loc_ReadWav
+    83 7c 24 04 01             ; cmp [esp+arg_0],1
+    75 'loc_read_wav_1         ; jnz xxx
+    68 *1b9294                 ; push b9294  addr_atk
+    ff 74 24 0c                ; push [esp+xx+arg_4]
+    68 *56d30                  ; push atk00.wav
+    e8 "sub_readfile           ; call sub_readfule
+    83 c4 0c                   ; add esp c
+    66 a3 *56c94               ; mov word_56c94,ax   文件长度保存
+:loc_read_wav_1
+    83 7c 24 04 02             ; cmp [esp+arg_0],2
+    75 'loc_read_wav_2         ; jnz xxx
+    68 *1b09dc                 ; push b9294  addr_e
+    ff 74 24 0c                ; push [esp+xx+arg_4]
+    68 *56e75                  ; push e00.wav
+    e8 "sub_readfile           ; call sub_readfule
+    83 c4 0c                   ; add esp c
+    66 a3 *56cc6               ; mov word_56c94,ax   文件长度保存
+:loc_read_wav_2    
+    e9 &3e2dc                  ; jmp 3e2dc
+
+
+
+; 读取fight***.idx/grp
+:loc_newReadfightStr1
+   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+:loc_newReadfightStr2
+   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+       
+:sub_newReadfight     
+; arg_0 fight***.grp
+; arg_4 fight***.idx
+; arg_8 x
+; arg_c num
+; arg_10 memaddr
+
+
+    ff 74 24 0c                ; push [esp+xx+arg_8]
+    ff 74 24 08                ; push [esp+xx+arg_0]
+    68 #loc_newReadfightStr1   ;push offset loc_newReadfightStr1 
+    e8 &3ef4a                  ;call sprintf
+    83 c4 0c                   ;add esp c
+    
+    ff 74 24 0c                ; push [esp+xx+arg_8]
+    ff 74 24 0c                ; push [esp+xx+arg_4]
+    68 #loc_newReadfightStr2   ;push offset loc_newReadfightStr2
+    e8 &3ef4a                  ;call sprintf
+    83 c4 0c                   ;add esp c
+
+    ff 74 24 14                ; push [esp+xx+arg_10]
+    ff 74 24 14                ; push [esp+xx+arg_c]
+    68 #loc_newReadfightStr2   ;push offset loc_newReadfightStr2
+    68 #loc_newReadfightStr1   ;push offset loc_newReadfightStr2
+    e8 &3d6e0               
+    83 c4 10                   ;add esp c
+    c3                         ; retn
+
+
+
+
+    
+
+; 设置显示模式 
+:sub_SetVidioMode
+    55                        ;push ebp
+    89 e5                     ;mov ebp,esp
+    53                        ;push ebx
+    51                        ;push ecx
+    52                        ;push edx
+    56                        ;push esi
+    57                        ;push edi
+    8b 45 08                  ;mov eax,[ebp+arg_0]
+    a3 *51c7f                 ;mov addr_vram, eax
+    83 3d #var_640480 00      ;cmp Var640480,0
+    75 'loc_SetVidioMode_1    ;jnz loc_SetVidioMode_1
+    b8 13 00 00 00            ; mov eax 13H          mode 13
+    bb 00 01 00 00            ; mov ebx 100H
+    cd 10                     ; int 10
+    eb 'loc_SetVidioMode_end  ;jmp loc_SetVidioMode_end
+:loc_SetVidioMode_1
+    b8 02 4f 00 00            ; mov eax 4f02H        Vesa mode 640*480
+    bb 01 01 00 00            ; mov ebx 101H
+    cd 10                     ; int 10
+:loc_SetVidioMode_end    
+    5f                        ;pop edi
+    5e                        ;pop esi
+    5a                        ;pop edx
+    59                        ;pop ecx
+    5b                        ;pop ebx
+    5d                        ;pop ebp
+    c3                        ;retn
+
+; 传送数据到vram
+:sub_MovetoVRAM
+    83 3d #var_640480 00      ;cmp Var640480,0
+    75 'loc_MovetoVRAM_1    ;jnz loc_SetVidioMode_1
+    e8 &20039
+    c3                        ;retn
+:loc_MovetoVRAM_1    
+
+    e8 "sub_movetoVRAM640
+    c3                        ;retn
+
+
+:sub_movetoVRAM640
+    55                        ;push ebp
+    89 e5                     ;mov ebp,esp
+    53                        ;push ebx
+    51                        ;push ecx
+    52                        ;push edx
+    56                        ;push esi
+    57                        ;push edi
+    fc                        ;cld
+    8b 35 *51c7f              ;mov esi,51c7f
+    33 d2                     ;xor edx,edx
+    33 db                     ;xor ebx,ebx
+:loc_movetoVRAM640_1
+    b8 05 4f 00 00            ;mov eax,4f05
+    cd 10                     ;int 10
+    b9 00 40 00 00            ;mov ecx,40000
+    bf 00 00 0a 00            ;mov edi,a0000
+    f3 a5                     ;rep movsd
+    42                        ;inc edx
+    83 fa 05                  ;cmp edx,5
+    7c 'loc_movetoVRAM640_1      ;jl loc_movetoVRAM_1
+    5f                        ;pop edi
+    5e                        ;pop esi
+    5a                        ;pop edx
+    59                        ;pop ecx
+    5b                        ;pop ebx
+    5d                        ;pop ebp
+    c3                        ;retn
+
+
+
+
+; 表面绘贴图
+:sub_drawSurf
+     56                       ;push esi
+     57                       ;push edi
+     8b 74 24 0c              ;mov esi,[esp+arg_0]
+     8b 7c 24 10              ;mov edi,[esp+arg_4]
+     83 3d #var_640480 00     ;cmp Var640480,0
+     74 'loc_drawSurf_1       ;jz loc_drawSurf_1
+     81 c6 b0 00 00 00        ;add esi,0b0
+     83 ef 40                 ;sub edi,40
+:loc_drawSurf_1
+     ff 74 24 14             ; push [esp+arg_8]
+     57                      ;push edi
+     56                      ;push esi 
+     e8 &3d643               ;call 3d643 
+     83 c4 0c                ;add esp,0c
+     5f                      ;pop edi
+     5e                      ;pop esi
+     c3                      ;retn
+
+; 主地图绘人
+:Sub_DrawMMapPerson
+     83 3d #var_640480 00     ;cmp Var640480,0
+     75 'loc_DrawMMapPerson_1 ;jnz loc_drawSurf_1
+     6a 75                    ;push 117
+     68 91 00 00 00           ;push 91
+     e9 &2580d                ;jmp 2580d
+:loc_DrawMMapPerson_1
+     68 2c 01 00 00           ;push 12c
+     68 91 00 00 00           ;push 91
+     e9 &2580d                ;jmp 2580d
+           
+
+; 场景地图绘人
+:Sub_DrawSMapPerson
+     83 3d #var_640480 00     ;cmp Var640480,0
+     75 'loc_DrawSMapPerson_1 ;jnz loc_drawSurf_1
+     83 c1 75                 ;add ecx,75H
+     01 c8                    ; add eax,ecx
+     c3                       ;retn
+:loc_DrawSMapPerson_1
+     81 c1 15 01 00 00        ;add ecx,115h
+     01 c8                    ;add eax,ecx     
+     c3                       ;retn
+
+
+; 战斗地图绘人
+:Sub_DrawWMapPerson
+     83 3d #var_640480 00     ;cmp Var640480,0
+     75 'loc_DrawWMapPerson_1 ;jnz loc_drawSurf_1
+     81 c1 91 00 00 00        ;add ecx,91H
+     83 ea 51                 ;sub edx,51h
+     c3                       ;retn
+:loc_DrawWMapPerson_1
+     81 c1 41 01 00 00        ;add ecx,141h
+     81 ea 91 00 00 00        ;sub edx,91h     
+     c3                       ;retn       
+
+
+; 战斗半透明绘贴图
+:sub_drawWarSurf
+     56                       ;push esi
+     57                       ;push edi
+     8b 74 24 0c              ;mov esi,[esp+arg_0]
+     8b 7c 24 10              ;mov edi,[esp+arg_4]
+     83 3d #var_640480 00     ;cmp Var640480,0
+     74 'loc_drawWarSurf_1       ;jz loc_drawSurf_1
+     81 c6 b0 00 00 00        ;add esi,0b0
+     83 ef 40                 ;sub edi,40
+:loc_drawWarSurf_1
+     ff 74 24 1c             ; push [esp+arg_10]
+     ff 74 24 1c             ; push [esp+arg_c]
+     ff 74 24 1c             ; push [esp+arg_8]
+     57                      ;push edi
+     56                      ;push esi 
+     e8 &3d88a               ;call 3d88a 
+     83 c4 14                ;add esp,14
+     5f                      ;pop edi
+     5e                      ;pop esi
+     c3                      ;retn    
+     
+; 战斗绘文字
+:sub_drawWarStr
+     56                       ;push esi
+     57                       ;push edi
+     8b 74 24 0c              ;mov esi,[esp+arg_0]
+     8b 7c 24 10              ;mov edi,[esp+arg_4]
+     83 3d #var_640480 00     ;cmp Var640480,0
+     74 'loc_drawWarStr_1       ;jz loc_drawSurf_1
+     81 c6 b0 00 00 00        ;add esi,0b0
+     83 ef 40                 ;sub edi,40
+:loc_drawWarStr_1
+     ff 74 24 20             ; push [esp+arg_14]
+     ff 74 24 20             ; push [esp+arg_10]
+     ff 74 24 20             ; push [esp+arg_c]
+     ff 74 24 20             ; push [esp+arg_8]
+     57                      ;push edi
+     56                      ;push esi 
+     e8 &3d832               ;call 3d88a 
+     83 c4 18                ;add esp,18
+     5f                      ;pop edi
+     5e                      ;pop esi
+     c3                      ;retn         
+
+; 人物属性大小控制
+:Sub_ModifyPerson
+; eax 人物代号*偏移
+    56                           ;push esi
+    53                           ;push ebx
+    8b f0                        ;mov esi,eax
+    81 c6 *1901a2                ;add esi,offset 901a2
+    33 db                        ;xor ebx,ebx
+:loc_modifyPerson_1
+    0f bf 04 5d #Var_person     ;movsx eax,Var_person[ebx*2]
+    66 39 04 5e                  ;cmp [esi+ebx*2],\ax
+    7e 'loc_ModifyPerson_2       ;jle loc_ModifyPerson_1
+    66 89 04 5e                  ;mov [esi+ebx*2],ax
+:loc_ModifyPerson_2
+    66 83 3c 5e 00               ;cmp [esi+ebx*2],0
+    7d 'loc_ModifyPerson_3       ;jge loc_ModifyPerson_1
+    66 c7 04 5e 00 00            ;mov [esi+ebx*2],0
+:loc_ModifyPerson_3
+    
+    43                           ;inc ebx    
+    83 fb 12                     ;cmp ebx,18
+    7c 'loc_modifyPerson_1       ;jl loc_modifyPerson_1
+    
+    5b                           ;pop ebx
+    5e                           ;pop esi
+    c3                           ;retn
+
+
+
+
+:sub_ReadKDEFIDX
+    53                        ;push ebx
+    56                        ;push esi
+    57                        ;push edi
+    55                        ;push ebp   
+
+    ff 74 24 18              ; push [esp+arg_4]
+    ff 74 24 18              ; push [esp+arg_0]
+    e8 &3cf45                ;call 3cf45 
+    83 c4 08                  ;add esp,8
+    8b f0                    ;mov esi,eax 
+    83 3d #Var_Kdef 00       ;cmp Var_kdef,0
+    74 'loc_ReadKDEFIDX_end  ;jz loc_ReadKDEFIDX_end    
+    33 db                    ;xor ebx,ebx
+    a1 #Var_StrKdefOffset    ;mov eax,Var_StrKdefOffset
+    25 0f 00 00 00           ;and eax,000000ff
+    8b e8                    ;mov ebp,eax
+:loc_ReadKDEFIDX_1
+    33 ff                    ;xor edi,edi 
+  
+:loc_ReadKDEFIDX_2    
+    8b d7                    ;mov edx,edi
+    03 d5                    ;add edx,ebp
+    8a 82 #Addr_StrKdefIDX    ;mov al,Var_strkdefidx[edx]
+    8a a3 *1d5074            ;mov ah,*1d5074[ebx]
+    32 e0                    ;xor ah,al
+    88 a3 *1d5074            ;mov *1d5074[ebx],ah
+    43                       ;inc ebx
+    47                       ;inc edi
+    3b de                    ;cmp ebx,esi
+    7d 'loc_ReadKDEFIDX_end  ;jge loc_ReadKDEFIDX_end
+    83 ff 0f                 ;cmp edi,15
+    7c 'loc_ReadKDEFIDX_2    ;jl loc_ReadKDEFIDX_2
+    eb 'loc_ReadKDEFIDX_1    ;jmp  loc_ReadKDEFIDX_1
+
+:loc_ReadKDEFIDX_end
+     
+    5d                        ;pop ebp
+    5f                        ;pop edi
+    5e                        ;pop esi
+    5b                        ;pop ebx
+    c3                        ;retn                        
+
+
+:Sub_CloseKDEFGRP
+    53                        ;push ebx
+    56                        ;push esi
+    57                        ;push edi
+    55                        ;push ebp   
+
+    ff 74 24 14              ; push [esp+arg_0]
+    e8 &3db2b                ;call 3db2b 
+    83 c4 04                  ;add esp,4
+    a1 *1dc690                ;mov eax,1dc690 
+    8b f0                     ;mov esi,eax
+    83 3d #Var_Kdef 00       ;cmp Var_kdef,0
+    74 'loc_CloseKDEFGRP_end  ;jz loc_ReadKDEFIDX_end    
+    bb 00 00 00 00            ;mov ebx,00
+    a1 #Var_StrKdefOffset    ;mov eax,Var_StrKdefOffset
+    25 0f 00 00 00           ;and eax,000000ff
+    8b e8                    ;mov ebp,eax
+:loc_CloseKDEFGRP_1
+    33 ff                    ;xor edi,edi 
+  
+:loc_CloseKDEFGRP_2    
+    8b d7                    ;mov edx,edi
+    03 d5                    ;add edx,ebp
+    8a 82 #Addr_StrKdefGRP    ;mov al,Var_strkdefidx[edx]
+    8a a3 *1d9e90            ;mov ah,*1d9e90[ebx]
+    32 e0                    ;xor ah,al
+    88 a3 *1d9e90            ;mov *1d9e90[ebx],ah
+    43                       ;inc ebx
+    47                       ;inc edi
+    3b de                    ;cmp ebx,esi
+    7d 'loc_CloseKDEFGRP_end  ;jge loc_ReadKDEFIDX_end
+    83 ff 0e                 ;cmp edi,1e
+    7c 'loc_CloseKDEFGRP_2    ;jl loc_ReadKDEFIDX_2
+    eb 'loc_CloseKDEFGRP_1    ;jmp  loc_ReadKDEFIDX_1
+
+:loc_CloseKDEFGRP_end
+     
+    5d                        ;pop ebp
+    5f                        ;pop edi
+    5e                        ;pop esi
+    5b                        ;pop ebx
+    c3                        ;retn                        
+
+
+
+
+
+    
+;  新增指令
+
+Start 2caa7
+    e8 "NewInstruct_32     ; 修改调用到新的指令32H
+    
+Start 29592
+    e8 &3efb9              ; 写当前场景S×，源程序此处有误，应该读写打开文件，误用读打开文件
+
+Start 2c8de
+    e8 "newInstruct_24     ; 修改调用到新的指令24H
+
+Section 63    ; 新Page 5c000
+
+00 00 00 00    ; 保留四个字节，以便空的fixup可以指向这个地址
+
+:loc_callAddress
+#sub_0          ; sub_0
+#sub_1          ; sub_1
+#sub_2          ; sub_2
+#sub_3          ; sub_3
+#sub_4          ; sub_4
+#sub_5          ; sub_5
+#sub_Empty     ; sub_6
+#sub_Empty     ;sub_7
+#sub_8          ;sub_8
+#sub_9          ;sub_9
+#sub_0a         ;sub_a
+#sub_0b         ;sub_b
+#sub_0c         ;sub_c
+#sub_Empty     ;sub_d
+#sub_Empty     ;sub_e
+#sub_Empty     ;sub_f
+#sub_10         ;sub_10
+#sub_11         ;sub_11
+#sub_12         ;sub_12
+#sub_13         ;sub_13
+#sub_14         ;sub_14
+#sub_15         ;sub_15
+#sub_16         ;sub_16
+#sub_17         ;sub_17
+#sub_18         ;sub_18
+#sub_19         ;sub_19
+#sub_1a         ;sub_1a
+#sub_1b         ;sub_1b
+#sub_1c         ;sub_1c
+#sub_Empty     ;sub_1d
+#sub_Empty     ;sub_1e
+#sub_Empty      ;sub_1f
+#sub_20         ;sub_20
+#sub_21         ;sub_21
+#sub_22        ;sub_22
+#sub_23        ;sub_23
+#sub_24        ;sub_24
+#sub_25       ;sub_25
+#sub_26        ;sub_26
+#sub_27        ;sub_27
+#sub_28        ;sub_28
+#sub_29       ;sub_29
+#sub_2a      ;sub_2a   42
+#sub_2b       ;sub_2b
+#sub_Empty      ;sub_2c
+#sub_Empty     ;sub_2d
+#sub_Empty     ;sub_2e
+#sub_Empty     ;sub_2f
+#sub_30         ;sub_30
+#sub_Empty     ;sub_31
+
+
+:NewInstruct_24
+    8b 44 24 04                      ; mov eax,[esp+arg_0]
+    3d 80 00 00 00                       ;cmp eax,80H 
+    7c 'loc_NewInstruct_24_1         ;jl loc_NewInstruct_24_1
+    b8 00 70 00 00                   ;mov eax,7000H
+    e8 "sub_value                    ;call sub_value
+    83 f8 00                         ;cmp eax,0
+    75 'loc_NewInstruct_24_2         ;jnz loc_NewInstruct_24_2
+    8b 44 24 08                      ; mov eax,[esp+arg_4]
+    c3                               ;retn
+:loc_NewInstruct_24_2        
+    8b 44 24 0c                      ; mov eax,[esp+arg_8]
+    c3        
+
+:loc_NewInstruct_24_1    
+    ff 74 24 0c                      ; push [esp+xx+arg_8]
+    ff 74 24 0c                      ; push [esp+xx+arg_4]
+    50                               ; push eax
+    e8 &2fedf                        ; call 2fedf           旧的指令24H
+    83 c4 0c                         ; add esp,0ch
+    c3                                ; retn
+        
+:NewInstruct_32
+
+    8b 44 24 04                      ; mov eax,[esp+arg_0]
+    ff 74 24 1c                      ; push [esp+xx+arg_18]
+    ff 74 24 1c                      ; push [esp+xx+arg_14]
+    ff 74 24 1c                      ; push [esp+xx+arg_10]
+    ff 74 24 1c                      ; push [esp+xx+arg_c]
+    ff 74 24 1c                      ; push [esp+xx+arg_8]
+    ff 74 24 1c                      ; push [esp+xx+arg_4]
+    3d 80 00 00 00                   ;cmp eax,80H 
+    7d 'loc_NewInstruct_32_1         ;jge loc_NewInstruct_32_1
+    2e ff 14 85 #loc_callAddress     ; call cs:loc_callAddress[eax*4]
+    83 c4 18                         ; add esp,18h
+    31 c0                            ; xor eax,eax    
+    c3                               ; retn
+:loc_NewInstruct_32_1
+    50
+    e8 &2fedf                        ; call 2fedf           旧的指令32H
+    83 c4 1c                         ; add esp,1ch
+    c3                               ; retn
+    
+;end  NewInstruct_32
+
+:sub_Empty
+    90
+    c3              ; retn
+
+:sub_value
+; 取变量值，为了减少fixup数量，设置此函数
+; 输入eax变量编号
+; 返回eax变量值
+    0f bf 04 45 *120000        ; movsx eax,120000[eax*2]
+    c3                         ; retn
+
+
+:sub_Getvalue
+; 根据参数的值确定是变量还是数值，然后取出值返回ax
+; arg_0 变量or数值
+; arg_4 参数，第i位=0数值，=1变量
+; arg_8 i
+
+    53                        ;push ebx
+    8b 5c 24 0c               ;mov ebx,[esp+arg_4]   ; 指示变量和值
+    8b 4c 24 10               ;mov ecx,[esp+arg_8]    
+    33 c0                     ; xor eax,eax
+    40                        ; inc eax
+    d3 e0                     ; shl eax,cl
+    
+    85 d8                     ;test ebx,eax
+    74 'loc_GetValue_1        ;jz 'loc_s1_1 
+    8b 44 24 08               ;mov eax,[esp+arg_0]
+    e8 "sub_value             ;call "sub_value
+    eb 'loc_GetValue_2        ;jmp loc_s1_2
+    
+:loc_GetValue_1
+
+    8b 44 24 08               ;mov eax,[esp+arg_0]
+:loc_GetValue_2     
+    5b                        ;pop ebx
+    c3                        ;retn
+
+;end sub_getValue
+
+:sub_VAddr
+; 取变量值表示的地址
+; 输入eax 变量编号
+; 返回eax 变量值指向的实际地址空间
+    0f bf 04 45 *120000        ; movsx eax,120000[eax*2]
+    05 *120000                 ; add eax, offset 120000
+    c3                         ; retn
+
+
+:sub_Addr
+; 取变量的地址
+; 输入eax 变量编号
+; 返回eax 变量的实际地址空间
+    03 c0                      ; add eax,eax
+    05 *120000                 ; add eax, offset 120000
+    c3                         ; retn
+
+
+:sub_0
+; 变量赋值
+; arg_0 变量
+; arg_1 V 变量值
+
+    8b 4c 24 08               ; mov ecx,[esp+arg_4]
+    8b 44 24 04               ; mov eax,[esp+arg_0]
+    66 89 0c 45 *120000       ; mov 120000[eax*2],cx
+    c3              ; retn
+    
+;end sub_0
+
+
+:sub_1
+;数组赋值
+; arg_0 指示变量和值
+; arg_4 字节还是字
+; arg_8 数组起始变量
+; arg_c 数组下标
+; arg_10 值
+   
+    57                        ;push edi
+    55                        ;push ebp   
+
+    6a 00                     ;push    0
+    ff 74 24 10               ;push [esp+arg_0]
+    ff 74 24 20               ;push [esp+arg_c]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    8b e8                     ;mov ebp,eax            数组下标保存到ebp
+
+    8b 44 24 14               ;mov eax,[esp+arg_8]
+    e8 "sub_Addr              ;call sub_Addr
+    8b f8                     ;mov edi,eax         ; 数组起始地址->edi
+
+    6a 01                     ;push    1
+    ff 74 24 10               ;push [esp+arg_0]
+    ff 74 24 24               ;push [esp+arg_10]
+    e8 "sub_getValue          ;call sub_getValue          值保存到eax
+    83 c4 0c                  ;add esp,0c
+    
+    03 fd                     ;add edi,ebp    
+    83 7c 24 10 00            ;cmp [esp+arg_4],0
+    75 'loc_s1_5              ;jnz loc_s1_5
+    03 fd                     ;add edi,ebp     =0 按字处理 edi+ebp*2
+    66 ab                     ;stosw 
+    eb 'loc_s1_6              ;jmp loc_s1_6
+:loc_s1_5    
+    aa                        ;stosb           =1 按字节处理 edi+ebp
+
+:loc_s1_6        
+    5d                        ;pop ebp
+    5f                        ;pop edi
+    c3                        ;retn                        
+
+
+:sub_2
+;取数组值
+; arg_0 指示变量和值
+; arg_4 字节还是字
+; arg_8 数组起始变量
+; arg_c 数组下标
+; arg_10 保存值的变量
+   
+    56                        ;push esi
+    55                        ;push ebp   
+    
+    6a 00                     ;push    0
+    ff 74 24 10               ;push [esp+arg_0]
+    ff 74 24 20               ;push [esp+arg_c]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    8b e8                     ;mov ebp,eax            数组下标保存到ebp
+    
+    8b 44 24 14               ;mov eax,[esp+arg_8]
+    e8 "sub_Addr              ;call sub_Addr
+    8b f0                     ;mov esi,eax     ; 数组起始地址
+    
+    03 f5                     ;add esi,ebp   
+    31 c0                     ;xor eax,eax
+    83 7c 24 10 00            ;cmp [esp+arg_4],0
+    75 'loc_s2_5              ;jnz loc_s1_5
+    03 f5                     ;add esi,ebp    =0 按字处理
+    66 ad                     ;lodsw 
+    eb 'loc_s2_6              ;jmp loc_s1_6
+:loc_s2_5    
+    ac                        ;lodsb         =1 按字节处理
+:loc_s2_6        
+    
+    50                        ;push eax
+    ff 74 24 20               ;push [esp+arg_10]
+    e8 "sub_0                 ;call sub_0
+    83 c4 08                  ;add esp,08
+    
+    5d                        ;pop ebp
+    5e                        ;pop esi
+    c3                        ;retn                        
+
+
+:sub_3
+; 四则远算
+; arg_0 指示b是变量还是数值
+; arg_4 运算 0+ 1- 2* 3/ 4 MOD
+; arg_8 y    = a+-*/b
+; arg_c a
+; arg_10 b
+
+    53                        ;push ebx
+    56                        ;push esi
+    57                        ;push edi
+    55                        ;push ebp   
+    
+    6a 00                     ;push    0
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 2c               ;push [esp+arg_10]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    8b e8                     ;mov ebp,eax            b保存到ebp
+
+    8b 5c 24 18               ;mov ebx,[esp+arg_4]   运算符
+    8b 44 24 20               ;mov eax,[esp+arg_c]
+    e8 "sub_value             ;call sub_value        a的值
+    
+    83 fb 00                  ;cmp ebx,0
+    7f 'loc_s3_1              ;jg 'loc_s3_1
+    03 c5                     ;add eax,ebp
+    eb 'loc_s3_5              ;jmp 'loc_s3_5
+:loc_s3_1
+    83 fb 01                  ;cmp ebx,1
+    7f 'loc_s3_2              ;jg 'loc_s3_2
+    2b c5                     ;sub eax,ebp
+    eb 'loc_s3_5              ;jmp 'loc_s3_5
+:loc_s3_2
+    83 fb 02                  ;cmp ebx,2
+    7f 'loc_s3_3               ;jg 'loc_s3_3
+    0f af c5                  ;imul eax,ebp
+    eb 'loc_s3_5              ;jmp 'loc_s3_5
+:loc_s3_3
+    83 fb 03                  ;cmp ebx,3
+    7f 'loc_s3_4              ;jg 'loc_s3_5
+    99                        ;cdq
+    f7 fd                     ;idiv eax,ebp
+    eb 'loc_s3_5              ;jmp 'loc_s3_5
+:loc_s3_4
+    83 fb 04                  ;cmp ebx,4
+    7f 'loc_s3_5              ;jg 'loc_s3_5
+    99                        ;cdq
+    f7 fd                     ;idiv eax,ebp
+    8b c2                     ;mov eax,edx
+    
+:loc_s3_5    
+
+    50                        ;push eax
+    ff 74 24 20               ;push [esp+arg_8]
+    e8 "sub_0                 ;call sub_0
+    83 c4 08                  ;add esp,08
+    
+    5d                        ;pop ebp
+    5f                        ;pop edi
+    5e                        ;pop esi
+    5b                        ;pop ebx
+    c3                        ;retn                        
+;end sub_3
+
+:sub_4
+;变量判断
+; arg_0 指示变量和值
+; arg_4 判断类型
+; arg_8 a
+; arg_c b
+
+    53                        ;push ebx
+    56                        ;push esi
+    57                        ;push edi
+    55                        ;push ebp   
+
+    6a 00                     ;push    0
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 28               ;push [esp+arg_c]
+    e8 "sub_getValue          ;call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    8b e8                     ;mov ebp,eax            b保存到ebp
+
+    8b 5c 24 18               ;mov ebx,[esp+arg_4]   判断类型
+    8b 44 24 1c               ;mov eax,[esp+arg_8]
+    e8 "sub_value             ;call sub_value        a的值
+    
+    33 f6                     ;xor esi,esi
+    
+    83 fb 00                  ;cmp ebx,0
+    7f 'loc_s4_1              ;jg 'loc_s3_1
+    3b c5                     ;cmp eax,ebp
+    7c 'loc_s4_v0             ;jl 'loc_s4_v0
+    eb 'loc_s4_v1             ;jmp loc_s4_v1
+:loc_s4_1
+    83 fb 01                  ;cmp ebx,1
+    7f 'loc_s4_2              ;jg 'loc_s3_1
+    3b c5                     ;cmp eax,ebp
+    7e 'loc_s4_v0             ;jle 'loc_s4_v0
+    eb 'loc_s4_v1             ;jmp loc_s4_v1
+:loc_s4_2
+    83 fb 02                  ;cmp ebx,1
+    7f 'loc_s4_3              ;jg 'loc_s3_1
+    3b c5                     ;cmp eax,ebp
+    74 'loc_s4_v0             ;je 'loc_s4_v0
+    eb 'loc_s4_v1             ;jmp loc_s4_v1
+:loc_s4_3
+    83 fb 03                  ;cmp ebx,1
+    7f 'loc_s4_4              ;jg 'loc_s3_1
+    3b c5                     ;cmp eax,ebp
+    75 'loc_s4_v0             ;jne 'loc_s4_v0
+    eb 'loc_s4_v1             ;jmp loc_s4_v1
+        
+:loc_s4_4
+    83 fb 04                  ;cmp ebx,1
+    7f 'loc_s4_5             ;jg 'loc_s3_1
+    3b c5                     ;cmp eax,ebp
+    7d 'loc_s4_v0             ;jge 'loc_s4_v0
+    eb 'loc_s4_v1             ;jmp loc_s4_v1
+    
+:loc_s4_5
+    83 fb 05                  ;cmp ebx,1
+    7f 'loc_s4_6              ;jg 'loc_s3_1
+    3b c5                     ;cmp eax,ebp
+    7f 'loc_s4_v0             ;jg 'loc_s4_v0
+    eb 'loc_s4_v1             ;jmp loc_s4_v1
+
+:loc_s4_6
+    83 fb 06                  ;cmp ebx,1
+    7f 'loc_s4_7              ;jg 'loc_s3_1
+    eb 'loc_s4_v0             ;jmp loc_s4_v1       
+    
+:loc_s4_7
+    83 fb 07                  ;cmp ebx,1
+    7f 'loc_s4_8              ;jg 'loc_s3_1
+
+:loc_s4_v1
+    46                        ;inc esi
+
+:loc_s4_v0
+    
+    8b c6                     ;mov eax,esi
+    50                        ;push eax
+    68 00 70 00 00            ;push c000
+    e8 "sub_0                 ;call sub_0
+    83 c4 08                  ;add esp,08
+
+:loc_s4_8    
+    5d                        ;pop ebp
+    5f                        ;pop edi
+    5e                        ;pop esi
+    5b                        ;pop ebx
+    c3                        ;retn                        
+
+:sub_5
+; 全部变量清零
+    57                        ;push edi
+    
+    31 c0                     ; xor eax,eax
+    e8 "sub_addr              ;call sub_addr        变量0地址
+    8b f8                     ;mov edi,eax           
+    31 c0                     ;xor eax,eax
+    b9 00 40 00 00            ;mov ecx,4000
+    fc                        ;cld
+    f3 ab                     ;rep stosd    
+    5f                        ;pop edi
+    c3                        ;retn 
+
+
+:sub_8  
+; 读对话到字符串
+; arg_0 type 数值还是变量
+; arg_4 talkid
+; arg_8 x
+    53                        ;push ebx
+    56                        ;push esi
+    57                        ;push edi
+    55                        ;push ebp
+
+    6a 00                     ;push    0
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 20               ;push [esp+arg_4]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    8b d8                     ;mov ebx,eax            对话编号保存到ebx
+    
+    66 83 3d *1c0bfa 08        ;cmp word_c0bfa,8
+    74 'loc_s8_1               ;jz short loc
+    c7 05 *1d5070 00 00 00 00  ;mov d_d5070,0  
+    68 *1d5074                 ;push    offset addr_ranger_idx ; paddr
+    68 *587e7                  ;push    offset aTalk_idx ; filename
+    e8 &3cf45                  ;call    readfile??
+    83 c4 08                   ;add     esp, 8
+    66 c7 05 *1c0bfa 08 00     ;mov     word_C0BFA, 8   ; idx 的内容标记
+    
+:loc_s8_1        
+
+    68 *587fb                 ;push    offset aTalk_grp ; "talk.grp"
+    e8 &3da66                 ;call    openfile??
+    89 c5                     ;mov     ebp, eax
+    83 c4 04                  ;add     esp, 4
+    6a 00                     ;push    0
+    ff 34 9d *1d5070           ;push    dword_D5070[ebx*4]
+    55                        ;push    ebp
+    e8 &3db07                 ;call    lseek?
+    83 c4 0c                  ;add     esp, 0Ch
+    8b 04 9d *1d5074           ;mov     eax, addr_ranger_idx[ebx*4]
+    2b 04 9d *1d5070           ;sub     eax, dword_D5070[ebx*4]
+    a3 *1dc690                 ;mov     basedatanum_r1, eax
+    50                        ;push    eax
+    68 *1dbe90                 ;push    offset byte_DBE90 ; 对话字符缓冲区
+    55                        ;push    ebp
+    e8 &3dabf                 ;call    readfromfile
+    83 c4 0c                  ;add     esp, 0Ch
+    55                        ;push    ebp
+    e8 &3db2b                 ;call    sub_3DB2B       ; 关闭文件
+    83 c4 04                  ;add     esp, 4
+    
+    ; 把字符串从对话字符缓冲区复制到数组中
+    8b 44 24 1c               ;mov eax,[esp+arg8]
+    e8 "sub_addr             ;call sub_value
+    8b f8                     ;mov edi,eax               x的起始地址
+    be *1dbe90                ;mov esi,offset 1dbe90
+    fc                        ;cld
+:loc_s8_2
+    80 3e 00                  ;cmp byte ptr[esi],0
+    74 'loc_s8_3              ;jz :loc_sub_20_3
+    80 36 ff                  ;xor byte ptr[esi],ff
+    a4                        ;movsb
+    eb 'loc_s8_2              ;jmp :loc_sub_20_2
+    
+:loc_s8_3
+    a4                        ;movsb
+    5d                        ;pop ebp
+    5f                        ;pop edi
+    5e                        ;pop esi
+    5b                        ;pop ebx
+    c3                        ;retn                        
+; end sub_8
+
+
+
+:sub_9
+; sprintf
+; arg_0 数值or变量
+; arg_4 输出字符串
+; arg_8 格式字符串
+; arg_c x
+
+    53                        ;push ebx
+    56                        ;push esi
+    57                        ;push edi
+    55                        ;push ebp
+
+    6a 00                     ;push    0
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 28               ;push [esp+arg_c]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    8b f0                     ;mov esi,eax           x->esi
+
+    8b 44 24 18               ;mov eax,[esp+arg_4]
+    e8 "sub_addr              ;call sub_addr        字符串地址
+    8b f8                     ;mov edi,eax       输出字串地址
+     
+    8b 44 24 1c               ;mov eax,[esp+arg_8]
+    e8 "sub_addr              ;call sub_addr        格式字串地址
+
+    56                        ;push esi  x
+    50                        ;push eax  格式
+    57                        ; push edi  输出
+    e8 &3ef4a                 ;call sprintf
+    83 c4 c                   ;add esp c
+    5d                        ;pop ebp
+    5f                        ;pop edi
+    5e                        ;pop esi
+    5b                        ;pop ebx
+    c3                        ;retn                        
+
+;end sub_9
+
+
+:sub_len
+; 读取字符串长度
+; arg_0 字符串地址
+; eax 返回长度
+
+    53                        ;push ebx
+    8b 44 24 08               ;mov eax,[esp+arg0]
+    33 db                     ;xor ebx,ebx
+:loc_slen_1
+    80 38 00                  ;cmp byte ptr[eax],0
+    74 'loc_slen_2              ;jz :loc_sub_20_3
+    40                         ;inc eax
+    43                         ;inc ebx              ; 字符个数
+    eb 'loc_slen_1              ;jmp :loc_sub_20_2
+:loc_slen_2
+    8b c3                     ;mov eax,ebx
+    5b                        ;pop ebx
+    c3                        ;retn                        
+; end sub_0a
+
+
+:sub_0a  
+; 读取字符串长度
+; arg_0 字符串
+; arg_4 l，保存长度
+    
+    ; 把字符串从对话字符缓冲区复制到数组中
+    8b 44 24 04               ;mov eax,[esp+arg0]
+    e8 "sub_addr              ;call sub_addr        字符串的起始地址
+    50                        ;push eax
+    e8 "sub_len               ;call sub_len
+    83 c4 04                  ;add esp,04
+    
+    50                        ;push eax
+    ff 74 24 0c               ;push [esp+arg_4]
+    e8 "sub_0                 ;call sub_0
+    83 c4 08                  ;add esp,08
+    
+ 
+    c3                        ;retn                        
+; end sub_0a
+
+
+:loc_s0b_format
+    25 73 25 73 00 ; %s%s
+
+:sub_0b
+; 字符串合并
+; arg_0 新字符串
+; arg_4 字符串1
+; arg_8 字符串2
+
+    53                        ;push ebx
+    56                        ;push esi
+    57                        ;push edi
+    55                        ;push ebp
+
+    8b 44 24 14               ;mov eax,[esp+arg_0]
+    e8 "sub_addr             ;call sub_addr        字符串地址
+    8b f8                    ;mov edi,eax       输出字串地址
+     
+    8b 44 24 18               ;mov eax,[esp+arg_4]
+    e8 "sub_addr             ;call sub_addr        字符串地址
+    8b f0                    ;mov esi,eax       字串1地址
+
+    8b 44 24 1c               ;mov eax,[esp+arg_8]
+    e8 "sub_addr             ;call sub_addr        字串2地址
+
+    50                         ;push eax
+    56                         ;push esi  
+    68 #loc_s0b_format         ;push offset a5d  "%5d"
+    57                        ; push edi  输出
+    e8 &3ef4a                  ;call sprintf
+    83 c4 10                   ;add esp 10
+    
+    5d                        ;pop ebp
+    5f                        ;pop edi
+    5e                        ;pop esi
+    5b                        ;pop ebx
+ 
+    c3                        ;retn    
+                                           
+:sub_0c
+; 空格字符串
+; arg_0 数值or变量
+; arg_4 字符串
+; arg_8 空格个数
+
+    53                        ;push ebx
+    56                        ;push esi
+    57                        ;push edi
+    55                        ;push ebp
+
+    6a 00                     ;push    0
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 24               ;push [esp+arg_8]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    8b f0                     ;mov esi,eax           n->esi
+
+    8b 44 24 18               ;mov eax,[esp+arg_4]
+    e8 "sub_addr             ;call sub_addr        字符串地址
+    8b f8                    ;mov edi,eax       输出字串地址
+    8b ce                    ;mov ecx,esi
+    b0 20                    ;mov al,20
+    fc                       ;cld
+    f3 aa                    ;rep stosb
+    33 c0                    ;xor eax,eax
+    aa                       ;stosb
+    
+    
+    5d                        ;pop ebp
+    5f                        ;pop edi
+    5e                        ;pop esi
+    5b                        ;pop ebx
+ 
+    c3                        ;retn                  
+
+:Array_Shuxing
+    *19014c                   ; 人物
+    *1a2744                   ; 物品
+    *19e4cc                   ; 场景
+    *19f5dc                   ; 武功 
+    *1dc694                   ; 小宝商店
+    00 00 00 00 
+:Array_ShuxingSize            ; 每个属性大小
+    b6 00 00 00
+    be 00 00 00
+    34 00 00 00
+    88 00 00 00
+    1e 00 00 00
+    00 00 00 00
+:Array_ShuxingName            ; 名称的偏移
+    08 00 00 00
+    16 00 00 00 
+    02 00 00 00
+    02 00 00 00
+    00 00 00 00
+
+:sub_10
+; 保存属性 属性id(i)=x
+; arg_0 数值or变量
+; arg_4 type 0人物 1物品 2场景 3武功 4小宝商店
+; arg_8 id
+; arg_c i
+; arg_10 x
+
+    53                        ;push ebx
+    56                        ;push esi
+    57                        ;push edi
+    55                        ;push ebp
+
+    6a 00                     ;push    0
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 24               ;push [esp+arg_8]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    8b f0                     ;mov esi,eax           id->esi
+
+    6a 01                     ;push    1
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 28               ;push [esp+arg_c]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    8b e8                     ;mov ebp,eax           i->ebp
+
+
+    8b 5c 24 18               ;mov ebx,[esp+arg_4]
+    
+    8b 04 9d #array_shuxingsize ;mov eax,array_shuxingsize[ebx*4]
+    0f af c6                    ;imul eax,esi
+    03 04 9d #array_shuxing     ;add eax,array_shuxing [ebx*4] 
+    
+    03 e8                     ;add ebp,eax          最后的偏移
+
+    6a 02                     ;push    2
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 2c               ;push [esp+arg_10]
+    e8 "sub_getValue          ; call sub_getValue   x->eax
+    83 c4 0c                  ;add esp,0c
+
+    66 89 45 00               ;mov [ebp],ax    
+    
+    5d                        ;pop ebp
+    5f                        ;pop edi
+    5e                        ;pop esi
+    5b                        ;pop ebx
+    c3                        ;retn                        
+
+
+
+
+:sub_11
+; 取属性 x=属性id(i)
+; arg_0 数值or变量
+; arg_4 type 0人物 1物品 2场景 3武功 4小宝商店
+; arg_8 id
+; arg_c i
+; arg_10 x
+
+    53                        ;push ebx
+    56                        ;push esi
+    57                        ;push edi
+    55                        ;push ebp
+
+    6a 00                     ;push    0
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 24               ;push [esp+arg_8]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    8b f0                     ;mov esi,eax           id->esi
+
+    6a 01                     ;push    1
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 28               ;push [esp+arg_c]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    8b e8                     ;mov ebp,eax           i->ebp
+
+
+    8b 5c 24 18               ;mov ebx,[esp+arg_4]
+    
+    8b 04 9d #array_shuxingsize ;mov eax,array_shuxingsize[ebx*4]
+    0f af c6                    ;imul eax,esi
+    03 04 9d #array_shuxing     ;add eax,array_shuxing [ebx*4] 
+
+    
+    03 e8                     ;add ebp,eax          最后的偏移
+
+    0f bf 45 00               ;movsx eax,[ebp]
+    50                        ;push eax
+    ff 74 24 28               ;push [esp+arg_10]
+    e8 "sub_0                 ;call sub_0
+    83 c4 08                  ;add esp,08
+    
+    5d                        ;pop ebp
+    5f                        ;pop edi
+    5e                        ;pop esi
+    5b                        ;pop ebx
+    c3                        ;retn                        
+
+
+
+
+
+:sub_12
+; 保存队伍 队伍(id)=x
+; arg_0 数值or变量
+; arg_4 id
+; arg_8 x
+
+    53                        ;push ebx
+    56                        ;push esi
+    57                        ;push edi
+    55                        ;push ebp
+
+    6a 00                     ;push    0
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 20               ;push [esp+arg_4]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    8b f0                     ;mov esi,eax           id->esi
+
+    6a 01                     ;push    1
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 24               ;push [esp+arg_8]
+    e8 "sub_getValue          ; call sub_getValue     x-->eax
+    83 c4 0c                  ;add esp,0c
+
+    66 89 04 75 *1c0b78       ;mov 1c0b78[esi*2],ax    
+    
+    5d                        ;pop ebp
+    5f                        ;pop edi
+    5e                        ;pop esi
+    5b                        ;pop ebx
+    c3                        ;retn                        
+
+:sub_13
+; 取队伍 x=队伍(id)
+; arg_0 数值or变量
+; arg_4 id
+; arg_8 x
+
+    53                        ;push ebx
+    56                        ;push esi
+    57                        ;push edi
+    55                        ;push ebp
+
+    6a 00                     ;push    0
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 20               ;push [esp+arg_4]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    8b f0                     ;mov esi,eax           id->esi
+
+    0f bf 04 75 *1c0b78       ;movsx eax,1c0b78[esi*2]
+    50                        ;push eax
+    ff 74 24 20               ;push [esp+arg_8]
+    e8 "sub_0                 ;call sub_0
+    83 c4 08                  ;add esp,08
+
+    5d                        ;pop ebp
+    5f                        ;pop edi
+    5e                        ;pop esi
+    5b                        ;pop ebx
+    c3                        ;retn                        
+
+
+:sub_14
+; 得到主角携带物品数量
+; arg_0 数值or变量
+; arg_4 i
+; arg_8 x
+
+    53                        ;push ebx
+    56                        ;push esi
+    57                        ;push edi
+    55                        ;push ebp
+
+    6a 00                     ;push    0
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 20               ;push [esp+arg_4]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    8b f0                     ;mov esi,eax           i->esi
+
+
+    33 db                     ;xor ebx,ebx
+    33 ed                     ;xor ebp,ebp
+:loc_s14_0    
+    0f bf 04 9d *18fe2c       ;movsx eax,1c0b78[ebx*4]
+    3b c6                     ;cmp eax,esi
+    75 'loc_s14_1             ;jnz loc_s14_1
+    0f bf 2c 9d *18fe2e      ;movsx ebp,1c0b78[ebx*4+2]
+    eb 'loc_s14_end           ;jmp loc_s14_end
+:loc_s14_1
+    43                        ;inc ebx
+    81 fb c8 00 00 00         ;cmp ebx,200
+    7c 'loc_s14_0             ;jl loc_s14_0
+    
+:loc_s14_end    
+    55                        ;push ebp
+    ff 74 24 20               ;push [esp+arg_8]
+    e8 "sub_0                 ;call sub_0
+    83 c4 08                  ;add esp,08
+    
+    5d                        ;pop ebp
+    5f                        ;pop edi
+    5e                        ;pop esi
+    5b                        ;pop ebx
+    c3                        ;retn                        
+
+ 
+
+:sub_15
+; 保存D×  场景id场景事件i(j)=x
+; arg_0 数值or变量
+; arg_4 id
+; arg_8 i
+; arg_c j
+; arg_10 x
+
+
+    53                        ;push ebx
+    56                        ;push esi
+    57                        ;push edi
+    55                        ;push ebp
+
+    6a 00                     ;push    0
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 20               ;push [esp+arg_4]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    8b f0                     ;mov esi,eax           id->esi 场景编号
+
+    6a 01                     ;push    1
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 24               ;push [esp+arg_8]
+    e8 "sub_getValue          ; call sub_getValue    
+    83 c4 0c                  ;add esp,0c
+    8b f8                     ;mod edi,eax            i-->edi
+    
+    6a 02                     ;push    2
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 28               ;push [esp+arg_c]
+    e8 "sub_getValue          ; call sub_getValue     j
+    83 c4 0c                  ;add esp,0c
+
+    6b ff 16                  ;imul edi,16h
+    03 f8                     ;add edi,eax    
+    03 f8                     ;add edi,eax            i*16H+j*2 要保存的地址相对场景开始的偏移
+    
+    6a 03                     ;push    3
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 2c               ;push [esp+arg_10]
+    e8 "sub_getValue          ; call sub_getValue       
+    83 c4 0c                  ;add esp,0c
+    8b d8                     ;mov ebx,eax           x
+    
+    0f bf 05 *1d295e          ; movsx eax, word ptr 1d295e   当前场景
+    3b c6                     ; cmp eax,esi
+    75 'loc_s15_1             ;jnz loc_s16_1
+    66 89 9f *1c5690          ;mov 1c5690[edi],bx    
+    e9 "loc_s15_end           ;jmp loc_s16_end
+    
+:loc_s15_1    
+
+    66 83 3d *1c0bfa 03        ;cmp word_c0bfa,3
+    74 'loc_s15_2              ;jz short loc
+    c7 05 *1d5070 00 00 00 00  ;mov d_d5070,0  
+    68 *1d5074                 ;push    offset addr_ranger_idx ; paddr
+    68 *5881f                 ;push    offset aTalk_idx ; filename
+    e8 &3cf45                 ;call    readfile??
+    83 c4 08                  ;add     esp, 8
+    66 c7 05 *1c0bfa 03 00     ;mov     word_C0BFA, 3   ; idx 的内容标记
+    
+:loc_s15_2        
+    68 02 02 00 00            ;push 202
+    68 *5883c                 ;push    offset aTalk_grp ; "talk.grp"
+    e8 &3efb9                 ;call    openfile??
+    89 c5                     ;mov     ebp, eax             文件指针
+    83 c4 08                  ;add     esp, 8
+    6a 00                     ;push    0
+    ff 34 b5 *1d5070           ;push    dword_D5070[esi*4]
+    55                        ;push    ebp
+    e8 &3db07                 ;call    lseek?
+    83 c4 0c                  ;add     esp, 0Ch
+    68 30 11 00 00            ;push    1130H
+    68 *1c4560                 ;push    offset byte_c4560 其他场景d×
+    55                        ;push    ebp
+    e8 &3dabf                 ;call    readfromfile
+    83 c4 0c                  ;add     esp, 0Ch
+    
+    66 89 9f *1c4560          ;mov 1c4560[edi],bx      
+    
+ 
+    
+    6a 00                     ;push    0
+    ff 34 b5 *1d5070           ;push    dword_D5070[esi*4]
+    55                        ;push    ebp
+    e8 &3db07                 ;call    lseek?
+    83 c4 0c                  ;add     esp, 0Ch
+    68 30 11 00 00            ;push    1130H
+    68 *1c4560                 ;push    offset byte_c4560 其他场景d×
+    55                        ;push    ebp
+    e8 &3dae3                 ;call    readfromfile
+    83 c4 0c                  ;add     esp, 0Ch
+    55                        ;push    ebp
+    e8 &3db2b                 ;call    sub_3DB2B       ; 关闭文件
+    83 c4 04                  ;add     esp, 4
+    
+    
+:loc_s15_end    
+    5d                        ;pop ebp
+    5f                        ;pop edi
+    5e                        ;pop esi
+    5b                        ;pop ebx
+    c3                        ;retn                        
+
+
+
+
+:sub_16
+; 取D×  x=场景id场景事件i(j)
+; arg_0 数值or变量
+; arg_4 id
+; arg_8 i
+; arg_c j
+; arg_10 x
+
+
+    53                        ;push ebx
+    56                        ;push esi
+    57                        ;push edi
+    55                        ;push ebp
+
+    6a 00                     ;push    0
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 20               ;push [esp+arg_4]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    8b f0                     ;mov esi,eax           id->esi 场景编号
+
+    6a 01                     ;push    1
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 24               ;push [esp+arg_8]
+    e8 "sub_getValue          ; call sub_getValue    
+    83 c4 0c                  ;add esp,0c
+    8b f8                     ;mod edi,eax            i-->edi
+    
+    6a 02                     ;push    2
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 28               ;push [esp+arg_c]
+    e8 "sub_getValue          ; call sub_getValue     j
+    83 c4 0c                  ;add esp,0c
+
+    6b ff 16                  ;imul edi,16h
+    03 f8                     ;add edi,eax    
+    03 f8                     ;add edi,eax            i*16H+j*2 要保存的地址相对场景开始的偏移
+    
+    
+    0f bf 05 *1d295e          ; movsx eax, word ptr 1d295e   当前场景
+    3b c6                     ; cmp eax,esi
+    75 'loc_s16_1             ;jnz loc_s16_1
+    0f bf 9f *1c5690          ;movsx,ebx,1c5690[edi]
+    e9 "loc_s16_end           ;jmp loc_s16_end
+    
+:loc_s16_1    
+
+    66 83 3d *1c0bfa 03        ;cmp word_c0bfa,3
+    74 'loc_s16_2              ;jz short loc
+    c7 05 *1d5070 00 00 00 00  ;mov d_d5070,0  
+    68 *1d5074                 ;push    offset addr_ranger_idx ; paddr
+    68 *5881f                 ;push    offset aTalk_idx ; filename
+    e8 &3cf45                 ;call    readfile??
+    83 c4 08                  ;add     esp, 8
+    66 c7 05 *1c0bfa 03 00     ;mov     word_C0BFA, 3   ; idx 的内容标记
+    
+:loc_s16_2        
+    68 02 02 00 00            ;push 202
+    68 *5883c                 ;push    offset aTalk_grp ; "talk.grp"
+    e8 &3efb9                 ;call    openfile??
+    89 c5                     ;mov     ebp, eax             文件指针
+    83 c4 08                  ;add     esp, 8
+    6a 00                     ;push    0
+    ff 34 b5 *1d5070           ;push    dword_D5070[esi*4]
+    55                        ;push    ebp
+    e8 &3db07                 ;call    lseek?
+    83 c4 0c                  ;add     esp, 0Ch
+    68 30 11 00 00            ;push    1130H
+    68 *1c4560                 ;push    offset byte_c4560 其他场景d×
+    55                        ;push    ebp
+    e8 &3dabf                 ;call    readfromfile
+    83 c4 0c                  ;add     esp, 0Ch
+    
+    0f bf 9f *1c4560          ;movsx,ebx,1c5690[edi]
+
+ 
+    
+    55                        ;push    ebp
+    e8 &3db2b                 ;call    sub_3DB2B       ; 关闭文件
+    83 c4 04                  ;add     esp, 4
+    
+    
+:loc_s16_end    
+
+    53                        ;push ebx
+    ff 74 24 28               ;push [esp+arg_c]
+    e8 "sub_0                 ;call sub_0
+    83 c4 08                  ;add esp,08
+
+
+
+    5d                        ;pop ebp
+    5f                        ;pop edi
+    5e                        ;pop esi
+    5b                        ;pop ebx
+    c3                        ;retn                        
+
+
+
+
+:sub_17
+; 保存S×  场景id层i(x,y)=v
+; arg_0 数值or变量
+; arg_4 id
+; arg_8 i
+; arg_c x
+; arg_10 y
+; arg_14 v
+
+
+    53                        ;push ebx
+    56                        ;push esi
+    57                        ;push edi
+    55                        ;push ebp
+
+    6a 00                     ;push    0
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 20               ;push [esp+arg_4]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    8b f0                     ;mov esi,eax           id->esi 场景编号
+
+    6a 01                     ;push    1
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 24               ;push [esp+arg_8]
+    e8 "sub_getValue          ; call sub_getValue    
+    83 c4 0c                  ;add esp,0c
+    8b f8                     ;mod edi,eax            i-->edi 层
+    
+    6a 02                     ;push    2
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 28               ;push [esp+arg_c]
+    e8 "sub_getValue          ; call sub_getValue     x
+    83 c4 0c                  ;add esp,0c
+
+    c1 e7 0c                  ;shl edi,12H         i*4096
+    03 f8                     ;add edi,eax         i*4096+x
+    
+    6a 03                     ;push    3
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 2c               ;push [esp+arg_10]
+    e8 "sub_getValue          ; call sub_getValue     y
+    83 c4 0c                  ;add esp,0c
+    
+    c1 e0 06                  ;shl eax,6 
+    03 f8                     ;add edi,eax      i*4096+x+y*64
+    03 ff                     ;add edi,edi      (i*4096+y+64+x)*2 要保存的地址相对场景开始的偏移
+
+    
+    6a 04                     ;push    4
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 30               ;push [esp+arg_14]
+    e8 "sub_getValue          ; call sub_getValue       
+    83 c4 0c                  ;add esp,0c
+    8b d8                     ;mov ebx,eax           v
+    
+    0f bf 05 *1d295e          ; movsx eax, word ptr 1d295e   当前场景
+    8b e8                      ;mov ebp,eax
+    3b c6                     ; cmp eax,esi
+    75 'loc_s17_1             ;jnz loc_s16_1
+    66 89 9f *1c67c0          ;mov 1c67c0[edi],bx     s*地址
+    eb 'loc_s17_end           ;jmp loc_s16_end
+    
+:loc_s17_1    
+    
+
+    55                        ;push ebp
+    e8 &29537                 ; call loc_29537     ; 保存当前场景
+    83 c4 04                  ;add esp,04    
+    
+    56                        ;push esi
+    e8 &294ad                 ; call loc_294ad     ; 读场景esi
+    83 c4 04                  ;add esp,04    
+    
+    66 89 9f *1c67c0          ;mov 1c67c0[edi],bx     s*地址 
+
+    56                        ;push esi
+    e8 &29537                 ; call loc_29537     ; 保存场景esi
+    83 c4 04                  ;add esp,04    
+    
+    55                        ;push ebp
+    e8 &294ad                 ; call loc_294ad     ; 读当前场景
+    83 c4 04                  ;add esp,04    
+    
+:loc_s17_end    
+    5d                        ;pop ebp
+    5f                        ;pop edi
+    5e                        ;pop esi
+    5b                        ;pop ebx
+    c3                        ;retn                        
+
+
+:sub_18
+; 读取S×  v=场景id层i(x,y)
+; arg_0 数值or变量
+; arg_4 id
+; arg_8 i
+; arg_c x
+; arg_10 y
+; arg_14 v
+
+
+    53                        ;push ebx
+    56                        ;push esi
+    57                        ;push edi
+    55                        ;push ebp
+
+    6a 00                     ;push    0
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 20               ;push [esp+arg_4]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    8b f0                     ;mov esi,eax           id->esi 场景编号
+
+    6a 01                     ;push    1
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 24               ;push [esp+arg_8]
+    e8 "sub_getValue          ; call sub_getValue    
+    83 c4 0c                  ;add esp,0c
+    8b f8                     ;mod edi,eax            i-->edi 层
+    
+    6a 02                     ;push    2
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 28               ;push [esp+arg_c]
+    e8 "sub_getValue          ; call sub_getValue     x
+    83 c4 0c                  ;add esp,0c
+
+    c1 e7 0c                  ;shl edi,12H         i*4096
+    03 f8                     ;add edi,eax         i*4096+x
+    
+    6a 03                     ;push    3
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 2c               ;push [esp+arg_10]
+    e8 "sub_getValue          ; call sub_getValue     y
+    83 c4 0c                  ;add esp,0c
+    
+    c1 e0 06                  ;shl eax,6 
+    03 f8                     ;add edi,eax      i*4096+x+y*64
+    03 ff                     ;add edi,edi      (i*4096+y+64+x)*2 要保存的地址相对场景开始的偏移
+
+    
+    
+    0f bf 05 *1d295e          ; movsx eax, word ptr 1d295e   当前场景
+    8b e8                      ;mov ebp,eax
+    3b c6                     ; cmp eax,esi
+    75 'loc_s18_1             ;jnz loc_s16_1
+    0f bf 9f *1c67c0          ;movsx,ebx,1c67c0[edi]
+    eb 'loc_s18_end           ;jmp loc_s16_end
+    
+:loc_s18_1    
+    
+
+    55                        ;push ebp
+    e8 &29537                 ; call loc_29537     ; 保存当前场景
+    83 c4 04                  ;add esp,04    
+    
+    56                        ;push esi
+    e8 &294ad                 ; call loc_294ad     ; 读场景esi
+    83 c4 04                  ;add esp,04    
+    
+    0f bf 9f *1c67c0          ;movsx,ebx,1c67c0[edi]
+
+    55                        ;push ebp
+    e8 &294ad                 ; call loc_294ad     ; 读当前场景
+    83 c4 04                  ;add esp,04    
+    
+:loc_s18_end    
+
+    53                        ;push ebx
+    ff 74 24 2c               ;push [esp+arg_14]
+    e8 "sub_0                 ;call sub_0
+    83 c4 08                  ;add esp,08
+
+
+    5d                        ;pop ebp
+    5f                        ;pop edi
+    5e                        ;pop esi
+    5b                        ;pop ebx
+    c3                        ;retn                        
+
+
+
+:sub_19
+; 修改给定地址参数   
+; arg_0 数值or变量
+; arg_4 字节or字 0 字，1 字节
+; arg_8 地址低16位
+; arg_c 地址高16位
+; arg_10 x
+; arg_14 i
+
+
+    53                        ;push ebx
+
+    8b 44 24 10               ;mov eax,[esp+arg_8]
+    8b 5c 24 14               ;mov ebx,[esp+arg_c]  
+
+    c1 e3 10                  ;shl ebx,10H
+    25 ff ff 00 00            ;and eax,0000ffffH
+    03 d8                      ;add ebx,eax
+
+    6a 01                     ;push    1
+    ff 74 24 0c               ;push [esp+arg_0]
+    ff 74 24 24               ;push [esp+arg_14]
+    e8 "sub_getValue          ;call sub_getValue     i
+    83 c4 0c                  ;add esp,0c
+    03 d8                      ;add ebx,eax
+
+    
+    6a 00                     ;push    0
+    ff 74 24 0c               ;push [esp+arg_0]
+    ff 74 24 20               ;push [esp+arg_10]
+    e8 "sub_getValue          ;call sub_getValue     x
+    83 c4 0c                  ;add esp,0c
+    
+    81 eb 00 00 02 00          ; sub ebx,20000
+    
+    83 7c 24 0c 00             ;cmp [esp+arg_4],0
+    75 'loc_s19_1              ;jnz loc_s19_1
+    66 89 83 *20000           ;mov 20000[ebx],ax
+    eb 'loc_s19_end           ;jmp loc_s19_end
+:loc_s19_1
+    88 83 *20000              ; mov 20000[ebx],al
+:loc_s19_end    
+
+    5b                        ;pop ebx
+    c3                        ;retn    
+
+
+:sub_1a
+; 读取给定地址参数   
+; arg_0 数值or变量
+; arg_4 字节or字 0 字，1 字节
+; arg_8 地址低16位
+; arg_c 地址高16位
+; arg_10 x
+; arg_14 i
+
+
+    53                        ;push ebx
+
+    8b 44 24 10               ;mov eax,[esp+arg_8]
+    8b 5c 24 14               ;mov ebx,[esp+arg_c]  
+
+    c1 e3 10                  ;shl ebx,10H
+    25 ff ff 00 00            ;and eax,0000ffffH
+    03 d8                      ;add ebx,eax
+
+    6a 00                     ;push    0
+    ff 74 24 0c               ;push [esp+arg_0]
+    ff 74 24 24               ;push [esp+arg_14]
+    e8 "sub_getValue          ;call sub_getValue     i
+    83 c4 0c                  ;add esp,0c
+    03 d8                      ;add ebx,eax
+
+   
+    81 eb 00 00 02 00          ; sub ebx,20000
+
+    33 c0                     ;xor eax,eax
+    83 7c 24 0c 00            ;cmp [esp+arg_4],0
+    75 'loc_s1a_1             ;jnz loc_s19_1
+    66 8b 83 *20000           ;mov ax,20000[ebx]
+    eb 'loc_s1a_end           ;jmp loc_s19_end
+:loc_s1a_1
+    8a 83 *20000           ; mov al,20000[ebx]
+:loc_s1a_end    
+   
+    50                        ;push eax
+    ff 74 24 1c               ;push [esp+arg_10]
+    e8 "sub_0                 ;call sub_0
+    83 c4 08                  ;add esp,08
+
+    5b                        ;pop ebx
+    c3                        ;retn    
+
+
+:loc_s1b_format
+    25 73 00 ; %s 
+:sub_1b
+; 取名称 s=属性id名称
+; arg_0 数值or变量
+; arg_4 type 0人物 1物品 2场景 3武功  
+; arg_8 id
+; arg_c s
+
+    53                        ;push ebx
+    56                        ;push esi
+    57                        ;push edi
+    55                        ;push ebp
+
+    6a 00                     ;push    0
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 24               ;push [esp+arg_8]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    8b f0                     ;mov esi,eax           id->esi
+
+    8b 5c 24 18               ;mov ebx,[esp+arg_4]
+    
+    8b 04 9d #array_shuxingsize ;mov eax,array_shuxingsize[ebx*4]
+    0f af c6                    ;imul eax,esi
+    03 04 9d #array_shuxing     ;add eax,array_shuxing [ebx*4] 
+    03 04 9d #array_shuxingName ;add eax,array_shuxingname [ebx*4] 
+    
+
+    8b e8                     ;mov ebp,eax     名称地址
+
+
+    8b 44 24 20               ;mov eax,[esp+arg_c]
+    e8 "sub_addr             ;call sub_addr        字符串地址
+
+    55                         ;push ebp
+    68 #loc_s1b_format         ;push offset loc_s1b_format
+    50                        ; push eax
+    e8 &3ef4a                  ;call sprintf
+    83 c4 0c                   ;add esp,0c
+    
+
+    
+    5d                        ;pop ebp
+    5f                        ;pop edi
+    5e                        ;pop esi
+    5b                        ;pop ebx
+    c3                        ;retn                        
+
+
+
+:sub_20
+; 修改下一条指令参数   Next(i)=x
+; arg_0 数值or变量
+; arg_4 x
+; arg_8 i
+
+
+    53                        ;push ebx
+    
+    
+    6a 00                     ;push    0
+    ff 74 24 0c               ;push [esp+arg_0]
+    ff 74 24 18               ;push [esp+arg_8]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c             i->eax
+
+    83 c3 08                  ;add ebx,8
+    03 d8                     ;add ebx,eax       ebx+8+i 要修改的指令偏移字
+     
+    8b 44 24 0c               ;mov eax,[esp+arg_4]
+    e8 "sub_value             ;call sub_value        x-->eax
+    
+    66 89 04 5d *1d9e90        ;mov 1d9e90[ebx*2],ax     s*地址
+
+    5b                        ;pop ebx
+    c3                        ;retn                        
+
+:Sub_findChar
+; 寻找字符串
+;arg_0  字符串地址
+;arg_4  字符
+; 返回eax 找到的偏移，-1没找到
+    56                        ;push esi
+    55                        ;push ebp
+    8b 44 24 10               ;mov eax,[esp+arg_4]    
+    8b 74 24 0c               ;mov esi,[esp+arg_0]
+    33 ed                     ;xor ebp,ebp
+:loc_FindChar_1
+    8a 24 2e                  ;mov ah,[esi+ebp]
+    84 e4                     ;test ah,ah
+    75 'loc_findchar_2        ;jnz loc_findchar_2
+    bd ff ff ff ff            ;mov ebp,ffffffff
+    eb 'loc_findchar_3        ;jmp loc_findchar_3
+:loc_findchar_2    
+    3a c4                     ;cmp al,ah
+    74 'loc_findchar_3     ;jz loc_findchar_3
+    45                        ;inc ebp
+    eb 'loc_findchar_1        ;jmp loc_findchar_1
+:loc_findchar_3       
+    8b c5                     ;mov eax,ebp
+    5d                        ;pop ebp
+    5e                        ;pop esi
+    c3                        ;retn  
+
+
+:sub_21
+; 显示字符串
+
+; arg_0 数值or变量
+; arg_4 字符串
+; arg_8 x
+; arg_c y
+; arg_10 color
+
+    53                        ;push ebx
+    56                        ;push esi
+    57                        ;push edi
+    55                        ;push ebp
+
+    6a 00                     ;push    0
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 24               ;push [esp+arg_8]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    8b f0                     ;mov esi,eax           x->esi
+
+    6a 01                    ;push    1
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 28               ;push [esp+arg_c]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    8b f8                     ;mov edi,eax          y->edi
+
+    6a 02                    ;push    2
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 2c               ;push [esp+arg_10]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    8b d8                     ;mov ebx,eax          color->ebx
+
+
+    8b 44 24 18               ;mov eax,[esp+arg_4]
+    e8 "sub_addr              ;call sub_addr        字符串地址
+    8b e8                     ;mov ebp,eax          str->ebp
+
+:loc_s21_0   
+    6a 2a                     ;push 2a
+    55                        ;push ebp
+    e8 "sub_findchar          ;call sub_findchar
+    83 c4 08                  ;add esp,8
+    83 f8 00                  ;cmp eax,0
+    7c 'loc_s21_3             ;jl loc_s21_3
+    33 c9                     ;xor ecx,ecx
+:loc_s21_1    
+    83 f8 00                  ;cmp eax,0
+    74 'loc_s21_2             ;jz loc_s21_2
+    8a 55 00                  ;mov dl,[ebp]
+    88 91 *1c07c4             ;mov c07c4[ecx],dl
+    45                        ;inc ebp
+    41                        ;inc ecx
+    48                        ;dec eax
+    eb 'loc_s21_1             ;jmp loc_s21_1
+:loc_s21_2
+    c6 81 *1c07c4 00          ;mov c07c4[ecx],0
+    45                        ;inc ebp
+        
+    6a 10                      ;push    10h
+    53                         ;push ebx
+    68 *1e87bc                 ;push    offset array_VRAM
+    68 *1c07c4                  ;push    c07c4
+    57                         ;push    edi
+    56                         ;push    esi
+    e8 &3d832                  ;call    draw_string     ; 显示字符串
+    83 c4 18                   ;add     esp, 18h    
+    83 c7 14                   ;add edi,20
+    eb 'loc_s21_0              ;jmp loc_s21_0
+
+:loc_s21_3    
+    
+    6a 10                      ;push    10h
+    53                         ;push ebx
+    68 *1e87bc                 ;push    offset array_VRAM
+    55                         ;push    ebp
+    57                         ;push    edi
+    56                         ;push    esi
+    e8 &3d832                  ;call    draw_string     ; 显示字符串
+    83 c4 18                   ;add     esp, 18h
+    
+    ff 35 *1c0b98              ;push    addr_ArrayVRAM2
+    68 *1e87bc                 ;push    offset array_VRAM
+    e8 &3d6d1                  ;call    MovetoVRAM      ; 把内存中显示数据传送到显存中
+    83 c4 08                   ;add     esp, 8
+
+    5d                        ;pop ebp
+    5f                        ;pop edi
+    5e                        ;pop esi
+    5b                        ;pop ebx
+    c3                        ;retn                        
+
+;end sub_21
+
+:sub_22
+; 处理背景
+; arg_0 数值or变量
+; arg_4 x
+; arg_8 y
+; arg_c w
+; arg_10 h
+
+    53                        ;push ebx
+    56                        ;push esi
+    57                        ;push edi
+    55                        ;push ebp
+
+    6a 00                     ;push    0
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 20               ;push [esp+arg_4]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    8b f0                     ;mov esi,eax           x->esi
+
+    6a 01                    ;push    1
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 24               ;push [esp+arg_8]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    8b f8                     ;mov edi,eax          y->edi
+
+    6a 02                    ;push    2
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 28               ;push [esp+arg_c]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    8b d8                     ;mov ebx,eax          w->ebx
+ 
+    6a 03                    ;push    3
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 2c               ;push [esp+arg_10]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    8b e8                     ;mov ebp,eax          h->ebx
+
+    6a 03                    ;push    3
+    68 *1e87bc                ; push e87bc
+    6a 00                    ;push    0    
+    68 ff 00 00 00           ; push ff
+    55                        ;push ebp
+    53                        ;push ebx
+    57                        ;push edi            
+    56                        ;push esi
+    e8 &2cebf                 ; call 边框
+    83 c4 20                  ;add esp,20    
+    5d                        ;pop ebp
+    5f                        ;pop edi
+    5e                        ;pop esi
+    5b                        ;pop ebx
+    c3                        ;retn       
+
+
+
+:sub_23
+; 读键盘
+;arg_0 保存键值的变量
+    e8 &20c32                  ;call    get_any_key     ; Get any key
+    50                        ;push eax
+    ff 74 24 08               ;push [esp+arg_0]
+    e8 "sub_0                 ;call sub_0
+    83 c4 08                  ;add esp,08
+    c3                        ;retn                        
+     
+;end sub_23    
+
+
+
+
+:Sub_findCharWH
+; 寻找字符串宽高
+;arg_0  字符串地址
+; 返回eax 宽   edx 高 单位都是字节字符
+
+    53                        ;push ebx
+    56                        ;push esi
+    57                        ;push edi
+    55                        ;push ebp
+    
+    8b 6c 24 14               ;mov ebp,[esp+arg_0]
+    33 f6                     ;xor esi,esi
+    33 ff                     ;xor edi,edi
+:loc_findCharWH_0   
+    6a 2a                     ;push 2a
+    55                        ;push ebp
+    e8 "sub_findchar          ;call sub_findchar
+    83 c4 08                  ;add esp,8
+    83 f8 00                  ;cmp eax,0
+    7c 'loc_findCharWH_2      ;jl loc_s21_3
+    03 e8                     ;add ebp,eax
+    45                        ;inc ebp
+    3b f0                     ;cmp esi,eax
+    7d 'loc_findcharWH_1                     ;jge 'loc_findcharWH_1
+    8b f0                     ;mov esi,eax
+:loc_findcharWH_1   
+    47                        ;inc edi     
+    eb 'loc_findCharWH_0      ;jmp loc_s21_1
+:loc_findCharWH_2
+    47                        ;inc edi    
+    55                         ;push ebp
+    e8 "sub_len                ;call sub_len
+    83 c4 04                   ;add esp,04
+    3b f0                      ;cmp esi,eax
+    7d 'loc_findcharWH_3       ;jge 'loc_findcharWH_3
+    8b f0                      ;mov esi,eax
+:loc_findcharWH_3
+    
+
+    8b d7                     ;mov edx,edi
+    8b c6                     ;mov eax,esi
+    
+    5d                        ;pop ebp
+    5f                        ;pop edi
+    5e                        ;pop esi
+    5b                        ;pop ebx
+    c3                        ;retn         
+
+:sub_24
+; 显示字符串
+; arg_0 数值or变量
+; arg_4 字符串
+; arg_8 x
+; arg_c y
+; arg_10 color
+    53                        ;push ebx
+    56                        ;push esi
+    57                        ;push edi
+    55                        ;push ebp
+    
+    6a 00                     ;push    0
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 24               ;push [esp+arg_8]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    8b f0                     ;mov esi,eax           x->esi
+
+    6a 01                    ;push    1
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 28               ;push [esp+arg_c]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    8b f8                     ;mov edi,eax          y->edi
+
+    8b 44 24 18               ;mov eax,[esp+arg_4]
+    e8 "sub_addr              ;call sub_addr        字符串地址
+    8b e8                     ;mov ebp,eax          str->ebp
+
+    55                        ;push ebp
+    e8 "sub_findcharWH        ;call sub_findcharWH
+    83 c4 04                   ;add     esp, 4
+
+
+    6b d2 14                   ;imul edx,20
+    6b c0 08                   ;imul eax,8  
+
+    
+      
+    83 c2 0a                   ;add edx,10
+    83 c0 0a                   ;add eax,10
+
+    52                         ;push edx
+    50                         ;push eax
+    57                         ;push edi
+    56                         ;push esi
+    6a 00                      ;push 0
+    e8 "sub_22                 ;call "sub_22
+    83 c4 14                   ;add     esp, 14
+
+    83 c6 05                   ;add esi,3
+    83 c7 05                   ;add edi,3        
+    
+    6a 02                     ;push    2
+    ff 74 24 18               ;push [esp+arg_0]
+    ff 74 24 2c               ;push [esp+arg_10]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+
+    50                        ;push eax
+    57                        ;push edi
+    56                        ;push esi
+    ff 74 24 24               ;push [esp+arg_4]
+    6a 00                     ;push 0
+    e8 "sub_21                ;call sub_21
+    83 c4 14                  ;add esp,14
+
+    e8 &20c32                  ;call    get_any_key     ; Get any key
+
+    80 3d *51b6b 59            ; cmp byte 51b6b,59H
+    75 'loc_s24_4              ;jnz
+    b8 00 00 00 00             ; mov eax,0    
+    eb 'loc_s24_5              ;jmp loc_s22_2
+:loc_s24_4
+
+    b8 01 00 00 00             ;mov eax,1
+
+:loc_s24_5
+    
+    50                        ;push eax
+    68 00 70 00 00            ;push 7000
+    e8 "sub_0                 ;call sub_0
+    83 c4 08                  ;add esp,08
+
+
+    e8 &2d653                  ; call instruct_0
+    5d                        ;pop ebp
+    5f                        ;pop edi
+    5e                        ;pop esi
+    5b                        ;pop ebx
+    c3                        ;retn                        
+
+;end sub_24
+
+
+
+:sub_25
+;   延时  delay(n)
+; arg_0 数值or变量
+; arg_4 n
+; arg_8 
+
+
+    6a 00                     ;push    0
+    ff 74 24 08               ;push [esp+arg_0]
+    ff 74 24 10               ;push [esp+arg_4]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c             i->eax
+
+    50                        ;push eax
+    e8 &3db83                ;call delay
+    83 c4 04                  ;add esp,0             
+
+    c3                        ;retn                        
+
+:sub_26
+;   随机数  x=random(n)
+; arg_0 数值or变量
+; arg_4 n
+; arg_8 x
+
+
+    6a 00                     ;push    0
+    ff 74 24 08               ;push [esp+arg_0]
+    ff 74 24 10               ;push [esp+arg_4]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c             i->eax
+
+    50                        ;push eax
+    e8 &3d612                ;call random
+    83 c4 04                  ;add esp,0             
+
+    50                        ;push eax
+    ff 74 24 10               ;push [esp+arg_8]
+    e8 "sub_0                 ;call sub_0
+    83 c4 08                  ;add esp,08
+
+    c3                        ;retn           
+
+
+Section 64    ; 新Page 5c000
+
+00 00 00 00    ; 保留四个字节，以便空的fixup可以指向这个地址
+
+
+
+:sub_27
+; 菜单选择
+; arg_0 数值or变量
+; arg_4 n 菜单项数
+; arg_8 s 字符串数组
+; arg_c r 返回变量
+; arg_10 x 左上角坐标
+; arg_14 y 
+
+
+
+    53                        ;push ebx
+    56                        ;push esi
+    57                        ;push edi
+    55                        ;push ebp
+    
+    6a 00                     ;push    0
+    ff 74 24 18               ;push [esp+10+arg_0]
+    ff 74 24 20               ;push [esp+10+arg_4]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c             
+    8b e8                     ;mov ebp,eax     n-->ebp
+    
+    6a 01                     ;push    1
+    ff 74 24 18               ;push [esp+10+arg_0]
+    ff 74 24 2c               ;push [esp+10+arg_10]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    89 44 24 24               ;mov [esp+arg_10],eax           x->arg_10
+
+    6a 02                     ;push    2
+    ff 74 24 18               ;push [esp+10+arg_0]
+    ff 74 24 30               ;push [esp+10+arg_14]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    89 44 24 28               ;mov [esp+arg_14],eax           y->arg_14
+
+
+
+
+    33 f6                     ;xor esi,esi  
+    c6 05 *51b6b 00          ;mov byte_51b6b,0
+    
+:loc_s27_1   
+    ff 74 24 1c               ;push [esp+arg_8]
+    56                        ;push esi
+    55                        ;push ebp
+    ff 74 24 34               ;push [esp+arg_14]
+    ff 74 24 34               ;push [esp+arg_10]
+    e8 "sub_showmenu          ;call "sub_showMenu
+    83 c4 14                  ;add esp,14h
+    
+    a0 *51b6b                ;mov al,byte_51b6b
+    3c 1b                     ;cmp al,1bH               Esc
+    75 'loc_s27_2             ;jnz loc_s24_2
+    c6 05 *51b6b 00          ;mov byte_51b6b,0
+    c6 05 *51b88 00          ;mov byte_51b88,0        esc
+    33 f6                     ;xor esi,esi        
+    eb 'loc_s27_end           ;eb 'loc_s24_end
+     
+:loc_s27_2
+    3c 98                     ;cmp al,98H              up
+    75 'loc_s27_3             ;jnz loc_s24_3
+    c6 05 *51c05 00          ;mov byte_51c05,0        up
+    c6 05 *51b6b 00          ;mov byte_51b6b,0
+    46                       ;inc esi
+    3b f5                    ;cmp esi,ebp
+    7c 'loc_s27_1             ;jl 'loc_s24_1
+    33 f6                     ;xor esi,esi
+    eb 'loc_s27_1             ;jmp loc_s24_1
+
+
+:loc_s27_3
+    3c 9e                     ;cmp al,98H              up
+    75 'loc_s27_4             ;jnz loc_s24_3
+    c6 05 *51c0b 00           ;mov byte_51c05,0        down
+    c6 05 *51b6b 00          ;mov byte_51b6b,0
+    4e                        ;dec esi
+    83 fe 00                  ;cmp esi,0
+    7d 'loc_s27_1             ;jge 'loc_s24_1
+    8b f5                     ;mov esi,ebp
+    4e                        ;dec esi
+    eb 'loc_s27_1             ;jmp loc_s24_1
+
+:loc_s27_4
+    3c 20                     ;cmp al,20H              spave
+    75 'loc_s27_5             ;jnz loc_s24_3
+:loc_s27_6
+    c6 05 *51b6b 00           ;mov byte_51b6b,0        
+    c6 05 *51b7a 00           ;mov byte_51c05,0      0d  
+    c6 05 *51b8d 00           ;mov byte_51c05,0      20   
+    c6 05 *51c03 00           ;mov byte_51c05,0        
+    46                        ;inc esi
+    eb 'loc_s27_end            ;jmp loc_s24_end
+
+:loc_s27_5
+    3c 0d                     ;cmp al,0dH             enter
+    0f 85 "loc_s27_1          ;jnz loc_s24_3
+    eb 'loc_s27_6             ;jmp 'loc_s24_6
+    
+:loc_s27_end
+    
+    e8 &2d653                  ; call instruct_0
+    
+    56                        ;push esi
+    ff 74 24 24               ;push [esp+arg_c]       返回变量
+    e8 "sub_0                 ;call sub_0
+    83 c4 08                  ;add esp,08
+    
+    
+    5d                        ;pop ebp
+    5f                        ;pop edi
+    5e                        ;pop esi
+    5b                        ;pop ebx
+    c3                        ;retn                        
+
+:sub_showmenu
+; 显示菜单
+; arg_0 x
+;arg_4 y
+;arg_8 n
+;arg_c current
+;arg_10 数组
+
+    53                        ;push ebx
+    56                        ;push esi
+    57                        ;push edi
+    55                        ;push ebp
+
+    33 db                     ;xor ebx,ebx      i
+    
+    8b 6c 24 20               ;mov ebp,[esp+arg_c]    current
+    8b 74 24 14               ;mov esi,[esp+arg_0]    x
+    8b 7c 24 18               ;mov edi,[esp+arg_4]    y
+    
+:loc_sshowmenu_1
+
+    6a 10                      ;push    10h
+    3b dd                      ;cmp ebx,ebp                 当前选择项颜色不同
+    75 'loc_sshowmenu_2         ;jnz loc_sshowmenu_2
+    68 63 66 00 00             ;push    1014h
+    eb 'loc_sshowmenu_3        ;jmp loc_sshowmenu_3
+
+:loc_sshowmenu_2        
+    68 21 23 00 00             ;push    705h
+
+
+:loc_sshowmenu_3
+
+    68 *1e87bc                 ;push    offset array_VRAM
+    8b 44 24 30                ;mov eax,[esp+arg_10]
+    03 c3                      ;add eax,ebx
+    e8 "sub_Value              ;call sub_value        取数组中元素
+    e8 "sub_addr               ; call sub_addr        取字符串地址
+    50                         ;push    eax
+    57                         ;push    edi
+    56                         ;push    esi
+    e8 &3d832                  ;call    draw_string     ; 显示字符串
+    83 c4 18                   ;add     esp, 18h
+    83 c7 12                   ;add edi,14H      y=y+20
+    43                         ;inc ebx
+    3b 5c 24 1c                ;cmp ebx,[esp+arg_8]
+    7c 'loc_sshowmenu_1        ;jl 'loc_sshowmenu_1
+    
+    ff 35 *1c0b98               ;push    addr_ArrayVRAM2
+    68 *1e87bc                  ;push    offset array_VRAM
+    e8 &3d6d1                  ;call    MovetoVRAM      ; 把内存中显示数据传送到显存中
+    83 c4 08                   ;add     esp, 8
+
+    5d                        ;pop ebp
+    5f                        ;pop edi
+    5e                        ;pop esi
+    5b                        ;pop ebx
+    31 c0                     ; xor eax,eax
+    c3                        ;retn                        
+
+
+
+
+:sub_28
+; 菜单选择, 超过10个自动滚动
+; arg_0 数值or变量
+; arg_4 n 菜单项数
+; arg_8 s 字符串数组
+; arg_c r 返回变量
+; arg_10 x 左上角坐标
+; arg_14 y 
+
+; ebp-4 var_4   n
+; ebp-8 var_8   x
+; ebp-c var_c   y 
+; ebp-10 var_10  ww  菜单宽
+; ebp-14 var_14  hh  菜单高
+; ebp-18 Var_18  最大菜单项
+
+    
+    55                        ;push ebp
+    8b ec                     ;mov ebp,esp
+    83 ec 20                  ;sub esp,10H
+    53                        ;push ebx
+    56                        ;push esi
+    57                        ;push edi
+    
+    6a 00                     ;push    0
+    ff 75 08                  ;push [ebp+arg_0]
+    ff 75 0c                  ;push [ebp+arg_4]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c           
+    89 45 fc                  ;mov [ebp-4],eax     n 
+    
+    8b 5d 08                  ;mov ebx,[ebp+arg_0]
+    c1 eb 08                  ;shr ebx,8
+    81 e3 ff 00 00 00         ;and ebx,000000ff
+    83 fb 00                  ;cmp ebx,0
+    7f 'loc_s28_f             ;jg 'loc_s28_f
+    bb 05 00 00 00            ;mov ebx,5    
+:loc_s28_f    
+    89 5d e8                  ;mov [ebp-18],ebx    nmax
+    
+    6a 01                     ;push    1
+    ff 75 08                 ;push [ebp+arg_0]
+    ff 75 18                  ;push [ebp+arg_10]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    89 45 f8                  ;mov [ebp+var_8],eax           x->arg_10
+
+    6a 02                     ;push    2
+    ff 75 08                  ;push [ebp+ arg_0]
+    ff 75 1c                  ;push [ebp+ arg_14]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    89 45 f4                 ;mov [ebp+var_c],eax           y->arg_14
+
+    33 ff                     ;xor edi,edi
+    33 db                     ;xor ebx,ebx      i
+    
+:loc_s28_0
+    8b 45 10                   ;mov eax,[ebp+arg_8]
+    03 c3                      ;add eax,ebx
+    e8 "sub_Value              ;call sub_value        取数组中元素
+    e8 "sub_addr               ; call sub_addr        取字符串地址
+    50                        ;push eax
+    e8 "sub_len               ;call sub_len
+    83 c4 04                  ;add esp,04
+    3b c7                     ;cmp eax,edi
+    7c 'loc_s28_0_1           ;jl loc_s28_0_1
+    8b f8                     ;mov edi,eax
+:loc_s28_0_1    
+
+    43                        ;inc ebx
+    3b 5d fc                  ;cmp ebx,[ebp-4]
+    7c 'loc_s28_0             ;jl loc_s28_0
+    
+    6b c7 08                  ;imul eax,edi,8
+    83 c0 0a                  ;add eax,8
+    89 45 f0                  ;mov [ebp+var_10],eax
+    8b 45 e8                  ;mov eax,[ebp-var_18]
+    39 45 fc                  ;cmp [ebp+var_4],eax
+    7d 'loc_s28_0_2           ;jge loc_s28_0_2
+    8b 45 fc                  ;mov eax,[ebp+var_4]
+:loc_s28_0_2    
+    6b c0 12                  ;imul eax,18
+    83 c0 0a                  ;add eax,10
+    89 45 ec                  ;mov [ebp+var_14],eax
+    
+    8b 7d e8                  ;mov edi,[ebp-var_18]
+    33 db                     ;xor ebx,ebx      start
+    
+    33 f6                     ;xor esi,esi      current
+    c6 05 *51b6b 00          ;mov byte_51b6b,0
+    
+    
+:loc_s28_1   
+
+    e8 &2d653                  ; call instruct_0   
+    ff 75 ec                   ;push [ebp+var_14]
+    ff 75 f0                   ;push [ebp+var_10]
+    ff 75 f4                   ;push [ebp+var_c]
+    ff 75 f8                   ;push [ebp+var_8]
+    6a 00                      ;push 0
+    e8 "sub_22                 ;call sub_22
+    83 c4 14                   ;add esp,14
+
+
+    3b 7d fc                  ;cmp edi,[ebp-var_4]
+    7c 'loc_s28_1_1           ; jl loc_s28_1_1
+    6a 00                     ;push 0
+    ff 75 10                  ;push [ebp+arg_8]
+    56                        ;push esi
+    ff 75 fc                  ;push [ebp-var_4]
+    eb 'loc_s28_1_2            ; jmpxxx    
+:loc_s28_1_1
+    53                        ;push ebx
+    ff 75 10                  ;push [ebp+arg_8]
+    56                        ;push esi
+    57                        ;push edi
+:loc_s28_1_2
+
+    8b 45 f4                  ;mov eax,[ebp-var_c]
+    83 c0 04                  ;add eax,3
+    50                        ;push eax
+    8b 45 f8                  ;mov eax,[ebp-var_c]
+    83 c0 04                  ;add eax,3
+    50                        ;push eax
+        
+    ;ff 75 f4                 ;push [ebp-var_c]
+    ;ff 75 f8                 ;push [ebp-var_8]
+    e8 "sub_showmenu2          ;call "sub_showMenu2
+    83 c4 18                  ;add esp,18h
+
+:loc_s28_1_end    
+    a0 *51b6b                ;mov al,byte_51b6b
+    3c 1b                     ;cmp al,1bH               Esc
+    75 'loc_s28_2             ;jnz loc_s24_2
+    c6 05 *51b6b 00          ;mov byte_51b6b,0
+    c6 05 *51b88 00          ;mov byte_51b88,0        esc
+    33 f6                     ;xor esi,esi        
+    e9 "loc_s28_end           ;jmp 'loc_s24_end
+     
+:loc_s28_2
+    3c 98                     ;cmp al,98H              down
+    75 'loc_s28_3             ;jnz loc_s24_3
+    c6 05 *51c05 00          ;mov byte_51c05,0        down
+    c6 05 *51b6b 00          ;mov byte_51b6b,0
+
+ 
+    
+    46                       ;inc esi
+    
+    3b 75 fc                 ;cmp esi,[ebp-var_4]
+    7c 'loc_s28_2_1             ;jl 'loc_s24_1
+    4e                        ;dec esi
+:loc_s28_2_1
+    8b c7                     ; mov eax,edi
+    03 c3                     ; add eax,ebx
+    3b f0                     ; cmp esi,eax
+     7c 'loc_s28_2_2           ;jl loc_s28_2_2
+     43                        ;inc ebx
+:loc_s28_2_2       
+    e9 "loc_s28_1             ;jmp loc_s24_1
+
+
+:loc_s28_3
+    3c 9e                     ;cmp al,98H              up
+    75 'loc_s28_4             ;jnz loc_s24_3
+    c6 05 *51c0b 00           ;mov byte_51c05,0        up
+    c6 05 *51b6b 00          ;mov byte_51b6b,0
+
+    4e                        ;dec esi
+    83 fe 00                  ;cmp esi,0
+    7d 'loc_s28_3_1             ;jge 'loc_s24_1
+    46                       ;inc esi
+:loc_s28_3_1
+    3b f3                     ;cmp esi,ebx
+    7d 'loc_s28_3_2           ;jge loc_s28_3_2
+    4b                        ;dec ebx
+:loc_s28_3_2        
+        
+    e9 "loc_s28_1             ;jmp loc_s24_1
+
+:loc_s28_4
+    3c 20                     ;cmp al,20H              spave
+    75 'loc_s28_5             ;jnz loc_s24_3
+:loc_s28_6
+    c6 05 *51b6b 00           ;mov byte_51b6b,0        
+    c6 05 *51b7a 00           ;mov byte_51c05,0      0d  
+    c6 05 *51b8d 00           ;mov byte_51c05,0      20   
+    c6 05 *51c03 00           ;mov byte_51c05,0        
+    46                        ;inc esi
+    eb 'loc_s28_end            ;jmp loc_s24_end
+
+:loc_s28_5
+    3c 0d                     ;cmp al,0dH             enter
+    0f 85 "loc_s28_1_end          ;jnz loc_s24_3
+    eb 'loc_s28_6             ;jmp 'loc_s24_6
+    
+:loc_s28_end
+    
+    e8 &2d653                  ; call instruct_0
+    
+    56                        ;push esi
+    ff 75 14                  ;push [ebp+arg_c]       返回变量
+    e8 "sub_0                 ;call sub_0
+    83 c4 08                  ;add esp,08
+    
+    
+    5f                        ;pop edi
+    5e                        ;pop esi
+    5b                        ;pop ebx
+    8b e5                     ;mov esp,ebp
+    5d                        ;pop ebp    
+    c3                        ;retn                        
+
+
+:sub_showmenu2
+; 显示菜单
+; arg_0 x
+;arg_4 y
+;arg_8 n
+;arg_c current
+;arg_10 数组
+;arg_14 start   
+
+    53                        ;push ebx
+    56                        ;push esi
+    57                        ;push edi
+    55                        ;push ebp
+
+
+    
+    8b 6c 24 20               ;mov ebp,[esp+arg_c]    current
+    8b 74 24 28               ;mov esi,[esp+arg_14]    start
+    33 db                     ;xor ebx,ebx      i
+        
+:loc_sshowmenu2_1
+    8b fe                    ;mov edi,esi
+    03 fb                    ;add edi,ebx
+    6a 10                    ;push    10h
+    3b fd                    ;cmp edi,ebp                 当前选择项颜色不同
+    75 'loc_sshowmenu2_2         ;jnz loc_sshowmenu_2
+    68 63 66 00 00             ;push    1014h
+    eb 'loc_sshowmenu2_3        ;jmp loc_sshowmenu_3
+
+:loc_sshowmenu2_2        
+    68 21 23 00 00             ;push    705h
+
+
+:loc_sshowmenu2_3
+
+    68 *1e87bc                 ;push    offset array_VRAM
+    8b 44 24 30                ;mov eax,[esp+arg_10]
+    03 c7                      ;add eax,edi
+
+    e8 "sub_Value              ;call sub_value        取数组中元素
+    e8 "sub_addr               ; call sub_addr        取字符串地址
+    50                         ;push    eax
+    6b c3 12                   ;imul eax,ebx,12h
+    8b 4c 24 28                ;mov ecx,[esp+arg_4]
+    03 c1                      ;add eax,ecx
+    50                         ;push eax
+    ff 74 24 28                ;push [esp+arg_0]
+    e8 &3d832                  ;call    draw_string     ; 显示字符串
+    83 c4 18                   ;add     esp, 18h
+    43                         ;inc ebx
+    3b 5c 24 1c                ;cmp ebx,[esp+arg_8]
+    7c 'loc_sshowmenu2_1        ;jl 'loc_sshowmenu_1
+    
+    ff 35 *1c0b98               ;push    addr_ArrayVRAM2
+    68 *1e87bc                  ;push    offset array_VRAM
+    e8 &3d6d1                  ;call    MovetoVRAM      ; 把内存中显示数据传送到显存中
+    83 c4 08                   ;add     esp, 8
+
+    5d                        ;pop ebp
+    5f                        ;pop edi
+    5e                        ;pop esi
+    5b                        ;pop ebx
+
+    c3                        ;retn                        
+
+
+
+
+
+:sub_29
+; 显示图片
+; arg_0 数值or变量
+; arg_4 0 显示smp, 1 显示hdgrp
+; arg_8 x
+; arg_c y
+; arg_10 n
+
+    53                        ;push ebx
+    56                        ;push esi
+    57                        ;push edi
+    55                        ;push ebp
+
+    6a 00                     ;push    0
+    ff 74 24 18               ;push [esp+10+arg_0]
+    ff 74 24 24               ;push [esp+10+arg_8]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c             
+    8b f0                     ;mov esi,eax           x->esi
+    
+    6a 01                     ;push    1
+    ff 74 24 18               ;push [esp+10+arg_0]
+    ff 74 24 28               ;push [esp+10+arg_c]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    8b f8                     ;mov edi,eax          y->edi
+
+    6a 02                     ;push    2
+    ff 74 24 18               ;push [esp+10+arg_0]
+    ff 74 24 2c               ;push [esp+10+arg_10]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    8b e8                     ;mov ebp,eax     n-->ebp
+
+    83 7c 24 18 00            ;cmp [esp+arg_4],0
+    75 'loc_s29_1             ;jnz loc_s28_1
+    55                        ;push ebp
+    57                        ;push edi
+    56                        ;push esi
+    e8 &3d643                 ;call 3d643
+    83 c4 0c                  ;add esp,0c
+    eb 'loc_s29_end           ;jmp loc_s28_end
+:loc_s29_1
+    55                        ;push ebp
+    57                        ;push edi
+    56                        ;push esi
+    e8 &2d590                 ;call 3d643
+    83 c4 0c                  ;add esp,0c
+
+:loc_s29_end        
+
+    ff 35 *1c0b98               ;push    addr_ArrayVRAM2
+    68 *1e87bc                  ;push    offset array_VRAM
+    e8 &3d6d1                  ;call    MovetoVRAM      ; 把内存中显示数据传送到显存中
+    83 c4 08                   ;add     esp, 8
+
+
+    5d                        ;pop ebp
+    5f                        ;pop edi
+    5e                        ;pop esi
+    5b                        ;pop ebx
+    c3                        ;retn                        
+
+
+
+:sub_2A
+; 改变主地图坐标
+; arg_0 数值or变量
+; arg_4 x
+; arg_8 y
+
+
+    53                        ;push ebx
+    56                        ;push esi
+    57                        ;push edi
+    55                        ;push ebp
+
+    6a 00                     ;push    0
+    ff 74 24 18               ;push [esp+10+arg_0]
+    ff 74 24 20               ;push [esp+10+arg_4]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c             
+    8b f0                     ;mov esi,eax           x->esi
+    
+    6a 01                     ;push    1
+    ff 74 24 18               ;push [esp+10+arg_0]
+    ff 74 24 24               ;push [esp+10+arg_8]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    8b f8                     ;mov edi,eax          y->edi
+
+    8b c6                     ;mov eax,esi
+    A3 *1c0b88                ;mov 1c0b88,eax
+    83 e8 40                  ;sub eax,40
+    a3 *1c082c                ;mov 1c082c,eax
+    85 c0                     ;text eax,eax
+    7d 'loc_s2a_01            ; jge loc_s2a_01
+    c7 05 *1c082c 00 00 00 00 ; mov 1c082c,0
+:loc_s2a_01
+    81 3d *1c082c 60 01 00 00 ;cmp 1c082c,160
+    7e 'loc_s2a_02            ;jle 
+    c7 05 *1c082c 60 01 00 00 ; mov 1c082c,160
+:loc_s2a_02
+    8b c6                     ;mov eax,esi
+    2b 05 *1c082c             ;sub eax,1c082c    
+    A3 *1c0824                ;mov 1c0824,eax
+
+    8b c7                     ;mov eax,edi
+    A3 *1c0b8c                ;mov 1c0b8c,eax
+    83 e8 40                  ;sub eax,40
+    a3 *1c0830                ;mov 1c0830,eax
+    85 c0                     ;text eax,eax
+    7d 'loc_s2a_03            ; jge loc_s2a_01
+    c7 05 *1c0830 00 00 00 00 ; mov 1c0830,0
+:loc_s2a_03
+    81 3d *1c0830 60 01 00 00 ;cmp 1c0830,160
+    7e 'loc_s2a_04            ;jle 
+    c7 05 *1c0830 60 01 00 00 ; mov 1c0830,160
+:loc_s2a_04
+    8b c7                     ;mov eax,edi
+    2b 05 *1c0830             ;sub eax,1c0830    
+    A3 *1c0828                ;mov 1c0828,eax
+
+    ff 35 *1c0830             ; push 1c0830
+    ff 35 *1c082c             ;push 1c082c
+    e8 &24ce8                 ;call 24ce8
+    83 c4 08                   ;add esp 08
+    e8 &24f8c                 ;call 24ce8
+
+    5d                        ;pop ebp
+    5f                        ;pop edi
+    5e                        ;pop esi
+    5b                        ;pop ebx
+    c3                        ;retn                        
+
+
+:sub_2b
+; 调用子事件
+; arg_0 数值or变量
+; arg_4 n
+; arg_8 x1
+; arg_c x2
+; arg_10 x3
+; arg_14 x4
+
+
+    53                        ;push ebx
+    56                        ;push esi
+    57                        ;push edi
+    55                        ;push ebp
+
+    6a 00                     ;push    0
+    ff 74 24 18               ;push [esp+10+arg_0]
+    ff 74 24 20               ;push [esp+10+arg_4]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c             
+    8b e8                     ;mov ebp,eax     n-->ebp
+    
+    6a 01                     ;push    1
+    ff 74 24 18               ;push [esp+10+arg_0]
+    ff 74 24 24               ;push [esp+10+arg_8]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    50                        ;push eax
+    68 00 71 00 00            ;push 7100H
+    e8 "sub_0                 ;call sub_0
+    83 c4 08                  ;add esp,08
+
+    6a 02                     ;push    2
+    ff 74 24 18               ;push [esp+10+arg_0]
+    ff 74 24 28               ;push [esp+10+arg_c]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    50                        ;push eax
+    68 01 71 00 00            ;push 7100H
+    e8 "sub_0                 ;call sub_0
+    83 c4 08                  ;add esp,08
+    
+    6a 03                     ;push    3
+    ff 74 24 18               ;push [esp+10+arg_0]
+    ff 74 24 2c               ;push [esp+10+arg_10]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    50                        ;push eax
+    68 02 71 00 00            ;push 7100H
+    e8 "sub_0                 ;call sub_0
+    83 c4 08                  ;add esp,08
+
+    6a 04                     ;push    4
+    ff 74 24 18               ;push [esp+10+arg_0]
+    ff 74 24 30               ;push [esp+10+arg_14]
+    e8 "sub_getValue          ; call sub_getValue
+    83 c4 0c                  ;add esp,0c
+    50                        ;push eax
+    68 03 71 00 00            ;push 7100H
+    e8 "sub_0                 ;call sub_0
+    83 c4 08                  ;add esp,08
+
+    68 00 20 00 00            ;push 2000H
+    e8 &3ed5b                 ;call 3ed5b    malloc
+    83 c4 04                  ;add esp,04
+    8b d8                     ;mov ebx,eax   分配的内存
+    
+    be *1d9e90                ;mov esi,offset 1d9e90
+    8b fb                     ;mov edi,ebx
+    b9 00 08 00 00            ;mov ecx,800h
+    f3 a5                     ;rep movsd        ; 把原来的事件内容复制到分配内存
+    
+    55                        ;push ebp
+    e8 &2c319                 ;call 2c319    call event
+    83 c4 04                  ;add esp,04
+
+    8b f3                     ;mov esi,ebx
+    bf *1d9e90                ;mov edi,offset 1d9e90
+    b9 00 08 00 00            ;mov ecx,800h
+    f3 a5                     ;rep movsd        ; 把原来的事件内容从分配内存复制回来
+
+    53                        ;push ebx     
+    e8 &45229                 ;call 45229    free
+    83 c4 04                  ;add esp,04
+
+    5d                        ;pop ebp
+    5f                        ;pop edi
+    5e                        ;pop esi
+    5b                        ;pop ebx
+    c3                        ;retn                        
+
+
+:loc_s30_format
+    78 28 25 64 29 3d 25 64 00 ; x(%d)=%d
+:sub_30
+; 显示变量
+; arg_0 起始变量
+; arg_4 n 显示个数
+    53                        ;push ebx
+    56                        ;push esi
+
+    8b 44 24 c               ;mov esi,[esp+arg_0]
+    8b f0                     ;mov esi,eax
+
+    33 db                     ;xor ebx,ebx
+        
+:loc_s30_0
+
+
+    8b c6                     ;mov eax,esi
+    e8 "Sub_value             ;call sub_value
+    50                         ;push eax
+    56                         ;push esi
+    68 #loc_s30_format         ;push offset a5d  "%5d"
+    68 *1c07c4                  ;push offset byte_c07c4
+    e8 &3ef4a                  ;call sprintf
+    83 c4 10                   ;add esp 10
+    
+    6a 10                      ;push    10h
+    68 05 07 00 00             ;push    705h
+    68 *1e87bc                  ;push    offset array_VRAM
+    68 *1c07c4                  ;push    byte_c07c4
+    6a 2d                      ;push    2Dh
+    6a 47                      ;push    47h
+    e8 &3d832                  ;call    draw_string     ; 显示字符串
+    83 c4 18                   ;add     esp, 18h
+    ff 35 *1c0b98               ;push    addr_ArrayVRAM2
+    68 *1e87bc                  ;push    offset array_VRAM
+    e8 &3d6d1                  ;call    MovetoVRAM      ; 把内存中显示数据传送到显存中
+    83 c4 08                   ;add     esp, 8
+    e8 &20c32                  ;call    get_any_key     ; Get any key
+    e8 &2d653                  ; call instruct_0
+    46                         ;inc esi
+    43                         ;inc ebx
+    3b 5c 24 10                ;cmp ebx,[esp+arg_4]
+    7c 'loc_s30_0     ;jl      
+
+
+
+
+    5e                        ;pop esi
+    5b                        ;pop ebx
+    c3                        ;retn                        
+
+;end sub_30
+
+
+:loc_sdebug_format
+    25 64 00                   ;%d
+:sub_debug
+; 显示变量
+; arg_0 起始变量
+    53                        ;push ebx
+    56                        ;push esi
+
+    8b 44 24 0c               ;mov eax,[esp+arg_0]
+    50                         ;push eax
+    68 #loc_sdebug_format         ;push offset a5d  "%5d"
+    68 *1c07c4                  ;push offset byte_c07c4
+    e8 &3ef4a                  ;call sprintf
+    83 c4 0c                   ;add esp c
+    
+    6a 10                      ;push    10h
+    68 05 07 00 00             ;push    705h
+    68 *1e87bc                  ;push    offset array_VRAM
+    68 *1c07c4                  ;push    byte_c07c4
+    6a 2d                      ;push    2Dh
+    6a 47                      ;push    47h
+    e8 &3d832                  ;call    draw_string     ; 显示字符串
+    83 c4 18                   ;add     esp, 18h
+    ff 35 *1c0b98               ;push    addr_ArrayVRAM2
+    68 *1e87bc                  ;push    offset array_VRAM
+    e8 &3d6d1                  ;call    MovetoVRAM      ; 把内存中显示数据传送到显存中
+    83 c4 08                   ;add     esp, 8
+    e8 &20c32                  ;call    get_any_key     ; Get any key
+    e8 &2d653                  ; call instruct_0
+
+    5e                        ;pop esi
+    5b                        ;pop ebx
+    31 c0                     ; xor eax,eax
+    c3                        ;retn                        
+
+;end sub_30
+
+
+
+end

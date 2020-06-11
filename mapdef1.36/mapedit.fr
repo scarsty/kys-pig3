@@ -1,0 +1,2098 @@
+VERSION 5.00
+Begin VB.Form frmMapEdit 
+   Caption         =   "µØÍ¼±à¼­Æ÷"
+   ClientHeight    =   7695
+   ClientLeft      =   165
+   ClientTop       =   165
+   ClientWidth     =   11880
+   LinkTopic       =   "Form2"
+   MDIChild        =   -1  'True
+   ScaleHeight     =   513
+   ScaleMode       =   3  'Pixel
+   ScaleWidth      =   792
+   WindowState     =   2  'Maximized
+   Begin VB.ComboBox Combo5 
+      Height          =   300
+      Left            =   9840
+      Style           =   2  'Dropdown List
+      TabIndex        =   46
+      Top             =   7440
+      Width           =   975
+   End
+   Begin VB.ComboBox Combo3 
+      BackColor       =   &H00C0FFC0&
+      BeginProperty Font 
+         Name            =   "Times New Roman"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   345
+      ItemData        =   "mapedit.frx":0000
+      Left            =   0
+      List            =   "mapedit.frx":0002
+      Style           =   2  'Dropdown List
+      TabIndex        =   37
+      Top             =   7440
+      Width           =   390
+   End
+   Begin VB.ComboBox Combo2 
+      BackColor       =   &H00C0E0FF&
+      BeginProperty Font 
+         Name            =   "Times New Roman"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   345
+      ItemData        =   "mapedit.frx":0004
+      Left            =   10800
+      List            =   "mapedit.frx":014E
+      Style           =   2  'Dropdown List
+      TabIndex        =   31
+      Top             =   0
+      Width           =   1095
+   End
+   Begin VB.Frame Frame1 
+      Caption         =   "³¡¾°½á¹¹"
+      BeginProperty Font 
+         Name            =   "Times New Roman"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H000000C0&
+      Height          =   4215
+      Index           =   1
+      Left            =   10320
+      TabIndex        =   30
+      Top             =   3480
+      Width           =   1575
+      Begin VB.CommandButton Command1 
+         Caption         =   "¹Ø"
+         Height          =   255
+         Index           =   3
+         Left            =   1200
+         TabIndex        =   41
+         Top             =   3960
+         Width           =   375
+      End
+      Begin VB.CommandButton Command1 
+         Caption         =   "´æ"
+         Height          =   255
+         Index           =   2
+         Left            =   840
+         TabIndex        =   40
+         Top             =   3960
+         Width           =   375
+      End
+      Begin VB.CommandButton Command1 
+         Caption         =   "¶Á"
+         Height          =   255
+         Index           =   1
+         Left            =   480
+         TabIndex        =   45
+         Top             =   3960
+         Width           =   375
+      End
+      Begin VB.PictureBox Picture2 
+         AutoRedraw      =   -1  'True
+         BackColor       =   &H00E0E0E0&
+         FillStyle       =   0  'Solid
+         Height          =   3500
+         Index           =   2
+         Left            =   120
+         ScaleHeight     =   229
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   163
+         TabIndex        =   42
+         Top             =   1320
+         Width           =   2500
+      End
+      Begin VB.VScrollBar VScroll2 
+         Height          =   3855
+         LargeChange     =   10
+         Left            =   0
+         TabIndex        =   38
+         Top             =   120
+         Width           =   135
+      End
+      Begin VB.ComboBox Combo4 
+         Height          =   300
+         Index           =   1
+         ItemData        =   "mapedit.frx":0422
+         Left            =   600
+         List            =   "mapedit.frx":0424
+         Style           =   2  'Dropdown List
+         TabIndex        =   34
+         Top             =   480
+         Width           =   975
+      End
+      Begin VB.ComboBox Combo4 
+         Height          =   300
+         Index           =   0
+         ItemData        =   "mapedit.frx":0426
+         Left            =   600
+         List            =   "mapedit.frx":0428
+         Style           =   2  'Dropdown List
+         TabIndex        =   32
+         Top             =   240
+         Width           =   975
+      End
+      Begin VB.Label Label4 
+         AutoSize        =   -1  'True
+         Caption         =   "ÌùÍ¼º£°Î>"
+         ForeColor       =   &H00FF0000&
+         Height          =   180
+         Left            =   240
+         MouseIcon       =   "mapedit.frx":042A
+         MousePointer    =   99  'Custom
+         TabIndex        =   44
+         ToolTipText     =   "²»¿É³¬¹ý200£¬ÒòÎªÓÎÏ··Ö±æÂÊÊÇ320*200"
+         Top             =   1080
+         Width           =   810
+      End
+      Begin VB.Label Label2 
+         AutoSize        =   -1  'True
+         Caption         =   "ÌùÍ¼Ë÷Òý>"
+         Height          =   180
+         Index           =   2
+         Left            =   240
+         TabIndex        =   36
+         Top             =   840
+         Width           =   810
+      End
+      Begin VB.Label Label2 
+         AutoSize        =   -1  'True
+         Caption         =   "ÉèÖÃ"
+         Height          =   180
+         Index           =   1
+         Left            =   240
+         TabIndex        =   35
+         Top             =   480
+         Width           =   360
+      End
+      Begin VB.Label Label2 
+         AutoSize        =   -1  'True
+         BackColor       =   &H00FF0000&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "²é¿´"
+         ForeColor       =   &H00FFFFFF&
+         Height          =   240
+         Index           =   0
+         Left            =   240
+         MouseIcon       =   "mapedit.frx":0734
+         MousePointer    =   99  'Custom
+         TabIndex        =   33
+         Top             =   240
+         Width           =   420
+      End
+   End
+   Begin VB.Frame Frame1 
+      Caption         =   "ÊÂ¼þ"
+      BeginProperty Font 
+         Name            =   "Times New Roman"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H000000C0&
+      Height          =   3255
+      Index           =   0
+      Left            =   10320
+      TabIndex        =   5
+      Top             =   240
+      Width           =   1575
+      Begin VB.CommandButton Command1 
+         Caption         =   "ËÑË÷ÏÐÖÃ"
+         Height          =   375
+         Index           =   0
+         Left            =   0
+         TabIndex        =   39
+         Top             =   2880
+         Width           =   855
+      End
+      Begin VB.ComboBox Combo1 
+         BackColor       =   &H00FFC0C0&
+         BeginProperty DataFormat 
+            Type            =   1
+            Format          =   "0"
+            HaveTrueFalseNull=   0
+            FirstDayOfWeek  =   0
+            FirstWeekOfYear =   0
+            LCID            =   2052
+            SubFormatType   =   1
+         EndProperty
+         BeginProperty Font 
+            Name            =   "Times New Roman"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   345
+         ItemData        =   "mapedit.frx":0A3E
+         Left            =   840
+         List            =   "mapedit.frx":0A40
+         Style           =   2  'Dropdown List
+         TabIndex        =   29
+         Top             =   2880
+         Width           =   615
+      End
+      Begin VB.TextBox Text1 
+         Alignment       =   1  'Right Justify
+         BeginProperty Font 
+            Name            =   "Times New Roman"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   270
+         Index           =   10
+         Left            =   840
+         MaxLength       =   5
+         TabIndex        =   16
+         ToolTipText     =   "Ê®½øÖÆÊý"
+         Top             =   2640
+         Width           =   615
+      End
+      Begin VB.TextBox Text1 
+         Alignment       =   1  'Right Justify
+         BeginProperty Font 
+            Name            =   "Times New Roman"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   270
+         Index           =   9
+         Left            =   840
+         MaxLength       =   5
+         TabIndex        =   15
+         ToolTipText     =   "Ê®½øÖÆÊý"
+         Top             =   2400
+         Width           =   615
+      End
+      Begin VB.TextBox Text1 
+         Alignment       =   1  'Right Justify
+         BeginProperty Font 
+            Name            =   "Times New Roman"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   270
+         Index           =   8
+         Left            =   840
+         MaxLength       =   5
+         TabIndex        =   14
+         ToolTipText     =   "Ê®½øÖÆÊý"
+         Top             =   2160
+         Width           =   615
+      End
+      Begin VB.TextBox Text1 
+         Alignment       =   1  'Right Justify
+         BeginProperty Font 
+            Name            =   "Times New Roman"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   270
+         Index           =   7
+         Left            =   840
+         MaxLength       =   5
+         TabIndex        =   13
+         ToolTipText     =   "Ê®½øÖÆÊý"
+         Top             =   1920
+         Width           =   615
+      End
+      Begin VB.TextBox Text1 
+         Alignment       =   1  'Right Justify
+         BeginProperty Font 
+            Name            =   "Times New Roman"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   270
+         Index           =   6
+         Left            =   840
+         MaxLength       =   5
+         TabIndex        =   12
+         ToolTipText     =   "Ê®½øÖÆÊý"
+         Top             =   1680
+         Width           =   615
+      End
+      Begin VB.TextBox Text1 
+         Alignment       =   1  'Right Justify
+         BeginProperty Font 
+            Name            =   "Times New Roman"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   270
+         Index           =   5
+         Left            =   840
+         MaxLength       =   5
+         TabIndex        =   11
+         ToolTipText     =   "Ê®½øÖÆÊý"
+         Top             =   1440
+         Width           =   615
+      End
+      Begin VB.TextBox Text1 
+         Alignment       =   1  'Right Justify
+         BeginProperty Font 
+            Name            =   "Times New Roman"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   270
+         Index           =   4
+         Left            =   840
+         MaxLength       =   5
+         TabIndex        =   10
+         ToolTipText     =   "Ê®½øÖÆÊý"
+         Top             =   1200
+         Width           =   615
+      End
+      Begin VB.TextBox Text1 
+         Alignment       =   1  'Right Justify
+         BeginProperty Font 
+            Name            =   "Times New Roman"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   270
+         Index           =   3
+         Left            =   840
+         MaxLength       =   5
+         TabIndex        =   9
+         ToolTipText     =   "Ê®½øÖÆÊý"
+         Top             =   960
+         Width           =   615
+      End
+      Begin VB.TextBox Text1 
+         Alignment       =   1  'Right Justify
+         BeginProperty Font 
+            Name            =   "Times New Roman"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   270
+         Index           =   2
+         Left            =   840
+         MaxLength       =   5
+         TabIndex        =   8
+         ToolTipText     =   "Ê®½øÖÆÊý"
+         Top             =   720
+         Width           =   615
+      End
+      Begin VB.TextBox Text1 
+         Alignment       =   1  'Right Justify
+         BeginProperty Font 
+            Name            =   "Times New Roman"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   270
+         Index           =   1
+         Left            =   840
+         MaxLength       =   5
+         TabIndex        =   7
+         ToolTipText     =   "Ê®½øÖÆÊý"
+         Top             =   480
+         Width           =   615
+      End
+      Begin VB.TextBox Text1 
+         Alignment       =   1  'Right Justify
+         BeginProperty Font 
+            Name            =   "Times New Roman"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   270
+         Index           =   0
+         Left            =   840
+         MaxLength       =   5
+         TabIndex        =   6
+         ToolTipText     =   "Ê®½øÖÆÊý"
+         Top             =   240
+         Width           =   615
+      End
+      Begin VB.Label Label1 
+         AutoSize        =   -1  'True
+         Caption         =   "×Ý×ø±êY"
+         BeginProperty Font 
+            Name            =   "Times New Roman"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   225
+         Index           =   10
+         Left            =   120
+         MousePointer    =   14  'Arrow and Question
+         TabIndex        =   28
+         ToolTipText     =   "È¡0µ½60"
+         Top             =   2640
+         Width           =   660
+      End
+      Begin VB.Label Label1 
+         AutoSize        =   -1  'True
+         Caption         =   "ºá×ø±êX"
+         BeginProperty Font 
+            Name            =   "Times New Roman"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   225
+         Index           =   9
+         Left            =   120
+         MousePointer    =   14  'Arrow and Question
+         TabIndex        =   27
+         ToolTipText     =   "È¡0µ½60"
+         Top             =   2400
+         Width           =   675
+      End
+      Begin VB.Label Label1 
+         AutoSize        =   -1  'True
+         Caption         =   "¶¯»­ËÙ¶È"
+         BeginProperty Font 
+            Name            =   "Times New Roman"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   225
+         Index           =   8
+         Left            =   120
+         MousePointer    =   99  'Custom
+         TabIndex        =   26
+         ToolTipText     =   "µ¥»÷¿ªÊ¼/Í£Ö¹¶¯»­"
+         Top             =   2160
+         Width           =   720
+      End
+      Begin VB.Label Label1 
+         AutoSize        =   -1  'True
+         Caption         =   "ÌùÍ¼3"
+         BeginProperty Font 
+            Name            =   "Times New Roman"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   225
+         Index           =   7
+         Left            =   120
+         MouseIcon       =   "mapedit.frx":0A42
+         TabIndex        =   25
+         ToolTipText     =   "ÒâÒåÍ¬ÉÏ£¬µ«Öµ²»»áÔòÏÔÊ¾Îª¶¯»­"
+         Top             =   1920
+         Width           =   450
+      End
+      Begin VB.Label Label1 
+         AutoSize        =   -1  'True
+         Caption         =   "ÌùÍ¼2"
+         BeginProperty Font 
+            Name            =   "Times New Roman"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   225
+         Index           =   6
+         Left            =   120
+         MouseIcon       =   "mapedit.frx":0E84
+         TabIndex        =   24
+         ToolTipText     =   "ÒâÒåÍ¬ÉÏ£¬µ«Öµ²»»áÔòÏÔÊ¾Îª¶¯»­"
+         Top             =   1680
+         Width           =   450
+      End
+      Begin VB.Label Label1 
+         AutoSize        =   -1  'True
+         Caption         =   "ÌùÍ¼1"
+         BeginProperty Font 
+            Name            =   "Times New Roman"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   225
+         Index           =   5
+         Left            =   120
+         MouseIcon       =   "mapedit.frx":12C6
+         TabIndex        =   23
+         ToolTipText     =   "¾ö¶¨ÁË¸Ã´¥·¢µãÏÔÊ¾µÄÊ²Ã´¡£ÀýÈçÏä×Ó£¬Ê÷Ä¾£¬²ÝµØ£¬ÈËµÈµÈ......(µ¥»÷Ê¹ÁíÍâÁ½¸öÌùÍ¼Êý¾ÝÓë´ËÒ»ÖÂ)"
+         Top             =   1440
+         Width           =   450
+      End
+      Begin VB.Label Label1 
+         AutoSize        =   -1  'True
+         Caption         =   "ÊÂ¼þ3"
+         BeginProperty Font 
+            Name            =   "Times New Roman"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   225
+         Index           =   4
+         Left            =   120
+         TabIndex        =   22
+         ToolTipText     =   "Â·¹ýÔò´¥·¢"
+         Top             =   1200
+         Width           =   450
+      End
+      Begin VB.Label Label1 
+         AutoSize        =   -1  'True
+         Caption         =   "ÊÂ¼þ2"
+         BeginProperty Font 
+            Name            =   "Times New Roman"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   225
+         Index           =   3
+         Left            =   120
+         TabIndex        =   21
+         ToolTipText     =   "ÓÉÊÂ¼þ1´¥·¢"
+         Top             =   960
+         Width           =   450
+      End
+      Begin VB.Label Label1 
+         AutoSize        =   -1  'True
+         Caption         =   "ÊÂ¼þ1"
+         BeginProperty Font 
+            Name            =   "Times New Roman"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   225
+         Index           =   2
+         Left            =   120
+         MousePointer    =   14  'Arrow and Question
+         TabIndex        =   20
+         ToolTipText     =   "¾ö¶¨ÁËÖ÷½ÇÔÚ¸Ã´¥·¢µã´¦µ÷²éÊ±ËùÒý·¢µÄÊÂ¼þ¡£ÀýÈçµÃµ½ÎïÆ·£¬Ì¸»°"
+         Top             =   720
+         Width           =   450
+      End
+      Begin VB.Label Label1 
+         AutoSize        =   -1  'True
+         Caption         =   "±àºÅ"
+         BeginProperty Font 
+            Name            =   "Times New Roman"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   225
+         Index           =   1
+         Left            =   120
+         TabIndex        =   19
+         Top             =   480
+         Width           =   360
+      End
+      Begin VB.Label Label1 
+         AutoSize        =   -1  'True
+         Caption         =   "ÄÜ·ñÍ¨¹ý"
+         BeginProperty Font 
+            Name            =   "Times New Roman"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   225
+         Index           =   0
+         Left            =   120
+         MouseIcon       =   "mapedit.frx":1708
+         TabIndex        =   18
+         ToolTipText     =   "0ÄÜÍ¨¹ý£¬1²»ÄÜÍ¨¹ý"
+         Top             =   240
+         Width           =   720
+      End
+      Begin VB.Label Label1 
+         AutoSize        =   -1  'True
+         Caption         =   "±àºÅË÷Òý"
+         BeginProperty Font 
+            Name            =   "Times New Roman"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H000000C0&
+         Height          =   225
+         Index           =   12
+         Left            =   120
+         TabIndex        =   17
+         ToolTipText     =   "ÔÚÒ»¸ö³¡¾°ÖÐ×î¶àÄÜÓÐ200¸ö"
+         Top             =   3000
+         Width           =   720
+      End
+   End
+   Begin VB.PictureBox Picture2 
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H00C0FFC0&
+      FillStyle       =   0  'Solid
+      Height          =   1335
+      Index           =   1
+      Left            =   0
+      ScaleHeight     =   1275
+      ScaleWidth      =   2430
+      TabIndex        =   4
+      Top             =   6120
+      Width           =   2490
+   End
+   Begin VB.VScrollBar VScroll1 
+      Height          =   7200
+      LargeChange     =   80
+      Left            =   10080
+      Max             =   1200
+      SmallChange     =   16
+      TabIndex        =   3
+      Top             =   240
+      Width           =   225
+   End
+   Begin VB.HScrollBar HScroll1 
+      Height          =   225
+      LargeChange     =   160
+      Left            =   360
+      Max             =   2310
+      SmallChange     =   32
+      TabIndex        =   2
+      Top             =   7440
+      Width           =   9420
+   End
+   Begin VB.PictureBox Picture1 
+      Height          =   7440
+      Left            =   0
+      ScaleHeight     =   492
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   665
+      TabIndex        =   0
+      Top             =   0
+      Width           =   10035
+      Begin VB.PictureBox Picture2 
+         AutoRedraw      =   -1  'True
+         BackColor       =   &H00FF80FF&
+         FillStyle       =   0  'Solid
+         Height          =   17850
+         Index           =   0
+         Left            =   0
+         ScaleHeight     =   1186
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   2306
+         TabIndex        =   1
+         Top             =   0
+         Width           =   34650
+         Begin VB.Timer Timer1 
+            Interval        =   200
+            Left            =   9360
+            Top             =   4560
+         End
+         Begin VB.Line Line1 
+            BorderColor     =   &H0000FF00&
+            BorderWidth     =   2
+            Index           =   0
+            X1              =   -24
+            X2              =   8
+            Y1              =   0
+            Y2              =   0
+         End
+      End
+   End
+   Begin VB.Label Label3 
+      AutoSize        =   -1  'True
+      Caption         =   "³¡¾°:0"
+      Height          =   180
+      Left            =   10080
+      TabIndex        =   43
+      Top             =   120
+      Width           =   540
+   End
+End
+Attribute VB_Name = "frmMapEdit"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = False
+Attribute VB_PredeclaredId = True
+Attribute VB_Exposed = False
+Option Explicit
+
+Dim iniOK As Boolean
+Dim MapTile(0 To 5, 0 To 63, 0 To 63) As Integer, MapReaded As Integer
+Dim CurrentMapIDX As Integer, CurrentEvtIDX As Integer
+Dim CurrentMouseXindex As Integer, CurrentMouseYindex As Integer
+Dim AddName(0 To 83) As String, AddAttrib(0 To 199, 0 To 10) As Integer
+Dim inMapFile As String, inMapIdxFile As String
+Dim Busying As Boolean, EnableAni As Boolean, aniFrameIndex As Integer
+Dim xIndex As Integer, yIndex As Integer
+Dim WidthDraw As Integer, HeightDraw As Integer
+Dim PointX As Integer, PointY As Integer
+Dim ux As Integer, uy As Integer, lx As Integer, ly As Integer
+Dim dX As Integer, dY As Integer, rx As Integer, ry As Integer
+Dim LayerEditMode As Boolean, SelectedTileIDX As Integer, SelectedTileYadd As Integer
+Dim combo1en As Boolean, combo2en As Boolean
+Dim CurrentJinDu As Integer
+Const mapEDITreadMODE As Integer = 1
+Const mapEDITsaveMODE As Integer = 2
+Private Type BITMAPINFOHEADER '4Ø bytes
+        biSize As Long
+        biWidth As Long
+        biHeight As Long
+        biPlanes As Integer
+        biBitCount As Integer
+        biCompression As Long
+        biSizeImage As Long
+        biXPelsPerMeter As Long
+        biYPelsPerMeter As Long
+        biClrUsed As Long
+        biClrImportant As Long
+End Type
+
+Private Type RGBQUAD
+        rgbBlue As Byte
+        rgbGreen As Byte
+        rgbRed As Byte
+        rgbReserved As Byte
+End Type
+
+Private Type BITMAPINFO
+        bmiHeader As BITMAPINFOHEADER
+
+        bmiColors As RGBQUAD    ' RGB, so length here doesn't matter
+End Type
+
+
+Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hdc As Long) As Long
+Private Declare Function CreateDIBSection Lib "gdi32" (ByVal hdc As Long, pBitmapInfo _
+                         As BITMAPINFO, ByVal un As Long, lplpVoid As Long, ByVal handle As Long, ByVal dw As Long) _
+                         As Long
+Private Declare Function SelectObject Lib "gdi32" (ByVal hdc As Long, ByVal hObject As Long) _
+                         As Long
+Private Declare Function DeleteDC Lib "gdi32" (ByVal hdc As Long) As Long
+Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
+Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Destination As Any, Source As Any, ByVal Length As Long)
+Private Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal X As Long, ByVal Y _
+As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As _
+Long, ByVal ySrc As Long, ByVal dwRop As Long) As Long
+
+Private Declare Function GetLastError Lib "kernel32" () As Long
+
+Dim SmpMapNum As Long  ' µØÍ¼ÌùÍ¼µÄË÷Òý¸öÊý
+Dim Wd640 As Integer, Ht480 As Integer
+Const XSCALE = 18
+Const YSCALE = 9
+Dim mColor_RGB(256) As Long
+Dim SinData1(63, 63) As Integer
+Dim SinData2(63, 63) As Integer
+Dim SinData3(63, 63) As Integer
+Dim SinData4(63, 63) As Integer
+Dim SinData5(63, 63) As Integer
+Dim SinData6(63, 63) As Integer
+' ÒÔÏÂÉùÃ÷ ÌùÍ¼×Ô¶¨ÒåÀàÐÍ
+' Æ«ÒÆ(x,y)µÄÒâË¼ÊÇÌùÍ¼ÔÚÌùÊ±µÄÏÔÊ¾Æ«ÒÆÁ¿£¬¼´Õâ¸±Í¼ÔÚÏÔÊ¾Ê±ÒªÏòx£¬y·½Ïò¸÷Æ«ÒÆ¶àÉÙ£¬×¢ÒâÊÇ¸ºÆ«ÒÆ£¬
+Private Type RLEPic
+    Width As Integer   ' Í¼Æ¬¿í¶È
+    Height As Integer  ' Í¼Æ¬¸ß¶È
+    X As Integer       ' Í¼Æ¬xÆ«ÒÆ
+    Y As Integer       ' Í¼Æ¬yÆ«ÒÆ
+    dataLong As Long   ' Í¼Æ¬RLEÑ¹ËõÊý¾Ý³¤¶È
+    Data() As Byte     ' Í¼Æ¬RLEÑ¹ËõÊý¾Ý
+    Data32() As Long   ' Í¼Æ¬32Î»Ñ¹ËõÊý¾Ý
+End Type
+Dim mmapPic() As RLEPic
+Dim Started As Boolean
+Private Sub cmddown_Click()
+    If txty < 63 Then
+        txty = txty + 1
+        Command6_Click
+    End If
+End Sub
+
+Private Sub cmdleft_Click()
+   If txtX > 0 Then
+       txtX = txtX - 1
+       Command6_Click
+   End If
+End Sub
+
+Private Sub cmdright_Click()
+    If txtX < 63 Then
+        txtX = txtX + 1
+        Command6_Click
+    End If
+End Sub
+
+Private Sub cmdup_Click()
+    If txty > 0 Then
+        txty = txty - 1
+        Command6_Click
+    End If
+End Sub
+
+
+
+
+
+
+
+' ¶ÁÈ¡ÑÕÉ«±íÊý¾Ý
+' jinyongÖÐÑÕÉ«±íÊÇ°´ÕÕ256É«£¬Ã¿É«rgb¸÷Ò»¸ö×Ö½Ú
+Public Sub SetColor()
+Dim Filenum As Integer
+Dim i As Long
+Dim Rr As Byte, Gg As Byte, Bb As Byte
+    
+    Filenum = FreeFile()
+    Open GamePath & mmap_col For Binary Access Read As Filenum
+    For i = 0 To 255
+        Get Filenum, , Rr
+        Get Filenum, , Gg
+        Get Filenum, , Bb
+        Rr = Rr * 4           ' ÑÕÉ«ÖµÐèÒª¡Á4
+        Gg = Gg * 4
+        Bb = Bb * 4
+        
+        ' ×ª»¯Îª32Î»ÑÕÉ«Öµ£¬32Î»ÑÕÉ«Öµ×î¸ßÎ»Îª0£¬ÆäÓà°´ÕÕrgbË³ÐòÅÅÁÐ
+        mColor_RGB(i) = Bb + Gg * 256& + Rr * 65536
+    Next i
+
+End Sub
+
+
+
+
+
+
+Private Sub Command5_Click()
+    
+Dim Filename As String
+Dim Filenum As Integer
+
+
+Dim i As Long, J As Long
+
+Dim sinID(100) As Long
+
+   Filename = GamePath & "s1.idx"
+   
+    sinID(0) = 0
+    
+    Filenum = FreeFile()
+    Open Filename For Binary Access Read As Filenum
+    For i = 1 To 100
+        Get Filenum, , sinID(i) '¶ÁË÷Òýµ½ÄÚ´æsinID
+    Next i
+      
+    Close (Filenum)
+
+
+    Filename = GamePath & "\s1.grp"
+    Filenum = FreeFile()
+    Open Filename For Binary Access Read As Filenum
+    Seek #Filenum, sinID(0) + 1
+            Get Filenum, , SinData1
+            Get Filenum, , SinData2
+            Get Filenum, , SinData3
+            Get Filenum, , SinData4
+            Get Filenum, , SinData5
+            Get Filenum, , SinData6
+
+    Close (Filenum)
+    
+    Call LoadSMap(0)
+    
+    Command6_Click
+    
+    
+End Sub
+
+Private Sub ShowPicDIBn2()
+Dim copmDC As Long
+Dim bInfo As BITMAPINFO
+Dim DIBSectionHandle As Long    ' Handle to DIBSection
+Dim OldCompDCBM As Long         ' Original bitmap for CompDC
+Dim CompDC As Long
+Dim addR As Long
+Dim Temp As Long
+Dim lineSize As Long
+Dim picData() As Long
+
+Dim i As Long, J As Long
+Dim rangeX As Long, rangeY As Long
+Dim X0 As Integer, Y0 As Integer
+
+Dim X1 As Long, Y1 As Long
+Dim Pic As Long
+Dim dX As Long, dY As Long
+    
+    Busying = True
+    X0 = 32
+    Y0 = 32
+    
+   Wd640 = 640
+   Ht480 = 480
+   Wd640 = 1152
+   Ht480 = 576
+
+  Wd640 = 2304
+  Ht480 = 1152
+
+    CompDC = CreateCompatibleDC(0)
+    With bInfo.bmiHeader
+        .biSize = 40
+        .biWidth = Wd640
+        .biHeight = -Ht480
+        .biPlanes = 1
+        .biBitCount = 32
+        .biCompression = 0
+        lineSize = .biWidth * 4
+        .biSizeImage = -lineSize * .biHeight
+    End With
+    
+    DIBSectionHandle = CreateDIBSection(CompDC, bInfo, 0, addR, 0, 0)
+    OldCompDCBM = SelectObject(CompDC, DIBSectionHandle)
+
+   
+    
+    ReDim picData(bInfo.bmiHeader.biSizeImage / 4)
+    
+    
+    rangeX = 64 '18 + 3 + 6    ' ±£Ö¤²»³öÏÖÂ©»­ÌùÍ¼£¬°Ñ»­µÄ·¶Î§À©´ó
+    rangeY = 0 ' 10 + 11 + 6     ' ÆäÊµÓÐ¸üºÃµÄ°ì·¨¿ÉÒÔÏÈÅÐ¶Ï³öÓ¦¸Ã»­ÄÄÐ©
+    
+    Dim i1 As Long, j1 As Long
+    
+    
+    ' °´ÆÁÄ»×ø±ê£¬´ÓÓÒÏò×ó£¬´ÓÉÏµ½ÏÂÒÀ´Î»­Ã¿¸öÌùÍ¼£¬±£Ö¤ÌùÍ¼ÕýÈ·£¬
+     For J = -rangeY To 2 * rangeX + rangeY
+        For i = rangeX To 0 Step -1
+            If J Mod 2 = 0 Then
+                i1 = -rangeX + i + J \ 2
+                j1 = -i + J \ 2
+            Else
+                i1 = -rangeX + i + J \ 2
+                j1 = -i + J \ 2 + 1
+            End If
+      'For j1 = -64 To 63
+      '    For i1 = -64 To 63
+          'Debug.Print i1, j1
+            X1 = XSCALE * (i1 - j1) + Wd640 / 2
+            Y1 = YSCALE * (i1 + j1 + 2) + Ht480 / 2
+            If Y0 + j1 >= 0 And X0 + i1 >= 0 And Y0 + j1 < 64 And X0 + i1 < 64 Then
+                dX = SinData5(X0 + i1, Y0 + j1)
+                dY = SinData6(X0 + i1, Y0 + j1)
+                Pic = SinData1(X0 + i1, Y0 + j1) / 2
+                ' »­1²ã
+                Call genPicData(Pic, addR, bInfo.bmiHeader.biWidth, -bInfo.bmiHeader.biHeight, X1, Y1)
+                 
+                ' »­2²ã
+                 Pic = SinData2(X0 + i1, Y0 + j1) / 2
+                If Pic > 0 And Pic < SmpMapNum Then
+                    Call genPicData(Pic, addR, bInfo.bmiHeader.biWidth, -bInfo.bmiHeader.biHeight, X1, Y1 - dX)
+                End If
+                ' »­2²ã
+                Pic = SinData3(X0 + i1, Y0 + j1) / 2
+                If Pic > 0 Then
+                    Call genPicData(Pic, addR, bInfo.bmiHeader.biWidth, -bInfo.bmiHeader.biHeight, X1, Y1 - dY)
+                End If
+               
+            End If
+        Next
+    Next
+
+    ' ÔÚµ±Ç°×ø±êÎ»ÖÃÌùÍ¼
+    Call genPicData(0, addR, bInfo.bmiHeader.biWidth, -bInfo.bmiHeader.biHeight, X2Pixel(1, 1), Y2Pixel(1, 1)) ' Wd640 / 2, Ht480 / 2)
+    
+    ' ¸´ÖÆµ½dibÉÏ
+    Temp = BitBlt(Picture2(0).hdc, 0, 0, Wd640, Ht480, CompDC, 0, 0, &HCC0020)
+    ' »­µÚ4²ãÊÂ¼þµÄ±àºÅ
+      For J = -rangeY To 2 * rangeX + rangeY
+        For i = rangeX To 0 Step -1
+            If J Mod 2 = 0 Then
+                i1 = -rangeX + i + J \ 2
+                j1 = -i + J \ 2
+            Else
+                i1 = -rangeX + i + J \ 2
+                j1 = -i + J \ 2 + 1
+            End If
+            X1 = XSCALE * (i1 - j1) + Wd640 / 2
+            Y1 = YSCALE * (i1 + j1) + Ht480 / 2
+            If Y0 + j1 >= 0 And X0 + i1 >= 0 And Y0 + j1 < 64 And X0 + i1 < 64 Then
+                Pic = SinData4(X0 + i1, Y0 + j1)
+                If Pic >= 0 Then
+                    'pic1.CurrentX = X1
+                    'pic1.CurrentY = Y1 - YSCALE
+                    'Picture2(0).Print Pic
+                End If
+            End If
+        Next i
+    Next J
+    
+    
+    
+    Temp = GetLastError()
+    Temp = SelectObject(CompDC, OldCompDCBM)
+    Temp = DeleteDC(CompDC)
+    Temp = DeleteObject(DIBSectionHandle)
+Busying = False
+End Sub
+Function X2Pixel(i1 As Long, j1 As Long)
+  X2Pixel = XSCALE * (i1 - j1) + Wd640 / 2
+End Function
+Function Y2Pixel(i1 As Long, j1 As Long)
+  Y2Pixel = YSCALE * (i1 + j1 + 2)
+End Function
+
+
+Private Sub Command6_Click()
+    'pic1.Cls
+    Call ShowPicDIBn2
+    Picture2(0).Refresh
+    'txt1.Text = SinData1(txtX.Text, txty.Text)
+   ' txt2.Text = SinData2(txtX.Text, txty.Text)
+   ' txt3.Text = SinData3(txtX.Text, txty.Text)
+   ' txt4.Text = SinData4(txtX.Text, txty.Text)
+   ' txt5.Text = SinData5(txtX.Text, txty.Text)
+   ' txt6.Text = SinData6(txtX.Text, txty.Text)
+   ' txtoffset1 = txtsnum * 49152 + 0 * 8192& + txty * 128& + txtX * 2&
+   ' txtoffset1 = Hex(txtoffset1)
+   ' txtoffset2 = txtsnum * 49152 + 1 * 8192& + txty * 128& + txtX * 2&
+   ' txtoffset2 = Hex(txtoffset2)
+End Sub
+
+
+
+
+
+    
+    
+
+
+
+
+
+' ¶ÁÈ¡³¡¾°µØÍ¼²¢×ª»¯Îª32Î»rle
+
+
+Private Sub LoadSMap(mapNum As Long)
+Dim FileId As String, filePic As String, fileColor As String
+Dim Filenum As Integer, filenum2 As Integer
+Dim i As Long
+Dim Value As Integer
+Dim Rr As Integer, Gg As Integer, Bb As Integer
+Dim offSet As Long
+Dim picDataLong As Long
+Dim Num As Long
+Dim Xx As Long, Yy As Long
+
+Dim picNum2
+Dim mMapIdx() As Long
+
+
+
+    FileId = GamePath & SDXxxx(CurrentMapIDX)
+    filePic = GamePath & SMPxxx(CurrentMapIDX)
+   
+    Filenum = FreeFile()
+    Open FileId For Binary Access Read As Filenum
+    SmpMapNum = LOF(Filenum) / 4 - 1
+    ReDim mMapIdx(SmpMapNum)
+    ReDim mmapPic(SmpMapNum)
+    mMapIdx(0) = 0
+    For Num = 1 To SmpMapNum ' µØÍ¼ÌùÍ¼µÄË÷Òý¸öÊý
+        Get Filenum, , mMapIdx(Num)
+    Next Num
+    Close Filenum
+    
+    Filenum = FreeFile()
+    Open filePic For Binary Access Read As Filenum
+    For Num = 0 To SmpMapNum - 1 ' µØÍ¼ÌùÍ¼µÄË÷Òý¸öÊý
+        offSet = mMapIdx(Num)
+        picDataLong = mMapIdx(Num + 1) - mMapIdx(Num)
+        If picDataLong > 0 Then
+       
+            Get Filenum, offSet + 1, mmapPic(Num).Width
+            Get Filenum, , mmapPic(Num).Height
+            Get Filenum, , mmapPic(Num).X
+            Get Filenum, , mmapPic(Num).Y
+            mmapPic(Num).dataLong = picDataLong - 8
+            ReDim mmapPic(Num).Data(mmapPic(Num).dataLong - 1)
+            'For i = 0 To mmapPic(num).dataLong - 1
+            Get Filenum, , mmapPic(Num).Data
+            'Next i
+            Call RLEto32(mmapPic(Num))
+        Else
+            mmapPic(Num).Width = mmapPic(Num - 1).Width
+            mmapPic(Num).Height = mmapPic(Num - 1).Height
+            mmapPic(Num).X = mmapPic(Num - 1).X
+            mmapPic(Num).Y = mmapPic(Num - 1).Y
+            mmapPic(Num).dataLong = mmapPic(Num - 1).dataLong
+            ReDim mmapPic(Num).Data(mmapPic(Num).dataLong - 1)
+            mmapPic(Num).Data = mmapPic(Num - 1).Data
+            Call RLEto32(mmapPic(Num))
+        End If
+            
+            
+    Next Num
+    Close Filenum
+End Sub
+
+
+
+
+' Éú³ÉÍ¼ÏóÊý¾Ýµ½addrÖ¸ÏòµÄµØÖ·
+' picnum ÌùÍ¼±àºÅ
+' width height addrÖ¸ÏòµÄdib¿í¸ß
+' x1,y1,»æÍ¼Î»ÖÃ
+Private Sub genPicData(picNum As Long, addR As Long, Width As Long, Height As Long, ByVal X1 As Long, ByVal Y1 As Long)
+Dim i As Long, J As Long
+Dim X As Long, Y As Long
+Dim Row As Byte
+Dim Start As Long
+Dim P As Long
+Dim MaskNum As Byte
+Dim SolidNum As Byte
+Dim Yoffset As Long
+Dim Xoffset As Long
+Dim offSet As Long
+    
+    X1 = X1 - mmapPic(picNum).X
+    Y1 = Y1 - mmapPic(picNum).Y
+    
+    If X1 >= 0 And Y1 >= 0 And X1 + mmapPic(picNum).Width < Width And Y1 + mmapPic(picNum).Height < Height Then
+        P = 0
+        For i = 1 To mmapPic(picNum).Height
+            Y = i
+            Yoffset = (Y + Y1 - 1) * Width
+            
+            Row = mmapPic(picNum).Data(P)
+            Start = P
+            P = P + 1
+            If Row > 0 Then
+                X = 0
+                Do
+                    X = X + mmapPic(picNum).Data(P)
+                    If X >= mmapPic(picNum).Width Then
+                        Exit Do
+                    End If
+                    P = P + 1
+                    SolidNum = mmapPic(picNum).Data(P)
+                    P = P + 1
+                    Xoffset = X + (X1)
+                    offSet = Xoffset + Yoffset
+                    Call CopyMemory(ByVal (addR + offSet * 4), mmapPic(picNum).Data32(P), 4 * SolidNum)
+                    X = X + SolidNum
+                    P = P + SolidNum
+                    If X >= mmapPic(picNum).Width Then
+                        Exit Do
+                    End If
+                    If P - Start >= Row Then
+                        Exit Do
+                    End If
+                Loop
+                If P + 1 >= mmapPic(picNum).dataLong Then
+                    Exit For
+                End If
+            End If
+        Next i
+    Else
+        P = 0
+        For i = 1 To mmapPic(picNum).Height
+            Y = i
+            Yoffset = (Y + Y1 - 1) * Width
+            
+            Row = mmapPic(picNum).Data(P)
+            Start = P
+            P = P + 1
+            If Row > 0 Then
+                X = 0
+                Do
+                    X = X + mmapPic(picNum).Data(P)
+                    If X >= mmapPic(picNum).Width Then
+                        Exit Do
+                    End If
+                    P = P + 1
+                    SolidNum = mmapPic(picNum).Data(P)
+                    P = P + 1
+                    Xoffset = X + (X1)
+                    
+                    If Y1 + Y - 1 >= 0 And Y1 + Y < Height And Xoffset + SolidNum >= 0 And Xoffset < Width Then
+                        Dim p2 As Long
+                        Dim ee As Long
+                        
+                        If Xoffset < 0 Then
+                            offSet = Yoffset
+                            p2 = P - Xoffset
+                            ee = SolidNum + Xoffset
+                        Else
+                            offSet = Xoffset + Yoffset
+                            p2 = P
+                            ee = SolidNum
+                        End If
+                        If Xoffset + SolidNum >= Width Then
+                            ee = ee - (Xoffset + SolidNum - Width + 1)
+                        End If
+                        Call CopyMemory(ByVal (addR + offSet * 4), mmapPic(picNum).Data32(p2), 4 * ee)
+                    End If
+                    X = X + SolidNum
+                    P = P + SolidNum
+                    If X >= mmapPic(picNum).Width Then
+                        Exit Do
+                    End If
+                    If P - Start >= Row Then
+                        Exit Do
+                    End If
+                Loop
+                If P + 1 >= mmapPic(picNum).dataLong Then
+                    Exit For
+                End If
+            End If
+        Next i
+    End If
+            
+End Sub
+
+
+
+' °ÑÌùÍ¼Êý¾ÝµÄ8BitRLEÑ¹ËõÊý¾Ý£¬×ª»»Îª32Bit£¬·½±ãÒÔºó´¦Àí
+' RLEÑ¹Ëõ¸ñÊ½£º
+' µÚÒ»¸ö×Ö½ÚÎªµÚÒ»ÐÐÊý¾Ý³¤¶È£¨¼¸¸ö×Ö½Ú£©
+' ºóÃæÒ»¸ö×Ö½ÚÎªÍ¸Ã÷Êý¾Ýµã¸öÊý£¬ºóÃæ¸ú×ÅÎª²»Í¸Ã÷Êý¾Ýµã¸öÊý£¬È»ºóÊÇ²»Í¸Ã÷µÄÃ¿¸öÊý¾Ýµã8Î»ÑÕÉ«£¬
+' ÖØ¸´ÒÔÉÏ£¬Ö±µ½µÚÒ»ÐÐ×Ö½Ú½áÊø
+' ¶ÁÈ¡ÏÂÒ»ÐÐÊý¾Ý£¬Ö±µ½Ã»ÓÐºóÃæÊý¾Ý
+Private Sub RLEto32(Pic As RLEPic)
+Dim P As Long  ' Ö¸ÏòRLEÊý¾ÝµÄÖ¸Õë
+Dim p32 As Long   ' Ö¸Ïò32Î»·ÇÑ¹ËõÊý¾ÝµÄÖ¸Õë
+Dim i As Long, J As Long
+Dim Row As Byte
+Dim Temp As Long
+Dim Start As Long
+Dim MaskNum As Long
+Dim SolidNum As Long
+   
+    ReDim Pic.Data32(Pic.dataLong)
+
+    P = 0
+    p32 = 0
+    For i = 1 To Pic.Height
+        Row = Pic.Data(P)     ' µ±Ç°ÐÐÊý¾Ý¸öÊý
+        Pic.Data32(P) = Row
+        Start = P             ' µ±Ç°ÐÐÆðÊ¼Î»ÖÃ
+        P = P + 1             'PÖ¸ÏòµÚÒ»¸öµãÑÚÂë¸öÊý
+        If Row > 0 Then
+            p32 = 0          'P32Ö¸Ïò0
+            Do
+                MaskNum = Pic.Data(P)  ' ÑÚÂë¸öÊý
+                Pic.Data32(P) = 0 ' MaskNum
+                'Pic.Data32(P) = Row
+                P = P + 1           'PÖ¸ÏòµÚÒ»¸öµã
+                p32 = p32 + MaskNum
+                If p32 >= Pic.Width Then  ' ´ËÑÚÂëÍê³ÉºóÎ»ÖÃÖ¸ÕëÒÑ¾­Ö¸Ïò×îÓÒ¶Ë
+                    Exit Do
+                End If
+                SolidNum = Pic.Data(P) ' Êµ¼ÊµãµÄ¸öÊý
+                Pic.Data32(P) = SolidNum
+                P = P + 1
+                For J = 1 To SolidNum
+                    Temp = Pic.Data(P)
+                    Pic.Data32(P) = mColor_RGB(Temp)
+                    p32 = p32 + 1
+                    P = P + 1
+                Next J
+                If p32 >= Pic.Width Then   ' Êµ¼ÊµãÍê³ÉºóÎ»ÖÃÖ¸ÕëÒÑ¾­Ö¸Ïò×îÓÒ¶Ë
+                    Exit Do
+                End If
+                If P - Start >= Row Then           ' µ±Ç°ÐÐÊý¾ÝÒÑ¾­½áÊø
+                    Exit Do
+                End If
+            Loop
+            If P + 1 >= Pic.dataLong Then
+                Exit For
+            End If
+        End If
+    Next i
+   
+End Sub
+
+
+
+Private Sub Combo1_Click()
+If Not Started Then Exit Sub
+Busying = False
+Text1(0).SetFocus
+End Sub
+
+Private Sub Combo2_Click()
+combo2en = False
+CurrentMapIDX = Combo2.ListIndex
+ReadDx_GRPfile mapEDITreadMODE
+ReadSx_GRPfile mapEDITreadMODE
+Label3.Caption = "³¡¾°:" & CurrentMapIDX
+Combo4(0).ListIndex = 3
+  If Combo4(0).ListIndex > 0 Then
+    VScroll2.Max = FileLen(GamePath & SDXxxx(CurrentMapIDX)) \ 4
+    setStaBarText 7, "µØÃæÌùÍ¼:0~" & VScroll2.Max
+  Else
+    VScroll2.Max = FileLen(GamePath & FMAP_IDX) \ 4
+    setStaBarText 7, "µ×²ãÌùÍ¼:0~" & VScroll2.Max
+  End If
+End Sub
+
+Private Sub Combo1_GotFocus()
+combo1en = True
+Busying = True
+End Sub
+
+Private Sub Combo1_LostFocus()
+combo1en = False
+RefreshText1
+End Sub
+Private Sub Combo2_GotFocus()
+combo2en = True
+End Sub
+
+Private Sub Combo2_LostFocus()
+combo2en = False
+End Sub
+
+Private Sub Combo4_Click(Index As Integer)
+If Combo4(Index).ListIndex < 0 Then Exit Sub
+If Index = 0 Then
+  If Not LayerEditMode Then
+   mapRefresh 0, Combo4(Index).ListIndex  '¶ÁÒ»²ãµØÍ¼²¢ÏÔÊ¾
+   mapRefresh 1, Combo4(Index).ListIndex
+   Picture2(0).Refresh
+   Picture2(1).Refresh
+  End If
+  
+  If Combo4(Index).ListIndex > 0 Then
+    VScroll2.Max = FileLen(GamePath & SDXxxx(CurrentMapIDX)) \ 4
+    setStaBarText 7, "µØÃæÌùÍ¼:0~" & VScroll2.Max
+  If Combo4(Index).ListIndex < 3 Then Label4.Enabled = True Else Label4.Enabled = False
+  Else
+    VScroll2.Max = FileLen(GamePath & FMAP_IDX) \ 4
+    setStaBarText 7, "µ×²ãÌùÍ¼:0~" & VScroll2.Max
+  End If
+  
+End If
+
+If Index = 1 Then  '¹¦ÄÜ
+ Select Case Combo4(Index).ListIndex
+  Case 0
+   Dim i As Integer
+   For i = 0 To 2
+    Picture2(i).Cls
+   Next
+  Case 1
+  Case 2
+    Picture2(1).Visible = Not Picture2(1).Visible
+    If Picture2(1).Visible Then Combo4(Index).List(2) = "Òþ²ØÐ¡µØÍ¼" Else Combo4(Index).List(2) = "ÏÔÊ¾Ð¡µØÍ¼"
+  Case 3
+    Dim Cc As ChooseColor, Rtn As Long
+    Cc.lStructSize = Len(Cc)
+    Cc.hwndOwner = Me.hWnd
+    Cc.hInstance = App.hInstance
+    Cc.flags = 0
+    Cc.lpCustColors = String$(16 * 4, 0)
+    Rtn = ChooseColor(Cc)
+    
+    If Rtn >= 1 Then Picture2(0).BackColor = Cc.rgbResult
+  Case 4
+   Clipboard.Clear
+   Clipboard.SetData Picture2(0).Picture
+   
+  Case 5
+   On Error Resume Next
+   Dim systemDir As String, winDir As String
+   systemDir = Space(255): winDir = Space(255)
+   GetSystemDirectory systemDir, 255
+   GetWindowsDirectory winDir, 255
+   'MsgBox Trim(winDir)
+   Shell Trim(systemDir) & "\mspaint.exe", vbNormalFocus
+   Shell Trim(winDir) & "\mspaint.exe", vbNormalFocus
+   'MsgBox Trim(winDir) + "\mspaint.exe"
+   On Error GoTo 0
+ End Select
+End If
+End Sub
+
+Private Sub Combo5_Click()
+CurrentJinDu = Combo5.ListIndex
+Me.Caption = "µØÍ¼±à¼­Æ÷-½ø¶È" & (CurrentJinDu + 1)
+End Sub
+
+Private Sub Command1_Click(Index As Integer)
+Dim i As Integer
+Select Case Index
+ Case 0           'ËÑË÷ÏÐÖÃ
+ For i = 0 To 199
+ If AddAttrib(i, 9) + AddAttrib(i, 10) <= 0 Then
+  CurrentEvtIDX = i
+  Combo1.ListIndex = i
+  RefreshText1
+  Exit For
+ End If
+Next
+ Case 1   '¶ÁÈ¡
+  ReadDx_GRPfile mapEDITreadMODE
+  ReadSx_GRPfile mapEDITreadMODE
+ Case 2   '±£´æ
+  ReadDx_GRPfile mapEDITsaveMODE
+  ReadSx_GRPfile mapEDITsaveMODE
+ Case 3   'ÍË³ö
+  Unload Me
+End Select
+End Sub
+
+Private Sub Command1_MouseMove(Index As Integer, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Dim tempstr As String
+Select Case Index
+ Case 0           'ËÑË÷ÏÐÖÃ
+  tempstr = "ËÑË÷ÏÂÒ»¸öÎ´Ê¹ÓÃµÄÊÂ¼þ£¬ËÑË÷Ìõ¼þÎªXºÍY¶¼Îª0"
+ Case 1   '±£´æ
+  tempstr = "±£´æµ±Ç°³¡¾°µÄÊÂ¼þºÍµØÍ¼£¬ÍË³öÇ°±ðÍüÁËµã»÷Ëü"
+ Case 2   'ÍË³ö
+  tempstr = "µØÍ¼±à¼­Æ÷ºÜÕ¼×ÊÔ´£¬×îºÃ¹Ø±ÕÔÙÊ¹ÓÃÆäËü¹¦ÄÜ"
+End Select
+Command1(Index).ToolTipText = tempstr
+End Sub
+
+Private Sub Form_Activate()
+Started = True
+End Sub
+
+Private Sub Form_Click()
+Command6_Click
+End Sub
+
+Private Sub Form_DblClick()
+Command5_Click
+End Sub
+
+Private Sub Form_Load()
+'×°ÔØForm
+Started = False
+Randomize Timer
+Busying = False
+frmMapEdit_iniControls
+WidthDraw = 36: HeightDraw = 18
+SelectedTileYadd = 0
+LayerEditMode = False
+pal256 App.Path & "\palette.pal"
+setStaBarText 6, "¶¯»­¿ª"
+setStaBarText 5, "Ä£Ê½:±à¼­"
+MDIFormMain.ProgressBar1.Max = 64
+Combo2.ListIndex = 0
+Combo1.ListIndex = 0
+Combo4(0).ListIndex = 3
+Combo5.ListIndex = 0
+'CurrentJinDu = 0
+Combo5_Click
+RefreshText1
+EnableAni = True
+Call SetColor
+Command5_Click
+End Sub
+
+
+Private Sub menuhelp_Click()
+
+End Sub
+
+Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
+Unload Me
+End Sub
+
+Private Sub Label1_Click(Index As Integer)
+Select Case Index
+ Case 0
+  If Val(Text1(Index).Text) = 0 Then
+   Text1(Index).Text = 1
+  Else
+   Text1(Index).Text = 0
+  End If
+ Case 2
+  If MsgBox("Òª²é¿´ÊÂ¼þ¶¨ÒåÅäÖÃÎÄ¼þÂð£¿(evtlist.ini)¡£", vbYesNo + vbQuestion, "ÌáÊ¾") = vbYes Then
+    Shell "notepad " & App.Path & "\evtlist.ini", vbNormalFocus
+  End If
+  Case 5, 6, 7
+
+  Case 8
+   EnableAni = Not EnableAni
+   If EnableAni Then setStaBarText 6, "¶¯»­¿ª" Else setStaBarText 6, "¶¯»­¹Ø"
+ Case 9, 10
+  Dim ret As String * 1
+  ret = Chr$(13)
+  MsgBox "¡¶½ðÓ¹ÈºÏÀ´«¡·Ð±45¶ÈÊÓ½ÇµØÍ¼µÄ×ø±êÏµÍ³(x,y)ÈçÏÂ:" & ret & "           (0,0)" & ret & "          *      *" & ret & "       *     ±±     *" & ret & "    *        ¡ü        *" & ret & "(0,60)   Î÷¡û  ¡ú¶«   (60,0)" & ret & "    *        ¡ý        *" & ret & "       *     ÄÏ     *" & ret & "          *      *" & ret & "          (60,60)" & ret & "xÊÇ´Ó×óÉÏµ½ÓÒÏÂµÝÔöµÄ\£¬yÊÇ´ÓÓÒÉÏµ½×óÏÂµÝÔöµÄ/¡£" & ret & "µ«ÊÇ¸ÄÁËÒ²ÊÇÎÞÐ§µÄ£¬ÒòÎªÕæÕýÓÐÐ§µÄ×ø±êÊÇ´æÔÚS?.GRPÖÐ¡£", vbInformation + vbOKOnly, "ÌáÊ¾"
+End Select
+End Sub
+
+Private Sub Label1_MouseMove(Index As Integer, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Select Case Index
+Case 5, 6, 7
+ VScroll2.Value = Val(Text1(Index).Text) \ 2
+End Select
+End Sub
+
+Private Sub Label2_Click(Index As Integer)
+If Index = 0 Then
+ LayerEditMode = Not LayerEditMode
+ If LayerEditMode Then
+   Label2(0).Caption = "±à¼­"
+   Label2(0).ForeColor = vbYellow
+   Label2(0).BackColor = vbRed
+  Dim tempstr As String
+  Select Case Combo4(0).ListIndex
+   Case 0
+    tempstr = "±à¼­µ×²ãÌùÍ¼£¡"
+   Case 1
+    tempstr = "±à¼­µØÃæµÚ1²ã£¬¶ÔÓ¦YÆ«ÒÆÊý¾ÝÔÚµÚ4²ã"
+   Case 2
+    tempstr = "±à¼­µØÃæµÚ2²ã£¬¶ÔÓ¦YÆ«ÒÆÊý¾ÝÔÚµÚ5²ã"
+   Case 3
+    tempstr = "µÚ3²ã(ÊÂ¼þÌùÍ¼)£¬×¢ÒâÄã±à¼­µÄµ±Ç°ÊÂ¼þ±àºÅ"
+  End Select
+   setStaBarText 1, tempstr
+
+  Else
+   Label2(0).Caption = "²é¿´"
+   Label2(0).ForeColor = vbWhite
+   Label2(0).BackColor = vbBlue
+ End If
+ setStaBarText 5, "Ä£Ê½:" & Label2(0).Caption
+End If
+End Sub
+
+Private Sub Label2_MouseMove(Index As Integer, Button As Integer, Shift As Integer, X As Single, Y As Single)
+If Index = 0 Then Exit Sub
+ If LayerEditMode Then
+  setStaBarText 1, "ÓÒ¼üÊ°È¡/×ó¼ü»æÖÆ/Ë¢ÐÂÐÞ¸ÄÇëÇÐ»»µ½²é¿´,Çå³ýÍ¼ÏñÔÙÑ¡Í¼²ã"
+ Else
+  MDIFormMain.StatusBar1.Panels(1).Text = "ÓÒ¼üÊ°È¡/ÒªË¢ÐÂÇëÔÙÑ¡ÔñÒ»´ÎÍ¼²ã"
+ End If
+End Sub
+
+Private Sub Label4_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+If Label4.Enabled = False Then Exit Sub
+Dim tempInt As Integer
+If Button = vbLeftButton Then tempInt = 1 Else tempInt = -1
+SelectedTileYadd = SelectedTileYadd + tempInt
+If SelectedTileYadd < 0 Then SelectedTileYadd = 199
+If SelectedTileYadd > 199 Then SelectedTileYadd = 0
+
+Label4.Caption = "ÌùÍ¼º£°Î>" & SelectedTileYadd
+End Sub
+
+Private Sub Picture2_KeyUp(Index As Integer, KeyCode As Integer, Shift As Integer)
+
+If Combo4(0).ListIndex < 0 Then Exit Sub
+xIndex = CurrentMouseXindex: yIndex = CurrentMouseYindex
+If xIndex < 0 Or yIndex < 0 Or xIndex > 63 Or yIndex > 63 Then Exit Sub
+
+
+
+End Sub
+
+Private Sub Picture2_MouseDown(Index As Integer, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Select Case Index
+Case 0
+If Combo4(0).ListIndex < 0 Then Exit Sub
+xIndex = CurrentMouseXindex: yIndex = CurrentMouseYindex
+If xIndex < 0 Or yIndex < 0 Or xIndex > 63 Or yIndex > 63 Then Exit Sub
+If LayerEditMode And Index = 0 And Not Busying And Button = vbLeftButton Then '×ó¼ü»æÍ¼
+ Dim yTemp As Long, i As Integer, RefreshMode As Integer
+ RefreshMode = Combo4(0).ListIndex
+ Select Case RefreshMode
+  Case 0, 1, 2, 4, 5
+   EnableAni = False
+   setStaBarText 6, "¶¯»­¹Ø"
+   If RefreshMode = 1 Or RefreshMode = 2 Then MapTile(RefreshMode + 3, xIndex, yIndex) = SelectedTileYadd
+   DrawTile45 RefreshMode, Index, WidthDraw, HeightDraw, xIndex, yIndex, SelectedTileYadd, SelectedTileIDX
+   MapTile(RefreshMode, xIndex, yIndex) = SelectedTileIDX * 2
+  
+  Case 3
+   DrawTile45 RefreshMode, Index, WidthDraw, HeightDraw, xIndex, yIndex, 0, SelectedTileIDX
+   AddAttrib(CurrentEvtIDX, 5) = SelectedTileIDX * 2
+   AddAttrib(CurrentEvtIDX, 9) = xIndex
+   AddAttrib(CurrentEvtIDX, 10) = yIndex
+   Dim Xx As Integer, Yy As Integer
+   For Xx = 0 To 63
+    For Yy = 0 To 63
+     If Xx = xIndex And Yy = yIndex Then MapTile(RefreshMode, xIndex, yIndex) = AddAttrib(CurrentEvtIDX, 1)
+    Next
+   Next
+   RefreshText1
+   setStaBarText 1, "µÚ" & CurrentEvtIDX & "¸öÊÂ¼þÒÑ±»ÒÆµ½×ø±ê" & xIndex & "/" & yIndex & ",ÇëÊÖ¶¯ÐÞ¸ÄÆäËüÊý¾Ý"
+   PackLayer3
+ End Select
+ Picture2(Index).Refresh
+ Exit Sub
+End If
+
+If Button = vbRightButton Then  'ÓÒ¼üÊ°È¡
+If MapTile(Combo4(0).ListIndex, xIndex, yIndex) / 2 < 0 Then Exit Sub
+Dim temp1 As Integer
+ If Combo4(0).ListIndex = 3 Then
+  temp1 = MapTile(Combo4(0).ListIndex, xIndex, yIndex)
+  Combo1.ListIndex = temp1
+  CurrentEvtIDX = temp1
+  RefreshText1
+  SelectedTileIDX = AddAttrib(temp1, 5) / 2
+  
+  VScroll2.Value = SelectedTileIDX
+  combo1en = False
+ Else
+   EnableAni = False
+   setStaBarText 6, "¶¯»­¹Ø"
+   SelectedTileIDX = MapTile(Combo4(0).ListIndex, xIndex, yIndex) / 2
+   combo1en = False
+   If Combo4(0).ListIndex <= 3 Then
+    SelectedTileYadd = MapTile(Combo4(0).ListIndex + 3, xIndex, yIndex)
+    Label4.Caption = "ÌùÍ¼º£°Î>" & SelectedTileYadd
+   End If
+ End If
+ VScroll2.Value = SelectedTileIDX
+End If
+
+Case 1
+Case 2
+End Select
+End Sub
+
+Private Sub Picture2_MouseMove(Index As Integer, Button As Integer, Shift As Integer, X As Single, Y As Single)
+'ÏÔÊ¾µ±Ç°×ø±ê
+If Index <> 0 Or Busying = True Then Exit Sub
+
+xIndex = ((X - WidthDraw * 32) / (WidthDraw / 2) + (Y - HeightDraw / 2) / (HeightDraw / 2)) / 2
+yIndex = (Y - HeightDraw / 2) / (HeightDraw / 2) - xIndex
+CurrentMouseXindex = xIndex: CurrentMouseYindex = yIndex
+setStaBarText 2, "X:" & xIndex & "  Y:" & yIndex
+If xIndex < 0 Or yIndex < 0 Or xIndex > 63 Or yIndex > 63 Then Exit Sub
+ PointX = WidthDraw * 32 + (xIndex - yIndex) * (WidthDraw / 2)
+ PointY = HeightDraw / 2 + (xIndex + yIndex) * (HeightDraw / 2)
+ ux = PointX: uy = PointY - HeightDraw / 2
+ lx = PointX - WidthDraw / 2: ly = PointY
+ dX = PointX: dY = PointY + HeightDraw / 2
+ rx = PointX + WidthDraw / 2: ry = PointY
+Line1(0).X1 = ux: Line1(0).Y1 = uy: Line1(0).X2 = rx: Line1(0).Y2 = ry
+Line1(1).X1 = rx: Line1(1).Y1 = ry: Line1(1).X2 = dX: Line1(1).Y2 = dY
+Line1(2).X1 = dX: Line1(2).Y1 = dY: Line1(2).X2 = lx: Line1(2).Y2 = ly
+Line1(3).X1 = lx: Line1(3).Y1 = ly: Line1(3).X2 = ux: Line1(3).Y2 = uy
+
+
+
+Select Case Combo4(0).ListIndex
+
+Case 0
+ inMapIdxFile = GamePath & FMAP_IDX
+ inMapFile = GamePath & FMAP_GRP   'µ×²ãÌûÍ¼µ÷ÎÄ¼þ
+Case 1 To 5
+ inMapIdxFile = GamePath & SDXxxx(CurrentMapIDX)
+ inMapFile = GamePath & SMPxxx(CurrentMapIDX)      '2£¬3²ãÌûÍ¼µ÷ÎÄ¼þ
+End Select
+Select Case Combo4(0).ListIndex
+  Case 0, 3, 4, 5
+  setStaBarText 3, "ÌùÍ¼:" & MapTile(Combo4(0).ListIndex, xIndex, yIndex)
+  Case 1, 2
+  setStaBarText 3, "ÌùÍ¼:" & MapTile(Combo4(0).ListIndex, xIndex, yIndex)
+  setStaBarText 4, "º£°Î:" & MapTile(Combo4(0).ListIndex + 3, xIndex, yIndex)
+End Select
+
+End Sub
+
+Private Sub Text1_change(Index As Integer)
+If Busying Then Exit Sub
+Dim tempstr1 As String
+tempstr1 = Text1(Index).Text
+If Len(tempstr1) > 5 Then Text1(Index).Text = "0"
+If Len(tempstr1) = 5 And Left(tempstr1, 4) > 3275 And Right(tempstr1, 1) > 7 Then Text1(Index).Text = "0"
+tempstr1 = Text1(Index).Text
+Text1(Index).ToolTipText = "Ê®Áù½øÖÆÊýÎª£º" + Hex$(Val(tempstr1))
+AddAttrib(CurrentEvtIDX, Index) = Val(tempstr1)
+If (Index = 2 Or Index = 3 Or Index = 4) And Val(tempstr1) < Combo3.ListCount And Val(tempstr1) >= 0 Then
+ Combo3.ListIndex = Val(tempstr1)
+ setStaBarText 1, "ÊÂ¼þ:" & Combo3.List(Val(tempstr1))
+End If
+
+End Sub
+
+Private Sub Text1_KeyPress(Index As Integer, KeyAscii As Integer)
+Dim tempstr1 As String
+tempstr1 = Text1(Index).Text
+Select Case Chr(KeyAscii)
+ Case "0" To "9"
+ Case "-"
+  If tempstr1 = "" Then Exit Sub
+  If Left(tempstr1, 1) = "-" Then KeyAscii = 0: Exit Sub
+  Text1(Index).Text = "-" & tempstr1: KeyAscii = 0
+ Case Chr(vbKeyBack)
+ Case Else
+  KeyAscii = 0
+End Select
+End Sub
+
+Private Sub Text1_LostFocus(Index As Integer)
+If Text1(Index).Text = "-" Or Text1(Index).Text = "" Then Text1(Index).Text = "0"
+Text1(Index).Text = Val(Text1(Index).Text)
+End Sub
+
+Private Sub Text1_MouseMove(Index As Integer, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Dim tempstr1 As String, tempInt As Integer
+tempstr1 = Text1(Index).Text
+tempInt = Val(tempstr1)
+Select Case Index
+Case 0
+ tempstr1 = "Í¨¹ýÎª0,²»¿É¹ýÎª1"
+ If tempInt < 0 Or tempInt > 1 Then tempstr1 = tempstr1 & "£¬´ËÊý¾Ý³¬³ö·¶Î§£¡"
+Case 0
+ tempstr1 = "±àºÅ¿ÉÒÔÖØ¸´£¬È¡Öµ·¶Î§0~199"
+ If tempInt < 0 Or tempInt > 1 Then tempstr1 = tempstr1 & "£¬´ËÊý¾Ý³¬³ö·¶Î§£¡"
+
+Case 2, 3, 4
+ tempstr1 = "ÊÂ¼þ:" & Combo3.List(Val(tempstr1))
+ If Val(tempstr1) >= Combo3.ListCount Then tempstr1 = "ÊÂ¼þÎª0~1017£¬´ËÊý¾Ý³¬³ö·¶Î§£¡"
+ If Val(tempstr1) < 0 Then tempstr1 = "-1±íÊ¾Ã»ÓÐÊÂ¼þ£¬ÆäËü¸ºÊý¿ÉÄÜÎÞÒâÒå£¡"
+Case 5
+ If Text1(5) And Text1(6) And Text1(7) Then tempstr1 = "¾²Ì¬ÌùÍ¼"
+Case 8
+ tempstr1 = "ËÙ¶ÈÒªÐ¡ÓÚ100£¬Ô½Ð¡Ô½¿ì"
+Case 9
+Case 10
+End Select
+setStaBarText 1, tempstr1
+End Sub
+
+Private Sub Timer1_Timer()
+On Error Resume Next
+If combo1en Then
+ 'If CurrentEvtIDX <> Combo1.ListIndex Then
+ RefreshText1
+ 
+ VScroll2.Value = AddAttrib(Combo1.ListIndex, 5) \ 2
+
+End If
+
+On Error GoTo 0
+If Busying Then Exit Sub
+
+If EnableAni Then
+ aniFrameIndex = aniFrameIndex + 1
+ If aniFrameIndex > 2 Then aniFrameIndex = 0
+ VScroll2.Value = AddAttrib(Combo1.ListIndex, 5 + aniFrameIndex) \ 2
+End If
+If combo2en Then setStaBarText 5, "³¡¾°:" & Combo2.ListIndex
+
+End Sub
+
+Private Sub VScroll1_Change()
+Picture2(0).Top = -VScroll1.Value
+End Sub
+Private Sub VScroll1_scroll()
+Picture2(0).Top = -VScroll1.Value
+End Sub
+Private Sub HScroll1_Scroll()
+Picture2(0).Left = -HScroll1.Value
+End Sub
+Private Sub HScroll1_change()
+Picture2(0).Left = -HScroll1.Value
+End Sub
+
+Private Sub frmMapEdit_iniControls()
+'³õÊ¼»¯´°Ìå
+iniOK = False
+Dim i As Integer
+For i = 1 To 3
+ Load Line1(i)
+ Line1(i).Visible = True
+Next
+For i = 0 To 199
+ Combo1.AddItem i
+Next
+For i = 0 To 5
+ Combo4(0).AddItem "µÚ" & i & "²ã"
+Next
+Combo4(1).AddItem "Çå³ýÍ¼Ïñ"
+Combo4(1).AddItem "ÏÔÊ¾Íø¸ñ"
+Combo4(1).AddItem "Òþ²ØÐ¡µØÍ¼"
+Combo4(1).AddItem "µ÷Õû±³¾°É«"
+Combo4(1).AddItem "¸´ÖÆµ½¼ôÌù°å"
+Combo4(1).AddItem "Windows»­Í¼"
+
+Combo5.AddItem "½ø¶ÈÒ»"
+Combo5.AddItem "½ø¶È¶þ"
+Combo5.AddItem "½ø¶ÈÈý"
+'Combo4(0).Text = "Í¼²ã"
+'Combo4(1).Text = "¹¦ÄÜ"
+
+ReadEvent Combo3   '¶ÁÊÂ¼þ´úÂëÎÄ¼þ
+Call SetComboHeight(Combo2, 500)
+Me.Icon = MDIFormMain.Icon
+Label1(8).MouseIcon = Label2(0).MouseIcon
+VScroll1.Max = VScroll1.Max - VScroll1.Height
+HScroll1.Max = HScroll1.Max - HScroll1.Width
+VScroll1.Value = VScroll1.Max / 3
+HScroll1.Value = HScroll1.Max * 0.4
+iniOK = True
+End Sub
+Sub ReadEvent(combo_obj As ComboBox)
+'¶ÁÊÂ¼þ´úÂëÎÄ¼þ1018¸ö
+Dim evtFile As Integer, tempstr1 As String
+evtFile = FreeFile
+If Dir(App.Path & "\evtlist.ini") = "" Then Exit Sub
+
+Open App.Path & "\evtlist.ini" For Input As evtFile
+If LOF(evtFile) < 500 Then Close evtFile: Exit Sub
+
+Do
+ Line Input #evtFile, tempstr1
+ If EOF(evtFile) Then Close evtFile: Exit Sub
+Loop Until Trim(tempstr1) = "[ÊÂ¼þ´úºÅ]"
+
+Do
+  Line Input #evtFile, tempstr1
+  combo_obj.AddItem Trim(tempstr1)
+  Call SetComboHeight(combo_obj, 500)
+Call SetComboWidth(combo_obj, 400)
+Loop Until EOF(evtFile)
+Close evtFile
+
+End Sub
+Function ReadDx_GRPfile(Mode As Integer) As String
+'¶ÁÒ»¸ö³¡¾°µØÍ¼ÊÂ¼þ,200¸ö
+Dim K As Integer, m As Integer
+Dim FileNum1 As Integer
+FileNum1 = FreeFile
+Open GamePath & Dx_GRP(CurrentJinDu) For Binary As #FileNum1
+temp4 = 400& * 11 * CurrentMapIDX + 1
+Seek #FileNum1, temp4
+ For K = 0 To 199
+  For m = 0 To 10
+   If Mode = mapEDITreadMODE Then
+    Get #FileNum1, , AddAttrib(K, m)
+   Else
+    Put #FileNum1, , AddAttrib(K, m)
+   End If
+  Next
+ Next
+Close #FileNum1
+RefreshText1
+End Function
+Function ReadSx_GRPfile(Mode As Integer) As String
+'¶ÁÒ»¸ö³¡¾°µØÍ¼½á¹¹Êý¾Ý£¬6²ã
+Dim K As Integer, Y As Integer, X As Integer
+Dim FileNum1 As Integer, tempstr As String
+FileNum1 = FreeFile
+Open GamePath & Sx_GRP(CurrentJinDu) For Binary As #FileNum1
+temp4 = &HC000& * CurrentMapIDX + 1
+Seek #FileNum1, temp4
+ For K = 0 To 5
+  For Y = 0 To 63
+   For X = 0 To 63
+   If Mode = mapEDITreadMODE Then
+    Get FileNum1, , MapTile(K, X, Y)
+   Else
+    Put FileNum1, , MapTile(K, X, Y)
+   End If
+   Next
+  Next
+ Next
+Close #FileNum1
+If Mode = mapEDITreadMODE Then tempstr = "¶ÁÈ¡" Else tempstr = "±£´æ"
+MapReaded = CurrentMapIDX
+setStaBarText 1, "½ø¶È" & (CurrentJinDu + 1) & "³¡¾°" & CurrentMapIDX & "Êý¾Ý" & tempstr & "Íê±Ï"
+End Function
+
+Function mapRefresh(PicboxIndex As Integer, RefreshMode As Integer) As Integer
+ MDIFormMain.ProgressBar1.Visible = True
+Dim Co As Integer
+Busying = True: nowRefreshMode = RefreshMode
+'mapedit.Picture2(picboxindex).DrawMode = 13
+'mapedit.Picture2(picboxindex).ScaleMode = vbPixels        ' Windows ÓÃÏñËØ»­.
+Picture2(PicboxIndex).FillStyle = vbFSSolid    ' ÉèÖÃ FillStyle ÎªÊµÏß.
+If RefreshMode = 0 Then Picture2(PicboxIndex).Cls
+Dim yTemp As Integer, X As Integer, Y As Integer, i As Integer
+On Error GoTo er
+For Y = 0 To 63 'Step 2
+ For X = 0 To 63 ' Step 2
+  
+  Co = MapTile(RefreshMode, X, Y) / 2
+  If Co <> 0 Then
+  If RefreshMode <> 3 Then
+   If RefreshMode = 1 Or RefreshMode = 2 Then yTemp = MapTile(RefreshMode + 3, X, Y)
+   DrawTile45 RefreshMode, PicboxIndex, WidthDraw, HeightDraw, X, Y, yTemp, Co
+   End If
+  End If
+ Next
+ MDIFormMain.ProgressBar1.Value = Y + 1
+Next
+If RefreshMode = 3 Then
+For i = 0 To 199
+ If AddAttrib(i, 5) <> 0 Then DrawTile45 RefreshMode, PicboxIndex, WidthDraw, HeightDraw, AddAttrib(i, 9) + 0, AddAttrib(i, 10) + 0, 0, AddAttrib(i, 5) / 2
+Next
+End If
+
+On Error GoTo 0
+ MDIFormMain.ProgressBar1.Visible = False
+Busying = False
+Exit Function
+
+er:
+Resume Next
+End Function
+Function DrawTile45(RefreshMode As Integer, PictureboxIndex As Integer, WidthDraw As Integer, HeightDraw As Integer, xIndex As Integer, yIndex As Integer, yAdd As Integer, TileTypeIndex As Integer) As Integer
+Select Case RefreshMode
+Case 0
+ inMapIdxFile = GamePath & FMAP_IDX
+ inMapFile = GamePath & FMAP_GRP   'µ×²ãÌûÍ¼µ÷ÎÄ¼þ
+Case 1 To 5
+ inMapIdxFile = GamePath & SDXxxx(CurrentMapIDX)
+ inMapFile = GamePath & SMPxxx(CurrentMapIDX)      '2£¬3²ãÌûÍ¼µ÷ÎÄ¼þ
+End Select
+ Dim prePoint1 As POINTAPI
+ PointX = WidthDraw * 32 + (xIndex - yIndex) * (WidthDraw / 2)
+ PointY = (xIndex + yIndex + 3) * (HeightDraw / 2)
+ ux = PointX: uy = PointY - HeightDraw / 2
+MoveToEx Picture2(PictureboxIndex).hdc, ux, uy - yAdd, prePoint1
+ Select Case PictureboxIndex
+  Case 0
+   Call DrawOneTile2(Picture2(PictureboxIndex), ux, uy - yAdd, inMapFile, inMapIdxFile, TileTypeIndex, True)
+  Case 1
+   Picture2(PictureboxIndex).Circle (PointX, PointY), 9, TileTypeIndex
+ End Select
+End Function
+
+Sub setStaBarText(PanelIndex As Integer, Words As String)
+MDIFormMain.StatusBar1.Panels(PanelIndex).Text = Words
+End Sub
+Sub RefreshText1()
+If Combo1.ListIndex < 0 Then Exit Sub
+Dim i As Integer
+For i = 0 To 10
+ Text1(i).Text = AddAttrib(Combo1.ListIndex, i)
+Next
+CurrentEvtIDX = Combo1.ListIndex
+End Sub
+
+Private Sub VScroll2_Change()
+'If Busying Then Exit Sub
+Select Case Combo4(0).ListIndex
+Case 0
+ inMapIdxFile = GamePath & FMAP_IDX
+ inMapFile = GamePath & FMAP_GRP   'µ×²ãÌûÍ¼µ÷ÎÄ¼þ
+Case 1 To 5
+ inMapIdxFile = GamePath & SDXxxx(CurrentMapIDX)
+ inMapFile = GamePath & SMPxxx(CurrentMapIDX)      '2£¬3²ãÌûÍ¼µ÷ÎÄ¼þ
+Case Else
+ Exit Sub
+End Select
+SelectedTileIDX = VScroll2.Value
+Label2(2).Caption = "ÌùÍ¼Ë÷Òý>" & SelectedTileIDX
+Picture2(2).Cls
+DrawOneTile1 Picture2(2), 0, 0, inMapFile, inMapIdxFile, SelectedTileIDX, False
+Picture2(2).Refresh
+End Sub
+
+Sub PackLayer3()
+Dim X As Integer, Y As Integer, i As Integer
+For X = 0 To 63
+ For Y = 0 To 63
+  MapTile(3, X, Y) = -1
+ Next
+Next
+For i = 0 To 199
+ MapTile(3, AddAttrib(i, 9), AddAttrib(i, 10)) = i ' AddAttrib(i, 1)
+Next
+End Sub

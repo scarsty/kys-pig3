@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="KGedit">
+</Property><Property Name="解决方案文件" Value="E:\program\KGedit\KGedit.sln">
+</Property><Property Name="Date" Value="2008年8月15日">
+</Property><Property Name="Time" Value="20:28">
+</Property><Property Name="日志号" Value="2">
+</Property></Properties><Event ErrorLevel="0" Project="KGedit" Source="KGedit\KGedit.csproj" Description="项目已成功转换">
+</Event><Event ErrorLevel="3" Project="KGedit" Source="KGedit\KGedit.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="" Source="KGedit.sln" Description="成功转换解决方案">
+</Event><Event ErrorLevel="3" Project="" Source="KGedit.sln" Description="Converted">
+</Event><Event ErrorLevel="0" Project="KGedit" Source="KGedit\KGedit.csproj" Description="扫描完成: 项目文件不需要升级。">
+</Event></UpgradeLog>
