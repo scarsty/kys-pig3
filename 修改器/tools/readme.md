@@ -15,7 +15,7 @@
 | picBmp            | 合并贴图bmp版            |
 | re_leavelist      | 编辑复刻专用离队列表     |
 | re_matchlist      | 编辑复刻专用配合列表     |
-| talk              | talk文件转换代码         |
+| talk              | 修改DOS版对话框         |
 | wdx               | 提取动作贴图到wdx文件    |
 | 合并图片至luagrp  |                          |
 | 某事件加密工具    | 想不起来干啥用的了       |
