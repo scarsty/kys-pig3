@@ -1,0 +1,15 @@
+bin/lib/release/*
+bin/lib/debug/*
+*.dbg
+*.lps
+game/*
+*.ppu
+*.o
+*.a
+*.so
+*.dylib
+*.bat
+*.compiled
+*.identcache
+*.cmd
+*.zip

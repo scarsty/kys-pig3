@@ -1,0 +1,5 @@
+open 118.123.19.100 10181
+txdx
+txdx
+send kys_pig3.exe
+quit

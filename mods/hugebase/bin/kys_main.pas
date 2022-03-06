@@ -6264,9 +6264,9 @@ begin
     i := i + 1;
   if i > 2 then
     i := 2;
-  r1 := LinearInsert(v, vp[i], vp[i + 1], r[i], r[i + 1]);
-  g1 := LinearInsert(v, vp[i], vp[i + 1], g[i], g[i + 1]);
-  b1 := LinearInsert(v, vp[i], vp[i + 1], b[i], b[i + 1]);
+  r1 := RegionParameter(LinearInsert(v, vp[i], vp[i + 1], r[i], r[i + 1]), 0, 250);
+  g1 := RegionParameter(LinearInsert(v, vp[i], vp[i + 1], g[i], g[i + 1]), 0, 250);
+  b1 := RegionParameter(LinearInsert(v, vp[i], vp[i + 1], b[i], b[i + 1]), 0, 250);
   r2 := trunc(r1 * 0.8);
   g2 := trunc(g1 * 0.8);
   b2 := trunc(b1 * 0.8);

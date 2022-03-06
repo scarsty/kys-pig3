@@ -1,0 +1,8 @@
+#############################################################
+                CodeTyphon Studio 
+            PilotLogic Software House
+            http://www.pilotlogic.com
+#############################################################
+
+Libraries for 
+Android-4.0-api14-arm
