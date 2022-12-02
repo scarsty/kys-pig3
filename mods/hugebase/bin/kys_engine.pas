@@ -863,12 +863,13 @@ var
   p: pointer;
   w, h: integer;
 begin
+  len := length(PWideChar(word));
+  if len = 0 then exit;
 {$IFDEF fpc}
   //widestring在fpc中的默认赋值动作是将utf8码每字节间插入一个00.
   //此处删除这些0, 同时统计这些0的数目, 若与字串长度相同
   //即认为是一个纯英文字串, 或者是一个直接赋值的widestring,
   //需要再编码为Unicode, 否则即认为已经是Unicode
-  len := length(PWideChar(word));
   setlength(word1, len * 2 + 1);
   p1 := @word1[1];
   p2 := pbyte(word);
