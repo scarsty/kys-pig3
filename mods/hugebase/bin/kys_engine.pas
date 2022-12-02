@@ -715,12 +715,14 @@ var
   L: integer;
 begin
 {$IFDEF windows}
+  mTraditional := UTF8ToCP936(mTraditional);
   L := Length(mTraditional);
   SetLength(Result, L + 1);
   Result[L + 1] := char(0);
   if L > 0 then
-    LCMapString(GetUserDefaultLCID,
+    LCMapString($0800,
       $02000000, PChar(mTraditional), L, @Result[1], L);
+  result:=CP936TOUTF8(result);
 {$ELSE}
   Result := mTraditional;
 {$ENDIF}
