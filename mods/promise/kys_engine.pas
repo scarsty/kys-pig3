@@ -6220,7 +6220,7 @@ begin
 
         sdl_delay(1);
         SDL_UpdateRect2(screen, 0, 0, screen.w, screen.h);
-        SDL_freeSurface(MOV.pic);
+        //SDL_freeSurface(MOV.pic);
       end;
     end;
     fileclose(grp);

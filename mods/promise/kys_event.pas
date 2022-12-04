@@ -355,7 +355,8 @@ begin
   //这里应该是原本z文件的bug, 如果不处于当前场景, 在连坐标值一起修改时, 并不会同时
   //对S数据进行修改. 而<苍龙逐日>中有几条语句无意中符合了这个bug而造成正确的结果
   //if list[0] = CurScene then
-  Sdata[list[0], 3, Ddata[list[0], list[1], 10], Ddata[list[0], list[1], 9]] := -1;
+  if (Ddata[list[0], list[1], 10] > 0) and (Ddata[list[0], list[1], 9] >= 0) then
+    Sdata[list[0], 3, Ddata[list[0], list[1], 10], Ddata[list[0], list[1], 9]] := -1;
 
   oldpic := DData[list[0], list[1], 5];
   newpic := list[7];
@@ -371,7 +372,8 @@ begin
     end;
   end;
   //if list[0] = CurScene then
-  Sdata[list[0], 3, Ddata[list[0], list[1], 10], Ddata[list[0], list[1], 9]] := list[1];
+  if (Ddata[list[0], list[1], 10] > 0) and (Ddata[list[0], list[1], 9] >= 0) then
+    Sdata[list[0], 3, Ddata[list[0], list[1], 10], Ddata[list[0], list[1], 9]] := list[1];
   if not (((sx = RScene[CurScene].ExitX[0]) and (sy = RScene[CurScene].ExitY[0])) or
     ((sx = RScene[CurScene].ExitX[1]) and (sy = RScene[CurScene].ExitY[1])) or
     ((sx = RScene[CurScene].ExitX[2]) and (sy = RScene[CurScene].ExitY[2]))) then
