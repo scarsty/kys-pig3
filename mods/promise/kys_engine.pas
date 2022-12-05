@@ -6220,7 +6220,7 @@ begin
 
         sdl_delay(1);
         SDL_UpdateRect2(screen, 0, 0, screen.w, screen.h);
-        //SDL_freeSurface(MOV.pic);
+        //SDL_freeSurface(MOV.pic);这里是移除gfx后导致的zoom指针free顺序的复杂问题，不管了
       end;
     end;
     fileclose(grp);

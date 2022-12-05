@@ -37,6 +37,8 @@ uses
 //{$R kys_promise.res}
 
 
+{$R *.res}
+
 begin
   // Application.Title := 'KYS';
   // alpplication..Create(kysw).Enabled;
