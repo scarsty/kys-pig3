@@ -8,7 +8,7 @@
 
 如果作者单独在github上发布的，此处不再重复收集，仅列出地址。
 
-upedit：<https://github.com/scarsty/UPEdit> 
+upedit：<https://github.com/Upwinded/UPEdit> 游戏修改器
 
 sfe：<https://github.com/godka/sfe/> fishedit的改进版
 
