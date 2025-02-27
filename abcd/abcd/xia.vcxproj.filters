@@ -21,9 +21,6 @@
     <ClCompile Include="grpidx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="lintcode.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="hug.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
