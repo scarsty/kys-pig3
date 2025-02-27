@@ -8,8 +8,8 @@
 
 如果作者单独在github上发布的，此处不再重复收集，仅列出地址。
 
-upedit：<https://github.com/scarsty/UPEdit> 因原作者不再更新，建议使用此少量修正的版本。
+upedit：<https://github.com/Upwinded/UPEdit> 游戏修改器
 
-sfe：<https://github.com/godka/sfe/> fishedit的改进版。
+sfe：<https://github.com/godka/sfe/> fishedit的改进版
 
-sfe2：<https://github.com/godka/sfe2> KA重新编写的修改器，只有命令行。
+sfe2：<https://github.com/godka/sfe2> KA重新编写的修改器，只有命令行
