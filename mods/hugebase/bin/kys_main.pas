@@ -47,6 +47,7 @@ uses
   unzip,
   ziputils,
   fileinfo,
+  potdll,
   winpeimagereader, {need this for reading exe info}
   elfreader, {needed for reading ELF executables}
   machoreader; {needed for reading MACH-O executables}
@@ -214,7 +215,7 @@ begin
   SetMODVersion;
 
   //初始化音频系统
-  //SDL_Init(SDL_INIT_AUDIO);
+  SDL_Init(SDL_INIT_AUDIO);
   //Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 16384);
   SoundFlag := 0;
   if SOUND3D = 1 then
@@ -375,10 +376,9 @@ begin
   end;
 
   ConsoleLog('Initial ended, start game');
+  smallpot:=PotCreateFromWindow(window);
   Start;
-
   Quit;
-
 end;
 
 //关闭所有已打开的资源, 退出
@@ -545,7 +545,7 @@ begin
 
   ConsoleLog('Play movie and start music');
   if (OPEN_MOVIE = 1) then
-    PlayMovie('open.wmv', 1);
+    PlayMovie(AppPath+'movie/1.wmv');
   PlayMP3(StartMusic, -1);
   ConsoleLog('Begin.....');
   Redraw;

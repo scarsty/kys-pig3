@@ -1,4 +1,4 @@
-unit kys_event;
+﻿unit kys_event;
 
 //{$MODE Delphi}
 

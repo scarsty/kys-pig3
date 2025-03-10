@@ -617,6 +617,9 @@ var
   VIrtualKeySize: integer = 60;
   VirtualKeySpace: integer = 25;
 
+  //播放视频
+  smallpot: Pointer;
+
 const
   //色值蒙版, 注意透明蒙版在创建表面时需设为0而不应用此值
   RMask: uint32 = $FF0000;

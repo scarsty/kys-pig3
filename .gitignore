@@ -66,3 +66,9 @@ mods/hugebase/pig3-c/Release/
 mods/hugebase/bin/backup/
 mods/promise/backup/
 abcd/.vs/
+mods/promise/lib/__history
+mods/promise/__history
+*.~dsk
+*.local
+*.dsk
+*.dsv

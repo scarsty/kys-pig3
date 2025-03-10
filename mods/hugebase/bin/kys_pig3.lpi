@@ -49,7 +49,6 @@
           <Parsing>
             <SyntaxOptions>
               <SyntaxMode Value="Delphi"/>
-              <StaticKeyword Value="True"/>
             </SyntaxOptions>
           </Parsing>
           <CodeGeneration>
@@ -99,12 +98,10 @@
           <Parsing>
             <SyntaxOptions>
               <SyntaxMode Value="Delphi"/>
-              <StaticKeyword Value="True"/>
             </SyntaxOptions>
           </Parsing>
           <CodeGeneration>
             <SmartLinkUnit Value="True"/>
-            <TargetCPU Value="i386"/>
             <Optimizations>
               <OptimizationLevel Value="0"/>
             </Optimizations>
@@ -201,12 +198,10 @@
     <Parsing>
       <SyntaxOptions>
         <SyntaxMode Value="Delphi"/>
-        <StaticKeyword Value="True"/>
       </SyntaxOptions>
     </Parsing>
     <CodeGeneration>
       <SmartLinkUnit Value="True"/>
-      <TargetCPU Value="i386"/>
       <Optimizations>
         <OptimizationLevel Value="3"/>
       </Optimizations>
