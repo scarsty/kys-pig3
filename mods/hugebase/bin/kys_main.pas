@@ -24,12 +24,12 @@ unit kys_main;
 interface
 
 uses
-{$IFDEF UNIX}
+  {$IFDEF UNIX}
   baseUnix,
-{$ENDIF}
-{$IFDEF ANDROID}
+  {$ENDIF}
+  {$IFDEF ANDROID}
   jni,
-{$ENDIF}
+  {$ENDIF}
   LCLIntf,
   LCLType,
   LConvEncoding,
@@ -52,7 +52,7 @@ uses
   elfreader, {needed for reading ELF executables}
   machoreader; {needed for reading MACH-O executables}
 
-//function main(paracount: integer; paras: PPChar): integer; stdcall; export;
+  //function main(paracount: integer; paras: PPChar): integer; stdcall; export;
 
 //程序重要子程
 procedure Run0;
@@ -87,12 +87,10 @@ procedure TurnBlack;
 //选单子程
 function CommonMenu(x, y, w, max, default: integer; menuString, menuEngString: array of WideString): integer; overload;
 function CommonMenu(x, y, w, max, default: integer; menuString: array of WideString): integer; overload;
-function CommonMenu(x, y, w, max, default: integer; menuString, menuEngString: array of WideString;
-  needFrame: integer; color1, color2, menucolor1, menucolor2: uint32): integer; overload;
+function CommonMenu(x, y, w, max, default: integer; menuString, menuEngString: array of WideString; needFrame: integer; color1, color2, menucolor1, menucolor2: uint32): integer; overload;
 //function CommonMenu(x, y, w, max, default: integer; menuString, menuEngString: array of WideString; fn: TPInt1): integer; overload;
 function CommonScrollMenu(x, y, w, max, maxshow: integer; menuString: array of WideString): integer; overload;
-function CommonScrollMenu(x, y, w, max, maxshow: integer; menuString, menuEngString: array of WideString): integer;
-  overload;
+function CommonScrollMenu(x, y, w, max, maxshow: integer; menuString, menuEngString: array of WideString): integer; overload;
 function CommonMenu2(x, y, w: integer; menuString: array of WideString; max: integer = 1): integer; overload;
 function SelectOneTeamMember(x, y: integer; str: WideString; list1, list2: integer; mask: integer = 63): integer;
 procedure MenuEsc;
@@ -129,8 +127,7 @@ procedure EatOneItem(rnum, inum: integer);
 procedure CallEvent(num: integer);
 procedure ReSetEntrance; //重设入口
 procedure Maker;
-procedure ScrollTextAmi(words: TStringList;
-  chnsize, engsize, linespace, align, alignx, style, delay, picnum, scrolldirect: integer);
+procedure ScrollTextAmi(words: TStringList; chnsize, engsize, linespace, align, alignx, style, delay, picnum, scrolldirect: integer);
 
 
 procedure InitGrowth();
@@ -178,11 +175,11 @@ var
   a: array of integer;
   logo: PSDL_Texture;
   rect: TSDL_Rect;
-{$IFDEF UNIX}
+  {$IFDEF UNIX}
   filestat: stat;
-{$ENDIF}
+  {$ENDIF}
 begin
-{$IFDEF Darwin}
+  {$IFDEF Darwin}
   AppPath := ParamStr(0);
   fpLStat(AppPath, filestat);
   if fpS_IsLnk(filestat.st_mode) then
@@ -192,11 +189,11 @@ begin
       AppPath := ExtractFilePath(ParamStr(0)) + AppPath;
   end;
   AppPath := ExtractFileDir(ExtractFileDir(AppPath)) + '/game/';
-{$ENDIF}
-{$IFDEF mswindows}
+  {$ENDIF}
+  {$IFDEF mswindows}
   AppPath := '../game/';
-{$ENDIF}
-{$IFDEF android}
+  {$ENDIF}
+  {$IFDEF android}
   AppPath := SDL_AndroidGetExternalStoragePath() + '/game/';
   //for i := 1 to 4 do
   //AppPath:= ExtractFileDir(AppPath);
@@ -204,7 +201,7 @@ begin
   //if not fileexists(str) then
   FileClose(filecreate(str));
   CellPhone := 1;
-{$ENDIF}
+  {$ENDIF}
   //versionstr :=  SDL_AndroidGetExternalStoragePath();
   //test;
   //cellphone:=1;
@@ -376,7 +373,7 @@ begin
   end;
 
   ConsoleLog('Initial ended, start game');
-  smallpot:=PotCreateFromWindow(window);
+  smallpot := PotCreateFromWindow(window);
   Start;
   Quit;
 end;
@@ -545,7 +542,7 @@ begin
 
   ConsoleLog('Play movie and start music');
   if (OPEN_MOVIE = 1) then
-    PlayMovie(AppPath+'movie/1.wmv');
+    PlayMovie(AppPath + 'movie/1.wmv');
   PlayMP3(StartMusic, -1);
   ConsoleLog('Begin.....');
   Redraw;
@@ -963,11 +960,11 @@ begin
       ZIP_SAVE := 1;
     if (KDEF_SCRIPT = 2) and (not FileExists(AppPath + 'script/event.imz')) then
       KDEF_SCRIPT := 1;
-{$ifdef unix}
+    {$ifdef unix}
     THREAD_READ_PNG := 0;
     if RENDERER = 0 then
       RENDERER := 1;
-{$endif}
+    {$endif}
     if DISABLE_MENU_AMI <> 0 then
       DISABLE_MENU_AMI := 25;
   finally
@@ -1161,8 +1158,8 @@ var
   str0, str2: WideString;
   str, str1, Name: string;
   str3: string;
-  p0, p1: PWideChar;
-{$ifdef android}
+  p0, p1: pwidechar;
+  {$ifdef android}
   env: PJNIEnv;
   jstr: jstring;
   cstr: PChar;
@@ -1170,7 +1167,7 @@ var
   clazz: jclass;
   method_id: jmethodID;
   e: TSDL_event;
-{$endif}
+  {$endif}
 begin
   LoadR(0);
   //显示输入姓名的对话框
@@ -1188,7 +1185,7 @@ begin
     str := '请输入主角之姓名';
   end;
 
-{$ifdef android}
+  {$ifdef android}
   ShowStatus(0);
   UpdateAllScreen;
   str0 := '點擊一下開始選屬性！';
@@ -1202,7 +1199,7 @@ begin
   Name := strpas(cstr);
   env^.ReleaseStringUTFChars(env, jstr, cstr);
   Result := True;
-{$else}
+  {$else}
   if FULLSCREEN = 0 then
     Result := inputquery('Enter name', str, Name)
   else
@@ -1214,7 +1211,7 @@ begin
     Redraw;
     UpdateAllScreen;
   end;
-{$endif}
+  {$endif}
 
   Result := Result and (Name <> '');
   if Result then
@@ -1231,8 +1228,8 @@ begin
       Inc(p0);
       Inc(p1);
     end;
-    DivideName(PWideChar(@Rrole[0].Name[0]), str2, str0);
-    ConsoleLog('%s, %s, %s', [WideString(PWideChar(@Rrole[0].Name[0])), str2, str0]);
+    DivideName(pwidechar(@Rrole[0].Name[0]), str2, str0);
+    ConsoleLog('%s, %s, %s', [WideString(pwidechar(@Rrole[0].Name[0])), str2, str0]);
     Redraw;
     str2 := '資質';
     repeat
@@ -1608,7 +1605,7 @@ begin
 
     ReSetEntrance;
 
-    RoleName[0] := PWideChar(@Rrole[0].Name[0]);
+    RoleName[0] := pwidechar(@Rrole[0].Name[0]);
     if MODVersion = 13 then
     begin
       BEGIN_MISSION_NUM := Rrole[650].Data[0];
@@ -1617,7 +1614,7 @@ begin
       for i := 0 to MISSION_AMOUNT - 1 do
       begin
         ReadTalk(BEGIN_MISSION_NUM + i, talkarray);
-        MissionStr[i] := PWideChar(@talkarray[0]);
+        MissionStr[i] := pwidechar(@talkarray[0]);
       end;
     end;
   end;
@@ -3199,8 +3196,7 @@ begin
   Result := CommonMenu(x, y, w, max, default, menuString, menuEngString, 1, $0, $202020, ColColor($64), ColColor($66));
 end;
 
-function CommonMenu(x, y, w, max, default: integer; menuString, menuEngString: array of WideString;
-  needFrame: integer; color1, color2, menucolor1, menucolor2: uint32): integer; overload;
+function CommonMenu(x, y, w, max, default: integer; menuString, menuEngString: array of WideString; needFrame: integer; color1, color2, menucolor1, menucolor2: uint32): integer; overload;
 var
   menu, menup, x1, y1, h, len, len1, lene, p, i: integer;
 
@@ -3352,8 +3348,7 @@ begin
   Result := CommonScrollMenu(x, y, w, max, maxshow, menuString, menuEngString);
 end;
 
-function CommonScrollMenu(x, y, w, max, maxshow: integer; menuString, menuEngString: array of WideString): integer;
-  overload;
+function CommonScrollMenu(x, y, w, max, maxshow: integer; menuString, menuEngString: array of WideString): integer; overload;
 var
   menu, menup, menutop, x1, y1, h, i, len, lene, len1, p: integer;
 
@@ -4198,8 +4193,7 @@ var
   //point似乎未使用, listLT为处于左上角的物品在列表中的序号, x, y为光标位置
   //col, row为总列数和行数
   regionx1, regiony1, regionx2, regiony2, d, level: integer;
-  titlex1, titley1, titlew, titlemax, intitle, pintitle, dragitem, dragitemx, dragitemy,
-  dragteammate, DragSuccess: integer;
+  titlex1, titley1, titlew, titlemax, intitle, pintitle, dragitem, dragitemx, dragitemy, dragteammate, DragSuccess: integer;
   menuString: array of WideString;
   //tempsur, tempsur2: PSDL_Surface;
   dest: TSDL_Rect;
@@ -4289,7 +4283,7 @@ var
       end
       else
       begin
-        len := length(PWideChar(@Ritem[item].Introduction));
+        len := length(pwidechar(@Ritem[item].Introduction));
         DrawU16ShadowText(@Ritem[item].Introduction, 8 + xp, 47 + dt + yp, 0, $202020);
         //如有人使用则显示
         if Ritem[item].User >= 0 then
@@ -4969,8 +4963,7 @@ begin
             1: subType := 26;
             2: subType := 27;
             3: subType := 28;
-            else
-              subType := 20 + Rmagic[mnum].MagicType;
+            else subType := 20 + Rmagic[mnum].MagicType;
           end;
         //扩展部分, 合并部分分类
         if (subType = 2) or (subType = 24) or (subType = 25) or (subType = 27) then
@@ -5085,7 +5078,7 @@ begin
           TransBlackScreen;
           UpdateAllScreen;
           str := '誰要裝備';
-          str1 := PWideChar(@Ritem[inum].Name);
+          str1 := pwidechar(@Ritem[inum].Name);
           off := DrawTextFrame(CENTER_X - 275, CENTER_Y - 193, 8 + DrawLength(str1));
           //DrawTextWithRect(@str[1], CENTER_X - 275, CENTER_Y - 193, length(str1) * 22 + 80, 0, $202020);
           DrawShadowText(@str[1], CENTER_X - 275 + off, CENTER_Y - 193 + 3,{160, 32,} 0, $202020);
@@ -5151,7 +5144,7 @@ begin
           TransBlackScreen;
           UpdateAllScreen;
           str := '誰要修煉';
-          str1 := PWideChar(@Ritem[inum].Name);
+          str1 := pwidechar(@Ritem[inum].Name);
           //DrawTextWithRect(@str[1], CENTER_X - 275, CENTER_Y - 193, length(str1) * 22 + 80, 0, $202020);
           off := DrawTextFrame(CENTER_X - 275, CENTER_Y - 193, 8 + DrawLength(str1));
           //DrawTextWithRect(@str[1], CENTER_X - 275, CENTER_Y - 193, length(str1) * 22 + 80, 0, $202020);
@@ -5211,7 +5204,7 @@ begin
         if teammate = -1 then
         begin
           str := '誰要服用';
-          str1 := PWideChar(@Ritem[inum].Name);
+          str1 := pwidechar(@Ritem[inum].Name);
           DrawTextWithRect(@str[1], CENTER_X - 275, CENTER_Y - 193, DrawLength(str1) * 10 + 80,
             0, $202020);
           DrawShadowText(@str1[1], CENTER_X - 275 + 99, CENTER_Y - 193 + 2,{160, 32,} ColColor($64), ColColor($66));
@@ -5635,7 +5628,7 @@ begin
     y := yp - 15;
 
     //显示姓名
-    Name := PWideChar(@Rrole[rnum].Name);
+    Name := pwidechar(@Rrole[rnum].Name);
     DrawTextWithRect(@Name[1], x + 58 - DrawLength(PChar(@Rrole[rnum].Name)) * 5, y + 180, 0,
       ColColor($64), ColColor($66), 0, 0);
 
@@ -6058,8 +6051,7 @@ begin
   case Rrole[rnum].MPType of
     0: color := MapRGBA(112, 12, 112);
     1: color := MapRGBA(224, 180, 32);
-    else
-      color := MapRGBA(160, 160, 160);
+    else color := MapRGBA(160, 160, 160);
   end;
   DrawRectangleWithoutFrame(x + 96, y + 48, w, 9, color, -1);
   DrawRectangleWithoutFrame(x + 96 + w, y + 48, 138 - w, 9, color, alpha);
@@ -6318,8 +6310,7 @@ begin
   drag := -1;
   case MODVersion of
     0: maxselect := 3;
-    else
-      maxselect := 2;
+    else maxselect := 2;
   end;
   while SDL_PollEvent(@event) >= 0 do
   begin
@@ -7842,7 +7833,7 @@ begin
   yp := CENTER_Y - 240 + 70;
 
   //DrawRectangle(30 + xp, 100 + yp, 200, 25, 0, ColColor(255), 25);
-  DrawTextFrame(14 + xp, 99 + yp, 4 + DrawLength(PWideChar(@Ritem[inum].Name)));
+  DrawTextFrame(14 + xp, 99 + yp, 4 + DrawLength(pwidechar(@Ritem[inum].Name)));
   str := '服用';
   if Ritem[inum].ItemType = 2 then
     str := '練成';
@@ -8590,8 +8581,7 @@ end;
 
 //align: 0-居中, 1-左对齐
 //alignx: 非居中时指定横轴位置
-procedure ScrollTextAmi(words: TStringList;
-  chnsize, engsize, linespace, align, alignx, style, delay, picnum, scrolldirect: integer);
+procedure ScrollTextAmi(words: TStringList; chnsize, engsize, linespace, align, alignx, style, delay, picnum, scrolldirect: integer);
 var
   x, y, i, l, len, w, h, texw, texh, texh0: integer;
   tempscr, tempscr1: PSDL_Surface;
@@ -8750,11 +8740,9 @@ begin
     end;
     CheckBasicEvent;
     case event.type_ of
-      SDL_MOUSEBUTTONUP:
-        if event.button.button = SDL_BUTTON_RIGHT then
+      SDL_MOUSEBUTTONUP: if event.button.button = SDL_BUTTON_RIGHT then
           break;
-      SDL_KEYUP:
-        if event.key.keysym.sym = SDLK_ESCAPE then
+      SDL_KEYUP: if event.key.keysym.sym = SDLK_ESCAPE then
           break;
     end;
     SDL_Delay(delay);
@@ -8800,8 +8788,7 @@ begin
   case MODVersion of
     13: Result := snum in [6, 10, 26, 35, 52, 71, 72, 78, 87, 107];
     31: Result := False;
-    else
-      Result := snum in [5, 7, 10, 41, 42, 46, 65, 66, 67, 72, 79];
+    else Result := snum in [5, 7, 10, 41, 42, 46, 65, 66, 67, 72, 79];
       //Result := False;
   end;
 
