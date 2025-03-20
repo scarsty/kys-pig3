@@ -5690,11 +5690,11 @@ begin
 
 
   FillChar(BField[8, 0, 0], sizeof(BField[8]), -1);
-  BField[8, aimX, aimY] := 0;
-  SeekPath2(aimX, aimY, 128, TeamMate, 3, bnum);  //从敌方的位置寻路回自己的位置, 标记每格到目标的距离
   n := 0;
-  if aimX > 0 then
+  if (aimX > 0) and (aimY > 0) then
   begin
+    BField[8, aimX, aimY] := 0;
+    SeekPath2(aimX, aimY, 128, TeamMate, 3, bnum);  //从敌方的位置寻路回自己的位置, 标记每格到目标的距离
     for curX := 0 to 63 do
       for curY := 0 to 63 do
       begin
