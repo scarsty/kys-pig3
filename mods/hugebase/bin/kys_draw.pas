@@ -380,17 +380,17 @@ begin
     3:
     begin
       CleanTextScreen;
-      DrawTPic(0, OpenPicPosition.x, OpenPicPosition.y);
+      DrawTPic(0, 0, 0);
       DrawTPic(12, CENTER_X - 384 + 112, CENTER_Y - 240 + 15);
       DrawTPic(10, CENTER_X - 384 + 110, CENTER_Y - 240 + 5);
       DrawTPic(10, CENTER_X - 384 + 591, CENTER_Y - 240 + 5);
-      DrawShadowText(@versionstr[1], OpenPicPosition.x + 5, CENTER_Y - 240 + 455, ColColor($64), ColColor($66));
+      DrawShadowText(@versionstr[1], 5, CENTER_Y * 2 - 30, ColColor($64), ColColor($66));
     end;
     4: //处于标题动画中
     begin
       CleanTextScreen;
-      DrawTPic(0, OpenPicPosition.x, OpenPicPosition.y);
-      DrawShadowText(@versionstr[1], OpenPicPosition.x + 5, CENTER_Y - 240 + 455, ColColor($64), ColColor($66));
+      DrawTPic(0, 0, 0);
+      DrawShadowText(@versionstr[1], 5, CENTER_Y * 2 - 30, ColColor($64), ColColor($66));
     end;
   end;
 

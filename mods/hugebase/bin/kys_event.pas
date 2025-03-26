@@ -426,6 +426,7 @@ var
   i, i1, i2, curPic, preEventPic: integer;
   ModifyS: boolean;
 begin
+  if CurEvent < 0 then exit;
   curPic := DData[CurScence, CurEvent, 5];
   if list[0] = -2 then
     list[0] := CurScence;

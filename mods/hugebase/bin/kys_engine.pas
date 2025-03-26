@@ -1406,8 +1406,8 @@ begin
   //物品栏则计算物品的坐标, 否则按照绝对坐标绘图
   if realcoord = 0 then
   begin
-    xp := CENTER_X - 384 + 300;
-    yp := CENTER_Y - 240 + 65;
+    xp := CENTER_X - 250;
+    yp := 75;
     x := x * d + 5 + xp;
     y := y * d + 35 + yp;
   end
