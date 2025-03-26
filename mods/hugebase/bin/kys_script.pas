@@ -1,12 +1,12 @@
-unit kys_script;
+﻿unit kys_script;
 
 interface
 
 uses
-  {$IFDEF fpc}
-  {$ELSE}
+{$IFDEF fpc}
+{$ELSE}
   Windows,
-  {$ENDIF}
+{$ENDIF}
   SysUtils,
   SDL2,
   Math,
@@ -24,7 +24,7 @@ type
     f: lua_CFunction;
   end;
 
-//初始化脚本配置,运行脚本
+  //初始化脚本配置,运行脚本
 procedure InitialScript;
 procedure DestroyScript;
 function ExecScript(filename, functionname: string): integer;
@@ -210,7 +210,7 @@ uses
 procedure InitialScript;
 var
   i: integer;
-  list: array [0..300] of TScriptRegister;
+  list: array [0 .. 300] of TScriptRegister;
 begin
   //LoadLua;
   //LoadLuaLib;
@@ -223,13 +223,12 @@ begin
   luaopen_string(Lua_script);
 
   {list[0].name:='talk';
-  list[0].f:=Talk;
+    list[0].f:=Talk;
 
-  for i:=0 to 0 do
-  begin
+    for i:=0 to 0 do
+    begin
     lua_register(Lua_script, list[i].name, list[i].f);
-  end;}
-
+    end;}
 
   lua_register(Lua_script, 'add3eventnum', Add3EventNum);
   lua_register(Lua_script, 'instruct_26', Add3EventNum);
@@ -476,7 +475,6 @@ begin
   //UnloadLua;
 end;
 
-
 function ExecScript(filename, functionname: string): integer;
 var
   Script: string;
@@ -547,7 +545,6 @@ begin
     p5032pos := -100;
   end;
 end;
-
 
 function Blank(L: Plua_state): integer; cdecl;
 begin
@@ -709,8 +706,8 @@ var
   //len, headx, heady, diagx, diagy, Width, line, w1, l1, i: integer;
   //str: WideString;
   n, i, inum, istr: integer;
-  nums: array[0..5] of integer = (-1, -2, -2, 0, 0, 0);
-  strs: array[0..1] of WideString;
+  nums: array [0 .. 5] of integer = (-1, -2, -2, 0, 0, 0);
+  strs: array [0 .. 1] of WideString;
 begin
   n := lua_gettop(L);
   inum := 0;
@@ -725,10 +722,10 @@ begin
       inum := inum + 1;
     end;
     {if (istr<2 )and lua_isstring(L, i) then
-    begin
+      begin
       strs[istr] := UTF8Decode(lua_tostring(L, i));
       istr:=istr+1;
-    end;}
+      end;}
   end;
   if lua_type(L, -n + 1) <> LUA_TNUMBER then
   begin
@@ -745,95 +742,95 @@ begin
   //writeln(strs[0]);
   //writeln(strs[1]);
   {Width := 48;
-  line := 4;
-  case dismode of
+    line := 4;
+    case dismode of
     0:
     begin
-      headx := 40;
-      heady := 85;
-      diagx := 100;
-      diagy := 30;
+    headx := 40;
+    heady := 85;
+    diagx := 100;
+    diagy := 30;
     end;
     1:
     begin
-      headx := 546;
-      heady := CENTER_Y * 2 - 75;
-      diagx := 10;
-      diagy := CENTER_Y * 2 - 130;
+    headx := 546;
+    heady := CENTER_Y * 2 - 75;
+    diagx := 10;
+    diagy := CENTER_Y * 2 - 130;
     end;
     2:
     begin
-      headx := -1;
-      heady := -1;
-      diagx := 100;
-      diagy := 30;
+    headx := -1;
+    heady := -1;
+    diagx := 100;
+    diagy := 30;
     end;
     5:
     begin
-      headx := 40;
-      heady := CENTER_Y * 2 - 75;
-      diagx := 100;
-      diagy := CENTER_Y * 2 - 130;
+    headx := 40;
+    heady := CENTER_Y * 2 - 75;
+    diagx := 100;
+    diagy := CENTER_Y * 2 - 130;
     end;
     4:
     begin
-      headx := 546;
-      heady := 85;
-      diagx := 10;
-      diagy := 30;
+    headx := 546;
+    heady := 85;
+    diagx := 10;
+    diagy := 30;
     end;
     3:
     begin
-      headx := -1;
-      heady := -1;
-      diagx := 100;
-      diagy := CENTER_Y * 2 - 130;
+    headx := -1;
+    heady := -1;
+    diagx := 100;
+    diagy := CENTER_Y * 2 - 130;
     end;
-  end;
-  DrawRectangleWithoutFrame(screen, 0, diagy - 10, 640, 120, 0, 40);
-  if headx > 0 then
+    end;
+    DrawRectangleWithoutFrame(screen, 0, diagy - 10, 640, 120, 0, 40);
+    if headx > 0 then
     DrawHeadPic(rnum, headx, heady);
-  len := length(content);
+    len := length(content);
 
-  w1 := 0;
-  l1 := 0;
-  for i := 1 to len do
-  begin
+    w1 := 0;
+    l1 := 0;
+    for i := 1 to len do
+    begin
     if content[i] <> '*' then
     begin
-      str := content[i];
-      DrawShadowText(@str[1], diagx + w1 * 10, diagy + l1 * 22, ColColor($FF), ColColor($0));
-      if integer(str[1]) < 128 then
-        w1 := w1 + 1
-      else
-        w1 := w1 + 2;
-      if w1 >= Width then
-      begin
-        w1 := 0;
-        l1 := l1 + 1;
-      end;
+    str := content[i];
+    DrawShadowText(@str[1], diagx + w1 * 10, diagy + l1 * 22, ColColor($FF), ColColor($0));
+    if integer(str[1]) < 128 then
+    w1 := w1 + 1
+    else
+    w1 := w1 + 2;
+    if w1 >= Width then
+    begin
+    w1 := 0;
+    l1 := l1 + 1;
+    end;
     end
     else
     begin
-      w1 := 0;
-      l1 := l1 + 1;
+    w1 := 0;
+    l1 := l1 + 1;
     end;
     if (l1 >= 4) and (i < len) then
     begin
-      updateallscreen;
-      WaitAnyKey;
-      Redraw;
-      DrawRectangleWithoutFrame(screen, 0, diagy - 10, 640, 120, 0, 40);
-      if headx > 0 then
-        DrawHeadPic(rnum, headx, heady);
-      w1 := 0;
-      l1 := 0;
+    updateallscreen;
+    WaitAnyKey;
+    Redraw;
+    DrawRectangleWithoutFrame(screen, 0, diagy - 10, 640, 120, 0, 40);
+    if headx > 0 then
+    DrawHeadPic(rnum, headx, heady);
+    w1 := 0;
+    l1 := 0;
     end;
-  end;
-  updateallscreen;
-  WaitAnyKey;
-  Redraw;
-  Result := 0;}
+    end;
+    updateallscreen;
+    WaitAnyKey;
+    Redraw;
+    Result := 0;}
 
 end;
 
@@ -959,7 +956,7 @@ end;
 function AskYesOrNo(L: Plua_state): integer; cdecl;
 var
   x, y: integer;
-  menuString: array[0..1] of WideString;
+  menuString: array [0 .. 1] of WideString;
 begin
   //setlength(menustring, 2);
   menuString[0] := ('否');
@@ -1321,7 +1318,6 @@ begin
 
 end;
 
-
 //读全局信息
 function GetGlobalValue(L: Plua_state): integer; cdecl;
 var
@@ -1426,15 +1422,14 @@ end;
 
 function SetScenceMapPro(L: Plua_state): integer; cdecl;
 begin
-  sdata[lua_tointeger(L, -4), lua_tointeger(L, -3), lua_tointeger(L, -1),
-    lua_tointeger(L, -2)] := lua_tointeger(L, -5);
+  sdata[lua_tointeger(L, -4), lua_tointeger(L, -3), lua_tointeger(L, -1), lua_tointeger(L, -2)] := lua_tointeger(L, -5);
   Result := 0;
 
 end;
 
 function OldSetScenceMapPro(L: Plua_state): integer; cdecl;
 var
-  list: array[0..4] of integer;
+  list: array [0 .. 4] of integer;
   i: integer;
 begin
   for i := -5 to -1 do
@@ -1473,8 +1468,7 @@ begin
     snum := CurScence;
   if enum = -2 then
     enum := CurEvent;
-  ddata[snum, enum, lua_tointeger(L, -1)] :=
-    lua_tointeger(L, -4);
+  ddata[snum, enum, lua_tointeger(L, -1)] := lua_tointeger(L, -4);
   Result := 0;
 
 end;
@@ -1554,11 +1548,11 @@ begin
     2: p1 := @Rscence[num].Name;
     3: p1 := @Rmagic[num].Name;
   end;
-  {$IFDEF fpc}
+{$IFDEF fpc}
   str := UTF8Encode(WideString(p1));
-  {$ELSE}
+{$ELSE}
   str := UTF8Encode(GBKToUnicode(p1));
-  {$ENDIF}
+{$ENDIF}
   lua_pushstring(L, @str[1]);
   Result := 1;
 
@@ -1579,14 +1573,14 @@ begin
     2: p1 := @Rscence[num].Name;
     3: p1 := @Rmagic[num].Name;
   end;
-  strw := UTF8Decode(lua_tostring(L, -3));
-  ;
+  strw := UTF8Decode(lua_tostring(L, -3));;
   Result := 0;
 
   for i := 0 to 4 do
   begin
     (p1 + i)^ := widechar(0);
-    if i < length(strw) then (p1 + i)^ := strw[i + 1];
+    if i < length(strw) then
+      (p1 + i)^ := strw[i + 1];
   end;
 
 end;
@@ -1603,11 +1597,11 @@ begin
   ReadTalk(num, a);
   strw := pwidechar(a);
 
-  {$IFDEF fpc}
+{$IFDEF fpc}
   str := UTF8Encode(strw);
-  {$ELSE}
+{$ELSE}
   str := UTF8Encode(GBKToUnicode(p1));
-  {$ENDIF}
+{$ENDIF}
   lua_pushstring(L, @str[1]);
   Result := 1;
 
@@ -1893,15 +1887,14 @@ end;
 
 function Add3EventNum(L: Plua_state): integer; cdecl;
 begin
-  instruct_26(lua_tointeger(L, -5), lua_tointeger(L, -4), lua_tointeger(L, -3),
-    lua_tointeger(L, -2), lua_tointeger(L, -1));
+  instruct_26(lua_tointeger(L, -5), lua_tointeger(L, -4), lua_tointeger(L, -3), lua_tointeger(L, -2), lua_tointeger(L, -1));
   Result := 0;
 end;
 
 function Judge5Item(L: Plua_state): integer; cdecl;
 var
   n, i: integer;
-  list: array[0..6] of integer;
+  list: array [0 .. 6] of integer;
 begin
   for i := 0 to 6 do
     list[i] := lua_tointeger(L, i - 7);
@@ -1945,8 +1938,7 @@ end;
 
 function SetOneMagic(L: Plua_state): integer; cdecl;
 begin
-  instruct_35(lua_tointeger(L, -4), lua_tointeger(L, -3), lua_tointeger(L, -2),
-    lua_tointeger(L, -1));
+  instruct_35(lua_tointeger(L, -4), lua_tointeger(L, -3), lua_tointeger(L, -2), lua_tointeger(L, -1));
   Result := 0;
 end;
 
@@ -1964,8 +1956,7 @@ end;
 
 function ChangeScencePic(L: Plua_state): integer; cdecl;
 begin
-  instruct_38(lua_tointeger(L, -4), lua_tointeger(L, -3), lua_tointeger(L, -2),
-    lua_tointeger(L, -1));
+  instruct_38(lua_tointeger(L, -4), lua_tointeger(L, -3), lua_tointeger(L, -2), lua_tointeger(L, -1));
   Result := 0;
 end;
 
@@ -1983,8 +1974,7 @@ end;
 
 function Play2Amination(L: Plua_state): integer; cdecl;
 begin
-  instruct_44(lua_tointeger(L, -6), lua_tointeger(L, -5), lua_tointeger(L, -4),
-    lua_tointeger(L, -3), lua_tointeger(L, -2), lua_tointeger(L, -1));
+  instruct_44(lua_tointeger(L, -6), lua_tointeger(L, -5), lua_tointeger(L, -4), lua_tointeger(L, -3), lua_tointeger(L, -2), lua_tointeger(L, -1));
   Result := 0;
 end;
 
@@ -2068,8 +2058,7 @@ end;
 
 function BackHome(L: Plua_state): integer; cdecl;
 begin
-  instruct_62(lua_tointeger(L, -6), lua_tointeger(L, -5), lua_tointeger(L, -4),
-    lua_tointeger(L, -3), lua_tointeger(L, -2), lua_tointeger(L, -1));
+  instruct_62(lua_tointeger(L, -6), lua_tointeger(L, -5), lua_tointeger(L, -4), lua_tointeger(L, -3), lua_tointeger(L, -2), lua_tointeger(L, -1));
   Result := 0;
 end;
 
@@ -2091,8 +2080,7 @@ end;
 
 function SetAttributeScript(L: Plua_state): integer; cdecl;
 begin
-  SetAttribute(lua_tointeger(L, -5), lua_tointeger(L, -4),
-    lua_tointeger(L, -3), lua_tointeger(L, -2), lua_tointeger(L, -1));
+  SetAttribute(lua_tointeger(L, -5), lua_tointeger(L, -4), lua_tointeger(L, -3), lua_tointeger(L, -2), lua_tointeger(L, -1));
   Result := 0;
 end;
 
@@ -2221,8 +2209,7 @@ begin
   n := Lua_gettop(L);
   if n >= 4 then
     str := UTF8Decode(lua_tostring(L, -n + 3));
-  AddRoleProWithHint(lua_tointeger(L, -n), lua_tointeger(L, -n + 1),
-    lua_tointeger(L, -n + 2), str);
+  AddRoleProWithHint(lua_tointeger(L, -n), lua_tointeger(L, -n + 1), lua_tointeger(L, -n + 2), str);
   Result := 0;
 end;
 

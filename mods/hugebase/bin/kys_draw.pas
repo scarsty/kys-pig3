@@ -1,20 +1,19 @@
-unit kys_draw;
+﻿unit kys_draw;
 
 interface
 
 uses
-  {$IFDEF fpc}
-  {$ENDIF}
-  {$IFDEF mswindows}
+{$IFDEF fpc}
+{$ENDIF}
+{$IFDEF mswindows}
   Windows,
-  {$ENDIF}
+{$ENDIF}
   SysUtils,
   SDL2,
   Math,
   kys_type,
   kys_main,
   kys_event;
-
 
 //画单个图片的子程
 procedure DrawPic(sur: PSDL_Surface; Pictype, num, px, py, shadow, alpha: integer; mixColor: uint32; mixAlpha: integer);
@@ -135,8 +134,7 @@ begin
   if PNG_TILE > 0 then
   begin
     if imgnum <= high(TitlePNGIndex) then
-      DrawPNGTile(render, TitlePNGIndex[imgnum], 0, px, py, region, shadow, alpha, mixColor,
-        mixAlpha, scalex, scaley, angle, nil);
+      DrawPNGTile(render, TitlePNGIndex[imgnum], 0, px, py, region, shadow, alpha, mixColor, mixAlpha, scalex, scaley, angle, nil);
   end;
 
 end;
@@ -161,8 +159,7 @@ begin
         begin
           LoadOnePNGTexture('resource/mmap/', pMPic, MPNGIndex[num]);
         end;
-      DrawPNGTile(render, MPNGIndex[num], Framenum, px, py, nil, shadow, alpha, mixColor, mixAlpha,
-        scalex, scaley, angle, nil);
+      DrawPNGTile(render, MPNGIndex[num], Framenum, px, py, nil, shadow, alpha, mixColor, mixAlpha, scalex, scaley, angle, nil);
     end;
     if (PNG_TILE = 0) then
     begin
@@ -181,10 +178,10 @@ begin
   if (num >= 0) and (num < SPicAmount) then
   begin
     {if num = 1941 then
-    begin
+      begin
       num := 0;
       py := py - 50;
-    end;}
+      end;}
     if PNG_TILE > 0 then
     begin
       if PNG_LOAD_ALL = 0 then
@@ -210,8 +207,7 @@ begin
       if PNG_LOAD_ALL = 0 then
         if SPNGIndex[num].Loaded = 0 then
           LoadOnePNGTexture('resource/smap/', pSPic, SPNGIndex[num]);
-      DrawPNGTile(render, SPNGIndex[num], 0, px, py, region, shadow, alpha, mixColor, mixAlpha,
-        1, 1, 0, nil);
+      DrawPNGTile(render, SPNGIndex[num], 0, px, py, region, shadow, alpha, mixColor, mixAlpha, 1, 1, 0, nil);
     end
     else
     begin
@@ -239,8 +235,7 @@ begin
         begin
           LoadOnePNGTexture('resource/head', pHPic, HPNGIndex[num]);
         end;
-      DrawPNGTile(render, HPNGIndex[num], 0, px, py, nil, shadow, alpha, mixColor, mixAlpha,
-        scalex, scaley, 0, nil);
+      DrawPNGTile(render, HPNGIndex[num], 0, px, py, nil, shadow, alpha, mixColor, mixAlpha, scalex, scaley, 0, nil);
     end;
     if PNG_TILE = 0 then
     begin
@@ -267,11 +262,10 @@ begin
     begin
       {if PNG_LOAD_ALL = 0 then
         if EPNGIndex[num].Loaded = 0 then
-          LoadOnePNGTile('resource/eft/', pEPic, num, EPNGIndex[num], @EPNGTile[0]);
-      DrawPNGTile(EPNGIndex[num], 0, nil, screen, px, py, shadow, alpha, mixColor, mixAlpha,
+        LoadOnePNGTile('resource/eft/', pEPic, num, EPNGIndex[num], @EPNGTile[0]);
+        DrawPNGTile(EPNGIndex[num], 0, nil, screen, px, py, shadow, alpha, mixColor, mixAlpha,
         0, nil, 0, 0, 0, 0, 0);}
-      DrawPNGTile(render, EPNGIndex[index].PNGIndexArray[num], 0, px, py, nil, shadow, alpha, mixColor, mixAlpha,
-        scalex, scaley, angle, center);
+      DrawPNGTile(render, EPNGIndex[index].PNGIndexArray[num], 0, px, py, nil, shadow, alpha, mixColor, mixAlpha, scalex, scaley, angle, center);
     end;
     if PNG_TILE = 0 then
     begin
@@ -300,10 +294,9 @@ begin
         LoadPNGTiles(formatfloat('resource/fight/fight000', index), FPNGIndex[index].PNGIndexArray, 1);
         FPNGIndex[index].Loaded := 1;
       end;
-      if (index >= 0) and (index < High(FPNGIndex)) then
-        if (num >= Low(FPNGIndex[index].PNGIndexArray)) and (num <= High(FPNGIndex[index].PNGIndexArray)) then
-          DrawPNGTile(render, FPNGIndex[index].PNGIndexArray[num], 0, px, py, nil, shadow, alpha, mixColor, mixAlpha,
-            1, 1, 0, nil);
+      if (index >= 0) and (index < high(FPNGIndex)) then
+        if (num >= low(FPNGIndex[index].PNGIndexArray)) and (num <= high(FPNGIndex[index].PNGIndexArray)) then
+          DrawPNGTile(render, FPNGIndex[index].PNGIndexArray[num], 0, px, py, nil, shadow, alpha, mixColor, mixAlpha, 1, 1, 0, nil);
     end;
     0:
     begin
@@ -385,13 +378,13 @@ var
   //temp: array[0..479, 0..479] of smallint;
   Width, Height, xoffset, yoffset: smallint;
   pos: TPosition;
-  BuildArray: array[0..2000] of TBuildInfo;
+  BuildArray: array [0 .. 2000] of TBuildInfo;
   tempb: TBuildInfo;
 begin
   //由上到下绘制, 先绘制地面和表面, 同时计算出现的建筑数目
   //SDL_RenderClear(render);
   k := 0;
-  h := High(BuildArray);
+  h := high(BuildArray);
   widthregion := CENTER_X div 36 + 3;
   sumregion := CENTER_Y div 9 + 2;
   for sum := -sumregion to sumregion + 15 do
@@ -445,9 +438,9 @@ begin
           else
           begin
             {Width := SmallInt(Mpic[MIdx[num - 1]]);
-            Height := SmallInt(Mpic[MIdx[num - 1] + 2]);
-            //xoffset := SmallInt(Mpic[MIdx[num - 1] + 4]);
-            yoffset := SmallInt(Mpic[MIdx[num - 1] + 6]);}
+              Height := SmallInt(Mpic[MIdx[num - 1] + 2]);
+              //xoffset := SmallInt(Mpic[MIdx[num - 1] + 4]);
+              yoffset := SmallInt(Mpic[MIdx[num - 1] + 6]);}
           end;
           //根据图片的宽度计算图的中点, 为避免出现小数, 实际是中点坐标的2倍
           //次要排序依据是y坐标
@@ -465,12 +458,12 @@ begin
   {for i1 := 0 to k - 2 do
     for i2 := i1 + 1 to k - 1 do
     begin
-      if BuildArray[i1].c > BuildArray[i2].c then
-      begin
-        tempb := BuildArray[i1];
-        BuildArray[i1] := BuildArray[i2];
-        BuildArray[i2] := tempb;
-      end;
+    if BuildArray[i1].c > BuildArray[i2].c then
+    begin
+    tempb := BuildArray[i1];
+    BuildArray[i1] := BuildArray[i2];
+    BuildArray[i2] := tempb;
+    end;
     end;}
   //快速排序
   QuickSortB(BuildArray, 0, k - 1);
@@ -574,23 +567,23 @@ begin
     end;
 
   {if (CurEvent < 0) then
-  begin
+    begin
     DrawScenceWithoutRole(Sx, Sy);
     DrawRoleOnScence(Sx, Sy);
-  end
-  else
-  begin
+    end
+    else
+    begin
     DrawScenceWithoutRole(Cx, Cy);
     if (DData[CurScence, CurEvent, 10] = Sx) and (DData[CurScence, CurEvent, 9] = Sy) then
     begin
-      if DData[CurScence, CurEvent, 5] <= 0 then
-      begin
-        DrawRoleOnScence(Cx, Cy);
-      end;
+    if DData[CurScence, CurEvent, 5] <= 0 then
+    begin
+    DrawRoleOnScence(Cx, Cy);
+    end;
     end
     else
-      DrawRoleOnScence(Cx, Cy);
-  end;}
+    DrawRoleOnScence(Cx, Cy);
+    end;}
 
   if (CurScence = 71) and (MODVersion = 13) then
   begin
@@ -690,7 +683,7 @@ end;
 procedure ExpandGroundOnImg();
 var
   i1, i2, x, y, num: integer;
-  Ex: array[-64..127, -64..127] of smallint;
+  Ex: array [-64 .. 127, -64 .. 127] of smallint;
 begin
   fillchar(Ex, sizeof(Ex), -1);
   for i1 := 0 to 63 do
@@ -804,10 +797,10 @@ begin
   else
     ShowBlackScreen := False;
   {SDL_LockMutex(mutex);
-  LoadingScence := True;
+    LoadingScence := True;
 
-  if Visible = 0 then
-  begin
+    if Visible = 0 then
+    begin
     x1 := 0;
     y1 := 0;
     w := ImageWidth;
@@ -815,74 +808,74 @@ begin
     SDL_FillRect(ImgScence, nil, 1);
     SDL_FillRect(ImgScenceBack, nil, 1);
     ExpandGroundOnImg();
-  end
-  else
-  begin
-    if CurEvent >= 0 then
-    begin
-      CalLTPosOnImageByCenter(Cx, Cy, x1, y1);
     end
     else
     begin
-      CalLTPosOnImageByCenter(Sx, Sy, x1, y1);
+    if CurEvent >= 0 then
+    begin
+    CalLTPosOnImageByCenter(Cx, Cy, x1, y1);
+    end
+    else
+    begin
+    CalLTPosOnImageByCenter(Sx, Sy, x1, y1);
     end;
     w := screen.w;
     h := screen.h;
     if (PNG_LOAD_ALL = 0) and (LoadingTiles) then
     begin
-      x1 := 0;
-      y1 := 0;
-      w := ImageWidth;
-      h := ImageHeight;
+    x1 := 0;
+    y1 := 0;
+    w := ImageWidth;
+    h := ImageHeight;
     end;
-  end;
+    end;
 
-  if (Visible > 0) and (where = 1) then
+    if (Visible > 0) and (where = 1) then
     onback := 1
-  else
+    else
     onback := 0;
 
-  if (Visible = 2) and IsCave(CurScence) then
-  begin
+    if (Visible = 2) and IsCave(CurScence) then
+    begin
     x1 := x1 + CENTER_X - 125;
     y1 := y1 + CENTER_Y - 125;
     w := 250;
     h := 250;
-  end;
+    end;
 
-  for i1 := 0 to 63 do
+    for i1 := 0 to 63 do
     for i2 := 0 to 63 do
     begin
-      CalPosOnImage(i1, i2, x, y);
-      if (SData[CurScence, 4, i1, i2] <= 0) then
-      begin
-        num := SData[CurScence, 0, i1, i2] div 2;
-        if num > 0 then
-          InitialSPic(num, x, y, x1, y1, w, h, 1, 0, onback);
-      end;
+    CalPosOnImage(i1, i2, x, y);
+    if (SData[CurScence, 4, i1, i2] <= 0) then
+    begin
+    num := SData[CurScence, 0, i1, i2] div 2;
+    if num > 0 then
+    InitialSPic(num, x, y, x1, y1, w, h, 1, 0, onback);
     end;
-  for sumi := 0 to 126 do
-  begin
+    end;
+    for sumi := 0 to 126 do
+    begin
     for i1 := 63 downto 0 do
     begin
-      i2 := sumi - i1;
-      if (i2 >= 0) and (i2 <= 63) then
-        InitialScenceOnePosition(i1, i2, x1, y1, w, h, CalBlock(i1, i2), onback);
+    i2 := sumi - i1;
+    if (i2 >= 0) and (i2 <= 63) then
+    InitialScenceOnePosition(i1, i2, x1, y1, w, h, CalBlock(i1, i2), onback);
     end;
-  end;
+    end;
 
-  if (Visible > 0) and (where = 1) and (x1 >= 0) and (y1 >= 0) then
-  begin
+    if (Visible > 0) and (where = 1) and (x1 >= 0) and (y1 >= 0) then
+    begin
     //遮挡值仅更新主角附近的即可
     CalPosOnImage(Sx, Sy, x, y);
     x := x - 36;
     y := y - 100;
     for i1 := x to x + 72 do
-      //for i2:=y to y+100 do
+    //for i2:=y to y+100 do
     begin
-      num := i1 * ImageHeight + y;
-      //blockImg[num]:=blockImg2[num];
-      move(BlockImg2[num], BlockImg[num], 200);
+    num := i1 * ImageHeight + y;
+    //blockImg[num]:=blockImg2[num];
+    move(BlockImg2[num], BlockImg[num], 200);
     end;
     //Move(BlockImg2[0], BlockImg[0], sizeof(BlockImg[0])*length(BlockImg));
     dest.x := x1;
@@ -890,11 +883,10 @@ begin
     dest.w := w;
     dest.h := h;
     SDL_BlitSurface(ImgScenceBack, @dest, ImgScence, @dest);
-  end;
-  LoadingScence := False;
-  SDL_UnLockMutex(mutex);}
+    end;
+    LoadingScence := False;
+    SDL_UnLockMutex(mutex);}
 end;
-
 
 function CalBlock(x, y: integer): integer;
 begin
@@ -960,36 +952,35 @@ begin
               picnum := Brole[num].Pic
             else
               picnum := Brole[num].StaticPic[Brole[num].Face];
-            DrawFPic(picnum, pos.x, pos.y, Rrole[Brole[num].rnum].ActionNum,
-              Brole[num].shadow, Brole[num].alpha, Brole[num].mixColor, Brole[num].mixAlpha);
+            DrawFPic(picnum, pos.x, pos.y, Rrole[Brole[num].rnum].ActionNum, Brole[num].shadow, Brole[num].alpha, Brole[num].mixColor, Brole[num].mixAlpha);
           end;
         end;
       end;
     end;
 
   {for sumi := 0 to 126 do
-  begin
+    begin
     for i1 := 63 downto 0 do
     begin
-      i2 := sumi - i1;
-      if (i2 >= 0) and (i2 <= 63) then
-      begin
-           pos := GetPositionOnScreen(i1, i2, Bx, By);
-        num:= bfield[0, i1, i2] div 2;
-         if num >0 then  DrawSPic(num, pos.x, pos.y);
-        num:= bfield[1, i1, i2] div 2;
-         if num >0 then
-           DrawSPic(num, pos.x, pos.y);
-      end;
+    i2 := sumi - i1;
+    if (i2 >= 0) and (i2 <= 63) then
+    begin
+    pos := GetPositionOnScreen(i1, i2, Bx, By);
+    num:= bfield[0, i1, i2] div 2;
+    if num >0 then  DrawSPic(num, pos.x, pos.y);
+    num:= bfield[1, i1, i2] div 2;
+    if num >0 then
+    DrawSPic(num, pos.x, pos.y);
     end;
-  end;}
+    end;
+    end;}
   {DrawBfieldWithoutRole(Bx, By);
 
-  for i1 := 0 to 63 do
+    for i1 := 0 to 63 do
     for i2 := 0 to 63 do
     begin
-      if (Bfield[2, i1, i2] >= 0) and (Brole[Bfield[2, i1, i2]].Dead = 0) then
-        DrawRoleOnBfield(i1, i2);
+    if (Bfield[2, i1, i2] >= 0) and (Brole[Bfield[2, i1, i2]].Dead = 0) then
+    DrawRoleOnBfield(i1, i2);
     end;}
 
   DrawProgress;
@@ -1016,13 +1007,13 @@ var
   pos: Tposition;
 begin
   {pos := GetPositionOnScreen(x, y, Bx, By);
-  depth := CalBlock(x, y);
-  bnum := Bfield[2, x, y];
-  if Brole[bnum].Pic > 0 then
+    depth := CalBlock(x, y);
+    bnum := Bfield[2, x, y];
+    if Brole[bnum].Pic > 0 then
     picnum := Brole[bnum].Pic
-  else
+    else
     picnum := Brole[bnum].StaticPic[Brole[bnum].Face];
-  DrawFPic(picnum, pos.x, pos.y, Rrole[Brole[bnum].rnum].ActionNum, 0, Alpha, depth, mixColor, mixAlpha);}
+    DrawFPic(picnum, pos.x, pos.y, Rrole[Brole[bnum].rnum].ActionNum, 0, Alpha, depth, mixColor, mixAlpha);}
 
 end;
 
@@ -1047,17 +1038,17 @@ begin
     end;
   ExpandGroundOnImg();
   {for sumi := 0 to 126 do
-  begin
+    begin
     //InitialBFieldPosition(mini, mini, CalBlock(mini, mini));
     for i1 := 63 downto 0 do
     begin
-      //InitialBFieldPosition(maxi, mini, CalBlock(maxi, mini));
-      //InitialBFieldPosition(mini, maxi, CalBlock(mini, maxi));
-      i2 := sumi - i1;
-      if (i2 >= 0) and (i2 <= 63) then
-        InitialBFieldPosition(i1, i2, CalBlock(i1, i2), layer);
+    //InitialBFieldPosition(maxi, mini, CalBlock(maxi, mini));
+    //InitialBFieldPosition(mini, maxi, CalBlock(mini, maxi));
+    i2 := sumi - i1;
+    if (i2 >= 0) and (i2 <= 63) then
+    InitialBFieldPosition(i1, i2, CalBlock(i1, i2), layer);
     end;
-  end;}
+    end;}
 
 end;
 
@@ -1074,9 +1065,9 @@ var
   HighLight: boolean;
 begin
   {SDL_FillRect(screen, nil, 0);
-  CalLTPosOnImageByCenter(Bx, By, x, y);
-  LoadBfieldPart(x, y, 1);
-  TransBlackScreen;}
+    CalLTPosOnImageByCenter(Bx, By, x, y);
+    LoadBfieldPart(x, y, 1);
+    TransBlackScreen;}
   CleanTextScreen;
   if SW_SURFACE = 0 then
     SDL_SetTextureColorMod(ImgBGroundTex, 128, 128, 128)
@@ -1204,8 +1195,7 @@ begin
           mixAlpha := 0;
           shadow := 0;
         end;
-        DrawFPic(Brole[bnum].StaticPic[Brole[bnum].Face], pos.x, pos.y, Rrole[Brole[bnum].rnum].ActionNum,
-          shadow, 0, mixColor, mixAlpha);
+        DrawFPic(Brole[bnum].StaticPic[Brole[bnum].Face], pos.x, pos.y, Rrole[Brole[bnum].rnum].ActionNum, shadow, 0, mixColor, mixAlpha);
         HighLight := False;
       end;
     end;
@@ -1234,7 +1224,7 @@ begin
     if t = 1 then
     begin
       Brole[i].shadow := 1;
-      Brole[i].mixColor := $FFFFFFff;
+      Brole[i].mixColor := $FFFFFFFF;
       Brole[i].mixAlpha := t * (10 + random(40));
     end;
   end;
@@ -1253,15 +1243,15 @@ begin
           shadow := 0;
           case Rrole[rnum].MPType of
             {0:
-            begin
+              begin
               MixColor2 := MapRGBA(255, 200, 64);
               MixAlpha2 := -1 * random(2);
-            end;
-            1:
-            begin
+              end;
+              1:
+              begin
               MixColor2 := MapRGBA(243, 128, 255);
               MixAlpha2 := -1 * random(2);
-            end;}
+              end;}
             2:
             begin
               MixColor2 := $FFFFFFFF;
@@ -1378,9 +1368,9 @@ begin
         {if (BField[4, Brole[range[i]].X, Brole[range[i]].Y] > 0) and
           (Brole[BField[2, Bx, By]].Team <> Brole[range[i]].Team) then
           mixColor := MapRGBA(200, 50, 50)
-        else
+          else
           mixColor := MapRGBA(255, 255, 255);
-        DrawHeadPic(Rrole[Brole[range[i]].rnum].HeadNum, p[i] + x, y, 0, 0, mixColor, -1, 0.25, 0.25);}
+          DrawHeadPic(Rrole[Brole[range[i]].rnum].HeadNum, p[i] + x, y, 0, 0, mixColor, -1, 0.25, 0.25);}
       end;
   end;
 end;

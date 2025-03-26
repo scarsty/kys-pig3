@@ -1,17 +1,17 @@
-unit kys_engine;
+﻿unit kys_engine;
 
 interface
 
 uses
-  {$IFDEF fpc}
+{$IFDEF fpc}
   LConvEncoding,
   LCLType,
   LCLIntf,
-  {$ENDIF}
-  {$IFDEF mswindows}
+{$ENDIF}
+{$IFDEF mswindows}
   Windows,
   //xVideo,
-  {$ENDIF}
+{$ENDIF}
   Classes,
   SysUtils,
   SDL2_ttf,
@@ -93,7 +93,6 @@ function AngleToDirection(y, x: real): integer;
 
 procedure ChangeCol;
 
-
 //用于读取的子程
 procedure InitialPicArrays;
 procedure ReadTiles;
@@ -151,7 +150,6 @@ procedure UpdateAllScreen;
 procedure CleanTextScreen; overload;
 procedure CleanTextScreenRect(x, y, w, h: integer); overload;
 
-
 //清键值
 procedure CleanKeyValue; inline;
 
@@ -184,7 +182,6 @@ procedure ConsoleLog(formatstring: string; content: array of const; cr: boolean 
 procedure ConsoleLog(formatstring: string = ''; cr: boolean = True); overload; inline;
 //function Myth_VideoPlay(window: integer; filename: string): integer; cdecl; external 'myth-simpleplayer.dll';
 
-
 implementation
 
 uses
@@ -195,11 +192,10 @@ begin
   Result := 1;
   {or (e.type_ = SDL_FINGERMOTION)}
   case e.type_ of
-    SDL_FINGERUP, SDL_FINGERDOWN, SDL_CONTROLLERAXISMOTION, SDL_CONTROLLERBUTTONDOWN, SDL_CONTROLLERBUTTONUP:
-      Result := 0;
+    SDL_FINGERUP, SDL_FINGERDOWN, SDL_CONTROLLERAXISMOTION, SDL_CONTROLLERBUTTONDOWN, SDL_CONTROLLERBUTTONUP: Result := 0;
     SDL_FINGERMOTION:
-      if CellPhone = 0 then
-        Result := 0;
+    if CellPhone = 0 then
+      Result := 0;
   end;
 end;
 
@@ -223,25 +219,25 @@ begin
   BASS_Set3DFactors(1, 0, 0);
   sf.font := BASS_MIDI_FontInit(PChar(AppPath + 'music/mid.sf2'), 0);
   BASS_MIDI_StreamSetFonts(0, sf, 1);
-  sf.preset := -1; // use all presets
+  sf.preset := -1; //use all presets
   sf.bank := 0;
   Flag := 0;
   if SOUND3D = 1 then
     Flag := BASS_SAMPLE_3D or BASS_SAMPLE_MONO or Flag;
 
-  for i := 0 to High(Music) do
+  for i := 0 to high(Music) do
   begin
     str := AppPath + 'music/' + IntToStr(i) + '.mp3';
     if FileExists(PChar(str)) then
     begin
       try
-        {$ifdef android0}
+{$IFDEF android0}
         p := ReadFileToBuffer(nil, PChar(str), -1, 1);
         Music[i] := BASS_StreamCreateFile(True, p, 0, FileGetlength(str), 0);
         FreeFileBuffer(p);
-        {$else}
+{$ELSE}
         Music[i] := BASS_StreamCreateFile(False, PChar(str), 0, 0, 0);
-        {$endif}
+{$ENDIF}
       finally
       end;
     end
@@ -251,13 +247,13 @@ begin
       if FileExists(PChar(str)) then
       begin
         try
-          {$ifdef android0}
+{$IFDEF android0}
           p := ReadFileToBuffer(nil, PChar(str), -1, 1);
           Music[i] := BASS_MIDI_StreamCreateFile(True, p, 0, FileGetlength(str), 0, 0);
           FreeFileBuffer(p);
-          {$else}
+{$ELSE}
           Music[i] := BASS_MIDI_StreamCreateFile(False, PChar(str), 0, 0, 0, 0);
-          {$endif}
+{$ENDIF}
           BASS_MIDI_StreamSetFonts(Music[i], sf, 1);
           //showmessage(inttostr(Music[i]));
         finally
@@ -268,35 +264,35 @@ begin
     end;
   end;
 
-  for i := 0 to High(Esound) do
+  for i := 0 to high(Esound) do
   begin
     str := AppPath + 'sound/e' + IntToStr(i) + '.wav';
     if FileExists(PChar(str)) then
     begin
-      {$ifdef android0}
+{$IFDEF android0}
       p := ReadFileToBuffer(nil, PChar(str), -1, 1);
       ESound[i] := BASS_SampleLoad(True, p, 0, FileGetlength(str), 1, Flag);
       FreeFileBuffer(p);
-      {$else}
+{$ELSE}
       ESound[i] := BASS_SampleLoad(False, PChar(str), 0, 0, 1, Flag);
-      {$endif}
+{$ENDIF}
     end
     else
       ESound[i] := 0;
     //showmessage(inttostr(esound[i]));
   end;
-  for i := 0 to High(Asound) do
+  for i := 0 to high(Asound) do
   begin
     str := AppPath + formatfloat('sound/atk00', i) + '.wav';
     if FileExists(PChar(str)) then
     begin
-      {$ifdef android0}
+{$IFDEF android0}
       p := ReadFileToBuffer(nil, PChar(str), -1, 1);
       ASound[i] := BASS_SampleLoad(True, p, 0, FileGetlength(str), 1, Flag);
       FreeFileBuffer(p);
-      {$else}
+{$ELSE}
       ASound[i] := BASS_SampleLoad(False, PChar(str), 0, 0, 1, Flag);
-      {$endif}
+{$ENDIF}
     end
     else
       ASound[i] := 0;
@@ -308,17 +304,17 @@ procedure FreeAllMusic;
 var
   i: integer;
 begin
-  for i := 0 to High(Music) do
+  for i := 0 to high(Music) do
   begin
     if Music[i] <> 0 then
       BASS_StreamFree(Music[i]);
   end;
-  for i := 0 to High(Asound) do
+  for i := 0 to high(Asound) do
   begin
     if Asound[i] <> 0 then
       BASS_SampleFree(Asound[i]);
   end;
-  for i := 0 to High(Esound) do
+  for i := 0 to high(Esound) do
   begin
     if Esound[i] <> 0 then
       BASS_SampleFree(Esound[i]);
@@ -337,7 +333,7 @@ begin
   else
     repeatable := False;
   try
-    if (MusicNum in [Low(Music)..High(Music)]) and (VOLUME > 0) then
+    if (MusicNum in [low(Music) .. high(Music)]) and (VOLUME > 0) then
       if Music[MusicNum] <> 0 then
       begin
         //BASS_ChannelSlideAttribute(Music[nowmusic], BASS_ATTRIB_VOL, 0, 1000);
@@ -396,7 +392,7 @@ begin
     repeatable := True
   else
     repeatable := False;
-  if (SoundNum in [Low(Esound)..High(Esound)]) and (VOLUMEWAV > 0) then
+  if (SoundNum in [low(Esound) .. high(Esound)]) and (VOLUMEWAV > 0) then
     if Esound[SoundNum] <> 0 then
     begin
       //Mix_VolumeChunk(Esound[SoundNum], Volume);
@@ -426,7 +422,7 @@ begin
   else
     repeatable := False;
 
-  if (SoundNum in [Low(Esound)..High(Esound)]) and (VOLUMEWAV > 0) then
+  if (SoundNum in [low(Esound) .. high(Esound)]) and (VOLUMEWAV > 0) then
     if Esound[SoundNum] <> 0 then
     begin
       //Mix_VolumeChunk(Esound[SoundNum], Volume);
@@ -475,7 +471,7 @@ begin
     repeatable := True
   else
     repeatable := False;
-  if (SoundNum in [Low(Asound)..High(Asound)]) and (VOLUMEWAV > 0) then
+  if (SoundNum in [low(Asound) .. high(Asound)]) and (VOLUMEWAV > 0) then
     if Asound[SoundNum] <> 0 then
     begin
       //Mix_VolumeChunk(Esound[SoundNum], Volume);
@@ -501,10 +497,10 @@ end;
 procedure PlaySound(filename: PChar; times: integer); overload;
 begin
   {if fileexists(filename) then
-  begin
+    begin
     Sound := Mix_LoadWav(filename);
     Mix_PlayChannel(-1, sound, times);
-  end;}
+    end;}
 end;
 
 
@@ -512,7 +508,7 @@ end;
 
 function GetPixel(surface: PSDL_Surface; x: integer; y: integer): uint32;
 type
-  TByteArray = array[0..2] of byte;
+  TByteArray = array [0 .. 2] of byte;
   PByteArray = ^TByteArray;
 var
   bpp: integer;
@@ -521,22 +517,18 @@ begin
   if (x >= 0) and (x < surface.w) and (y >= 0) and (y < surface.h) then
   begin
     bpp := surface.format.BytesPerPixel;
-    // Here p is the address to the pixel we want to retrieve
+    //Here p is the address to the pixel we want to retrieve
     p := Pointer(uint32(surface.pixels) + y * surface.pitch + x * bpp);
     case bpp of
-      1:
-        Result := longword(p^);
-      2:
-        Result := puint16(p)^;
+      1: Result := longword(p^);
+      2: Result := puint16(p)^;
       {3:
         if (SDL_BYTEORDER = SDL_BIG_ENDIAN) then
-          Result := PByteArray(p)[0] shl 16 or PByteArray(p)[1] shl 8 or PByteArray(p)[2]
+        Result := PByteArray(p)[0] shl 16 or PByteArray(p)[1] shl 8 or PByteArray(p)[2]
         else
-          Result := PByteArray(p)[0] or PByteArray(p)[1] shl 8 or PByteArray(p)[2] shl 16;}
-      4:
-        Result := puint32(p)^;
-      else
-        Result := 0; // shouldn't happen, but avoids warnings
+        Result := PByteArray(p)[0] or PByteArray(p)[1] shl 8 or PByteArray(p)[2] shl 16;}
+      4: Result := puint32(p)^;
+      else Result := 0; //shouldn't happen, but avoids warnings
     end;
   end;
 
@@ -546,7 +538,7 @@ end;
 
 procedure PutPixel(surface: PSDL_Surface; x: integer; y: integer; pixel: uint32);
 type
-  TByteArray = array[0..2] of byte;
+  TByteArray = array [0 .. 2] of byte;
   PByteArray = ^TByteArray;
 var
   bpp: integer;
@@ -555,28 +547,25 @@ begin
   if (x >= 0) and (x < surface.w) and (y >= 0) and (y < surface.h) then
   begin
     bpp := surface.format.BytesPerPixel;
-    // Here p is the address to the pixel we want to set
+    //Here p is the address to the pixel we want to set
     p := Pointer(uint32(surface.pixels) + y * surface.pitch + x * bpp);
     case bpp of
-      1:
-        longword(p^) := pixel;
-      2:
-        puint16(p)^ := pixel;
+      1: longword(p^) := pixel;
+      2: puint16(p)^ := pixel;
       {3:
         if (SDL_BYTEORDER = SDL_BIG_ENDIAN) then
         begin
-          PByteArray(p)[0] := (pixel shr 16) and $FF;
-          PByteArray(p)[1] := (pixel shr 8) and $FF;
-          PByteArray(p)[2] := pixel and $FF;
+        PByteArray(p)[0] := (pixel shr 16) and $FF;
+        PByteArray(p)[1] := (pixel shr 8) and $FF;
+        PByteArray(p)[2] := pixel and $FF;
         end
         else
         begin
-          PByteArray(p)[0] := pixel and $FF;
-          PByteArray(p)[1] := (pixel shr 8) and $FF;
-          PByteArray(p)[2] := (pixel shr 16) and $FF;
-        end; }
-      4:
-        puint32(p)^ := pixel;
+        PByteArray(p)[0] := pixel and $FF;
+        PByteArray(p)[1] := (pixel shr 8) and $FF;
+        PByteArray(p)[2] := (pixel shr 16) and $FF;
+        end;}
+      4: puint32(p)^ := pixel;
     end;
   end;
 end;
@@ -627,26 +616,26 @@ function Big5ToUnicode(str: PChar): WideString;
 var
   len: integer;
 begin
-  {$IFDEF fpc}
+{$IFDEF fpc}
   Result := UTF8Decode(CP950ToUTF8(str));
-  {$ELSE}
+{$ELSE}
   len := MultiByteToWideChar(950, 0, PChar(str), -1, nil, 0);
   setlength(Result, len - 1);
   MultiByteToWideChar(950, 0, PChar(str), length(str), pwidechar(Result), len + 1);
-  {$ENDIF}
+{$ENDIF}
 end;
 
 function GBKToUnicode(str: PChar): WideString;
 var
   len: integer;
 begin
-  {$IFDEF fpc}
+{$IFDEF fpc}
   Result := UTF8Decode(CP936ToUTF8(str));
-  {$ELSE}
+{$ELSE}
   len := MultiByteToWideChar(950, 0, PChar(str), -1, nil, 0);
   setlength(Result, len - 1);
   MultiByteToWideChar(950, 0, PChar(str), length(str), pwidechar(Result), len + 1);
-  {$ENDIF}
+{$ENDIF}
 end;
 
 function PCharToUnicode(str: PChar; len: integer = -1): WideString;
@@ -665,14 +654,13 @@ function UnicodeToBig5(str: pwidechar): string;
 var
   len: integer;
 begin
-  {$IFDEF fpc}
+{$IFDEF fpc}
   Result := UTF8ToCP950((str));
-  {$ELSE}
+{$ELSE}
   len := WideCharToMultiByte(950, 0, pwidechar(str), -1, nil, 0, nil, nil);
   setlength(Result, len + 1);
   WideCharToMultiByte(950, 0, pwidechar(str), -1, PChar(Result), len + 1, nil, nil);
-  {$ENDIF}
-
+{$ENDIF}
 end;
 
 //unicode转为GBK, 仅用于输入姓名
@@ -681,14 +669,13 @@ function UnicodeToGBK(str: pwidechar): string;
 var
   len: integer;
 begin
-  {$IFDEF fpc}
+{$IFDEF fpc}
   Result := UTF8ToCP936((str));
-  {$ELSE}
+{$ELSE}
   len := WideCharToMultiByte(936, 0, pwidechar(str), -1, nil, 0, nil, nil);
   setlength(Result, len + 1);
   WideCharToMultiByte(936, 0, pwidechar(str), -1, PChar(Result), len + 1, nil, nil);
-  {$ENDIF}
-
+{$ENDIF}
 end;
 
 //繁体汉字转化成简体汉字
@@ -697,19 +684,18 @@ function Traditional2Simplified(mTraditional: string): string; //返回繁体字
 var
   L: integer;
 begin
-  {$IFDEF windows}
+{$IFDEF windows}
   mTraditional := UTF8ToCP936(mTraditional);
   L := Length(mTraditional);
   SetLength(Result, L + 1);
   Result[L + 1] := char(0);
   if L > 0 then
-    LCMapString($0800,
-      $02000000, PChar(mTraditional), L, @Result[1], L);
-  result:=CP936TOUTF8(result);
-  {$ELSE}
+    LCMapString($0800, $02000000, PChar(mTraditional), L, @Result[1], L);
+  result := CP936TOUTF8(result);
+{$ELSE}
   Result := mTraditional;
-  {$ENDIF}
-end; {   Traditional2Simplified   }
+{$ENDIF}
+end; {Traditional2Simplified}
 
 //生成或查找已知纹理, 返回其指针, 是否销毁由调用者决定
 //返回值为建议是否销毁是否已经保存
@@ -719,8 +705,8 @@ var
   size0, size: integer;
   pfont: PTTF_Font;
   needcreate: boolean;
-  whitecolor: uint32 = $ffffffff;
-  word: array[0..2] of uint16 = (32, 0, 0);
+  whitecolor: uint32 = $FFFFFFFF;
+  word: array [0 .. 2] of uint16 = (32, 0, 0);
   src, dst: TSDL_Rect;
   sur, tempsur: PSDL_Surface;
   tex, temptex: PSDL_Texture;
@@ -833,7 +819,7 @@ var
   dest, src, dst: TSDL_Rect;
   tempcolor, whitecolor: TSDL_Color;
   len, i, k: integer;
-  word0: array[0..2] of uint16 = (32, 0, 0);
+  word0: array [0 .. 2] of uint16 = (32, 0, 0);
   word1: ansistring;
   word2: WideString;
   p1: pbyte;
@@ -847,8 +833,9 @@ var
   w, h: integer;
 begin
   len := length(pwidechar(word));
-  if len = 0 then exit;
-  {$IFDEF fpc}
+  if len = 0 then
+    exit;
+{$IFDEF fpc}
   //widestring在fpc中的默认赋值动作是将utf8码每字节间插入一个00.
   //此处删除这些0, 同时统计这些0的数目, 若与字串长度相同
   //即认为是一个纯英文字串, 或者是一个直接赋值的widestring,
@@ -880,11 +867,10 @@ begin
     word2 := UTF8Decode(word1);
     word := @word2[1];
   end;
-  {$ELSE}
+{$ELSE}
   //word2 := UTF8Decode(string(word));
   //word := @word2[1];
-  {$ENDIF}
-
+{$ENDIF}
   GetRGBA(color, @r, @g, @b);
   tempcolor.r := r;
   tempcolor.g := g;
@@ -975,7 +961,6 @@ begin
 
 end;
 
-
 //显示unicode中文阴影文字, 即将同样内容显示2次, 间隔1像素
 procedure DrawShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32; Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil; realPosition: integer = 0; eng: integer = 0); overload;
 var
@@ -1042,13 +1027,13 @@ var
   len: integer;
   words: WideString;
 begin
-  {$IFDEF fpc}
+{$IFDEF fpc}
   words := UTF8Decode(CP950ToUTF8(str));
-  {$ELSE}
+{$ELSE}
   len := MultiByteToWideChar(950, 0, PChar(str), -1, nil, 0);
   setlength(words, len - 1);
   MultiByteToWideChar(950, 0, PChar(str), length(str), pwidechar(words), len + 1);
-  {$ENDIF}
+{$ENDIF}
   DrawText(@words[1], x_pos, y_pos, color);
 
 end;
@@ -1060,13 +1045,13 @@ var
   len: integer;
   words: WideString;
 begin
-  {$IFDEF fpc}
+{$IFDEF fpc}
   words := UTF8Decode(CP950ToUTF8(word));
-  {$ELSE}
+{$ELSE}
   len := MultiByteToWideChar(950, 0, PChar(word), -1, nil, 0);
   setlength(words, len - 1);
   MultiByteToWideChar(950, 0, PChar(word), length(word), pwidechar(words), len + 1);
-  {$ENDIF}
+{$ENDIF}
   DrawShadowText(@words[1], x_pos + 1, y_pos, color1, color2);
 
 end;
@@ -1078,13 +1063,13 @@ var
   len: integer;
   words: WideString;
 begin
-  {$IFDEF fpc}
+{$IFDEF fpc}
   words := UTF8Decode(CP936ToUTF8(word));
-  {$ELSE}
+{$ELSE}
   len := MultiByteToWideChar(950, 0, PChar(word), -1, nil, 0);
   setlength(words, len - 1);
   MultiByteToWideChar(950, 0, PChar(word), length(word), pwidechar(words), len + 1);
-  {$ENDIF}
+{$ENDIF}
   DrawShadowText(@words[1], x_pos + 1, y_pos, color1, color2);
 
 end;
@@ -1140,7 +1125,7 @@ begin
         l3 := (i1) - (i2 - h);
         l4 := -(i1 - w) - (i2 - h);
         //4边角
-        if not ((l1 >= 4) and (l2 >= 4) and (l3 >= 4) and (l4 >= 4)) then
+        if not((l1 >= 4) and (l2 >= 4) and (l3 >= 4) and (l4 >= 4)) then
         begin
           SDL_SetRenderDrawColor(render, 0, 0, 0, 0);
           SDL_RenderDrawPoint(render, i1, i2);
@@ -1148,11 +1133,11 @@ begin
         //框线
         {if TEXT_LAYER = 0 then
           if (((l1 >= 4) and (l2 >= 4) and (l3 >= 4) and (l4 >= 4) and ((i1 = 0) or (i1 = w) or
-            (i2 = 0) or (i2 = h))) or ((l1 = 4) or (l2 = 4) or (l3 = 4) or (l4 = 4))) then
+          (i2 = 0) or (i2 = h))) or ((l1 = 4) or (l2 = 4) or (l3 = 4) or (l4 = 4))) then
           begin
-            a := round(250 - abs(i1 / w + i2 / h - 1) * 150);
-            SDL_SetRenderDrawColor(render, r1, g1, b1, a);
-            SDL_RenderDrawPoint(render, i1, i2);
+          a := round(250 - abs(i1 / w + i2 / h - 1) * 150);
+          SDL_SetRenderDrawColor(render, r1, g1, b1, a);
+          SDL_RenderDrawPoint(render, i1, i2);
           end;}
       end;
     SDL_SetRenderTarget(render, ptex);
@@ -1182,11 +1167,11 @@ begin
           //框线
           {if (((l1 >= 4) and (l2 >= 4) and (l3 >= 4) and (l4 >= 4) and ((i1 = 0) or (i1 = w) or
             (i2 = 0) or (i2 = h))) or ((l1 = 4) or (l2 = 4) or (l3 = 4) or (l4 = 4))) then
-          begin
+            begin
             a := round(250 - abs(i1 / w + i2 / h - 1) * 150);
             SDL_SetRenderDrawColor(render, r1, g1, b1, a);
             SDL_RenderDrawPoint(render, i1, i2);
-          end;}
+            end;}
         end;
       SDL_SetRenderTarget(render, TextScreenTex);
       SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
@@ -1221,19 +1206,19 @@ begin
         l3 := (i1) - (i2 - h);
         l4 := -(i1 - w) - (i2 - h);
         //4边角
-        if not ((l1 >= 4) and (l2 >= 4) and (l3 >= 4) and (l4 >= 4)) then
+        if not((l1 >= 4) and (l2 >= 4) and (l3 >= 4) and (l4 >= 4)) then
         begin
           PutPixel(tempscr, i1 + x1, i2 + y1, 0);
         end;
         //框线
         {if TEXT_LAYER = 0 then
           if (((l1 >= 4) and (l2 >= 4) and (l3 >= 4) and (l4 >= 4) and ((i1 = 0) or (i1 = w) or
-            (i2 = 0) or (i2 = h))) or ((l1 = 4) or (l2 = 4) or (l3 = 4) or (l4 = 4))) then
+          (i2 = 0) or (i2 = h))) or ((l1 = 4) or (l2 = 4) or (l3 = 4) or (l4 = 4))) then
           begin
-            //a := round(200 - min(abs(i1/w-0.5),abs(i2/h-0.5))*2 * 100);
-            a := round(250 - abs(i1 / w + i2 / h - 1) * 150);
-            //writeln(a);
-            PutPixel(tempscr, i1 + x1, i2 + y1, MapRGBA(r1, g1, b1, a));
+          //a := round(200 - min(abs(i1/w-0.5),abs(i2/h-0.5))*2 * 100);
+          a := round(250 - abs(i1 / w + i2 / h - 1) * 150);
+          //writeln(a);
+          PutPixel(tempscr, i1 + x1, i2 + y1, MapRGBA(r1, g1, b1, a));
           end;}
       end;
 
@@ -1258,12 +1243,12 @@ begin
           //框线
           {if (((l1 >= 4) and (l2 >= 4) and (l3 >= 4) and (l4 >= 4) and ((i1 = 0) or (i1 = w) or
             (i2 = 0) or (i2 = h))) or ((l1 = 4) or (l2 = 4) or (l3 = 4) or (l4 = 4))) then
-          begin
+            begin
             //a := round(200 - min(abs(i1/w-0.5),abs(i2/h-0.5))*2 * 100);
             a := round(250 - abs(i1 / w + i2 / h - 1) * 150);
             //writeln(a);
             PutPixel(tempscr, i1 + x1, i2 + y1, MapRGBA(r1, g1, b1, a));
-          end;}
+            end;}
         end;
       dest.x := x;
       dest.y := y;
@@ -1322,7 +1307,7 @@ begin
           for i2 := 0 to h - 1 do
           begin
             case alpha of
-              -1: a := round(250 - abs(i2 / h - 0.5) * 150);
+              - 1: a := round(250 - abs(i2 / h - 0.5) * 150);
               -2: a := round(150 + abs(i2 / h - 0.5) * 100);
             end;
             PutPixel(tempsur, i1, i2, MapRGBA(r, g, b, a));
@@ -1348,39 +1333,38 @@ begin
   //SDL_RenderCopy(render, tex, nil, @dest);
   //sdl_destroytexture(tex);
   {if (w > 0) and (h > 0) then
-  begin
+    begin
     if sur.flags = 0 then
     begin
-      tempscr := SDL_CreateRGBSurface(sur.flags, w, h, 32, RMask, GMask, BMask, 0);
-      SDL_FillRect(tempscr, nil, colorin);
-      //SDL_SetAlpha(tempscr, 0, 255 - alpha * 255 div 100);
-      dest.x := x;
-      dest.y := y;
-      //tempscr1 := sdl_displayformatalpha(tempscr);
-      SDL_BlitSurface(tempscr, nil, sur, @dest);
-      SDL_FreeSurface(tempscr);
+    tempscr := SDL_CreateRGBSurface(sur.flags, w, h, 32, RMask, GMask, BMask, 0);
+    SDL_FillRect(tempscr, nil, colorin);
+    //SDL_SetAlpha(tempscr, 0, 255 - alpha * 255 div 100);
+    dest.x := x;
+    dest.y := y;
+    //tempscr1 := sdl_displayformatalpha(tempscr);
+    SDL_BlitSurface(tempscr, nil, sur, @dest);
+    SDL_FreeSurface(tempscr);
     end
     else
     begin
-      SDL_GetRGB(colorin, sur.format, @r, @g, @b);
-      a := 255 - 255 * alpha div 100;
-      for i1 := x to x + w - 1 do
-        for i2 := y to y + h - 1 do
-        begin
-          if (i1 < sur.w) and (i2 < sur.h) then
-          begin
-            if alpha = -1 then
-              a := round(250 - abs((i2 - y) / h - 0.5) * 150);
-            //a := round(250 - abs((i1 - x) / w + (i2 - y) / h - 1) * 150);
-            PutPixel(sur, i1, i2, SDL_MapRGBA(sur.format, r, g, b, a));
-          end;
-        end;
+    SDL_GetRGB(colorin, sur.format, @r, @g, @b);
+    a := 255 - 255 * alpha div 100;
+    for i1 := x to x + w - 1 do
+    for i2 := y to y + h - 1 do
+    begin
+    if (i1 < sur.w) and (i2 < sur.h) then
+    begin
+    if alpha = -1 then
+    a := round(250 - abs((i2 - y) / h - 0.5) * 150);
+    //a := round(250 - abs((i1 - x) / w + (i2 - y) / h - 1) * 150);
+    PutPixel(sur, i1, i2, SDL_MapRGBA(sur.format, r, g, b, a));
     end;
-  end;
-  //rectangleRGBA(sur, x, y, x+w, y+h, 0, 0, 0,alpha * 255 div 100);}
+    end;
+    end;
+    end;
+    //rectangleRGBA(sur, x, y, x+w, y+h, 0, 0, 0,alpha * 255 div 100);}
 
 end;
-
 
 //画白色边框作为物品选单的光标
 //realcoord-使用实际坐标, 默认为物品栏的坐标
@@ -1456,19 +1440,17 @@ function Simplified2Traditional(mSimplified: ansistring): ansistring; //返回�
 var
   L: integer;
 begin
-  {$IFDEF windows}
+{$IFDEF windows}
   L := Length(mSimplified);
   SetLength(Result, L + 1);
   Result[L + 1] := char(0);
   if L > 0 then
-    LCMapString(GetUserDefaultLCID,
-      $04000000, PChar(mSimplified), L, @Result[1], L);
+    LCMapString(GetUserDefaultLCID, $04000000, PChar(mSimplified), L, @Result[1], L);
   //writeln(L,mSimplified,',',result,GetUserDefaultLCID);
-  {$ELSE}
+{$ELSE}
   Result := mSimplified;
-  {$ENDIF}
-end; {   Simplified2Traditional   }
-
+{$ENDIF}
+end; {Simplified2Traditional}
 
 procedure DrawPartPic(pic: pointer; x, y, w, h, x1, y1: integer);
 var
@@ -1499,8 +1481,8 @@ begin
   //PlayMp3(1,-1);
   //sdl_delay(500);
   {SDL_ShowCursor(SDL_DISABLE);
-  if (FileExists('Logo') and FileExists('Txdx')) then
-  begin
+    if (FileExists('Logo') and FileExists('Txdx')) then
+    begin
     grp := FileOpen('Logo', fmopenread);
     len := FileSeek(grp, 0, 2);
     FileSeek(grp, 0, 0);
@@ -1518,37 +1500,36 @@ begin
 
     for i := 1 to MOVidx[0] - 1 do
     begin
-      while SDL_PollEvent(@event) > 0 do
-        CheckBasicEvent;
-      MOV := GetPngPic(@MOVPic[0], @MOVidx[0], i);
-      ZoomPic(MOV, (screen.w - mov.w) div 2, (screen.h - mov.h) div 2, MOV.w, MOV.h);
-      if i * 5 < 100 then
-      begin
-        DrawRectangleWithoutFrame(0, 0, screen.w, screen.h, 0, 100 - (i * 5));
-        SDL_Delay(20);
-      end
-      else
-        SDL_Delay(50);
-      SDL_UpdateRect2(screen, 0, 0, screen.w, screen.h);
-      SDL_FreeSurface(MOV);
+    while SDL_PollEvent(@event) > 0 do
+    CheckBasicEvent;
+    MOV := GetPngPic(@MOVPic[0], @MOVidx[0], i);
+    ZoomPic(MOV, (screen.w - mov.w) div 2, (screen.h - mov.h) div 2, MOV.w, MOV.h);
+    if i * 5 < 100 then
+    begin
+    DrawRectangleWithoutFrame(0, 0, screen.w, screen.h, 0, 100 - (i * 5));
+    SDL_Delay(20);
+    end
+    else
+    SDL_Delay(50);
+    SDL_UpdateRect2(screen, 0, 0, screen.w, screen.h);
+    SDL_FreeSurface(MOV);
     end;
     Setlength(MOVpic, 0);
     Setlength(MOVIDX, 0);
     //Setlength(BGidx, 0);
-  end;
-  SDL_Delay(1500);
-  for i := 0 to 20 do
-  begin
+    end;
+    SDL_Delay(1500);
+    for i := 0 to 20 do
+    begin
     while SDL_PollEvent(@event) > 0 do
-      CheckBasicEvent;
+    CheckBasicEvent;
     DrawRectangleWithoutFrame(0, 0, screen.w, screen.h, 0, i * 5);
     SDL_Delay(20);
     SDL_UpdateRect2(screen, 0, 0, screen.w, screen.h);
     //Setlength(BGidx, 0);
-  end;
-  SDL_ShowCursor(SDL_ENABLE);}
+    end;
+    SDL_ShowCursor(SDL_ENABLE);}
 end;
-
 
 procedure SDL_UpdateRect2(scr1: PSDL_Surface; x, y, w, h: integer);
 {var
@@ -1561,63 +1542,63 @@ procedure SDL_UpdateRect2(scr1: PSDL_Surface; x, y, w, h: integer);
   xcoord, ycoord, scale, x1, y1, x2, y2, rx1, ry1, rx2, ry2: real;}
 begin
   {dest.x := x;
-  dest.y := y;
-  dest.w := w;
-  dest.h := h;
-  if scr1 = screen then
+    dest.y := y;
+    dest.w := w;
+    dest.h := h;
+    if scr1 = screen then
     SDL_BlitSurface(screen, @dest, prescreen, @dest);
 
-  if RENDERER = 1 then
-  begin
+    if RENDERER = 1 then
+    begin
     glGenTextures(1, @TextureID);
     glBindTexture(GL_TEXTURE_2D, TextureID);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, screen.w, screen.h, 0, GL_BGRA, GL_UNSIGNED_BYTE, prescreen.pixels);
 
     if SMOOTH = 1 then
     begin
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     end
     else
     begin
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     end;
 
     case ScreenBlendMode of
-      0:
-      begin
-        glColor3f(1, 1, 1);
-      end;
-      1:
-      begin
-        glColor3f(150 / 255, 150 / 255, 220 / 255);
-      end;
-      2:
-      begin
-        glColor3f(200 / 255, 152 / 255, 20 / 255);
-      end;
+    0:
+    begin
+    glColor3f(1, 1, 1);
+    end;
+    1:
+    begin
+    glColor3f(150 / 255, 150 / 255, 220 / 255);
+    end;
+    2:
+    begin
+    glColor3f(200 / 255, 152 / 255, 20 / 255);
+    end;
     end;
 
     if KEEP_SCREEN_RATIO = 1 then
     begin
-      xcoord := screen.w / RealScreen.w;
-      ycoord := screen.h / RealScreen.h;
-      if xcoord < ycoord then
-      begin
-        xcoord := xcoord / ycoord;
-        ycoord := 1;
-      end
-      else
-      begin
-        ycoord := ycoord / xcoord;
-        xcoord := 1;
-      end;
+    xcoord := screen.w / RealScreen.w;
+    ycoord := screen.h / RealScreen.h;
+    if xcoord < ycoord then
+    begin
+    xcoord := xcoord / ycoord;
+    ycoord := 1;
     end
     else
     begin
-      xcoord := 1;
-      ycoord := 1;
+    ycoord := ycoord / xcoord;
+    xcoord := 1;
+    end;
+    end
+    else
+    begin
+    xcoord := 1;
+    ycoord := 1;
     end;
     glClear(GL_COLOR_BUFFER_BIT);
     glBindTexture(GL_TEXTURE_2D, TextureID);
@@ -1637,86 +1618,85 @@ begin
 
     if (Text_Layer = 1) and (HaveText = 1) then
     begin
-      glGenTextures(1, @TextureIDText);
-      glBindTexture(GL_TEXTURE_2D, TextureIDText);
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, RealScreen.w, RealScreen.h, 0, GL_BGRA,
-        GL_UNSIGNED_BYTE, TextScreen.pixels);
+    glGenTextures(1, @TextureIDText);
+    glBindTexture(GL_TEXTURE_2D, TextureIDText);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, RealScreen.w, RealScreen.h, 0, GL_BGRA,
+    GL_UNSIGNED_BYTE, TextScreen.pixels);
 
-      if SMOOTH = 1 then
-      begin
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      end
-      else
-      begin
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-      end;}
+    if SMOOTH = 1 then
+    begin
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    end
+    else
+    begin
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    end;}
 
   //GetRealRect(x, y, w, h);
 
-      {x1 := x / realscreen.w;
-      y1 := y / realscreen.h;
-      x2 := (x + w) / realscreen.w;
-      y2 := (y + h) / realscreen.h;
+  {x1 := x / realscreen.w;
+    y1 := y / realscreen.h;
+    x2 := (x + w) / realscreen.w;
+    y2 := (y + h) / realscreen.h;
 
-      rx1 := x1 * 2 - 1;
-      rx2 := x2 * 2 - 1;
-      ry1 := -y1 * 2 + 1;
-      ry2 := -y2 * 2 + 1;}
+    rx1 := x1 * 2 - 1;
+    rx2 := x2 * 2 - 1;
+    ry1 := -y1 * 2 + 1;
+    ry2 := -y2 * 2 + 1;}
 
-      {x1 := 0;
-      y1 := 0;
-      x2 := 1;
-      y2 := 1;
-      rx1 := -1;
-      rx2 := 1;
-      ry1 := 1;
-      ry2 := -1;
+  {x1 := 0;
+    y1 := 0;
+    x2 := 1;
+    y2 := 1;
+    rx1 := -1;
+    rx2 := 1;
+    ry1 := 1;
+    ry2 := -1;
 
-      glBindTexture(GL_TEXTURE_2D, TextureIDText);
-      glEnable(GL_TEXTURE_2D);
-      glEnable(GL_BLEND);
-      //glClearColor(0.0, 0.0, 0.0, 0.5);
-      glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE);
-      //glBlendColor(0.8,0.8,0.8,0.8);
-      //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      //glColor4f(1.0,1.0,1.0,0.0);
-      //glEnable(GL_ALPHA_TEST);
-      //glAlphaFunc(GL_ALWAYS ,0);
-      glBegin(GL_QUADS);
-      glTexCoord2f(x1, y1);
-      glVertex3f(rx1, ry1, 0.0);
-      glTexCoord2f(x2, y1);
-      glVertex3f(rx2, ry1, 0.0);
-      glTexCoord2f(x2, y2);
-      glVertex3f(rx2, ry2, 0.0);
-      glTexCoord2f(x1, y2);
-      glVertex3f(rx1, ry2, 0.0);}
-      {glTexCoord2f(x1, y1);
-      glVertex3f(rx1, ry1, 0.0);
-      glTexCoord2f(x2, y1);
-      glVertex3f(rx2, ry1, 0.0);
-      glTexCoord2f(x2, y2);
-      glVertex3f(rx2, ry2, 0.0);
-      glTexCoord2f(x1, y2);
-      glVertex3f(rx1, ry2, 0.0);}
+    glBindTexture(GL_TEXTURE_2D, TextureIDText);
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
+    //glClearColor(0.0, 0.0, 0.0, 0.5);
+    glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE);
+    //glBlendColor(0.8,0.8,0.8,0.8);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glColor4f(1.0,1.0,1.0,0.0);
+    //glEnable(GL_ALPHA_TEST);
+    //glAlphaFunc(GL_ALWAYS ,0);
+    glBegin(GL_QUADS);
+    glTexCoord2f(x1, y1);
+    glVertex3f(rx1, ry1, 0.0);
+    glTexCoord2f(x2, y1);
+    glVertex3f(rx2, ry1, 0.0);
+    glTexCoord2f(x2, y2);
+    glVertex3f(rx2, ry2, 0.0);
+    glTexCoord2f(x1, y2);
+    glVertex3f(rx1, ry2, 0.0);}
+  {glTexCoord2f(x1, y1);
+    glVertex3f(rx1, ry1, 0.0);
+    glTexCoord2f(x2, y1);
+    glVertex3f(rx2, ry1, 0.0);
+    glTexCoord2f(x2, y2);
+    glVertex3f(rx2, ry2, 0.0);
+    glTexCoord2f(x1, y2);
+    glVertex3f(rx1, ry2, 0.0);}
   //glColor4f(1.0,1.0,1.0,1);
-      {glEnd;
-      glDisable(GL_TEXTURE_2D);
-      glDisable(GL_BLEND);
-      //glBlendFunc(GL_ZERO, GL_ZERO);
-      //glDisable(GL_ALPHA_TEST);
-      glDeleteTextures(1, @TextureIDText);
+  {glEnd;
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_BLEND);
+    //glBlendFunc(GL_ZERO, GL_ZERO);
+    //glDisable(GL_ALPHA_TEST);
+    glDeleteTextures(1, @TextureIDText);
     end;
     //SDL_GL_SwapBuffers;
-  end
-  else
-  begin
-  end;}
+    end
+    else
+    begin
+    end;}
 
 end;
-
 
 procedure SDL_GetMouseState2(var x, y: integer);
 var
@@ -1809,7 +1789,7 @@ begin
       TextScreenTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, RESOLUTIONX, RESOLUTIONY);
       SDL_SetTextureBlendMode(TextScreenTex, SDL_BLENDMODE_BLEND);
     end;
-    ResizeSimpleText(1);  //设定简单状态使用的字体层
+    ResizeSimpleText(1); //设定简单状态使用的字体层
     TTF_CloseFont(font);
     TTF_CloseFont(engfont);
     SetFontSize(20, 18, -1);
@@ -1936,7 +1916,7 @@ end;
 
 procedure QuitConfirm;
 var
-  menuString: array[0..1] of WideString;
+  menuString: array [0 .. 1] of WideString;
   Tex: PSDL_Texture;
 begin
   //NeedRefreshScence := 0;
@@ -1944,8 +1924,8 @@ begin
   begin
     //以下为 Windows 的 API, 可能会影响移植性
     {SDL_version(info.version);
-    SDL_GetWMInfo(@info);
-    if MessageBox(info.window, 'Are you sure to quit?', 'Confirmation', MB_ICONQUESTION or MB_YESNO) = idYes then
+      SDL_GetWMInfo(@info);
+      if MessageBox(info.window, 'Are you sure to quit?', 'Confirmation', MB_ICONQUESTION or MB_YESNO) = idYes then
       Quit;}
     if MessageDlg('Are you sure to quit?', mtConfirmation, [mbOK, mbCancel], 0) = idOk then
       Quit;
@@ -2081,31 +2061,28 @@ begin
       end;
     end;
     SDL_FINGERMOTION:
-      if CellPhone = 1 then
+    if CellPhone = 1 then
+    begin
+      if event.tfinger.fingerId = 1 then
       begin
-        if event.tfinger.fingerId = 1 then
+        msCount := SDL_GetTicks() - FingerTick;
+        msWait := 50;
+        if BattleSelecting then
+          msWait := 100;
+        if msCount > 500 then
+          FingerCount := 1;
+        if ((FingerCount <= 2) and (msCount > 200)) or ((FingerCount > 2) and (msCount > msWait)) then
         begin
-          msCount := SDL_GetTicks() - FingerTick;
-          msWait := 50;
-          if BattleSelecting then
-            msWait := 100;
-          if msCount > 500 then
-            FingerCount := 1;
-          if ((FingerCount <= 2) and (msCount > 200)) or ((FingerCount > 2) and (msCount > msWait)) then
-          begin
-            FingerCount := FingerCount + 1;
-            FingerTick := SDL_GetTicks();
-            event.type_ := SDL_KEYDOWN;
-            event.key.keysym.sym := AngleToDirection(event.tfinger.dy, event.tfinger.dx);
-          end;
+          FingerCount := FingerCount + 1;
+          FingerTick := SDL_GetTicks();
+          event.type_ := SDL_KEYDOWN;
+          event.key.keysym.sym := AngleToDirection(event.tfinger.dy, event.tfinger.dx);
         end;
       end;
-    SDL_FINGERUP:
-      ;
-    SDL_MULTIGESTURE:
-      ;
-    SDL_QUITEV:
-      QuitConfirm;
+    end;
+    SDL_FINGERUP:;
+    SDL_MULTIGESTURE:;
+    SDL_QUITEV: QuitConfirm;
     SDL_WindowEvent:
     begin
       if event.window.event = SDL_WINDOWEVENT_RESIZED then
@@ -2113,15 +2090,13 @@ begin
         ResizeWindow(event.window.data1, event.window.data2);
       end;
     end;
-    SDL_APP_DIDENTERFOREGROUND:
-      PlayMP3(nowmusic, -1, 0);
-    SDL_APP_DIDENTERBACKGROUND:
-      StopMP3(0);
+    SDL_APP_DIDENTERFOREGROUND: PlayMP3(nowmusic, -1, 0);
+    SDL_APP_DIDENTERBACKGROUND: StopMP3(0);
     {SDL_MOUSEBUTTONDOWN:
-    if (CellPhone = 1) and (event.button.button = SDL_BUTTON_LEFT) then
-    begin
+      if (CellPhone = 1) and (event.button.button = SDL_BUTTON_LEFT) then
+      begin
       SDL_GetMouseState(@x, @y);
-    end;}
+      end;}
     SDL_MOUSEMOTION:
     begin
       if CellPhone = 1 then
@@ -2242,7 +2217,7 @@ end;
 procedure ChangeCol;
 var
   i, a, b, add0, len: integer;
-  temp: array[0..2] of byte;
+  temp: array [0 .. 2] of byte;
   now, next_time: uint32;
   p, p0, p1, p2: real;
 begin
@@ -2293,7 +2268,7 @@ end;
 procedure InitialPicArrays;
 var
   i: integer;
-  word: array[0..1] of uint16 = (0, 0);
+  word: array [0 .. 1] of uint16 = (0, 0);
 begin
   if PNG_TILE > 0 then
   begin
@@ -2311,20 +2286,20 @@ begin
     {for i := 0 to 999 do
       if FPicLoaded[i] = 0 then
       begin
-        LoadPNGTiles(formatfloat('resource/fight/fight000', i), FPNGIndex[i], FPNGTex[i], 1);
-        FPicLoaded[i] := 1;
+      LoadPNGTiles(formatfloat('resource/fight/fight000', i), FPNGIndex[i], FPNGTex[i], 1);
+      FPicLoaded[i] := 1;
       end;
-    for i := 0 to 105 do
+      for i := 0 to 105 do
       if EPicLoaded[i] = 0 then
       begin
-        EPicAmount[i] := LoadPNGTiles(formatfloat('resource/eft/eft000', i), EPNGIndex[i], EPNGTex[i], 1);
-        EPicLoaded[i] := 1;
+      EPicAmount[i] := LoadPNGTiles(formatfloat('resource/eft/eft000', i), EPNGIndex[i], EPNGTex[i], 1);
+      EPicLoaded[i] := 1;
       end;
-    for i := $1000 to $FFFF do
-    begin
+      for i := $1000 to $FFFF do
+      begin
       word[0] := i;
       DrawText(@word[0], 0, 0, 0);
-    end;}
+      end;}
 
     if (PNG_TILE = 2) and (PNG_LOAD_ALL = 0) then
     begin
@@ -2346,7 +2321,7 @@ begin
   if BIG_PNG_TILE > 0 then
   begin
     {MMapSurface :=  LoadSurfaceFromFile(AppPath + 'resource/bigpng/mmap.png');
-    if MMapSurface <> nil then
+      if MMapSurface <> nil then
       writeln('Main map loaded.');}
   end;
 
@@ -2364,13 +2339,13 @@ begin
   end;
 
   {for i := 0 to HPicAmount - 1 do
-  begin
+    begin
     if fileexists(AppPath + 'resource/head/' + inttostr(i) + '.png') then
     begin
-      LoadOnePNGTile('resource/head', nil, i, HPNGIndex[i], @HPNGTile[0]);
-        writeln('Custom head pic ', inttostr(i), ' has been loaded.');
+    LoadOnePNGTile('resource/head', nil, i, HPNGIndex[i], @HPNGTile[0]);
+    writeln('Custom head pic ', inttostr(i), ' has been loaded.');
     end;
-  end;}
+    end;}
 
   if THREAD_READ_PNG = 1 then
   begin
@@ -2380,9 +2355,7 @@ begin
     d.path := 'resource/mmap';
     LoadThread := SDL_CreateThread(@LoadPNGTilesThread, nil, @d);
   end;
-
   ReadingTiles := False;
-
 end;
 
 function LoadPNGTilesThread(Data: pointer): longint; cdecl;
@@ -2412,10 +2385,10 @@ function ReadFileToBuffer(p: PChar; filename: string; size, malloc: integer): PC
 var
   i: integer;
 begin
-  {$ifdef android0}
+{$IFDEF android0}
   filename := StringReplace(filename, AppPath, 'game/', [rfReplaceAll]);
   Result := Android_ReadFiletoBuffer(p, PChar(filename), size, malloc);
-  {$else}
+{$ELSE}
   i := FileOpen(filename, fmopenread);
   if i > 0 then
   begin
@@ -2432,10 +2405,9 @@ begin
     FileRead(i, p^, size);
     FileClose(i);
   end
-  else
-  if malloc = 1 then
+  else if malloc = 1 then
     Result := nil;
-  {$endif}
+{$ENDIF}
 end;
 
 function ReadFileToBuffer(p: PChar; const filename: PChar; size, malloc: integer): PChar; overload;
@@ -2445,23 +2417,23 @@ end;
 
 function FileGetlength(filename: string): integer;
 begin
-  {$ifdef android0}
+{$IFDEF android0}
   filename := StringReplace(filename, AppPath, 'game/', [rfReplaceAll]);
   Result := Android_FileGetlength(PChar(filename));
-  {$else}
+{$ELSE}
   Result := 0;
-  {$endif}
+{$ENDIF}
 end;
 
 procedure FreeFileBuffer(var p: PChar);
 begin
-  {$ifdef android0}
+{$IFDEF android0}
   if p <> nil then
     Android_FileFreeBuffer(p);
-  {$else}
+{$ELSE}
   if p <> nil then
     StrDispose(p);
-  {$endif}
+{$ENDIF}
   p := nil;
 end;
 
@@ -2487,18 +2459,18 @@ begin
     FreeFileBuffer(pIDX);
     FreeFileBuffer(pGRP);
     {grp := FileOpen(AppPath + strgrp, fmopenread);
-    len := FileSeek(grp, 0, 2);
-    setlength(grparray, len + 4);
-    FileSeek(grp, 0, 0);
-    FileRead(grp, grparray[0], len);
-    FileClose(grp);
+      len := FileSeek(grp, 0, 2);
+      setlength(grparray, len + 4);
+      FileSeek(grp, 0, 0);
+      FileRead(grp, grparray[0], len);
+      FileClose(grp);
 
-    idx := FileOpen(AppPath + stridx, fmopenread);
-    tnum := FileSeek(idx, 0, 2) div 4;
-    setlength(idxarray, tnum + 1);
-    FileSeek(idx, 0, 0);
-    FileRead(idx, idxarray[0], tnum * 4);
-    FileClose(idx);}
+      idx := FileOpen(AppPath + stridx, fmopenread);
+      tnum := FileSeek(idx, 0, 2) div 4;
+      setlength(idxarray, tnum + 1);
+      FileSeek(idx, 0, 0);
+      FileRead(idx, idxarray[0], tnum * 4);
+      FileClose(idx);}
   end;
   Result.Amount := tnum;
 
@@ -2568,7 +2540,6 @@ begin
     else
       ConsoleLog('Can''t find imz file');
   end;
-
 
   if (PNG_TILE = 1) or (p = nil) then
   begin
@@ -2709,8 +2680,7 @@ begin
             LoadTileFromMem(p + index, len, Pointers[j], SW_SURFACE, w, h);
           end
           else
-            LoadTileFromFile(AppPath + path + IntToStr(filenum) + '_' + IntToStr(j) + '.png',
-              Pointers[j], SW_SURFACE, w1, h1);
+            LoadTileFromFile(AppPath + path + IntToStr(filenum) + '_' + IntToStr(j) + '.png', Pointers[j], SW_SURFACE, w1, h1);
           if (j = 0) then
           begin
             w := w1;
@@ -2844,50 +2814,50 @@ var
   i: integer;
 
   {procedure DestoryTextureArray(TextureArray: TTextureArray);
-  var
+    var
     i: integer;
-  begin
+    begin
     for i := 0 to high(TextureArray) do
     begin
-      SDL_DestroyTexture(TextureArray[i]);
-      TextureArray[i] := nil;
+    SDL_DestroyTexture(TextureArray[i]);
+    TextureArray[i] := nil;
     end;
-  end;
+    end;
 
-  procedure ResetIndexArray(PNGIndexArray: TPNGIndexArray);
-  var
+    procedure ResetIndexArray(PNGIndexArray: TPNGIndexArray);
+    var
     i: integer;
-  begin
+    begin
     for i := 0 to high(PNGIndexArray) do
     begin
-      PNGIndexArray[i].Loaded := 0;
-      PNGIndexArray[i].CurPointerT := nil;
+    PNGIndexArray[i].Loaded := 0;
+    PNGIndexArray[i].CurPointerT := nil;
     end;
-  end; }
+    end;}
 begin
 
   {ResetIndexArray(MPNGIndex);
-  ResetIndexArray(SPNGIndex);
-  ResetIndexArray(CPNGIndex);
-  ResetIndexArray(IPNGIndex);
-  ResetIndexArray(TitlePNGIndex);
-  for i := 0 to high(FPNGIndex) do
+    ResetIndexArray(SPNGIndex);
+    ResetIndexArray(CPNGIndex);
+    ResetIndexArray(IPNGIndex);
+    ResetIndexArray(TitlePNGIndex);
+    for i := 0 to high(FPNGIndex) do
     ResetIndexArray(FPNGIndex[i]);
-  for i := 0 to high(EPNGIndex) do
+    for i := 0 to high(EPNGIndex) do
     ResetIndexArray(EPNGIndex[i]);
-  fillchar(EPicLoaded, sizeof(EPicLoaded), 0);
-  fillchar(FPicLoaded, sizeof(FPicLoaded), 0);
+    fillchar(EPicLoaded, sizeof(EPicLoaded), 0);
+    fillchar(FPicLoaded, sizeof(FPicLoaded), 0);
 
-  DestoryTextureArray(MPNGTex);
-  DestoryTextureArray(SPNGTex);
-  DestoryTextureArray(CPNGTex);
-  DestoryTextureArray(IPNGTex);
-  DestoryTextureArray(TitlePNGTex);
-  for i := 0 to high(FPNGTex) do
+    DestoryTextureArray(MPNGTex);
+    DestoryTextureArray(SPNGTex);
+    DestoryTextureArray(CPNGTex);
+    DestoryTextureArray(IPNGTex);
+    DestoryTextureArray(TitlePNGTex);
+    for i := 0 to high(FPNGTex) do
     DestoryTextureArray(FPNGTex[i]);
-  for i := 0 to high(EPNGTex) do
+    for i := 0 to high(EPNGTex) do
     DestoryTextureArray(EPNGTex[i]);
-    }
+  }
   if all = 1 then
   begin
     DestroyRenderTextures;
@@ -2946,7 +2916,6 @@ begin
   end;
 end;
 
-
 procedure DrawPNGTile(render: PSDL_Renderer; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer; region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer; scalex, scaley, angle: real; center: PSDL_Point); overload;
 var
   rect: TSDL_Rect;
@@ -2956,8 +2925,7 @@ var
 begin
   if SW_SURFACE <> 0 then
   begin
-    DrawPNGTileS(CurTargetSurface, PNGIndex, FrameNum, px, py, region, shadow, alpha, mixColor,
-      mixAlpha, scalex, scaley, angle);
+    DrawPNGTileS(CurTargetSurface, PNGIndex, FrameNum, px, py, region, shadow, alpha, mixColor, mixAlpha, scalex, scaley, angle);
     exit;
   end;
   //shadow设置混合方式, 以及预设值等
@@ -3147,20 +3115,19 @@ begin
   end;
 end;
 
-
 //复制Index的表面, 如为空返回一很小的表面, 避免Blit出错
 function CopyIndexSurface(PNGIndexArray: TPNGIndexArray; i: integer): PSDL_Surface;
 var
   PNGIndex: TPNGIndex;
 begin
   {Result := nil;
-  if (i >= 0) and (i <= high(PNGIndexArray)) then
-  begin
+    if (i >= 0) and (i <= high(PNGIndexArray)) then
+    begin
     PNGIndex := PNGIndexArray[i];
     //if (PNGIndex.Loaded = 1) and (PNGIndex.Frame > 0) then
     //Result := SDL_DisplayFormatAlpha(PNGIndex.CurPointer^);
-  end;
-  if Result = nil then
+    end;
+    if Result = nil then
     Result := SDL_CreateRGBSurface(ScreenFlag, 1, 1, 32, RMask, GMask, BMask, 0);}
 end;
 
@@ -3275,7 +3242,7 @@ procedure SetFontSize(Chnsize, engsize: integer; force: integer = 0);
 var
   scale: real;
   Text: PSDL_Surface;
-  word: array[0..1] of uint16 = (32, 0);
+  word: array [0 .. 1] of uint16 = (32, 0);
   tempcolor: TSDL_Color;
   p: PChar;
 begin
@@ -3311,11 +3278,11 @@ begin
   //ConsoleLog('size is %d and %d', [chnsize, engsize]);
   //{$ifdef android}
   {p := ReadFileToBuffer(nil, PChar(AppPath + CHINESE_FONT), -1, 1);
-  font := TTF_OpenFontRW(SDL_RWFromMem(p, FileGetlength(PChar(AppPath + CHINESE_FONT))), 1, chnsize);
-  //FreeFileBuffer(p);
-  p := ReadFileToBuffer(nil, PChar(AppPath + CHINESE_FONT), -1, 1);
-  engfont := TTF_OpenFontRW(SDL_RWFromMem(p, FileGetlength(PChar(AppPath + CHINESE_FONT))), 1, engsize);
-  //FreeFileBuffer(p);}
+    font := TTF_OpenFontRW(SDL_RWFromMem(p, FileGetlength(PChar(AppPath + CHINESE_FONT))), 1, chnsize);
+    //FreeFileBuffer(p);
+    p := ReadFileToBuffer(nil, PChar(AppPath + CHINESE_FONT), -1, 1);
+    engfont := TTF_OpenFontRW(SDL_RWFromMem(p, FileGetlength(PChar(AppPath + CHINESE_FONT))), 1, engsize);
+    //FreeFileBuffer(p);}
   //{$else}
   font := TTF_OpenFont(PChar(AppPath + CHINESE_FONT), chnsize);
   engfont := TTF_OpenFont(PChar(AppPath + ENGLISH_FONT), engsize);
@@ -3340,7 +3307,6 @@ procedure ResetFontSize;
 begin
   SetFontSize(0, 0, 2);
 end;
-
 
 //以下2个用于将队伍的简单状态小图转为表面组
 procedure LoadTeamSimpleStatus(var max: integer);
@@ -3464,12 +3430,12 @@ var
   i: integer;
 begin
   {for i := 0 to 5 do
-  begin
+    begin
     if TeamList[i] >= 0 then
     begin
-      sdl_freesurface(simplestatus[i]);
+    sdl_freesurface(simplestatus[i]);
     end;
-  end;}
+    end;}
 end;
 
 //屏幕整体变半透明黑
@@ -3575,7 +3541,7 @@ begin
   else
   begin
     {SDL_SetRenderDrawColor(render, 0, 0, 0, 128);
-    SDL_RenderFillrect(render, nil);}
+      SDL_RenderFillrect(render, nil);}
   end;
 end;
 
@@ -3600,10 +3566,10 @@ begin
     end;
   end;
   {if i > 0 then
-  begin
+    begin
     SDL_SetRenderTarget(render, screenTex);
     SDL_RenderCopy(render, freshscreenTex[i - 1], nil, nil);
-  end;}
+    end;}
 end;
 
 //刷新全部屏幕
@@ -3724,7 +3690,6 @@ begin
 
 end;
 
-
 //清除文字层
 procedure CleanTextScreen; overload;
 var
@@ -3777,7 +3742,6 @@ begin
   end;
 end;
 
-
 //清键值
 procedure CleanKeyValue;
 begin
@@ -3815,7 +3779,6 @@ begin
   SDL_GetMouseState2(x1, y1);
   Result := (x1 >= x) and (y1 >= y) and (x1 < x + w) and (y1 < y + h);
 end;
-
 
 //获取换算后的位置, 会改变变量的值
 //force = 1 会在不使用文字分层时强制计算
@@ -3943,7 +3906,6 @@ begin
     QuickSort(a, l, j);
 end;
 
-
 procedure QuickSortB(var a: array of TBuildInfo; l, r: integer);
 var
   i, j: integer;
@@ -3977,7 +3939,7 @@ begin
   Result := (x >= x1) and (x <= x2);
 end;
 
-{$ifdef mswindows}
+{$IFDEF mswindows}
 
 procedure tic;
 begin
@@ -3989,10 +3951,10 @@ end;
 procedure toc;
 begin
   QueryPerformanceCounter(cccc2);
-  ConsoleLog(' %3.2f us', [(cccc2 - cccc1) / tttt * 1e6]);
+  ConsoleLog(' %3.2f us', [(cccc2 - cccc1) / tttt * 1E6]);
 end;
 
-{$else}
+{$ELSE}
 
 procedure tic;
 begin
@@ -4004,7 +3966,7 @@ begin
   ConsoleLog(' %d ms', [SDL_GetTicks - tttt]);
 end;
 
-{$endif}
+{$ENDIF}
 
 procedure ConsoleLog(formatstring: string; content: array of const; cr: boolean = True); overload; inline;
 var
@@ -4013,18 +3975,18 @@ var
 begin
   if IsConsole then
   begin
-    Write(format(formatstring, content));
+    write(format(formatstring, content));
     if cr then
       writeln();
   end;
-  {$ifdef android}
+{$IFDEF android}
   str := format(formatstring, content);
   mythoutput.mythoutput(PChar(str));
   {i := fileopen(SDL_AndroidGetExternalStoragePath()+'/pig3_place_game_here',fmopenwrite);
-  fileseek(i, 0, 2);
-  filewrite(i, str[1], length(str));
-  fileclose(i);}
-  {$endif}
+    fileseek(i, 0, 2);
+    filewrite(i, str[1], length(str));
+    fileclose(i);}
+{$ENDIF}
 end;
 
 procedure ConsoleLog(formatstring: string = ''; cr: boolean = True); overload; inline;
@@ -4034,18 +3996,18 @@ var
 begin
   if IsConsole then
   begin
-    Write(format(formatstring, []));
+    write(format(formatstring, []));
     if cr then
       writeln();
   end;
-  {$ifdef android}
+{$IFDEF android}
   str := format(formatstring, []);
   mythoutput.mythoutput(PChar(str));
   {i := fileopen(SDL_AndroidGetExternalStoragePath()+'/pig3_place_game_here',fmopenwrite);
-  fileseek(i, 0, 2);
-  filewrite(i, str[1], length(str));
-  fileclose(i);}
-  {$endif}
+    fileseek(i, 0, 2);
+    filewrite(i, str[1], length(str));
+    fileclose(i);}
+{$ENDIF}
 end;
 
 end.

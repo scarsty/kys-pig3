@@ -1,35 +1,35 @@
-unit kys_main;
+﻿unit kys_main;
 
 {
- All Heros in Kam Yung's Stories - The Replicated Edition
+  All Heros in Kam Yung's Stories - The Replicated Edition
 
- Created by S.weyl in 2008 May.
- No Copyright (C) reserved.
- 
- You can build it by Delphi with JEDI-SDL support.
- 
- This resouce code file which is not perfect so far,
- can be modified and rebuilt freely,
- or translate it to another programming language.
- But please keep this section when you want to spread a new vision. Thanks.
- Note: it must not be a good idea to use this as a pascal paradigm.
+  Created by S.weyl in 2008 May.
+  No Copyright (C) reserved.
+  
+  You can build it by Delphi with JEDI-SDL support.
+  
+  This resouce code file which is not perfect so far,
+  can be modified and rebuilt freely,
+  or translate it to another programming language.
+  But please keep this section when you want to spread a new vision. Thanks.
+  Note: it must not be a good idea to use this as a pascal paradigm.
 
 }
 
 {
- 任何人获得这份代码之后, 均可以自由增删功能, 重新
- 编译, 或译为其他语言. 但请保留本段文字.
+  任何人获得这份代码之后, 均可以自由增删功能, 重新
+  编译, 或译为其他语言. 但请保留本段文字.
 }
 
 interface
 
 uses
-  {$IFDEF UNIX}
+{$IFDEF UNIX}
   baseUnix,
-  {$ENDIF}
-  {$IFDEF ANDROID}
+{$ENDIF}
+{$IFDEF ANDROID}
   jni,
-  {$ENDIF}
+{$ENDIF}
   LCLIntf,
   LCLType,
   LConvEncoding,
@@ -52,7 +52,7 @@ uses
   elfreader, {needed for reading ELF executables}
   machoreader; {needed for reading MACH-O executables}
 
-  //function main(paracount: integer; paras: PPChar): integer; stdcall; export;
+//function main(paracount: integer; paras: PPChar): integer; stdcall; export;
 
 //程序重要子程
 procedure Run0;
@@ -129,7 +129,6 @@ procedure ReSetEntrance; //重设入口
 procedure Maker;
 procedure ScrollTextAmi(words: TStringList; chnsize, engsize, linespace, align, alignx, style, delay, picnum, scrolldirect: integer);
 
-
 procedure InitGrowth();
 
 procedure CloudCreate(num: integer);
@@ -141,7 +140,6 @@ function CheckString(str: string): boolean;
 //输出函数
 //procedure write1();
 
-
 implementation
 
 uses
@@ -152,10 +150,10 @@ uses
   kys_draw;
 
 {function main(paracount: integer; paras: PPChar): integer;
-begin
+  begin
   Run;
   result := 0;
-end;}
+  end;}
 
 procedure Run0;
 var
@@ -175,11 +173,11 @@ var
   a: array of integer;
   logo: PSDL_Texture;
   rect: TSDL_Rect;
-  {$IFDEF UNIX}
+{$IFDEF UNIX}
   filestat: stat;
-  {$ENDIF}
+{$ENDIF}
 begin
-  {$IFDEF Darwin}
+{$IFDEF Darwin}
   AppPath := ParamStr(0);
   fpLStat(AppPath, filestat);
   if fpS_IsLnk(filestat.st_mode) then
@@ -189,11 +187,11 @@ begin
       AppPath := ExtractFilePath(ParamStr(0)) + AppPath;
   end;
   AppPath := ExtractFileDir(ExtractFileDir(AppPath)) + '/game/';
-  {$ENDIF}
-  {$IFDEF mswindows}
+{$ENDIF}
+{$IFDEF mswindows}
   AppPath := '../game/';
-  {$ENDIF}
-  {$IFDEF android}
+{$ENDIF}
+{$IFDEF android}
   AppPath := SDL_AndroidGetExternalStoragePath() + '/game/';
   //for i := 1 to 4 do
   //AppPath:= ExtractFileDir(AppPath);
@@ -201,7 +199,7 @@ begin
   //if not fileexists(str) then
   FileClose(filecreate(str));
   CellPhone := 1;
-  {$ENDIF}
+{$ENDIF}
   //versionstr :=  SDL_AndroidGetExternalStoragePath();
   //test;
   //cellphone:=1;
@@ -276,7 +274,7 @@ begin
   WindowFlag := 0;
   if RENDERER = 1 then
     WindowFlag := SDL_WINDOW_OPENGL;
-  {if (SW_SURFACE <> 0) or (RENDERER = 1) then }
+  {if (SW_SURFACE <> 0) or (RENDERER = 1) then}
   WindowFlag := WindowFlag or SDL_WINDOW_RESIZABLE;
 
   if CellPhone = 1 then
@@ -532,12 +530,12 @@ begin
   ReadingTiles := True;
   now1 := SDL_GetTicks;
   {DecodeTime(time, h, m, s, ms);
-  case h of
+    case h of
     6..16: ScreenBlendMode := 0;
     17..20: ScreenBlendMode := 2;
     else
-      ScreenBlendMode := 1;
-  end;}
+    ScreenBlendMode := 1;
+    end;}
 
   ConsoleLog('Play movie and start music');
   if (OPEN_MOVIE = 1) then
@@ -565,9 +563,9 @@ begin
   NewStartAmi;
 
   {now1:=sdl_getticks;
-  for i:=1 to 10000 do
-  DrawTPic(0, 0, 0, 0, 0, 0, 0, 0, 0);
-  Message(sdl_getticks-now1);}
+    for i:=1 to 10000 do
+    DrawTPic(0, 0, 0, 0, 0, 0, 0, 0, 0);
+    Message(sdl_getticks-now1);}
 
   //x := TitlePosition.x;
   //y := TitlePosition.y;
@@ -724,8 +722,8 @@ begin
   end;
 
   {temp := CopyIndexSurface(TitlePngIndex[9]);
-  for i := 0 to 60 do
-  begin
+    for i := 0 to 60 do
+    begin
     Redraw;
     temp2 := rotozoomSurface(temp, -i * 6, 1, 1);
     dest.x := CENTER_X - temp2.w div 2;
@@ -737,11 +735,11 @@ begin
     if SDL_PollEvent(@event)>=0then
     begin
     if ((event.key.keysym.sym = SDLK_ESCAPE) or (event.button.button = SDL_BUTTON_RIGHT)) then
-      exit;
+    exit;
     CheckBasicEvent;
     end;
-  end;
-  SDL_FreeSurface(temp);}
+    end;
+    SDL_FreeSurface(temp);}
 
   for i := 1 to 60 do
   begin
@@ -836,7 +834,7 @@ begin
   words.LoadFromFile(AppPath + 'txt/start.txt');
   CleanTextScreen;
   instruct_14;
-  if 18 <= High(TitlePNGIndex) then
+  if 18 <= high(TitlePNGIndex) then
   begin
     for i := 20 downto 0 do
     begin
@@ -847,7 +845,7 @@ begin
       SDL_PollEvent(@event);
       {if ((event.key.keysym.sym = SDLK_ESCAPE) or (event.button.button = SDL_BUTTON_RIGHT)) then
         exit;
-      CheckBasicEvent;}
+        CheckBasicEvent;}
     end;
   end;
   PlayMP3(60, 0);
@@ -960,33 +958,33 @@ begin
       ZIP_SAVE := 1;
     if (KDEF_SCRIPT = 2) and (not FileExists(AppPath + 'script/event.imz')) then
       KDEF_SCRIPT := 1;
-    {$ifdef unix}
+{$IFDEF unix}
     THREAD_READ_PNG := 0;
     if RENDERER = 0 then
       RENDERER := 1;
-    {$endif}
+{$ENDIF}
     if DISABLE_MENU_AMI <> 0 then
       DISABLE_MENU_AMI := 25;
   finally
     Kys_ini.Free;
   end;
 
-  MaxProList[43] := 999;  //攻击
-  MaxProList[44] := 500;  //轻功
-  MaxProList[45] := 999;  //防御
-  MaxProList[46] := 200;  //医疗
-  MaxProList[47] := 100;  //用毒
-  MaxProList[48] := 100;  //解毒
-  MaxProList[49] := 100;  //抗毒
-  MaxProList[50] := 999;  //拳掌
-  MaxProList[51] := 999;  //御剑
-  MaxProList[52] := 999;  //耍刀
-  MaxProList[53] := 999;  //特殊
-  MaxProList[54] := 999;  //暗器
-  MaxProList[55] := 100;  //常识
-  MaxProList[56] := 100;  //品德
-  MaxProList[57] := 100;  //带毒
-  MaxProList[58] := 200;  //移动
+  MaxProList[43] := 999; //攻击
+  MaxProList[44] := 500; //轻功
+  MaxProList[45] := 999; //防御
+  MaxProList[46] := 200; //医疗
+  MaxProList[47] := 100; //用毒
+  MaxProList[48] := 100; //解毒
+  MaxProList[49] := 100; //抗毒
+  MaxProList[50] := 999; //拳掌
+  MaxProList[51] := 999; //御剑
+  MaxProList[52] := 999; //耍刀
+  MaxProList[53] := 999; //特殊
+  MaxProList[54] := 999; //暗器
+  MaxProList[55] := 100; //常识
+  MaxProList[56] := 100; //品德
+  MaxProList[57] := 100; //带毒
+  MaxProList[58] := 200; //移动
 
   ReadFileToBuffer(@ACol[0], AppPath + 'resource/mmap.col', 768, 0);
   move(ACol[0], ACol1[0], 768);
@@ -1018,25 +1016,25 @@ begin
 
   //升级经验统一为1000点
   //for i1 := 0 to 200 - 1 do
-  //  leveluplist[i1] := 1000;
+  //leveluplist[i1] := 1000;
 
-  // if fileexists('resource/black.pic') then
-  // begin
-  //   blackscreen := IMG_Load('resource/black.pic');
+  //if fileexists('resource/black.pic') then
+  //begin
+  //blackscreen := IMG_Load('resource/black.pic');
 
-  // end;
+  //end;
 
   {for i1 := 0 to 479 do
-  begin
+    begin
     for i := 0 to 639 do
     begin
-      b := ((i - ((CENTER_X * 2) shr 1)) * (i - ((CENTER_X * 2) shr 1)) + (i1 - ((CENTER_Y * 2) shr 1)) *
-        (i1 - ((CENTER_Y * 2) shr 1))) div 150;
-      if b > 100 then
-        b := 100;
-      snowalpha[i1][i] := b;
+    b := ((i - ((CENTER_X * 2) shr 1)) * (i - ((CENTER_X * 2) shr 1)) + (i1 - ((CENTER_Y * 2) shr 1)) *
+    (i1 - ((CENTER_Y * 2) shr 1))) div 150;
+    if b > 100 then
+    b := 100;
+    snowalpha[i1][i] := b;
     end;
-  end;}
+    end;}
   //showmessage(inttostr((CENTER_X * 2) shr 1));
   //InitialSurfaces;
   //载入108人名, 星位名
@@ -1154,12 +1152,12 @@ end;
 function InitialRole: boolean;
 var
   i, x, y, len: integer;
-  p: array[0..14] of integer;
+  p: array [0 .. 14] of integer;
   str0, str2: WideString;
   str, str1, Name: string;
   str3: string;
   p0, p1: pwidechar;
-  {$ifdef android}
+{$IFDEF android}
   env: PJNIEnv;
   jstr: jstring;
   cstr: PChar;
@@ -1167,7 +1165,7 @@ var
   clazz: jclass;
   method_id: jmethodID;
   e: TSDL_event;
-  {$endif}
+{$ENDIF}
 begin
   LoadR(0);
   //显示输入姓名的对话框
@@ -1177,15 +1175,15 @@ begin
   //if FULLSCREEN = 1 then
   //RealScreen := SDL_SetVideoMode(RESOLUTIONX, RESOLUTIONY, 32, ScreenFlag);
 
-  Name := '蕭笑竹'; //默认名
+  name := '蕭笑竹'; //默认名
   str := '請輸入主角之姓名';
   if SIMPLE = 1 then
   begin
-    Name := '萧笑竹'; //默认名
+    name := '萧笑竹'; //默认名
     str := '请输入主角之姓名';
   end;
 
-  {$ifdef android}
+{$IFDEF android}
   ShowStatus(0);
   UpdateAllScreen;
   str0 := '點擊一下開始選屬性！';
@@ -1196,12 +1194,12 @@ begin
   method_id := env^.GetMethodID(env, clazz, 'mythSetName', '()Ljava/lang/String;');
   jstr := jstring(env^.CallObjectMethod(env, activity, method_id));
   cstr := env^.GetStringUTFChars(env, jstr, 0);
-  Name := strpas(cstr);
+  name := strpas(cstr);
   env^.ReleaseStringUTFChars(env, jstr, cstr);
   Result := True;
-  {$else}
+{$ELSE}
   if FULLSCREEN = 0 then
-    Result := inputquery('Enter name', str, Name)
+    Result := inputquery('Enter name', str, name)
   else
     Result := True;
 
@@ -1211,14 +1209,13 @@ begin
     Redraw;
     UpdateAllScreen;
   end;
-  {$endif}
-
-  Result := Result and (Name <> '');
+{$ENDIF}
+  Result := Result and (name <> '');
   if Result then
   begin
     //if SIMPLE <> 0 then
     //Name := CP936ToUTF8(Simplified2Traditional(UTF8ToCP936(Name)));
-    str2 := UTF8Decode(Name);
+    str2 := UTF8Decode(name);
     p0 := @Rrole[0].Name;
     p1 := @str2[1];
     fillchar(Rrole[0].Name[0], 10, 0);
@@ -1267,9 +1264,9 @@ begin
       UpdateAllScreen;
 
       {while SDL_PollEvent(@event) do
-      begin
+        begin
 
-      end;}
+        end;}
       i := WaitAnyKey;
       if MouseInRegion(175, CENTER_Y + 171, 260, 22) and (i <> SDLK_ESCAPE) then
         break;
@@ -1286,7 +1283,7 @@ begin
     case MODVersion of
       0, 13, 31, 12, 41:
       begin
-        if Name = '曹輕羽' then
+        if name = '曹輕羽' then
         begin
           Rrole[0].MaxHP := 125;
           Rrole[0].CurrentHP := 125;
@@ -1314,7 +1311,7 @@ begin
           Rrole[0].Aptitude := 100;
           Rrole[0].MagLevel[0] := 999;
         end;
-        if Name = '小小豬' then
+        if name = '小小豬' then
         begin
           Rrole[0].addnum := 1;
           Rrole[0].Aptitude := 100;
@@ -1324,14 +1321,14 @@ begin
             Rrole[0].HeadNum := 448;
         end;
 
-        if Name = '風劍琴' then
+        if name = '風劍琴' then
         begin
           Rrole[0].addnum := 1;
           Rrole[0].AmiFrameNum[0] := 0;
 
         end;
 
-        if (Name = '阮小二') then
+        if (name = '阮小二') then
         begin
           Rrole[0].addnum := 1;
           Rrole[0].Aptitude := 100;
@@ -1341,7 +1338,7 @@ begin
             Rrole[0].HeadNum := 434;
         end;
 
-        if (Name = '史進') then
+        if (name = '史進') then
         begin
           Rrole[0].addnum := 1;
           Rrole[0].Aptitude := 100;
@@ -1351,7 +1348,7 @@ begin
             Rrole[0].HeadNum := 435;
         end;
 
-        if (Name = '晁蓋') then
+        if (name = '晁蓋') then
         begin
           Rrole[0].Aptitude := 100;
           Rrole[0].MagLevel[0] := 999;
@@ -1360,7 +1357,7 @@ begin
             Rrole[0].HeadNum := 454;
         end;
 
-        if (Name = '筷子') then
+        if (name = '筷子') then
         begin
           instruct_32(277, 1);
           Rrole[0].Fist := 150;
@@ -1371,7 +1368,7 @@ begin
           Ritem[277].NeedMPType := 2;
         end;
 
-        if Name = '獨孤令狐' then
+        if name = '獨孤令狐' then
         begin
           instruct_33(0, $A8, 1);
           Ritem[$27].AddAttack := 160;
@@ -1420,8 +1417,7 @@ begin
     r := random(3);
     Rrole[0].AddSpeed := r;
   end
-  else
-  if Rrole[0].Aptitude > 60 then
+  else if Rrole[0].Aptitude > 60 then
   begin
     r := random(8);
     Rrole[0].IncLife := r + 17;
@@ -1472,7 +1468,7 @@ var
   zfile: unzfile;
   file_info: unz_file_info;
   talkarray: array of byte;
-  temp: array[0..1000] of smallint;
+  temp: array [0 .. 1000] of smallint;
 begin
   Result := True;
 
@@ -1626,33 +1622,33 @@ begin
 
   //兼容存档, 判别标准是慕容复头像
   {if Rrole[882].HeadNum = 433 then
-  begin
+    begin
     for i := 1 to high(Rrole) do
-      Rrole[i].ActionNum := Rrole[i].HeadNum;
+    Rrole[i].ActionNum := Rrole[i].HeadNum;
     Rrole[882].HeadNum := 149;
-  end;}
+    end;}
 
   if num = 0 then
   begin
     //if MODVersion = 13 then
     move(Rrole[low(Rrole)], Rrole0[low(Rrole0)], sizeof(TRole) * length(Rrole));
-    for i := 0 to High(Rrole) do
+    for i := 0 to high(Rrole) do
       correctmagic(i);
   end
   else
-  //物品使用者修正
-  if MODVersion <> 13 then
-    for i := 0 to high(Rrole) do
-    begin
-      if Rrole[i].Level <= 0 then
-        break;
-      if Rrole[i].PracticeBook >= 0 then
-        Ritem[Rrole[i].PracticeBook].User := i;
-      if Rrole[i].Equip[0] >= 0 then
-        Ritem[Rrole[i].Equip[0]].User := i;
-      if Rrole[i].Equip[1] >= 0 then
-        Ritem[Rrole[i].Equip[1]].User := i;
-    end;
+    //物品使用者修正
+    if MODVersion <> 13 then
+      for i := 0 to high(Rrole) do
+      begin
+        if Rrole[i].Level <= 0 then
+          break;
+        if Rrole[i].PracticeBook >= 0 then
+          Ritem[Rrole[i].PracticeBook].User := i;
+        if Rrole[i].Equip[0] >= 0 then
+          Ritem[Rrole[i].Equip[0]].User := i;
+        if Rrole[i].Equip[1] >= 0 then
+          Ritem[Rrole[i].Equip[1]].User := i;
+      end;
 
   //物品修正, 判断标准为最后一个物品的数量
   if Ritemlist[MAX_ITEM_AMOUNT - 1].Amount <> 0 then
@@ -1671,39 +1667,38 @@ begin
     end;
   end;
 
-
   {for i1 := 900 downto 00 do
-  begin
+    begin
     for i2 := 0 to 4 do
-      FightFrame[Rrole[i1].HeadNum, i2] := Rrole[i1].AmiFrameNum[i2];
-  end;
-  idx := filecreate('fightframe.ka');
-  filewrite(idx, fightframe[0, 0], sizeof(fightframe));
-  fileclose(idx);}
+    FightFrame[Rrole[i1].HeadNum, i2] := Rrole[i1].AmiFrameNum[i2];
+    end;
+    idx := filecreate('fightframe.ka');
+    filewrite(idx, fightframe[0, 0], sizeof(fightframe));
+    fileclose(idx);}
 
   //以下用于转码
   {if Rrole[166].HeadNum <> 16 then
-  begin
+    begin
     Rrole[166].HeadNum := 16;
     for i1 := 0 to high(Rrole) do
     begin
-      big5tou16(@Rrole[i1].Name[0]);
+    big5tou16(@Rrole[i1].Name[0]);
     end;
     for i1 := 0 to high(Rmagic) do
     begin
-      big5tou16(@Rmagic[i1].Name[0]);
-      big5tou16(@Rmagic[i1].Name0[0]);
+    big5tou16(@Rmagic[i1].Name[0]);
+    big5tou16(@Rmagic[i1].Name0[0]);
     end;
     for i1 := 0 to high(Rscence) do
     begin
-      big5tou16(@Rscence[i1].Name[0]);
+    big5tou16(@Rscence[i1].Name[0]);
     end;
     for i1 := 0 to high(Ritem) do
     begin
-      big5tou16(@Ritem[i1].Name[0]);
-      big5tou16(@Ritem[i1].Introduction[0]);
+    big5tou16(@Ritem[i1].Name[0]);
+    big5tou16(@Ritem[i1].Introduction[0]);
     end;
-  end;}
+    end;}
   //测试武功显示使用, 发布时需去掉
   //instruct_33(0, 369, 1);
   //instruct_33(0, 372, 1);
@@ -1879,7 +1874,7 @@ end;
 
 procedure Walk;
 var
-  word: array[0..10] of uint16;
+  word: array [0 .. 10] of uint16;
   x, y, walking, Mx1, My1, Mx2, My2, i, i1, i2, stillcount, x1, y1: integer;
   axp, ayp, axp1, ayp1, gotoEntrance, minstep, step, drawed, speed: integer;
   now, next_time, next_time2, next_time3: uint32;
@@ -1951,7 +1946,7 @@ begin
         stillcount := 0;
       if stillcount >= 10 then
       begin
-        if not (MODVersion in [31]) then
+        if not(MODVersion in [31]) then
           still := 1;
         mstep := mstep + 1;
         if mstep > 6 then
@@ -2255,8 +2250,7 @@ begin
           else
             Result := True;
         end
-        else
-        if (x = shipy) and (y = shipx) then //touch ship?
+        else if (x = shipy) and (y = shipx) then //touch ship?
         begin
           InShip := 0;
           Result := True;
@@ -2267,7 +2261,7 @@ begin
           Result := True;
         end
         else
-          //      InShip := 0;           //option_explicit_ori_on
+          //InShip := 0;           //option_explicit_ori_on
           Result := False;
       end
       else
@@ -2302,7 +2296,7 @@ end;
 procedure Moveman(x1, y1, x2, y2: integer);
 var
   s, i, i1, i2, a, tempx, tx1, tx2, ty1, ty2, tempy: integer;
-  Xinc, Yinc, dir: array[1..4] of integer;
+  Xinc, Yinc, dir: array [1 .. 4] of integer;
 begin
   if Fway[x2, y2] > 0 then
   begin
@@ -2335,12 +2329,12 @@ end;
 
 function FindWay(x1, y1: integer): boolean;
 var
-  Xlist: array[0..4096] of smallint;
-  Ylist: array[0..4096] of smallint;
-  steplist: array[0..4096] of smallint;
+  Xlist: array [0 .. 4096] of smallint;
+  Ylist: array [0 .. 4096] of smallint;
+  steplist: array [0 .. 4096] of smallint;
   curgrid, totalgrid: integer;
-  Bgrid: array[1..4] of integer; //0空位, 1可过, 2已走过 ,3越界
-  Xinc, Yinc: array[1..4] of integer;
+  Bgrid: array [1 .. 4] of integer; //0空位, 1可过, 2已走过 ,3越界
+  Xinc, Yinc: array [1 .. 4] of integer;
   curX, curY, curstep, nextX, nextY: integer;
   i, mode: integer;
   CanWalk: boolean;
@@ -2379,11 +2373,11 @@ begin
           nextX := curX + Xinc[i];
           nextY := curY + Yinc[i];
           if (nextX < 0) or (nextX > 63) or (nextY < 0) or (nextY > 63) then
-            Bgrid[i] := 3  //越界
+            Bgrid[i] := 3//越界
           else if Fway[nextX, nextY] >= 0 then
-            Bgrid[i] := 2 //已走过
+            Bgrid[i] := 2//已走过
           else if not CanWalkInScence(curx, cury, nextx, nexty) then
-            Bgrid[i] := 1   //阻碍
+            Bgrid[i] := 1//阻碍
           else
             Bgrid[i] := 0;
         end;
@@ -2395,13 +2389,13 @@ begin
           nextX := curX + Xinc[i];
           nextY := curY + Yinc[i];
           if (nextX < 0) or (nextX > 479) or (nextY < 0) or (nextY > 479) then
-            Bgrid[i] := 3 //越界
+            Bgrid[i] := 3//越界
           else if (Entrance[nextx, nexty] >= 0) then
-            Bgrid[i] := 6 //入口
+            Bgrid[i] := 6//入口
           else if Fway[nextX, nextY] >= 0 then
-            Bgrid[i] := 2 //已走过
+            Bgrid[i] := 2//已走过
           else if buildx[nextx, nexty] > 0 then
-            Bgrid[i] := 1 //阻碍
+            Bgrid[i] := 1//阻碍
           else if ((surface[nextx, nexty] >= 1692) and (surface[nextx, nexty] <= 1700)) then
             Bgrid[i] := 1
           else if (earth[nextx, nexty] = 838) or ((earth[nextx, nexty] >= 612) and (earth[nextx, nexty] <= 670)) then
@@ -2409,9 +2403,9 @@ begin
           else if ((earth[nextx, nexty] >= 358) and (earth[nextx, nexty] <= 362)) or ((earth[nextx, nexty] >= 506) and (earth[nextx, nexty] <= 670)) or ((earth[nextx, nexty] >= 1016) and (earth[nextx, nexty] <= 1022)) then
           begin
             if (nextx = shipy) and (nexty = shipx) then
-              Bgrid[i] := 4 //船
+              Bgrid[i] := 4//船
             else if ((surface[nextx, nexty] div 2 >= 863) and (surface[nextx, nexty] div 2 <= 872)) or ((surface[nextx, nexty] div 2 >= 852) and (surface[nextx, nexty] div 2 <= 854)) or ((surface[nextx, nexty] div 2 >= 858) and (surface[nextx, nexty] div 2 <= 860)) then
-              Bgrid[i] := 0 //船
+              Bgrid[i] := 0//船
             else
               Bgrid[i] := 5; //水
           end
@@ -2424,17 +2418,17 @@ begin
     for i := 1 to 4 do
     begin
       case mode of
-        13://where = 1 必定有 inship = 0, 严格吗?
-          if ((inship = 1) and (Bgrid[i] = 5)) or (((Bgrid[i] = 0) or (Bgrid[i] = 4)) and (inship = 0)) then
-          begin
-            Xlist[totalgrid] := curX + Xinc[i];
-            Ylist[totalgrid] := curY + Yinc[i];
-            steplist[totalgrid] := curstep + 1;
-            Fway[Xlist[totalgrid], Ylist[totalgrid]] := steplist[totalgrid];
-            totalgrid := totalgrid + 1;
-            if totalgrid > 4096 then
-              exit;
-          end;
+        13: //where = 1 必定有 inship = 0, 严格吗?
+        if ((inship = 1) and (Bgrid[i] = 5)) or (((Bgrid[i] = 0) or (Bgrid[i] = 4)) and (inship = 0)) then
+        begin
+          Xlist[totalgrid] := curX + Xinc[i];
+          Ylist[totalgrid] := curY + Yinc[i];
+          steplist[totalgrid] := curstep + 1;
+          Fway[Xlist[totalgrid], Ylist[totalgrid]] := steplist[totalgrid];
+          totalgrid := totalgrid + 1;
+          if totalgrid > 4096 then
+            exit;
+        end;
         else
         begin
           CanWalk := False;
@@ -2526,7 +2520,6 @@ begin
   //result := canentrance;
 end;
 
-
 procedure UpdateScenceAmi;
 begin
   while True do
@@ -2560,7 +2553,7 @@ begin
   //LockScence := false;
   next_time := SDL_GetTicks;
   Where := 1;
-  walking := 0; // 为0表示静止, 为1表示键盘行走, 为2表示鼠标行走
+  walking := 0; //为0表示静止, 为1表示键盘行走, 为2表示鼠标行走
   just := 0;
   CurEvent := -1;
   AmiCount := 0;
@@ -2622,11 +2615,11 @@ begin
       break;
     {if Sx > 63 then
       Sx := 63;
-    if Sy > 63 then
+      if Sy > 63 then
       Sy := 63;
-    if Sx < 0 then
+      if Sx < 0 then
       Sx := 0;
-    if Sy < 0 then
+      if Sy < 0 then
       Sy := 0;}
     //场景内动态效果
     now := SDL_GetTicks;
@@ -2690,15 +2683,15 @@ begin
         Sy := Rscence[CurScence].JumpY2;
       end;
       {if Sx = 0 then
-      begin
+        begin
         Sx := RScence[CurScence].JumpX2;
         Sy := RScence[CurScence].JumpY2;
-      end;
-      if Sx = 0 then
-      begin
+        end;
+        if Sx = 0 then
+        begin
         Sx := RScence[CurScence].EntranceX;
         Sy := RScence[CurScence].EntranceY;
-      end;}
+        end;}
       InitialScence;
       Walking := 0;
       now2 := 0;
@@ -2802,10 +2795,10 @@ begin
             walking := 2;
             GetMousePosition(Axp, Ayp, Sx, Sy, SData[CurScence, 4, Sx, Sy]);
             {if (axp < 0) or (axp > 63) or (ayp < 0) or (ayp > 63) then
-            begin
+              begin
               axp := Rscence[CurScence].ExitX[0];
               ayp := Rscence[CurScence].ExitY[0];;
-            end;}
+              end;}
             if (axp >= 0) or (axp <= 63) or (ayp >= 0) or (ayp <= 63) then
             begin
               FillChar(Fway[0, 0], sizeof(Fway), -1);
@@ -2817,7 +2810,7 @@ begin
                 for i1 := axp + 1 downto axp do
                   for i2 := ayp + 1 downto ayp do
                   begin
-                    if (SData[CurScence, 3, i1, i2] > 0) and not (CanWalkInScence(i1, i2)) then
+                    if (SData[CurScence, 3, i1, i2] > 0) and not(CanWalkInScence(i1, i2)) then
                     begin
                       axp := i1;
                       ayp := i2;
@@ -2900,17 +2893,17 @@ begin
         begin
           speed := speed + 1;
           stillcount := 0;
-            {if walking = 2 then //如果用鼠标则重置方向
+          {if walking = 2 then //如果用鼠标则重置方向
             begin
-              SDL_GetMouseState2(x, y);
-              if (x < CENTER_x) and (y < CENTER_y) then
-                Sface := 2;
-              if (x > CENTER_x) and (y < CENTER_y) then
-                Sface := 0;
-              if (x < CENTER_x) and (y > CENTER_y) then
-                Sface := 3;
-              if (x > CENTER_x) and (y > CENTER_y) then
-                Sface := 1;
+            SDL_GetMouseState2(x, y);
+            if (x < CENTER_x) and (y < CENTER_y) then
+            Sface := 2;
+            if (x > CENTER_x) and (y < CENTER_y) then
+            Sface := 0;
+            if (x < CENTER_x) and (y > CENTER_y) then
+            Sface := 3;
+            if (x > CENTER_x) and (y > CENTER_y) then
+            Sface := 1;
             end;}
           Sx1 := Sx;
           Sy1 := Sy;
@@ -3027,9 +3020,9 @@ begin
     PlayMP3(exitscencemusicnum, -1);
   end;
   {if LESS_VIDEOMEMERY <> 0 then
-  begin
+    begin
     DestoryAllTextures;
-  end;}
+    end;}
 end;
 
 procedure ShowScenceName(snum: integer);
@@ -3041,8 +3034,7 @@ begin
   //显示场景名
   scencename := PCharToUnicode(PChar(@Rscence[snum].Name[0]), 5);
   //c:=sdl_maprgba(screen.format,0,255,0,0);
-  DrawTextWithRect(@scencename[1], CENTER_X - DrawLength(scencename) * 5 - 23, 100,
-    0, 0, $202020);
+  DrawTextWithRect(@scencename[1], CENTER_X - DrawLength(scencename) * 5 - 23, 100, 0, 0, $202020);
   SDL_Delay(500);
   if LastShowScene <> snum then
   begin
@@ -3153,14 +3145,14 @@ end;
 //Menus.
 //通用选单, (位置(x, y), 宽度, 最大选项(编号均从0开始))
 {
-function CommonMenu(x, y, w, max, default: integer; menuString, menuEngString: array of WideString;
+  function CommonMenu(x, y, w, max, default: integer; menuString, menuEngString: array of WideString;
   fn: TPInt1): integer; overload;
-var
+  var
   menu, menup, x1, y1: integer;
-begin
+  begin
   Result := CommonMenu(x, y, w, max, default, menuString, menuEngString, 1, $0, $202020,
-      ColColor($64), ColColor($66), fn);
-end;}
+  ColColor($64), ColColor($66), fn);
+  end;}
 
 //显示通用选单(位置, 宽度, 最大值)
 //这个通用选单包含两个字符串组, 可分别显示中文和英文
@@ -3361,8 +3353,7 @@ var
       DrawTextFrame(x, y + h * (i - menutop), len1, alpha);
       DrawShadowText(@menuString[i][1], x + 19, y + 3 + h * (i - menutop), c1, c2);
       if p = 1 then
-        DrawEngShadowText(@menuEngString[i][1], x + 19 + (len + 1) * 20, y + 3 + h * (i - menutop),
-          c1, c2);
+        DrawEngShadowText(@menuEngString[i][1], x + 19 + (len + 1) * 20, y + 3 + h * (i - menutop), c1, c2);
     end;
   end;
 
@@ -3598,7 +3589,7 @@ var
 
 begin
   menu := 0;
-  ////SDL_EnableKeyRepeat(0,10);
+  /// /SDL_EnableKeyRepeat(0,10);
   //DrawMMap;
   //测试长度
   len := 0;
@@ -3710,8 +3701,8 @@ var
   //SimpleStatus: array[0..5] of PSDL_Surface;
   tempsur, tempsur2: PSDL_Surface;
   dest: TSDL_Rect;
-  pos: array[0..5] of tposition;
-  list: array[0..5] of integer;
+  pos: array [0 .. 5] of tposition;
+  list: array [0 .. 5] of integer;
 begin
   //str := ('查看隊員狀態');
   //redraw;
@@ -3824,7 +3815,7 @@ end;
 procedure MenuEsc;
 var
   menu, menup, x1, y1, i, j, k: integer;
-  pos, pathsign: array[0..3] of TPosition;
+  pos, pathsign: array [0 .. 3] of TPosition;
   temp, rotoscr, tempscr: PSDL_Surface;
   dest: TSDL_Rect;
   selected: boolean;
@@ -4049,15 +4040,14 @@ begin
   end;
 
   {for i := 0 to 11 do
-  begin
+    begin
     ShowSimpleStatus(762 + i, i mod 3 * 200, i div 3 * 80);
-  end;
-  WaitAnyKey;}
+    end;
+    WaitAnyKey;}
 
   NeedRefreshScence := 1;
   FreeFreshScreen;
 end;
-
 
 procedure DrawTitleMenu(menu: integer = -1);
 var
@@ -4178,25 +4168,25 @@ var
   canuse, precanuse: byte;
   color1, color2: uint32;
   str: WideString;
-  words: array[0..10] of WideString;
-  words2: array[0..22] of WideString;
-  words3: array[0..12] of WideString;
+  words: array [0 .. 10] of WideString;
+  words2: array [0 .. 22] of WideString;
+  words3: array [0 .. 12] of WideString;
   curitem0: integer;
   refresh: boolean;
   //显示物品选单, intitle表示有灰度
-  ItemTypeList: array[0..8] of integer = (0, 1, 3, 4, 21, 22, 23, 30, 31);
+  ItemTypeList: array [0 .. 8] of integer = (0, 1, 3, 4, 21, 22, 23, 30, 31);
 
   procedure ShowMenuItem(lostfocus: integer);
   var
     item, i, i1, i2, len, len2, len3, listnum, Alpha, dt, l, l1, w, amount: integer;
     str: WideString;
-    p2: array[0..22] of integer;
-    p3: array[0..12] of integer;
+    p2: array [0 .. 22] of integer;
+    p3: array [0 .. 12] of integer;
     color1, color2: uint32;
   begin
 
     dt := d * row;
-    l := 7;  //介绍的列数
+    l := 7; //介绍的列数
     l1 := l - 1;
     w := 90; //介绍每列宽度
 
@@ -4241,9 +4231,9 @@ var
     begin
       amount := RItemlist[listnum].Amount;
       str := format('%10d', [amount]);
-      DrawShadowText(@str[1], 280 + xp, 3 + yp, ColColor($64), ColColor($66));
+      DrawShadowText(@str[1], 580 + xp, 3 + yp, ColColor($64), ColColor($66));
       len := DrawLength(PChar(@Ritem[item].Name));
-      DrawU16ShadowText(@Ritem[item].Name, 215 - len * 5 + xp, 3 + yp, 0, $202020);
+      DrawU16ShadowText(@Ritem[item].Name, 335 - len * 5 + xp, 3 + yp, 0, $202020);
       //drawshadowtext(@words[Ritem[item].ItemType, 1], 252, 115 + row * 50, colcolor($21), colcolor($23));
 
       //如是罗盘则显示坐标
@@ -4268,8 +4258,7 @@ var
         begin
           str := '使用';
           DrawShadowText(@str[1], 18 + length(PChar(@Rrole[Ritem[item].User].Name)) * 10 + len * 20 + xp, 47 + dt + yp, ColColor($64), ColColor($66));
-          DrawU16ShadowText(@Rrole[Ritem[item].User].Name, 18 + len * 20 + xp, 48 + dt + yp,
-            ColColor($64), ColColor($66));
+          DrawU16ShadowText(@Rrole[Ritem[item].User].Name, 18 + len * 20 + xp, 48 + dt + yp, ColColor($64), ColColor($66));
         end;
       end;
     end;
@@ -4356,10 +4345,8 @@ var
             color1 := ColColor($64);
             color2 := ColColor($66);
           end;
-          DrawShadowText(@words2[i][1], 68 + i1 mod l * w + xp, i1 div l * 28 + 78 + dt + yp,
-            ColColor(5), ColColor(7));
-          DrawShadowText(@str[1], 108 + i1 mod l * w + xp, i1 div l * 28 + 78 + dt + yp,
-            color1, color2);
+          DrawShadowText(@words2[i][1], 68 + i1 mod l * w + xp, i1 div l * 28 + 78 + dt + yp, ColColor(5), ColColor(7));
+          DrawShadowText(@str[1], 108 + i1 mod l * w + xp, i1 div l * 28 + 78 + dt + yp, color1, color2);
           i1 := i1 + 1;
         end;
       end;
@@ -4407,7 +4394,7 @@ begin
   y := 0;
   listLT := 0;
 
-  d := 83;  //图片的尺寸
+  d := 83; //图片的尺寸
 
   //标题区的位置, 标题每项的宽度
   titlex1 := CENTER_X - 250;
@@ -4415,7 +4402,7 @@ begin
   titlew := 45;
   titlemax := 8;
   xp := titlex1;
-  yp := titley1 + 25;  //菜单的总体初始位置
+  yp := titley1 + 25; //菜单的总体初始位置
 
   //物品选区的区域
   regionx1 := xp + 5;
@@ -4477,7 +4464,6 @@ begin
   menuString[6] := ('刀錄');
   menuString[7] := ('奇門');
   menuString[8] := ('心法');
-
 
   xm := CENTER_X - 384 + 300;
   ym := CENTER_Y - 240 + 5;
@@ -4549,10 +4535,10 @@ begin
             //DrawMPic(2020, CENTER_X - 384 + 15, CENTER_Y - 240 + 80 * i + 50, 0, 0, 30);
           end;
           {if (menu = 2) and (Rrole[teamlist[i]].PracticeBook >= 0) then
-          begin
+            begin
             str := pwidechar(@Ritem[Rrole[teamlist[i]].PracticeBook].Name);
             DrawShadowText(@str[1], CENTER_X - 384 + 15, CENTER_Y - 240 + 80 * i + 60, ColColor($64), ColColor($66));
-          end;}
+            end;}
           if (Ritem[curitem].Magic > 0) then
           begin
             level := GetMagicLevel(teamlist[i], Ritem[curitem].Magic);
@@ -4583,7 +4569,7 @@ begin
         end;
         DrawShadowText(@menuString[i, 1], titlex1 + titlew * i + 12, titley1, color1, color2);
         //if i < titlemax then
-        // DrawShadowText(@str[1], titlex1 + titlew * i + 50, titley1, ColColor($7a), ColColor($7c));
+        //DrawShadowText(@str[1], titlex1 + titlew * i + 50, titley1, ColColor($7a), ColColor($7c));
       end;
       if dragitem >= 0 then
       begin
@@ -4933,8 +4919,7 @@ begin
             1: subType := 26;
             2: subType := 27;
             3: subType := 28;
-            else
-              subType := 20 + Rmagic[mnum].MagicType;
+            else subType := 20 + Rmagic[mnum].MagicType;
           end;
         //扩展部分, 合并部分分类
         if (subType = 2) or (subType = 24) or (subType = 25) or (subType = 27) then
@@ -4972,20 +4957,20 @@ begin
     exit;
   CurItem := inum;
   {//following is for test.
-  ritem[inum].AddAttack :=1;
-  ritem[inum].AddSpeed :=1;
-  ritem[inum].AddDefence :=1;
-  ritem[inum].AddFist :=1;
-  ritem[inum].AddCurrentHP :=1;
-  ritem[inum].AddAttPoi :=1;
-  ritem[inum].AddMove :=1;
-  ritem[inum].AddHidWeapon :=1;
-  ritem[inum].AddRepute :=1;
-  ritem[inum].AddSword :=1;
-  ritem[inum].AddPoi :=1;
-  ritem[inum].AddUnusual :=1;
-  ritem[inum].AddUsePoi :=1;
-  ritem[inum].AddMedPoi :=1;}
+    ritem[inum].AddAttack :=1;
+    ritem[inum].AddSpeed :=1;
+    ritem[inum].AddDefence :=1;
+    ritem[inum].AddFist :=1;
+    ritem[inum].AddCurrentHP :=1;
+    ritem[inum].AddAttPoi :=1;
+    ritem[inum].AddMove :=1;
+    ritem[inum].AddHidWeapon :=1;
+    ritem[inum].AddRepute :=1;
+    ritem[inum].AddSword :=1;
+    ritem[inum].AddPoi :=1;
+    ritem[inum].AddUnusual :=1;
+    ritem[inum].AddUsePoi :=1;
+    ritem[inum].AddMedPoi :=1;}
   if (teammate >= 0) and (teammate <= 5) then
     potentialUser := Teamlist[teammate]
   else
@@ -5051,9 +5036,8 @@ begin
           str1 := pwidechar(@Ritem[inum].Name);
           off := DrawTextFrame(CENTER_X - 275, CENTER_Y - 193, 8 + DrawLength(str1));
           //DrawTextWithRect(@str[1], CENTER_X - 275, CENTER_Y - 193, length(str1) * 22 + 80, 0, $202020);
-          DrawShadowText(@str[1], CENTER_X - 275 + off, CENTER_Y - 193 + 3,{160, 32,} 0, $202020);
-          DrawShadowText(@str1[1], CENTER_X - 275 + 80 + off, CENTER_Y - 193 + 3,{160, 32,} ColColor($64),
-            ColColor($66));
+          DrawShadowText(@str[1], CENTER_X - 275 + off, CENTER_Y - 193 + 3, {160, 32,} 0, $202020);
+          DrawShadowText(@str1[1], CENTER_X - 275 + 80 + off, CENTER_Y - 193 + 3, {160, 32,} ColColor($64), ColColor($66));
           UpdateAllScreen;
           mask := 0;
           for i := 0 to 5 do
@@ -5117,9 +5101,8 @@ begin
           //DrawTextWithRect(@str[1], CENTER_X - 275, CENTER_Y - 193, length(str1) * 22 + 80, 0, $202020);
           off := DrawTextFrame(CENTER_X - 275, CENTER_Y - 193, 8 + DrawLength(str1));
           //DrawTextWithRect(@str[1], CENTER_X - 275, CENTER_Y - 193, length(str1) * 22 + 80, 0, $202020);
-          DrawShadowText(@str[1], CENTER_X - 275 + off, CENTER_Y - 193 + 3,{160, 32,} 0, $202020);
-          DrawShadowText(@str1[1], CENTER_X - 275 + 80 + off, CENTER_Y - 193 + 3,{160, 32,} ColColor($64),
-            ColColor($66));
+          DrawShadowText(@str[1], CENTER_X - 275 + off, CENTER_Y - 193 + 3, {160, 32,} 0, $202020);
+          DrawShadowText(@str1[1], CENTER_X - 275 + 80 + off, CENTER_Y - 193 + 3, {160, 32,} ColColor($64), ColColor($66));
           UpdateAllScreen;
           mask := 0;
           for i := 0 to 5 do
@@ -5151,7 +5134,7 @@ begin
               Rrole[rnum].ExpForBook := 0;
             end;
             //if (inum in [78, 93]) then
-            //  rrole[rnum].Sexual := 2;
+            //rrole[rnum].Sexual := 2;
           end
           else
           begin
@@ -5174,9 +5157,8 @@ begin
         begin
           str := '誰要服用';
           str1 := pwidechar(@Ritem[inum].Name);
-          DrawTextWithRect(@str[1], CENTER_X - 275, CENTER_Y - 193, DrawLength(str1) * 10 + 80,
-            0, $202020);
-          DrawShadowText(@str1[1], CENTER_X - 275 + 99, CENTER_Y - 193 + 2,{160, 32,} ColColor($64), ColColor($66));
+          DrawTextWithRect(@str[1], CENTER_X - 275, CENTER_Y - 193, DrawLength(str1) * 10 + 80, 0, $202020);
+          DrawShadowText(@str1[1], CENTER_X - 275 + 99, CENTER_Y - 193 + 2, {160, 32,} ColColor($64), ColColor($66));
           UpdateAllScreen;
           menu := SelectOneTeamMember(80, 65, '', 0, 0);
         end
@@ -5207,7 +5189,7 @@ end;
 function CanEquip(rnum, inum: integer; use: integer = 0): boolean;
 var
   i, r, mnum: integer;
-  menuString: array[0..1] of WideString;
+  menuString: array [0 .. 1] of WideString;
   str: WideString;
 begin
   //判断是否符合
@@ -5271,10 +5253,12 @@ begin
         else
         begin
           case Rmagic[mnum].HurtType of
-            3: if HaveMagicAmount(rnum, 1) >= 4 then
-                Result := False;
-            0, 1, 2: if HaveMagicAmount(rnum) >= 10 then
-                Result := False;
+            3:
+            if HaveMagicAmount(rnum, 1) >= 4 then
+              Result := False;
+            0, 1, 2:
+            if HaveMagicAmount(rnum) >= 10 then
+              Result := False;
           end;
         end;
       end;
@@ -5301,22 +5285,22 @@ end;
 //查看状态选单
 
 {procedure MenuStatus;
-var
+  var
   str: WideString;
   menu: integer;
-begin
+  begin
   str := '查看隊員狀態';
   drawtextwithrect(@str[1], 80, 30, 132, colcolor($21), colcolor($23));
   menu := SelectOneTeamMember(80, 65, '%3d', 15, 0);
   if menu >= 0 then
   begin
-    ShowStatus(TeamList[menu]);
-    waitanykey;
-    redraw;
-    updateallscreen;
+  ShowStatus(TeamList[menu]);
+  waitanykey;
+  redraw;
+  updateallscreen;
   end;
 
-end;}
+  end;}
 
 //查看状态选单
 
@@ -5393,12 +5377,12 @@ begin
       preequip := equip;
     end;
     {dest.y := 80 * menu + yeff;
-    dest.x := xeff;
-    SDL_BlitSurface(tempsur3, nil, screen, @dest);
-    DrawMPic(2100, xeff, menu * 80 + yeff, f);
-    SDL_UpdateRect2(screen, xeff, menu * 80 + yeff, tempsur3.w, tempsur3.h);
-    //DrawMPic(2100, 18, menu * 80 + 10, f);
-    f := f + 1;}
+      dest.x := xeff;
+      SDL_BlitSurface(tempsur3, nil, screen, @dest);
+      DrawMPic(2100, xeff, menu * 80 + yeff, f);
+      SDL_UpdateRect2(screen, xeff, menu * 80 + yeff, tempsur3.w, tempsur3.h);
+      //DrawMPic(2100, 18, menu * 80 + 10, f);
+      f := f + 1;}
     CheckBasicEvent;
     if ((event.type_ = SDL_KEYDOWN) and (event.key.keysym.sym = SDLK_UP)) or ((event.type_ = SDL_MOUSEWHEEL) and (event.wheel.y > 0)) then
     begin
@@ -5517,15 +5501,15 @@ end;
 procedure ShowStatus(rnum: integer; bnum: integer = 0);
 var
   i, k, magicnum, mlevel, needexp, x, y, w, h, xp, yp: integer;
-  p: array[0..10] of integer;
+  p: array [0 .. 10] of integer;
   addatk, adddef, addspeed: integer;
   str: WideString;
-  strs: array[0..24] of WideString;
+  strs: array [0 .. 24] of WideString;
   //strs1: array of WideString;
   color1, color2: uint32;
   Name: WideString;
   item1x, item1y, item2x, item2y: integer;
-  addnum: array[0..3] of integer;
+  addnum: array [0 .. 3] of integer;
 begin
   //where := 2;
   strs[0] := '等級';
@@ -5590,9 +5574,8 @@ begin
     y := yp - 15;
 
     //显示姓名
-    Name := pwidechar(@Rrole[rnum].Name);
-    DrawTextWithRect(@Name[1], x + 58 - DrawLength(PChar(@Rrole[rnum].Name)) * 5, y + 180, 0,
-      ColColor($64), ColColor($66), 0, 0);
+    name := pwidechar(@Rrole[rnum].Name);
+    DrawTextWithRect(@name[1], x + 58 - DrawLength(PChar(@Rrole[rnum].Name)) * 5, y + 180, 0, ColColor($64), ColColor($66), 0, 0);
 
     //显示所需字符
     for i := 0 to 5 do
@@ -5604,12 +5587,12 @@ begin
 
     //生命值, 在受伤和中毒值不同时使用不同颜色
     case Rrole[rnum].Hurt of
-      34..66:
+      34 .. 66:
       begin
         color1 := ColColor($E);
         color2 := ColColor($10);
       end;
-      67..1000:
+      67 .. 1000:
       begin
         color1 := ColColor($14);
         color2 := ColColor($16);
@@ -5627,12 +5610,12 @@ begin
     DrawEngShadowText(@str[1], x + 100, y + 211 + h * 1, ColColor($64), ColColor($66));
 
     case Rrole[rnum].Poison of
-      1..66:
+      1 .. 66:
       begin
         color1 := ColColor($30);
         color2 := ColColor($32);
       end;
-      67..1000:
+      67 .. 1000:
       begin
         color1 := ColColor($35);
         color2 := ColColor($37);
@@ -5648,7 +5631,7 @@ begin
     //内力, 依据内力性质使用颜色
     if Rrole[rnum].MPType = 0 then
     begin
-      color1 := ColColor($4e);
+      color1 := ColColor($4E);
       color2 := ColColor($50);
     end
     else if Rrole[rnum].MPType = 1 then
@@ -5694,14 +5677,12 @@ begin
       DrawTextWithRect(@strs[19, 1], item2x + 85, item2y, 0, 0, $202020, 0, 0);
       if Rrole[rnum].Equip[0] >= 0 then
       begin
-        DrawTextWithRect(@Ritem[Rrole[rnum].Equip[0]].Name, item1x + 85, item1y + 30,
-          0, ColColor($64), ColColor($66), 30, 0);
+        DrawTextWithRect(@Ritem[Rrole[rnum].Equip[0]].Name, item1x + 85, item1y + 30, 0, ColColor($64), ColColor($66), 30, 0);
         DrawIPic(Rrole[rnum].Equip[0], item1x, item1y, 0, 0, 0, 0);
       end;
       if Rrole[rnum].Equip[1] >= 0 then
       begin
-        DrawTextWithRect(@Ritem[Rrole[rnum].Equip[1]].Name, item2x + 85, item2y + 30, 0,
-          ColColor($64), ColColor($66), 30, 0);
+        DrawTextWithRect(@Ritem[Rrole[rnum].Equip[1]].Name, item2x + 85, item2y + 30, 0, ColColor($64), ColColor($66), 30, 0);
         DrawIPic(Rrole[rnum].Equip[1], item2x, item2y, 0, 0, 0, 0);
       end;
     end;
@@ -5863,28 +5844,28 @@ begin
   DrawEngShadowText(@str[1], x + 280 + 100, y + 5 + h * 11, color1, color2);
 
   {//武功
-  for i := 0 to 9 do
-  begin
+    for i := 0 to 9 do
+    begin
     magicnum := Rrole[rnum].magic[i];
     if magicnum > 0 then
     begin
-      DrawU16shadowtext(@Rmagic[magicnum].Name, x + 340, y + 26 + 21 * i, colcolor(5), colcolor(7));
-      str := format('%3d', [Rrole[rnum].MagLevel[i] div 100 + 1]);
-      drawengshadowtext(@str[1], x + 480, y + 26 + 21 * i, colcolor($64), colcolor($66));
+    DrawU16shadowtext(@Rmagic[magicnum].Name, x + 340, y + 26 + 21 * i, colcolor(5), colcolor(7));
+    str := format('%3d', [Rrole[rnum].MagLevel[i] div 100 + 1]);
+    drawengshadowtext(@str[1], x + 480, y + 26 + 21 * i, colcolor($64), colcolor($66));
     end;
-  end;
+    end;
 
-  //内功
-  for i := 0 to 3 do
-  begin
+    //内功
+    for i := 0 to 3 do
+    begin
     magicnum := Rrole[rnum].neigong[i];
     if magicnum > 0 then
     begin
-      DrawU16shadowtext(@Rmagic[magicnum].Name, x + 340, y + 26 + +260 + 21 * i, colcolor(5), colcolor(7));
-      str := format('%3d', [Rrole[rnum].NGLevel[i] div 100 + 1]);
-      drawengshadowtext(@str[1], x + 480, y + 26 + 260 + 21 * i, colcolor($64), colcolor($66));
+    DrawU16shadowtext(@Rmagic[magicnum].Name, x + 340, y + 26 + +260 + 21 * i, colcolor(5), colcolor(7));
+    str := format('%3d', [Rrole[rnum].NGLevel[i] div 100 + 1]);
+    drawengshadowtext(@str[1], x + 480, y + 26 + 260 + 21 * i, colcolor($64), colcolor($66));
     end;
-  end;}
+    end;}
 
   if (Where = 2) and (bnum >= 0) then
   begin
@@ -5896,7 +5877,7 @@ begin
     //14乾坤,15灵精,16奇门,17博采,18聆音,19青翼,20回体
     //21,22,23,24,25,26定身,27控制
     k := 0;
-    for i := 0 to High(Brole[bnum].StateLevel) do
+    for i := 0 to high(Brole[bnum].StateLevel) do
     begin
       if (Brole[bnum].StateLevel[i] <> 0) and (statestrs[i] <> '') then
       begin
@@ -5908,7 +5889,7 @@ begin
         else
         begin
           color1 := ColColor($50);
-          color2 := ColColor($4e);
+          color2 := ColColor($4E);
         end;
         DrawShadowText(@statestrs[i, 1], xp + 70 + 50 * (k mod 8), yp + 360 + h * (k div 8), color1, color2);
         if IsConsole then
@@ -5929,10 +5910,10 @@ end;
 procedure ShowSimpleStatus(rnum, x, y: integer; forTeam: integer = -1);
 var
   i, magicnum, w: integer;
-  p: array[0..10] of integer;
+  p: array [0 .. 10] of integer;
   str: WideString;
-  strs: array[0..3] of WideString;
-  strs1: array[1..17] of WideString;
+  strs: array [0 .. 3] of WideString;
+  strs1: array [1 .. 17] of WideString;
   color1, color2, color: uint32;
   tex: PSDL_Texture;
   sur: PSDL_Surface;
@@ -5982,7 +5963,6 @@ begin
   x := 0;
   y := 0;
 
-
   SetFontSize(17, 12);
   //engsize := 5;
 
@@ -6013,8 +5993,7 @@ begin
   case Rrole[rnum].MPType of
     0: color := MapRGBA(112, 12, 112);
     1: color := MapRGBA(224, 180, 32);
-    else
-      color := MapRGBA(160, 160, 160);
+    else color := MapRGBA(160, 160, 160);
   end;
   DrawRectangleWithoutFrame(x + 96, y + 48, w, 9, color, -1);
   DrawRectangleWithoutFrame(x + 96 + w, y + 48, 138 - w, 9, color, alpha);
@@ -6044,23 +6023,23 @@ begin
   end;
 
   {strs[0] := '等級';
-  strs[1] := '生命';
-  strs[2] := '內力';
-  strs[3] := '體力';
-  //for i := 0 to 3 do
-  //drawshadowtext(@strs[i, 1], x + 220, y + 60 + 21 * i, colcolor($21), colcolor($23)); }
+    strs[1] := '生命';
+    strs[2] := '內力';
+    strs[3] := '體力';
+    //for i := 0 to 3 do
+    //drawshadowtext(@strs[i, 1], x + 220, y + 60 + 21 * i, colcolor($21), colcolor($23));}
   //str := pWideChar(@Rrole[rnum].Name);
   str := PCharToUnicode(@Rrole[rnum].Name, 5);
   DrawShadowText(@str[1], x + 115, y + 8, ColColor($64), ColColor($66), tex, sur);
   str := format('%d', [Rrole[rnum].Level]);
   DrawEngShadowText(@str[1], x + 102 - length(str) * 3, y + 6, ColColor(5), ColColor(7), tex, sur);
   case Rrole[rnum].Hurt of
-    34..66:
+    34 .. 66:
     begin
       color1 := ColColor($10);
       color2 := ColColor($E);
     end;
-    67..1000:
+    67 .. 1000:
     begin
       color1 := ColColor($14);
       color2 := ColColor($16);
@@ -6079,12 +6058,12 @@ begin
   DrawEngShadowText(@str[1], x + 165, y + 28, ColColor($64), ColColor($66), tex, sur);
 
   case Rrole[rnum].Poison of
-    1..66:
+    1 .. 66:
     begin
       color1 := ColColor($30);
       color2 := ColColor($32);
     end;
-    67..1000:
+    67 .. 1000:
     begin
       color1 := ColColor($35);
       color2 := ColColor($37);
@@ -6102,14 +6081,13 @@ begin
   //drawengshadowtext(@str[1],x+50,y+107,colcolor($7),colcolor($5));
   if Rrole[rnum].MPType = 0 then
   begin
-    color1 := ColColor($4e);
+    color1 := ColColor($4E);
     color2 := ColColor($50);
   end
-  else
-  if Rrole[rnum].MPType = 1 then
+  else if Rrole[rnum].MPType = 1 then
   begin
-    color1 := ColColor($1c);
-    color2 := ColColor($1d);
+    color1 := ColColor($1C);
+    color2 := ColColor($1D);
   end
   else
   begin
@@ -6126,11 +6104,10 @@ begin
   str := format('%4d', [Rrole[rnum].MaxMP]);
   DrawEngShadowText(@str[1], x + 173, y + 44, color1, color2, tex, sur);
 
-
   str := format('%3d', [Rrole[rnum].PhyPower]);
   DrawEngShadowText(@str[1], x + 148, y + 61, ColColor(5), ColColor(7), tex, sur);
   {if Rrole[rnum].State in [1..17] then
-  begin
+    begin
     strs1[1] := '激昂';
     strs1[2] := '成城';
     strs1[3] := '倾国';
@@ -6149,7 +6126,7 @@ begin
     strs1[16] := '鸳鸯';
     strs1[17] := '神行';
     drawtextwithrect(@strs1[Rrole[rnum].State, 1], x + 5, y + 5, 47, colcolor($64), colcolor($66));
-  end;}
+    end;}
 
   ReSetFontSize;
 
@@ -6166,7 +6143,7 @@ begin
       SDL_BlitSurface(SimpleState, nil, screen, @dest2);
     end;
     {if Text_Layer = 1 then
-    begin
+      begin
       dest2 := GetRealRect(dest2);
       x1 := 0;
       y1 := 0;
@@ -6178,19 +6155,18 @@ begin
       //sdl_setrendertarget(render, TextScreenTex);
       //sdl_rendercopy(render, sim);
       //SDL_BlitSurface(st, @rectcut, TextScreen, @dest2);
-    end;}
+      end;}
     //UpdateAllScreen;
   end;
 
 end;
 
-
 procedure SetColorByPro(Cur, MaxValue: integer; var color1, color2: uint32);
 var
   v: real;
   r1, g1, b1, r2, g2, b2: byte;
-  r, g, b: array[0..3] of byte;
-  vp: array[0..3] of real;
+  r, g, b: array [0 .. 3] of byte;
+  vp: array [0 .. 3] of real;
   i: integer;
 begin
   r[0] := 250;
@@ -6235,8 +6211,8 @@ procedure MenuAbility;
 var
   str: WideString;
   menu, amount, i, j, x, y, premenu, max, select, preselect, menu2, itemx, itemy, d, rnum, inum, mouseactive: integer;
-  menuString: array [0..5] of WideString;
-  menustring2: array [0..2] of WideString;
+  menuString: array [0 .. 5] of WideString;
+  menustring2: array [0 .. 2] of WideString;
   tempsur, tempsur2: PSDL_Surface;
   dest: TSDL_Rect;
   drag, xm, ym: integer;
@@ -6260,7 +6236,6 @@ begin
   event.key.keysym.sym := 0;
   event.button.button := 0;
 
-
   itemx := x + 230;
   itemy := y + 380;
   d := 83;
@@ -6273,8 +6248,7 @@ begin
   drag := -1;
   case MODVersion of
     0: maxselect := 3;
-    else
-      maxselect := 2;
+    else maxselect := 2;
   end;
   while SDL_PollEvent(@event) >= 0 do
   begin
@@ -6425,8 +6399,8 @@ procedure ShowAbility(rnum, select: integer; showLeave: integer = 0);
 var
   i, magicnum, mlevel, needexp, x, y, w, itemx, itemy, x1, y1: integer;
   str: WideString;
-  strs: array[0..23] of WideString;
-  strs1: array[0..2] of WideString;
+  strs: array [0 .. 23] of WideString;
+  strs1: array [0 .. 2] of WideString;
   color1, color2: uint32;
 begin
   strs[0] := '普通';
@@ -6525,50 +6499,50 @@ begin
       {case Rmagic[magicnum].HurtType of
         2:
         begin
-          color1 := ColColor($64);
-          color2 := ColColor($66);
+        color1 := ColColor($64);
+        color2 := ColColor($66);
         end;
         3:
         begin
-          color1 := SDL_MapRGB(screen.format, 0, $e4, $e1);
-          color2 := SDL_MapRGB(screen.format, 0, $e4, $e1);
+        color1 := SDL_MapRGB(screen.format, 0, $e4, $e1);
+        color2 := SDL_MapRGB(screen.format, 0, $e4, $e1);
         end;
         else
         begin
-          case Rmagic[magicnum].MagicType of
-            1:
-            begin
-              color1 := ColColor(5);
-              color2 := ColColor(7);
-            end;
-            2:
-            begin
-              color1 := SDL_MapRGB(screen.format, 200, 200, 0);
-              color2 := SDL_MapRGB(screen.format, 180, 180, 0);
-            end;
-            3:
-            begin
-              color1 := ColColor($E);
-              color2 := ColColor($10);
-            end;
-            4:
-            begin
-              color1 := ColColor($50);
-              color2 := ColColor($4E);
-            end;
-            5:
-            begin
-              color1 := ColColor($30);
-              color2 := ColColor($32);
-            end;
-            else
-            begin
-              color1 := ColColor(5);
-              color2 := ColColor(7);
-            end;
-          end;
+        case Rmagic[magicnum].MagicType of
+        1:
+        begin
+        color1 := ColColor(5);
+        color2 := ColColor(7);
         end;
-      end;}
+        2:
+        begin
+        color1 := SDL_MapRGB(screen.format, 200, 200, 0);
+        color2 := SDL_MapRGB(screen.format, 180, 180, 0);
+        end;
+        3:
+        begin
+        color1 := ColColor($E);
+        color2 := ColColor($10);
+        end;
+        4:
+        begin
+        color1 := ColColor($50);
+        color2 := ColColor($4E);
+        end;
+        5:
+        begin
+        color1 := ColColor($30);
+        color2 := ColColor($32);
+        end;
+        else
+        begin
+        color1 := ColColor(5);
+        color2 := ColColor(7);
+        end;
+        end;
+        end;
+        end;}
       DrawShadowText((@Rmagic[magicnum].Name), x1 + 19, y1 + 3, 0, $202020);
       str := format('%2d', [Rrole[rnum].MagLevel[i] div 100 + 1]);
       DrawEngShadowText(@str[1], x1 + 119, y1 + 3, 0, $202020);
@@ -6837,9 +6811,9 @@ procedure MenuSet;
 var
   menu, pmenu, x, y, w, h, i, valuechanged, maxmenu, pressed, leftright, xm, ym, h0: integer;
   filename: string;
-  str, str2: array[0..7] of WideString;
-  menuString: array[0..1] of WideString;
-  Value: array [0..8] of integer;
+  str, str2: array [0 .. 7] of WideString;
+  menuString: array [0 .. 1] of WideString;
+  Value: array [0 .. 8] of integer;
   Kys_ini: TIniFile;
   tempsur: PSDL_Surface;
   dest: TSDL_Rect;
@@ -6848,8 +6822,8 @@ var
   fullscreenmode: uint32;
 begin
   maxmenu := 8;
-  pressed := 0;  //为1表示按下确定键
-  leftright := 0;  //-1为正在按下左, 1为正在按下右, 在设置数值时使用, 可以加速
+  pressed := 0; //为1表示按下确定键
+  leftright := 0; //-1为正在按下左, 1为正在按下右, 在设置数值时使用, 可以加速
   str[0] := '音樂音量';
   str[1] := '音效音量';
   str[2] := '大地圖走路延遲';
@@ -7198,7 +7172,7 @@ function MenuLoad: integer;
 var
   menu, i, x, y: integer;
   str: WideString;
-  menuString, menuEngString: array[0..10] of WideString;
+  menuString, menuEngString: array [0 .. 10] of WideString;
   filename: string;
 begin
   x := CENTER_X - 250;
@@ -7256,21 +7230,21 @@ var
   menu, mixAlpha, i, x, y: integer;
   color1, color2, menucolor1, menucolor2: uint32;
   str: WideString;
-  menuString, menuEngString: array[0..10] of WideString;
+  menuString, menuEngString: array [0 .. 10] of WideString;
   //menuengstring: array of WideString;
   filename: string;
 begin
   //Redraw;
   {if (text_layer = 1) then
-  begin
+    begin
     mixAlpha := 25;
     color1 := ColColor(5);
     color2 := ColColor(7);
     menucolor1 := ColColor($64);
     menucolor2 := ColColor($66);
-  end
-  else
-  begin}
+    end
+    else
+    begin}
   mixAlpha := 0;
   color1 := 0;
   color2 := $20202020;
@@ -7345,7 +7319,7 @@ function LoadForSecondRound(num: integer): boolean;
 var
   i, s, j: integer;
   tempRitemlist: array of TItemList;
-  tempRrole: array[-1..1000] of TRole;
+  tempRrole: array [-1 .. 1000] of TRole;
   mode, itemtype, rnum: integer;
 begin
   Result := False;
@@ -7455,7 +7429,7 @@ procedure MenuSave;
 var
   menu, i: integer;
   str: WideString;
-  menuString, menuEngString: array[0..9] of WideString;
+  menuString, menuEngString: array [0 .. 9] of WideString;
   filename: string;
 begin
   menuString[0] := '進度一';
@@ -7494,8 +7468,7 @@ begin
       if not SaveR(menu + 1) then
       begin
         str := '存檔失敗！索引丟失或文件被佔用！';
-        DrawTextWithRect(@str[1], CENTER_X - 384 + 420 - 40, CENTER_Y - 240 + 90 + 280, 322,
-          MapRGBA(240, 20, 20), MapRGBA(212, 20, 20));
+        DrawTextWithRect(@str[1], CENTER_X - 384 + 420 - 40, CENTER_Y - 240 + 90 + 280, 322, MapRGBA(240, 20, 20), MapRGBA(212, 20, 20));
         WaitAnyKey;
       end;
   end;
@@ -7511,7 +7484,7 @@ var
   menu, n: integer;
   str1, str2: string;
   str: WideString;
-  menuString: array [0..2] of WideString;
+  menuString: array [0 .. 2] of WideString;
 begin
   menuString[0] := '取消';
   menuString[1] := '確定';
@@ -7575,15 +7548,15 @@ begin
   if addlife < 0 then
     addlife := 0;
   //if Rrole[role2].Hurt - Rrole[role1].Medcine > 20 then
-  //  addlife := 0;
+  //addlife := 0;
   //if Rrole[role2].Hurt > 66 then
-  //  addlife := 0;
+  //addlife := 0;
   if Rrole[role1].PhyPower < 50 then
     addlife := 0;
   {Rrole[role2].Hurt := Rrole[role2].Hurt - addlife div LIFE_HURT;
-   if RRole[role2].Hurt < 0 then
-     RRole[role2].Hurt := 0;
-   }
+    if RRole[role2].Hurt < 0 then
+    RRole[role2].Hurt := 0;
+  }
   if addlife > Rrole[role2].MaxHP - Rrole[role2].CurrentHP then
     addlife := Rrole[role2].MaxHP - Rrole[role2].CurrentHP;
   Rrole[role2].CurrentHP := Rrole[role2].CurrentHP + addlife;
@@ -7648,8 +7621,8 @@ end;
 procedure EatOneItem(rnum, inum: integer);
 var
   i, j, p, l, x, y, xp, yp: integer;
-  word: array[0..24] of WideString;
-  addvalue, rolelist: array[0..24] of integer;
+  word: array [0 .. 24] of WideString;
+  addvalue, rolelist: array [0 .. 24] of integer;
   str: WideString;
 begin
 
@@ -7855,12 +7828,12 @@ begin
     //对左右互搏特殊处理
     //if (i = 21) and (addvalue[i] = 1) then
     //begin
-    //  if rrole[rnum].data[rolelist[i]] <> 1 then
-    //  begin
-    //    rrole[rnum].data[rolelist[i]] := 1;
-    //    drawshadowtext(@word[i, 1], 83 + x, 124 + y + p * 22, colcolor(5), colcolor(7));
-    //    p := p + 1;
-    //  end;
+    //if rrole[rnum].data[rolelist[i]] <> 1 then
+    //begin
+    //rrole[rnum].data[rolelist[i]] := 1;
+    //drawshadowtext(@word[i, 1], 83 + x, 124 + y + p * 22, colcolor(5), colcolor(7));
+    //p := p + 1;
+    //end;
     //end;
   end;
   ShowSimpleStatus(rnum, xp, yp);
@@ -7886,16 +7859,16 @@ begin
   if (KDEF_SCRIPT = 0) {or (not FileExists(AppPath + EventScriptPath + IntToStr(num) + '.lua'))} then
   begin
     {len := 0;
-    if num = 0 then
-    begin
+      if num = 0 then
+      begin
       offset := 0;
       len := KIdx[0];
-    end
-    else
-    begin
+      end
+      else
+      begin
       offset := KIdx[num - 1];
       len := KIdx[num] - offset;
-    end;}
+      end;}
     offset := KDEF.IDX[num];
     len := KDEF.IDX[num + 1] - offset;
     setlength(e, len div 2 + 1);
@@ -8319,7 +8292,7 @@ begin
   end;
   NeedRefreshScence := 1;
   //if where <> 2 then CurEvent := -1;
-  ////SDL_EnableKeyRepeat(30, 30);
+  /// /SDL_EnableKeyRepeat(30, 30);
 
 end;
 
@@ -8334,9 +8307,9 @@ var
 begin
   {for i1 := 0 to 479 do
     for i2 := 0 to 479 do
-      Entrance[i1, i2] := -1;}
+    Entrance[i1, i2] := -1;}
   FillChar(Entrance[0, 0], sizeof(Entrance), -1);
-  for i := 0 to min(ScenceAmount - 1, High(Rscence)) do
+  for i := 0 to min(ScenceAmount - 1, high(Rscence)) do
   begin
     if (Rscence[i].MainEntranceX1 >= 0) and (Rscence[i].MainEntranceX1 < 480) and (Rscence[i].MainEntranceY1 >= 0) and (Rscence[i].MainEntranceY1 < 480) then
       Entrance[Rscence[i].MainEntranceX1, Rscence[i].MainEntranceY1] := i;
@@ -8344,7 +8317,6 @@ begin
       Entrance[Rscence[i].MainEntranceX2, Rscence[i].MainEntranceY2] := i;
   end;
 end;
-
 
 procedure Maker;
 var
@@ -8531,7 +8503,6 @@ begin
   words.Free;
 end;
 
-
 //align: 0-居中, 1-左对齐
 //alignx: 非居中时指定横轴位置
 procedure ScrollTextAmi(words: TStringList; chnsize, engsize, linespace, align, alignx, style, delay, picnum, scrolldirect: integer);
@@ -8647,7 +8618,7 @@ begin
     end
     else
     begin
-      if picnum <= High(TitlePNGIndex) then
+      if picnum <= high(TitlePNGIndex) then
       begin
         w := TitlePNGIndex[picnum].w;
         h := TitlePNGIndex[picnum].h;
@@ -8693,10 +8664,12 @@ begin
     end;
     CheckBasicEvent;
     case event.type_ of
-      SDL_MOUSEBUTTONUP: if event.button.button = SDL_BUTTON_RIGHT then
-          break;
-      SDL_KEYUP: if event.key.keysym.sym = SDLK_ESCAPE then
-          break;
+      SDL_MOUSEBUTTONUP:
+      if event.button.button = SDL_BUTTON_RIGHT then
+        break;
+      SDL_KEYUP:
+      if event.key.keysym.sym = SDLK_ESCAPE then
+        break;
     end;
     SDL_Delay(delay);
   end;
@@ -8715,14 +8688,14 @@ end;
 procedure CloudCreate(num: integer);
 begin
   CloudCreateOnSide(num);
-  if num in [low(cloud)..high(cloud)] then
+  if num in [low(cloud) .. high(cloud)] then
     Cloud[num].Positionx := random(17280);
 
 end;
 
 procedure CloudCreateOnSide(num: integer);
 begin
-  if num in [low(Cloud)..high(Cloud)] then
+  if num in [low(Cloud) .. high(Cloud)] then
   begin
     Cloud[num].Picnum := random(CPicAmount);
     Cloud[num].Shadow := 0;
@@ -8741,9 +8714,8 @@ begin
   case MODVersion of
     13: Result := snum in [6, 10, 26, 35, 52, 71, 72, 78, 87, 107];
     31: Result := False;
-    else
-      Result := snum in [5, 7, 10, 41, 42, 46, 65, 66, 67, 72, 79];
-      //Result := False;
+    else Result := snum in [5, 7, 10, 41, 42, 46, 65, 66, 67, 72, 79];
+    //Result := False;
   end;
 
 end;
