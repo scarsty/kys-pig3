@@ -3212,6 +3212,7 @@ var
     end;
 
   end;
+
 begin
   h := 28;
   menu := default;
@@ -3364,6 +3365,7 @@ var
           c1, c2);
     end;
   end;
+
 begin
   menu := 0;
   menutop := 0;
@@ -3593,6 +3595,7 @@ var
     end;
 
   end;
+
 begin
   menu := 0;
   ////SDL_EnableKeyRepeat(0,10);
@@ -4396,6 +4399,7 @@ var
     //showblackscreen := bscreen;
 
   end;
+
 begin
   col := 8;
   row := 5;

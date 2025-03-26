@@ -241,10 +241,10 @@ var
   //初始值
   TitleString: string;
 
-  CHINESE_FONT: PAnsiChar = 'font/chinese.ttf';
+  CHINESE_FONT: pansichar = 'font/chinese.ttf';
   CHINESE_FONT_SIZE: integer = 20;
   CHINESE_FONT_REALSIZE: integer = 20;
-  ENGLISH_FONT: PAnsiChar = 'font/eng.ttf';
+  ENGLISH_FONT: pansichar = 'font/eng.ttf';
   ENGLISH_FONT_SIZE: integer = 18;
   ENGLISH_FONT_REALSIZE: integer = 18;
 
@@ -279,8 +279,7 @@ var
   MAX_ITEM_AMOUNT: integer = 304; //最大物品数量
   MAX_HP: integer = 9999; //最大生命
   MAX_MP: integer = 9999; //最大内功
-  MaxProList: array[43..58] of integer = (100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-    100, 100, 100, 100, 100, 100);
+  MaxProList: array[43..58] of integer = (100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100);
   //最大攻击值~最大左右互博值
   LIFE_HURT: integer = 100; //伤害值比例
   //以下3个常数实际并未使用, 不能由ini文件指定

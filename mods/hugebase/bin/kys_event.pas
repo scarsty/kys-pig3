@@ -64,7 +64,7 @@ function instruct_42(jump1, jump2: integer): integer;
 function instruct_43(inum, jump1, jump2: integer): integer;
 procedure instruct_44(enum1, beginpic1, endpic1, enum2, beginpic2, endpic2: integer);
 procedure instruct_44e(enum1, beginpic1, endpic1, enum2, beginpic2, enum3, beginpic3: integer);
-procedure Show3HintString(str1, str2, str3: PWideChar);
+procedure Show3HintString(str1, str2, str3: pwidechar);
 procedure AddRoleProWithHint(rnum, datalist, num: integer; word: WideString = '');
 procedure instruct_45(rnum, speed: integer);
 procedure instruct_46(rnum, mp: integer);
@@ -99,8 +99,7 @@ function GetMagicLevel(person, mnum: integer): integer;
 procedure StudyMagic(rnum, magicnum, newmagicnum, level, dismode: integer);
 procedure DivideName(fullname: WideString; var surname, givenname: WideString);
 function ReplaceStr(const S, Srch, Replace: WideString): WideString;
-procedure NewTalk(headnum, talknum, namenum, place, showhead, color, frame: integer;
-  content: WideString = ''; disname: WideString = '');
+procedure NewTalk(headnum, talknum, namenum, place, showhead, color, frame: integer; content: WideString = ''; disname: WideString = '');
 procedure ShowTitle(talknum, color: integer);
 function Digging(beginPic, goal, shovel, restrict: integer): integer;
 procedure ShowSurface(x, y, blank: integer; surface: array of integer);
@@ -150,7 +149,6 @@ uses
 
 //事件系统
 //事件指令含义请参阅其他相关文献
-
 procedure instruct_0;
 begin
   if NeedRefreshScence = 1 then
@@ -315,7 +313,7 @@ begin
 
   //DrawRectangle(x - 85, y, 170, 76, 0, ColColor(255), 30);
   word := UTF8Decode(format('%d', [amount]));
-  l1 := DrawLength(PWideChar(@Ritem[inum].Name));
+  l1 := DrawLength(pwidechar(@Ritem[inum].Name));
   l2 := DrawLength(word);
   DrawTextFrame(CENTER_X - (6 + l1 + l2) * 5 - 20, y, 6 + l1 + l2);
   x := CENTER_X - (6 + l1 + l2) * 5 + 1;
@@ -1116,7 +1114,7 @@ begin
   if iq > 0 then
   begin
     word := UTF8Decode('資質增加');
-    Show3HintString(@Rrole[rnum].Name, @word[1], PWideChar(UTF8Decode(format('%3d', [iq]))));
+    Show3HintString(@Rrole[rnum].Name, @word[1], pwidechar(UTF8Decode(format('%3d', [iq]))));
   end;
 end;
 
@@ -1291,7 +1289,7 @@ begin
   //SData[CurScence, 3, DData[CurScence, [enum,10],DData[CurScence, [enum,9]]:=-1;
 end;
 
-procedure Show3HintString(str1, str2, str3: PWideChar);
+procedure Show3HintString(str1, str2, str3: pwidechar);
 var
   l, l1, l2, l3, x: integer;
 begin
@@ -1318,7 +1316,7 @@ begin
   Rrole[rnum].Data[datalist] := Rrole[rnum].Data[datalist] + num;
   if word <> '' then
   begin
-    Show3HintString((@Rrole[rnum].Name), @word[1], PWideChar(UTF8Decode(format('%d', [num]))));
+    Show3HintString((@Rrole[rnum].Name), @word[1], pwidechar(UTF8Decode(format('%d', [num]))));
   end;
 end;
 
@@ -1381,7 +1379,7 @@ end;
 procedure ShowRolePro(rnum, datalist: integer; word: WideString);
 begin
   Redraw;
-  Show3HintString(PWideChar(''), PWideChar(word), PWideChar(UTF8Decode(format('%4d', [Rrole[rnum].Data[datalist]]))));
+  Show3HintString(pwidechar(''), pwidechar(word), pwidechar(UTF8Decode(format('%4d', [Rrole[rnum].Data[datalist]]))));
   //Redraw;
 end;
 
@@ -1815,7 +1813,7 @@ begin
       e4 := e_GetValue(0, e1, e4);
       pw := @x50[e2];
       pw1 := @x50[e3];
-      word := format(PWideChar(pw1), [e4]);
+      word := format(pwidechar(pw1), [e4]);
       //showmessage(pwidechar(pw1)+word);
       for i := 0 to length(word) - 1 do
       begin
@@ -1826,21 +1824,21 @@ begin
     end;
     10: //Get the length of a string.
     begin
-      x50[e2] := DrawLength(PWideChar(@x50[e1]));
+      x50[e2] := DrawLength(pwidechar(@x50[e1]));
       //showmessage(inttostr(x50[e2]));
     end;
     11: //Combine 2 strings.
     begin
       pw := @x50[e1];
       pw1 := @x50[e2];
-      for i := 0 to length(PWideChar(pw1)) - 1 do
+      for i := 0 to length(pwidechar(pw1)) - 1 do
       begin
         pw^ := pw1^;
         Inc(pw);
         Inc(pw1);
       end;
       pw1 := @x50[e3];
-      for i := 0 to length(PWideChar(pw1)) do
+      for i := 0 to length(pwidechar(pw1)) do
       begin
         pw^ := pw1^;
         Inc(pw);
@@ -2233,8 +2231,8 @@ begin
       for i := 0 to e2 - 1 do
       begin
         menuString[i] := '';
-        menuString[i] := PWideChar(@x50[x50[e3 + i]]);
-        i1 := DrawLength(PWideChar(@x50[x50[e3 + i]]));
+        menuString[i] := pwidechar(@x50[x50[e3 + i]]);
+        i1 := DrawLength(pwidechar(@x50[x50[e3 + i]]));
         if i1 > t1 then
           t1 := i1;
       end;
@@ -2251,8 +2249,8 @@ begin
       for i := 0 to e2 - 1 do
       begin
         menuString[i] := '';
-        menuString[i] := PWideChar(@x50[x50[e3 + i]]);
-        i1 := DrawLength(PWideChar(@x50[x50[e3 + i]]));
+        menuString[i] := pwidechar(@x50[x50[e3 + i]]);
+        i1 := DrawLength(pwidechar(@x50[x50[e3 + i]]));
         if i1 > i2 then
           i2 := i1;
       end;
@@ -2772,18 +2770,16 @@ begin
 end;
 
 
-procedure NewTalk(headnum, talknum, namenum, place, showhead, color, frame: integer;
-  content: WideString = ''; disname: WideString = '');
+procedure NewTalk(headnum, talknum, namenum, place, showhead, color, frame: integer; content: WideString = ''; disname: WideString = '');
 var
   FileHandle, Offset, len, I, I2, ix, iy, xtemp, a: integer;
-  Frame_X, Frame_Y, Frame_W, Frame_H, Head_X, Head_Y, Head_W, Head_H, Name_X, Name_Y, Name_W,
-  Name_H, Talk_X, Talk_Y, Talk_W, Talk_H, MaxCol: integer;
+  Frame_X, Frame_Y, Frame_W, Frame_H, Head_X, Head_Y, Head_W, Head_H, Name_X, Name_Y, Name_W, Name_H, Talk_X, Talk_Y, Talk_W, Talk_H, MaxCol: integer;
   ForeGroundCol, BackGroundCol: byte;
   DrawForeGroundCol, DrawBackGroundCol: cardinal;
   Talk, Name, SurName, GivenName: array of byte;
-{$IFDEF fpc}
+  {$IFDEF fpc}
   FullNameUTF8Str, SurNameUTF8Str, GivenNameUTF8Str: string;
-{$ENDIF}
+  {$ENDIF}
   FullNameStr, SurNameStr, GivenNameStr, TalkStr, NameStr, TempStr: WideString;
   Changed: boolean;
   HeadNumR: integer; //用于重定头像的对应人物, 以正确读取名字
@@ -2891,14 +2887,14 @@ begin
       ReadTalk(talknum, talk);
       //转为Unicode
       if length(Talk) > 0 then
-        TalkStr := PWideChar(@Talk[0])
+        TalkStr := pwidechar(@Talk[0])
       else
         TalkStr := '';
     end
     else
     begin
       if (-talknum >= low(x50)) and (-talknum <= high(x50)) then
-        TalkStr := PWideChar(@x50[-talknum])
+        TalkStr := pwidechar(@x50[-talknum])
       else
         TalkStr := '';
     end;
@@ -2947,11 +2943,11 @@ begin
     end;
 
     if (namenum = -2) or (namenum > 0) then
-      NameStr := PWideChar(@Name[0])
+      NameStr := pwidechar(@Name[0])
     else if (namenum = -1) or (namenum = 0) then
       NameStr := '';
     if {(MODVersion in [0, 31]) and} (namenum = 0) then
-      NameStr := PWideChar(@Rrole[0].Name);
+      NameStr := pwidechar(@Rrole[0].Name);
   end
   else
     NameStr := disname;
@@ -2967,13 +2963,13 @@ begin
   setlength(Name, 10);
   Move(Rrole[0].Name[0], Name[0], 10);
   //FullNameStr := UTF8Decode(CP950ToUTF8(PChar(@Name[0])));
-  FullNameStr := PWideChar(@Name[0]);
+  FullNameStr := pwidechar(@Name[0]);
 
-{$IFDEF fpc}
+  {$IFDEF fpc}
   //FullNameUTF8Str := UTF8Encode(FullNameStr);
-{$ELSE}
+  {$ELSE}
   //DivideName(FullNameStr, SurNameStr, GivenNameStr);
-{$ENDIF}
+  {$ENDIF}
 
   //******************************************//
 
@@ -3045,8 +3041,7 @@ begin
         //CleanKeyValue;
         break;
       end;
-      if (event.key.keysym.sym = SDLK_RETURN) or (event.key.keysym.sym = SDLK_SPACE) or
-        (event.button.button = SDL_BUTTON_LEFT) then
+      if (event.key.keysym.sym = SDLK_RETURN) or (event.key.keysym.sym = SDLK_SPACE) or (event.button.button = SDL_BUTTON_LEFT) then
       begin
         skipSync := True;
         SkipTalk := 0;
@@ -3431,8 +3426,7 @@ var
   temp: WideString;
   menuString: array of WideString;
 begin
-  if (teamlist[0] >= 0) and (teamlist[1] >= 0) and (teamlist[2] >= 0) and (teamlist[3] >= 0) and
-    (teamlist[4] >= 0) and (teamlist[5] >= 0) then
+  if (teamlist[0] >= 0) and (teamlist[1] >= 0) and (teamlist[2] >= 0) and (teamlist[3] >= 0) and (teamlist[4] >= 0) and (teamlist[5] >= 0) then
     exit;
 
   x := 220;
@@ -3443,8 +3437,7 @@ begin
     n := 0;
     setlength(menuString, n);
     setlength(mateList, n);
-    if (teamlist[0] >= 0) and (teamlist[1] >= 0) and (teamlist[2] >= 0) and (teamlist[3] >= 0) and
-      (teamlist[4] >= 0) and (teamlist[5] >= 0) then
+    if (teamlist[0] >= 0) and (teamlist[1] >= 0) and (teamlist[2] >= 0) and (teamlist[3] >= 0) and (teamlist[4] >= 0) and (teamlist[5] >= 0) then
       break;
     for i := 0 to 107 do
     begin
@@ -3672,7 +3665,7 @@ begin
         temp := '  ';
       if TeamList[i] <> -1 then
       begin
-        temp := temp + PWideChar(@Rrole[TeamList[i]].Name[0]);
+        temp := temp + pwidechar(@Rrole[TeamList[i]].Name[0]);
         temp := temp + StringOfChar(' ', 12 - DrawLength(temp)) + IntToStr(Rrole[TeamList[i]].Level);
       end
       else
@@ -4022,7 +4015,7 @@ begin
     3: p := @Rmagic[inum].Name; //武功
     4: p := @Ritem[inum].Introduction; //物品说明
   end;
-  for i := 0 to length(PWideChar(talkarray)) * 2 - 1 do
+  for i := 0 to length(pwidechar(talkarray)) * 2 - 1 do
   begin
     (p + i)^ := (np + i)^;
   end;
@@ -4128,7 +4121,7 @@ var
 
       //简介
       ReadTalk(menu + 600, talkarray);
-      str1 := ' ' + PWideChar(@talkarray[0]);
+      str1 := ' ' + pwidechar(@talkarray[0]);
       pw := @str1[1];
       for i := 0 to length(str1) - 1 do
       begin
@@ -4142,14 +4135,13 @@ var
       i := 0;
       r1 := 0;
       c1 := 0;
-      len := length(PWideChar(pw));
+      len := length(pwidechar(pw));
       while i < len do
       begin
         pword[0] := puint16(pw)^;
         Inc(pw);
         i := i + 1;
-        DrawU16ShadowText(@pword[0], CENTER_X - 320 + 250 + 20 * c1, CENTER_Y - 240 +
-          270 + 23 * r1, ColColor(5), ColColor(7));
+        DrawU16ShadowText(@pword[0], CENTER_X - 320 + 250 + 20 * c1, CENTER_Y - 240 + 270 + 23 * r1, ColColor(5), ColColor(7));
         Inc(c1);
         if c1 = 18 then
         begin
@@ -4814,10 +4806,8 @@ begin
   Rrole[rnum].CurrentHP := Rrole[rnum].MaxHP;
   Rrole[rnum].MaxMP := min(MAX_MP, 40 + trunc((Rrole[rnum].AddMP + 1) * lv * logN(4, lv)) + random(lv) - random(lv));
   Rrole[rnum].CurrentMP := Rrole[rnum].MaxMP;
-  Rrole[rnum].Attack := 30 + trunc((Rrole[rnum].AddAtk + 1) * (lv - 1) * logN(10, lv)) +
-    random(lv div 2) - random(lv div 2);
-  Rrole[rnum].Defence := 30 + trunc((Rrole[rnum].AddDef + 1) * (lv - 1) * logN(10, lv)) +
-    random(lv div 2) - random(lv div 2);
+  Rrole[rnum].Attack := 30 + trunc((Rrole[rnum].AddAtk + 1) * (lv - 1) * logN(10, lv)) + random(lv div 2) - random(lv div 2);
+  Rrole[rnum].Defence := 30 + trunc((Rrole[rnum].AddDef + 1) * (lv - 1) * logN(10, lv)) + random(lv div 2) - random(lv div 2);
   Rrole[rnum].Speed := 30 + trunc((Rrole[rnum].AddSpeed) * lv * logN(20, lv)) + random(lv div 2) - random(lv div 2);
 
   if Rrole[rnum].Fist > 10 then
@@ -4829,8 +4819,7 @@ begin
   if Rrole[rnum].Unusual > 10 then
     Rrole[rnum].Unusual := Rrole[rnum].Unusual + trunc(2 * lv * logN(20, lv)) + random(lv div 3) - random(lv div 3);
   if Rrole[rnum].HidWeapon > 10 then
-    Rrole[rnum].HidWeapon := Rrole[rnum].HidWeapon + trunc(2 * lv * logN(20, lv)) +
-      random(lv div 3) - random(lv div 3);
+    Rrole[rnum].HidWeapon := Rrole[rnum].HidWeapon + trunc(2 * lv * logN(20, lv)) + random(lv div 3) - random(lv div 3);
 
   if Rrole[rnum].Medcine > 10 then
     Rrole[rnum].Medcine := Rrole[rnum].Medcine + trunc(2 * lv * logN(20, lv)) + random(lv div 3) - random(lv div 3);
@@ -5002,8 +4991,7 @@ end;
 
 procedure RoleEnding(starnum, headnum, talknum: integer);
 var
-  status, newcolor, alen, n, ch, r1, c1, color1, color2, GRP, IDX, i, offset, len, hx, hy,
-  Sx, Sy, nx, ny, tx, ty, cell, framex, l, w, h, framey: integer;
+  status, newcolor, alen, n, ch, r1, c1, color1, color2, GRP, IDX, i, offset, len, hx, hy, Sx, Sy, nx, ny, tx, ty, cell, framex, l, w, h, framey: integer;
   str1, str2, str, talkstr, namestr: WideString;
   np3, np1, np2, tp, p1, ap: PChar;
   actorarray, name1, name2, talkarray: array of byte;
@@ -5070,8 +5058,8 @@ begin
   if status > 0 then
   begin
     ReadTalk(talknum, talkarray);
-    namestr := PWideChar(@Rrole[0].Name[0]);
-    talkstr := ' ' + PWideChar(@talkarray[0]);
+    namestr := pwidechar(@Rrole[0].Name[0]);
+    talkstr := ' ' + pwidechar(@talkarray[0]);
     talkstr := ReplaceStr(talkstr, '&&', namestr);
     tp := @talkstr[1];
     ch := 0;
@@ -5322,26 +5310,22 @@ begin
               begin
                 if i3 = 0 then
                 begin
-                  if (WoodmanSta.Exy[i3][0] < woodmansta.rx) and
-                    (woodmansta.GameData[(WoodmanSta.Exy[i3][0] + 1) * 19 + woodmansta.Exy[i3][1]] = 0) then
+                  if (WoodmanSta.Exy[i3][0] < woodmansta.rx) and (woodmansta.GameData[(WoodmanSta.Exy[i3][0] + 1) * 19 + woodmansta.Exy[i3][1]] = 0) then
                   begin
                     Eface1 := 3;
                     ShowWoodManWalk(i3, Eface1, Eface2, RoleFace);
                   end
-                  else if (WoodmanSta.Exy[i3][0] > woodmansta.rx) and
-                    (woodmansta.GameData[(WoodmanSta.Exy[i3][0] - 1) * 19 + woodmansta.Exy[i3][1]] = 0) then
+                  else if (WoodmanSta.Exy[i3][0] > woodmansta.rx) and (woodmansta.GameData[(WoodmanSta.Exy[i3][0] - 1) * 19 + woodmansta.Exy[i3][1]] = 0) then
                   begin
                     Eface1 := 2;
                     ShowWoodManWalk(i3, Eface1, Eface2, RoleFace);
                   end
-                  else if (WoodMansta.Exy[i3][1] > WoodmanSta.ry) and
-                    (WoodmanSta.GameData[WoodmanSta.Exy[i3][0] * 19 + WoodmanSta.Exy[i3][1] - 1] = 0) then
+                  else if (WoodMansta.Exy[i3][1] > WoodmanSta.ry) and (WoodmanSta.GameData[WoodmanSta.Exy[i3][0] * 19 + WoodmanSta.Exy[i3][1] - 1] = 0) then
                   begin
                     Eface1 := 1;
                     ShowWoodManWalk(i3, Eface1, Eface2, RoleFace);
                   end
-                  else if (WoodmanSta.Exy[i3][1] < WoodmanSta.ry) and
-                    (WoodmanSta.GameData[WoodmanSta.Exy[i3][0] * 19 + WoodmanSta.Exy[i3][1] + 1] = 0) then
+                  else if (WoodmanSta.Exy[i3][1] < WoodmanSta.ry) and (WoodmanSta.GameData[WoodmanSta.Exy[i3][0] * 19 + WoodmanSta.Exy[i3][1] + 1] = 0) then
                   begin
                     Eface1 := 0;
                     ShowWoodManWalk(i3, Eface1, Eface2, RoleFace);
@@ -5349,26 +5333,22 @@ begin
                 end
                 else
                 begin
-                  if (WoodMansta.Exy[i3][1] > WoodmanSta.ry) and
-                    (WoodmanSta.GameData[WoodmanSta.Exy[i3][0] * 19 + WoodmanSta.Exy[i3][1] + 1] = 0) then
+                  if (WoodMansta.Exy[i3][1] > WoodmanSta.ry) and (WoodmanSta.GameData[WoodmanSta.Exy[i3][0] * 19 + WoodmanSta.Exy[i3][1] + 1] = 0) then
                   begin
                     Eface1 := 1;
                     ShowWoodManWalk(i3, Eface1, Eface2, RoleFace);
                   end
-                  else if (WoodmanSta.Exy[i3][1] < WoodmanSta.ry) and
-                    (WoodmanSta.GameData[WoodmanSta.Exy[i3][0] * 19 + WoodmanSta.Exy[i3][1] - 1] = 0) then
+                  else if (WoodmanSta.Exy[i3][1] < WoodmanSta.ry) and (WoodmanSta.GameData[WoodmanSta.Exy[i3][0] * 19 + WoodmanSta.Exy[i3][1] - 1] = 0) then
                   begin
                     Eface1 := 0;
                     ShowWoodManWalk(i3, Eface1, Eface2, RoleFace);
                   end
-                  else if (WoodmanSta.Exy[i3][0] < woodmansta.rx) and
-                    (woodmansta.GameData[(WoodmanSta.Exy[i3][0] - 1) * 19 + woodmansta.Exy[i3][1]] = 0) then
+                  else if (WoodmanSta.Exy[i3][0] < woodmansta.rx) and (woodmansta.GameData[(WoodmanSta.Exy[i3][0] - 1) * 19 + woodmansta.Exy[i3][1]] = 0) then
                   begin
                     Eface1 := 3;
                     ShowWoodManWalk(i3, Eface1, Eface2, RoleFace);
                   end
-                  else if (WoodmanSta.Exy[i3][0] > woodmansta.rx) and
-                    (woodmansta.GameData[(WoodmanSta.Exy[i3][0] + 1) * 19 + woodmansta.Exy[i3][1]] = 0) then
+                  else if (WoodmanSta.Exy[i3][0] > woodmansta.rx) and (woodmansta.GameData[(WoodmanSta.Exy[i3][0] + 1) * 19 + woodmansta.Exy[i3][1]] = 0) then
                   begin
                     Eface1 := 2;
                     ShowWoodManWalk(i3, Eface1, Eface2, RoleFace);
@@ -5454,26 +5434,22 @@ begin
               begin
                 if i3 = 0 then
                 begin
-                  if (WoodmanSta.Exy[i3][0] < woodmansta.rx) and
-                    (woodmansta.GameData[(WoodmanSta.Exy[i3][0] + 1) * 19 + woodmansta.Exy[i3][1]] = 0) then
+                  if (WoodmanSta.Exy[i3][0] < woodmansta.rx) and (woodmansta.GameData[(WoodmanSta.Exy[i3][0] + 1) * 19 + woodmansta.Exy[i3][1]] = 0) then
                   begin
                     Eface1 := 3;
                     ShowWoodManWalk(i3, Eface1, Eface2, RoleFace);
                   end
-                  else if (WoodmanSta.Exy[i3][0] > woodmansta.rx) and
-                    (woodmansta.GameData[(WoodmanSta.Exy[i3][0] - 1) * 19 + woodmansta.Exy[i3][1]] = 0) then
+                  else if (WoodmanSta.Exy[i3][0] > woodmansta.rx) and (woodmansta.GameData[(WoodmanSta.Exy[i3][0] - 1) * 19 + woodmansta.Exy[i3][1]] = 0) then
                   begin
                     Eface1 := 2;
                     ShowWoodManWalk(i3, Eface1, Eface2, RoleFace);
                   end
-                  else if (WoodMansta.Exy[i3][1] > WoodmanSta.ry) and
-                    (WoodmanSta.GameData[WoodmanSta.Exy[i3][0] * 19 + WoodmanSta.Exy[i3][1] - 1] = 0) then
+                  else if (WoodMansta.Exy[i3][1] > WoodmanSta.ry) and (WoodmanSta.GameData[WoodmanSta.Exy[i3][0] * 19 + WoodmanSta.Exy[i3][1] - 1] = 0) then
                   begin
                     Eface1 := 1;
                     ShowWoodManWalk(i3, Eface1, Eface2, RoleFace);
                   end
-                  else if (WoodmanSta.Exy[i3][1] < WoodmanSta.ry) and
-                    (WoodmanSta.GameData[WoodmanSta.Exy[i3][0] * 19 + WoodmanSta.Exy[i3][1] + 1] = 0) then
+                  else if (WoodmanSta.Exy[i3][1] < WoodmanSta.ry) and (WoodmanSta.GameData[WoodmanSta.Exy[i3][0] * 19 + WoodmanSta.Exy[i3][1] + 1] = 0) then
                   begin
                     Eface1 := 0;
                     ShowWoodManWalk(i3, Eface1, Eface2, RoleFace);
@@ -5481,26 +5457,22 @@ begin
                 end
                 else
                 begin
-                  if (WoodMansta.Exy[i3][1] > WoodmanSta.ry) and
-                    (WoodmanSta.GameData[WoodmanSta.Exy[i3][0] * 19 + WoodmanSta.Exy[i3][1] + 1] = 0) then
+                  if (WoodMansta.Exy[i3][1] > WoodmanSta.ry) and (WoodmanSta.GameData[WoodmanSta.Exy[i3][0] * 19 + WoodmanSta.Exy[i3][1] + 1] = 0) then
                   begin
                     Eface1 := 1;
                     ShowWoodManWalk(i3, Eface1, Eface2, RoleFace);
                   end
-                  else if (WoodmanSta.Exy[i3][1] < WoodmanSta.ry) and
-                    (WoodmanSta.GameData[WoodmanSta.Exy[i3][0] * 19 + WoodmanSta.Exy[i3][1] - 1] = 0) then
+                  else if (WoodmanSta.Exy[i3][1] < WoodmanSta.ry) and (WoodmanSta.GameData[WoodmanSta.Exy[i3][0] * 19 + WoodmanSta.Exy[i3][1] - 1] = 0) then
                   begin
                     Eface1 := 0;
                     ShowWoodManWalk(i3, Eface1, Eface2, RoleFace);
                   end
-                  else if (WoodmanSta.Exy[i3][0] < woodmansta.rx) and
-                    (woodmansta.GameData[(WoodmanSta.Exy[i3][0] - 1) * 19 + woodmansta.Exy[i3][1]] = 0) then
+                  else if (WoodmanSta.Exy[i3][0] < woodmansta.rx) and (woodmansta.GameData[(WoodmanSta.Exy[i3][0] - 1) * 19 + woodmansta.Exy[i3][1]] = 0) then
                   begin
                     Eface1 := 3;
                     ShowWoodManWalk(i3, Eface1, Eface2, RoleFace);
                   end
-                  else if (WoodmanSta.Exy[i3][0] > woodmansta.rx) and
-                    (woodmansta.GameData[(WoodmanSta.Exy[i3][0] + 1) * 19 + woodmansta.Exy[i3][1]] = 0) then
+                  else if (WoodmanSta.Exy[i3][0] > woodmansta.rx) and (woodmansta.GameData[(WoodmanSta.Exy[i3][0] + 1) * 19 + woodmansta.Exy[i3][1]] = 0) then
                   begin
                     Eface1 := 2;
                     ShowWoodManWalk(i3, Eface1, Eface2, RoleFace);
@@ -5596,8 +5568,7 @@ begin
 
           end
           else
-            DrawPartPic(WoodPic, 48 * (i1 + 1), 240 + 48 * face, 48, 48, (x1 div 2) * 48 +
-              x + ((i1 + 1) * x2), (y1 div 2) * 30 - 25 + y + ((i1 + 1) * y2));
+            DrawPartPic(WoodPic, 48 * (i1 + 1), 240 + 48 * face, 48, 48, (x1 div 2) * 48 + x + ((i1 + 1) * x2), (y1 div 2) * 30 - 25 + y + ((i1 + 1) * y2));
         end;
       end;
     end;
@@ -5694,8 +5665,7 @@ begin
             DrawPartPic(WoodPic, 0, 48 * Ef1^, 48, 48, (x2 div 2) * 48 + x, (y2 div 2) * 30 - 25 + y);
           end
           else
-            DrawPartPic(WoodPic, 48 * (i1 + 1), 48 * Ef1^, 48, 48, (x1 div 2) * 48 + x +
-              (i1 + 1) * x2, (y1 div 2) * 30 - 25 + y + (i1 + 1) * y2);
+            DrawPartPic(WoodPic, 48 * (i1 + 1), 48 * Ef1^, 48, 48, (x1 div 2) * 48 + x + (i1 + 1) * x2, (y1 div 2) * 30 - 25 + y + (i1 + 1) * y2);
         end;
         if (Ex2^ = x1) and (Ey2^ = y1) then
         begin
@@ -5768,8 +5738,7 @@ begin
   DrawRectangle(x - 5, y - 5, w, h, 0, ColColor(255), 50);
   for i := 0 to 24 do
   begin
-    DrawPartPic(pic, ((24 - i) mod 5) * 80, ((24 - i) div 5) * 80, 80, 80, (i mod 5) * 80 +
-      x, (i div 5) * 80 + y + 30);
+    DrawPartPic(pic, ((24 - i) mod 5) * 80, ((24 - i) div 5) * 80, 80, 80, (i mod 5) * 80 + x, (i div 5) * 80 + y + 30);
   end;
   UpdateAllScreen;
   SDL_Delay(2000);
@@ -5778,8 +5747,7 @@ begin
   DrawRectangle(x - 5, y - 5, w, h, 0, ColColor(255), 50);
   for i := 0 to 24 do
   begin
-    DrawPartPic(pic, ((24 - gamearray[0][i]) mod 5) * 80, ((24 - gamearray[0][i]) div 5) *
-      80, 80, 80, (i mod 5) * 80 + x, (i div 5) * 80 + y + 30);
+    DrawPartPic(pic, ((24 - gamearray[0][i]) mod 5) * 80, ((24 - gamearray[0][i]) div 5) * 80, 80, 80, (i mod 5) * 80 + x, (i div 5) * 80 + y + 30);
   end;
   if menu2 > -1 then
     DrawRectangle((menu2 mod 5) * 80 + x, (menu2 div 5) * 80 + y + 30, 80, 80, 0, ColColor($64), 0);
@@ -5825,8 +5793,7 @@ begin
         if menu < 0 then
           menu := menu + 25;
         if menu1 > -1 then
-          DrawPartPic(pic, ((24 - gamearray[0][menu1]) mod 5) * 80, ((24 - gamearray[0][menu1]) div 5) *
-            80, 80, 80, (menu1 mod 5) * 80 + x, (menu1 div 5) * 80 + y + 30);
+          DrawPartPic(pic, ((24 - gamearray[0][menu1]) mod 5) * 80, ((24 - gamearray[0][menu1]) div 5) * 80, 80, 80, (menu1 mod 5) * 80 + x, (menu1 div 5) * 80 + y + 30);
         if (event.key.keysym.sym = SDLK_RETURN) or (event.key.keysym.sym = SDLK_SPACE) then
         begin
           if menu2 > -1 then
@@ -5852,8 +5819,7 @@ begin
           if menu <> menu1 then
           begin
             if menu1 > -1 then
-              DrawPartPic(pic, ((24 - gamearray[0][menu1]) mod 5) * 80, ((24 - gamearray[0][menu1]) div 5) *
-                80, 80, 80, (menu1 mod 5) * 80 + x, (menu1 div 5) * 80 + y + 30);
+              DrawPartPic(pic, ((24 - gamearray[0][menu1]) mod 5) * 80, ((24 - gamearray[0][menu1]) div 5) * 80, 80, 80, (menu1 mod 5) * 80 + x, (menu1 div 5) * 80 + y + 30);
           end;
         end;
       end;
@@ -5896,8 +5862,7 @@ begin
     DrawRectangle(x - 5, y - 5, w, h, 0, ColColor(255), 50);
     for i := 0 to 24 do
     begin
-      DrawPartPic(pic, ((24 - gamearray[0][i]) mod 5) * 80, ((24 - gamearray[0][i]) div 5) *
-        80, 80, 80, (i mod 5) * 80 + x, (i div 5) * 80 + y + 30);
+      DrawPartPic(pic, ((24 - gamearray[0][i]) mod 5) * 80, ((24 - gamearray[0][i]) div 5) * 80, 80, 80, (i mod 5) * 80 + x, (i div 5) * 80 + y + 30);
     end;
     if menu2 > -1 then
       DrawRectangle((menu2 mod 5) * 80 + x, (menu2 div 5) * 80 + y + 30, 80, 80, 0, ColColor($64), 0);
@@ -6005,7 +5970,7 @@ begin
       if Ritem[Ritemlist[i].Number].Magic >= 0 then
       begin
         j := j + 1;
-        menuString[j - 1] := ' ' + PWideChar(@Ritem[Ritemlist[i].Number].Name[0]);
+        menuString[j - 1] := ' ' + pwidechar(@Ritem[Ritemlist[i].Number].Name[0]);
         itemlist[j - 1] := Ritemlist[i].Number;
       end;
     end;
@@ -6163,7 +6128,6 @@ type
   TShopList = record
     HoldAmount, BuyAmount: array [0..4] of smallint;
   end;
-
 var
   i, menu, totalprice, money, k_num, select, lr: integer;
   x, y, w, x2, y2, w2, arrowlx, arrowrx, arrowy, l, pmenu, pselect, plr, pvalue, xm, ym: integer;
@@ -6190,8 +6154,7 @@ var
     DrawRectangle(x, y, 420, 116, 0, ColColor(255), 50);
     for i := 0 to 4 do
     begin
-      menuEngString[i] := format('%5d%7d%6d%9d', [sell.Price[i], sell.Amount[i], buy.HoldAmount[i],
-        buy.BuyAmount[i]]);
+      menuEngString[i] := format('%5d%7d%6d%9d', [sell.Price[i], sell.Amount[i], buy.HoldAmount[i], buy.BuyAmount[i]]);
       mixcolorl := 0;
       mixcolorr := 0;
       mixalphal := 0;
@@ -6264,7 +6227,7 @@ begin
     buy.BuyAmount[i] := 0;
     totalbuy[i] := 0;
     buy.HoldAmount[i] := GetItemAmount(sell.Item[i]);
-    menuString[i] := PWideChar(@Ritem[sell.Item[i]].Name);
+    menuString[i] := pwidechar(@Ritem[sell.Item[i]].Name);
   end;
 
   x := CENTER_X - 190;
@@ -6527,8 +6490,7 @@ begin
   l := scenceAmount;
   for i := 0 to l - 1 do
   begin
-    if ((Rscence[i].MainEntranceY1 = 0) and (Rscence[i].MainEntranceX1 = 0) and
-      (Rscence[i].MainEntranceX2 = 0) and (Rscence[i].MainEntranceY2 = 0)) or (Rscence[i].EnCondition <> 0) then
+    if ((Rscence[i].MainEntranceY1 = 0) and (Rscence[i].MainEntranceX1 = 0) and (Rscence[i].MainEntranceX2 = 0) and (Rscence[i].MainEntranceY2 = 0)) or (Rscence[i].EnCondition <> 0) then
       continue;
     Inc(u);
     setlength(scencex, u);
@@ -6621,8 +6583,7 @@ begin
       //方向键使用压下按键事件
       SDL_KEYUP:
       begin
-        if (event.key.keysym.sym = SDLK_ESCAPE) or (event.key.keysym.sym = SDLK_RETURN) or
-          (event.key.keysym.sym = SDLK_SPACE) then
+        if (event.key.keysym.sym = SDLK_ESCAPE) or (event.key.keysym.sym = SDLK_RETURN) or (event.key.keysym.sym = SDLK_SPACE) then
           break;
         if (event.key.keysym.sym = SDLK_LEFT) or (event.key.keysym.sym = SDLK_UP) then
         begin

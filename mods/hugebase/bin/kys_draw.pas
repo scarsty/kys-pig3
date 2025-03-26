@@ -3,11 +3,11 @@ unit kys_draw;
 interface
 
 uses
-{$IFDEF fpc}
-{$ENDIF}
-{$IFDEF mswindows}
+  {$IFDEF fpc}
+  {$ENDIF}
+  {$IFDEF mswindows}
   Windows,
-{$ENDIF}
+  {$ENDIF}
   SysUtils,
   SDL2,
   Math,
@@ -17,22 +17,14 @@ uses
 
 
 //画单个图片的子程
-procedure DrawPic(sur: PSDL_Surface; Pictype, num, px, py, shadow, alpha: integer; mixColor: uint32;
-  mixAlpha: integer);
-procedure DrawTPic(imgnum, px, py: integer; region: PSDL_Rect = nil; shadow: integer = 0;
-  Alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0; scalex: real = 1;
-  scaley: real = 1; angle: real = 0);
-procedure DrawMPic(num, px, py: integer; Framenum: integer = -1; shadow: integer = 0;
-  alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0; scalex: real = 1;
-  scaley: real = 1; angle: real = 0); overload;
+procedure DrawPic(sur: PSDL_Surface; Pictype, num, px, py, shadow, alpha: integer; mixColor: uint32; mixAlpha: integer);
+procedure DrawTPic(imgnum, px, py: integer; region: PSDL_Rect = nil; shadow: integer = 0; Alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0; scalex: real = 1; scaley: real = 1; angle: real = 0);
+procedure DrawMPic(num, px, py: integer; Framenum: integer = -1; shadow: integer = 0; alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0; scalex: real = 1; scaley: real = 1; angle: real = 0); overload;
 procedure DrawSPic(num, px, py: integer); overload;
-procedure DrawSPic(num, px, py: integer; region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32;
-  mixAlpha: integer); overload;
-procedure DrawHeadPic(num, px, py: integer; shadow: integer = 0; alpha: integer = 0;
-  mixColor: uint32 = 0; mixAlpha: integer = 0; scalex: real = 1; scaley: real = 1); overload;
+procedure DrawSPic(num, px, py: integer; region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer); overload;
+procedure DrawHeadPic(num, px, py: integer; shadow: integer = 0; alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0; scalex: real = 1; scaley: real = 1); overload;
 procedure DrawEPic(num, px, py: integer; index: integer = 0); overload;
-procedure DrawEPic(num, px, py, shadow, alpha: integer; mixColor: uint32; mixAlpha: integer;
-  index: integer = 0; scalex: real = 1; scaley: real = 1; angle: real = 1; center: PSDL_Point = nil); overload;
+procedure DrawEPic(num, px, py, shadow, alpha: integer; mixColor: uint32; mixAlpha: integer; index: integer = 0; scalex: real = 1; scaley: real = 1; angle: real = 1; center: PSDL_Point = nil); overload;
 procedure DrawFPic(num, px, py, index: integer); overload;
 procedure DrawFPic(num, px, py, index, shadow, alpha: integer; mixColor: uint32; mixAlpha: integer); overload;
 procedure DrawCPic(num, px, py, shadow, alpha: integer; mixColor: uint32; mixAlpha: integer);
@@ -55,20 +47,16 @@ procedure DrawRoleOnBfield(x, y: integer; mixColor: uint32 = 0; mixAlpha: intege
 procedure InitialBFieldImage(layer: integer = 2);
 procedure DrawBFieldWithCursor(AttAreaType, step, range: integer);
 procedure DrawBlackScreen;
-procedure DrawBFieldWithEft(Epicnum, beginpic, endpic, curlevel, bnum, SelectAimMode, flash: integer;
-  mixColor: uint32; index: integer = 0; shadow: integer = 0; alpha: integer = 0; MixColor2: uint32 = 0;
-  MixAlpha2: integer = 0); overload;
+procedure DrawBFieldWithEft(Epicnum, beginpic, endpic, curlevel, bnum, SelectAimMode, flash: integer; mixColor: uint32; index: integer = 0; shadow: integer = 0; alpha: integer = 0; MixColor2: uint32 = 0; MixAlpha2: integer = 0); overload;
 procedure DrawBFieldWithAction(bnum, Apicnum: integer);
 procedure DrawClouds;
 procedure DrawProgress;
 
 procedure LoadGroundTex(x, y: integer);
 
-function DrawTextFrame(x, y: integer; len: integer; alpha: integer = 0; mixColor: uint32 = 0;
-  mixAlpha: integer = 0): integer;
+function DrawTextFrame(x, y: integer; len: integer; alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0): integer;
 
-procedure DrawTextWithRect(word: puint16; x, y, w: integer; color1, color2: uint32;
-  alpha: integer = 0; Refresh: integer = 1);
+procedure DrawTextWithRect(word: puint16; x, y, w: integer; color1, color2: uint32; alpha: integer = 0; Refresh: integer = 1);
 procedure DrawVirtualKey;
 
 implementation
@@ -77,8 +65,7 @@ uses
   kys_engine,
   kys_battle;
 
-procedure DrawPic(sur: PSDL_Surface; Pictype, num, px, py, shadow, alpha: integer; mixColor: uint32;
-  mixAlpha: integer);
+procedure DrawPic(sur: PSDL_Surface; Pictype, num, px, py, shadow, alpha: integer; mixColor: uint32; mixAlpha: integer);
 var
   PNGIndex: TPNGIndex;
   pPNGIndex: ^TPNGIndex;
@@ -138,9 +125,7 @@ end;
 
 //显示title.grp的内容(即开始的选单)
 
-procedure DrawTPic(imgnum, px, py: integer; region: PSDL_Rect = nil; shadow: integer = 0;
-  Alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0; scalex: real = 1;
-  scaley: real = 1; angle: real = 0);
+procedure DrawTPic(imgnum, px, py: integer; region: PSDL_Rect = nil; shadow: integer = 0; Alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0; scalex: real = 1; scaley: real = 1; angle: real = 0);
 var
   len, grp, idx: integer;
   Area: TSDL_Rect;
@@ -158,9 +143,7 @@ end;
 
 //显示主地图贴图
 
-procedure DrawMPic(num, px, py: integer; Framenum: integer = -1; shadow: integer = 0;
-  alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0; scalex: real = 1;
-  scaley: real = 1; angle: real = 0); overload;
+procedure DrawMPic(num, px, py: integer; Framenum: integer = -1; shadow: integer = 0; alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0; scalex: real = 1; scaley: real = 1; angle: real = 0); overload;
 var
   NeedGRP: integer;
 begin
@@ -213,8 +196,7 @@ begin
   end;
 end;
 
-procedure DrawSPic(num, px, py: integer; region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32;
-  mixAlpha: integer); overload;
+procedure DrawSPic(num, px, py: integer; region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer); overload;
 begin
   if (num >= 0) and (num < SPicAmount) then
   begin
@@ -243,8 +225,7 @@ end;
 
 //显示头像
 
-procedure DrawHeadPic(num, px, py: integer; shadow: integer = 0; alpha: integer = 0;
-  mixColor: uint32 = 0; mixAlpha: integer = 0; scalex: real = 1; scaley: real = 1); overload;
+procedure DrawHeadPic(num, px, py: integer; shadow: integer = 0; alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0; scalex: real = 1; scaley: real = 1); overload;
 var
   len, grp, idx: integer;
   str: string;
@@ -278,8 +259,7 @@ begin
 
 end;
 
-procedure DrawEPic(num, px, py, shadow, alpha: integer; mixColor: uint32; mixAlpha: integer;
-  index: integer = 0; scalex: real = 1; scaley: real = 1; angle: real = 1; center: PSDL_Point = nil); overload;
+procedure DrawEPic(num, px, py, shadow, alpha: integer; mixColor: uint32; mixAlpha: integer; index: integer = 0; scalex: real = 1; scaley: real = 1; angle: real = 1; center: PSDL_Point = nil); overload;
 begin
   if (num >= 0) and (num < EPNGIndex[index].Amount) then
   begin
@@ -1173,8 +1153,7 @@ begin
             minstep := 3;
             if BField[4, i1, i2] > 0 then
               shadow := 1
-            else if (abs(i1 - Bx) + abs(i2 - By) <= step) and (abs(i1 - Bx) + abs(i2 - By) > minstep) and
-              (BField[3, i1, i2] >= 0) then
+            else if (abs(i1 - Bx) + abs(i2 - By) <= step) and (abs(i1 - Bx) + abs(i2 - By) > minstep) and (BField[3, i1, i2] >= 0) then
               shadow := 0
             else
               shadow := -1;
@@ -1233,9 +1212,7 @@ begin
   DrawVirtualKey;
 end;
 
-procedure DrawBFieldWithEft(Epicnum, beginpic, endpic, curlevel, bnum, SelectAimMode, flash: integer;
-  mixColor: uint32; index: integer = 0; shadow: integer = 0; alpha: integer = 0; MixColor2: uint32 = 0;
-  MixAlpha2: integer = 0); overload;
+procedure DrawBFieldWithEft(Epicnum, beginpic, endpic, curlevel, bnum, SelectAimMode, flash: integer; mixColor: uint32; index: integer = 0; shadow: integer = 0; alpha: integer = 0; MixColor2: uint32 = 0; MixAlpha2: integer = 0); overload;
 var
   k, i, t, i1, i2, rnum: integer;
   pos: TPosition;
@@ -1441,8 +1418,7 @@ begin
   end;
 end;
 
-function DrawTextFrame(x, y: integer; len: integer; alpha: integer = 0; mixColor: uint32 = 0;
-  mixAlpha: integer = 0): integer;
+function DrawTextFrame(x, y: integer; len: integer; alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0): integer;
 var
   i: integer;
   rect: TSDL_Rect;
@@ -1471,14 +1447,13 @@ end;
 //显示带边框的文字, 仅用于unicode, 需自定义宽度
 //默认情况为透明度50, 立即刷新
 
-procedure DrawTextWithRect(word: puint16; x, y, w: integer; color1, color2: uint32;
-  alpha: integer = 0; Refresh: integer = 1);
+procedure DrawTextWithRect(word: puint16; x, y, w: integer; color1, color2: uint32; alpha: integer = 0; Refresh: integer = 1);
 var
   len, j: integer;
   p: PChar;
 begin
   //DrawRectangle(x, y, w, 26, 0, ColColor(255), alpha);
-  len := DrawLength(PWideChar(word));
+  len := DrawLength(pwidechar(word));
   len := max((w + 9) div 10, len);
   DrawTextFrame(x, y, len, alpha);
   DrawShadowText(word, x + 19, y + 3, color1, color2);
@@ -1505,11 +1480,9 @@ begin
       SDLK_RIGHT: r := 0;
     end;
     DrawTPic(27, VirtualKeyX, VirtualKeyY, nil, 0, u);
-    DrawTPic(29, VirtualKeyX - VirtualKeySize - VirtualKeySpace, VirtualKeyY + VirtualKeySize +
-      VirtualKeySpace, nil, 0, l);
+    DrawTPic(29, VirtualKeyX - VirtualKeySize - VirtualKeySpace, VirtualKeyY + VirtualKeySize + VirtualKeySpace, nil, 0, l);
     DrawTPic(28, VirtualKeyX, VirtualKeyY + VirtualKeySize * 2 + VirtualKeySpace * 2, nil, 0, d);
-    DrawTPic(30, VirtualKeyX + VirtualKeySize + VirtualKeySpace, VirtualKeyY + VirtualKeySize +
-      VirtualKeySpace, nil, 0, r);
+    DrawTPic(30, VirtualKeyX + VirtualKeySize + VirtualKeySpace, VirtualKeyY + VirtualKeySize + VirtualKeySpace, nil, 0, r);
   end;
 end;
 

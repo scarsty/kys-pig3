@@ -3,15 +3,15 @@ unit kys_engine;
 interface
 
 uses
-{$IFDEF fpc}
+  {$IFDEF fpc}
   LConvEncoding,
   LCLType,
   LCLIntf,
-{$ENDIF}
-{$IFDEF mswindows}
+  {$ENDIF}
+  {$IFDEF mswindows}
   Windows,
   //xVideo,
-{$ENDIF}
+  {$ENDIF}
   Classes,
   SysUtils,
   SDL2_ttf,
@@ -26,7 +26,7 @@ uses
   unzip,
   ziputils,
   mythoutput,
-potdll;
+  potdll;
 
 function EventFilter(p: pointer; e: PSDL_Event): longint; cdecl;
 procedure SendKeyEvent(keyvalue: integer); stdcall; export;
@@ -60,14 +60,12 @@ function GetPositionOnScreen(x, y, CenterX, CenterY: integer): TPosition;
 function Big5ToUnicode(str: PChar): WideString;
 function GBKToUnicode(str: PChar): WideString;
 function PCharToUnicode(str: PChar; len: integer = -1): WideString;
-function UnicodeToBig5(str: PWideChar): string;
-function UnicodeToGBK(str: PWideChar): string;
+function UnicodeToBig5(str: pwidechar): string;
+function UnicodeToGBK(str: pwidechar): string;
 procedure DrawText(word: puint16; x_pos, y_pos: integer; color: uint32; engwidth: integer = -1);
 procedure DrawEngText(word: puint16; x_pos, y_pos: integer; color: uint32);
-procedure DrawShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32;
-  Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil; realPosition: integer = 0; eng: integer = 0); overload;
-procedure DrawEngShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32;
-  Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil);
+procedure DrawShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32; Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil; realPosition: integer = 0; eng: integer = 0); overload;
+procedure DrawEngShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32; Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil);
 procedure DrawBig5Text(sur: PSDL_Surface; str: PChar; x_pos, y_pos: integer; color: uint32);
 procedure DrawBig5ShadowText(word: PChar; x_pos, y_pos: integer; color1, color2: uint32);
 procedure DrawGBKShadowText(word: PChar; x_pos, y_pos: integer; color1, color2: uint32);
@@ -105,8 +103,7 @@ function ReadFileToBuffer(p: PChar; const filename: PChar; size, malloc: integer
 function FileGetlength(filename: string): integer;
 procedure FreeFileBuffer(var p: PChar);
 function LoadIdxGrp(stridx, strgrp: string): TIDXGRP;
-function LoadPNGTiles(path: string; var PNGIndexArray: TPNGIndexArray; LoadPic: integer = 1;
-  frame: psmallint = nil): integer; overload;
+function LoadPNGTiles(path: string; var PNGIndexArray: TPNGIndexArray; LoadPic: integer = 1; frame: psmallint = nil): integer; overload;
 procedure LoadOnePNGTexture(path: string; p: PChar; var PNGIndex: TPNGIndex; forceLoad: integer = 0); overload;
 function LoadTileFromFile(filename: string; var pt: Pointer; usesur: integer; var w, h: integer): boolean;
 function LoadTileFromMem(p: PChar; len: integer; var pt: Pointer; usesur: integer; var w, h: integer): boolean;
@@ -118,12 +115,8 @@ procedure DestroyAllTextures(all: integer = 1);
 procedure DestroyFontTextures();
 
 procedure DrawPNGTile(render: PSDL_Renderer; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer); overload;
-procedure DrawPNGTile(render: PSDL_Renderer; PNGIndex: TPNGIndex; FrameNum: integer;
-  px, py: integer; region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer;
-  scalex, scaley, angle: real; center: PSDL_Point); overload;
-procedure DrawPNGTileS(scr: PSDL_Surface; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer;
-  region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer;
-  scalex, scaley, angle: real); overload;
+procedure DrawPNGTile(render: PSDL_Renderer; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer; region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer; scalex, scaley, angle: real; center: PSDL_Point); overload;
+procedure DrawPNGTileS(scr: PSDL_Surface; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer; region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer; scalex, scaley, angle: real); overload;
 
 function CopyIndexSurface(PNGIndexArray: TPNGIndexArray; i: integer): PSDL_Surface;
 
@@ -134,7 +127,7 @@ procedure Big5ToU16(p: PChar);
 
 //字串的绘制长度
 function DrawLength(str: WideString): integer; overload;
-function DrawLength(p: PWideChar): integer; overload;
+function DrawLength(p: pwidechar): integer; overload;
 function DrawLength(p: PChar): integer; overload;
 //颜色
 function MapRGBA(r, g, b: byte; a: byte = 255): uint32;
@@ -242,13 +235,13 @@ begin
     if FileExists(PChar(str)) then
     begin
       try
-{$ifdef android0}
+        {$ifdef android0}
         p := ReadFileToBuffer(nil, PChar(str), -1, 1);
         Music[i] := BASS_StreamCreateFile(True, p, 0, FileGetlength(str), 0);
         FreeFileBuffer(p);
-{$else}
+        {$else}
         Music[i] := BASS_StreamCreateFile(False, PChar(str), 0, 0, 0);
-{$endif}
+        {$endif}
       finally
       end;
     end
@@ -258,13 +251,13 @@ begin
       if FileExists(PChar(str)) then
       begin
         try
-{$ifdef android0}
+          {$ifdef android0}
           p := ReadFileToBuffer(nil, PChar(str), -1, 1);
           Music[i] := BASS_MIDI_StreamCreateFile(True, p, 0, FileGetlength(str), 0, 0);
           FreeFileBuffer(p);
-{$else}
+          {$else}
           Music[i] := BASS_MIDI_StreamCreateFile(False, PChar(str), 0, 0, 0, 0);
-{$endif}
+          {$endif}
           BASS_MIDI_StreamSetFonts(Music[i], sf, 1);
           //showmessage(inttostr(Music[i]));
         finally
@@ -280,13 +273,13 @@ begin
     str := AppPath + 'sound/e' + IntToStr(i) + '.wav';
     if FileExists(PChar(str)) then
     begin
-{$ifdef android0}
+      {$ifdef android0}
       p := ReadFileToBuffer(nil, PChar(str), -1, 1);
       ESound[i] := BASS_SampleLoad(True, p, 0, FileGetlength(str), 1, Flag);
       FreeFileBuffer(p);
-{$else}
+      {$else}
       ESound[i] := BASS_SampleLoad(False, PChar(str), 0, 0, 1, Flag);
-{$endif}
+      {$endif}
     end
     else
       ESound[i] := 0;
@@ -297,13 +290,13 @@ begin
     str := AppPath + formatfloat('sound/atk00', i) + '.wav';
     if FileExists(PChar(str)) then
     begin
-{$ifdef android0}
+      {$ifdef android0}
       p := ReadFileToBuffer(nil, PChar(str), -1, 1);
       ASound[i] := BASS_SampleLoad(True, p, 0, FileGetlength(str), 1, Flag);
       FreeFileBuffer(p);
-{$else}
+      {$else}
       ASound[i] := BASS_SampleLoad(False, PChar(str), 0, 0, 1, Flag);
-{$endif}
+      {$endif}
     end
     else
       ASound[i] := 0;
@@ -634,31 +627,31 @@ function Big5ToUnicode(str: PChar): WideString;
 var
   len: integer;
 begin
-{$IFDEF fpc}
+  {$IFDEF fpc}
   Result := UTF8Decode(CP950ToUTF8(str));
-{$ELSE}
+  {$ELSE}
   len := MultiByteToWideChar(950, 0, PChar(str), -1, nil, 0);
   setlength(Result, len - 1);
-  MultiByteToWideChar(950, 0, PChar(str), length(str), PWideChar(Result), len + 1);
-{$ENDIF}
+  MultiByteToWideChar(950, 0, PChar(str), length(str), pwidechar(Result), len + 1);
+  {$ENDIF}
 end;
 
 function GBKToUnicode(str: PChar): WideString;
 var
   len: integer;
 begin
-{$IFDEF fpc}
+  {$IFDEF fpc}
   Result := UTF8Decode(CP936ToUTF8(str));
-{$ELSE}
+  {$ELSE}
   len := MultiByteToWideChar(950, 0, PChar(str), -1, nil, 0);
   setlength(Result, len - 1);
-  MultiByteToWideChar(950, 0, PChar(str), length(str), PWideChar(Result), len + 1);
-{$ENDIF}
+  MultiByteToWideChar(950, 0, PChar(str), length(str), pwidechar(Result), len + 1);
+  {$ENDIF}
 end;
 
 function PCharToUnicode(str: PChar; len: integer = -1): WideString;
 begin
-  Result := PWideChar(str);
+  Result := pwidechar(str);
   if len >= 0 then
   begin
     if length(Result) > len then
@@ -668,33 +661,33 @@ end;
 
 //unicode转为big5, 仅用于输入姓名
 
-function UnicodeToBig5(str: PWideChar): string;
+function UnicodeToBig5(str: pwidechar): string;
 var
   len: integer;
 begin
-{$IFDEF fpc}
+  {$IFDEF fpc}
   Result := UTF8ToCP950((str));
-{$ELSE}
-  len := WideCharToMultiByte(950, 0, PWideChar(str), -1, nil, 0, nil, nil);
+  {$ELSE}
+  len := WideCharToMultiByte(950, 0, pwidechar(str), -1, nil, 0, nil, nil);
   setlength(Result, len + 1);
-  WideCharToMultiByte(950, 0, PWideChar(str), -1, PChar(Result), len + 1, nil, nil);
-{$ENDIF}
+  WideCharToMultiByte(950, 0, pwidechar(str), -1, PChar(Result), len + 1, nil, nil);
+  {$ENDIF}
 
 end;
 
 //unicode转为GBK, 仅用于输入姓名
 
-function UnicodeToGBK(str: PWideChar): string;
+function UnicodeToGBK(str: pwidechar): string;
 var
   len: integer;
 begin
-{$IFDEF fpc}
+  {$IFDEF fpc}
   Result := UTF8ToCP936((str));
-{$ELSE}
-  len := WideCharToMultiByte(936, 0, PWideChar(str), -1, nil, 0, nil, nil);
+  {$ELSE}
+  len := WideCharToMultiByte(936, 0, pwidechar(str), -1, nil, 0, nil, nil);
   setlength(Result, len + 1);
-  WideCharToMultiByte(936, 0, PWideChar(str), -1, PChar(Result), len + 1, nil, nil);
-{$ENDIF}
+  WideCharToMultiByte(936, 0, pwidechar(str), -1, PChar(Result), len + 1, nil, nil);
+  {$ENDIF}
 
 end;
 
@@ -704,7 +697,7 @@ function Traditional2Simplified(mTraditional: string): string; //返回繁体字
 var
   L: integer;
 begin
-{$IFDEF windows}
+  {$IFDEF windows}
   mTraditional := UTF8ToCP936(mTraditional);
   L := Length(mTraditional);
   SetLength(Result, L + 1);
@@ -713,9 +706,9 @@ begin
     LCMapString($0800,
       $02000000, PChar(mTraditional), L, @Result[1], L);
   result:=CP936TOUTF8(result);
-{$ELSE}
+  {$ELSE}
   Result := mTraditional;
-{$ENDIF}
+  {$ENDIF}
 end; {   Traditional2Simplified   }
 
 //生成或查找已知纹理, 返回其指针, 是否销毁由调用者决定
@@ -853,9 +846,9 @@ var
   p: pointer;
   w, h: integer;
 begin
-  len := length(PWideChar(word));
+  len := length(pwidechar(word));
   if len = 0 then exit;
-{$IFDEF fpc}
+  {$IFDEF fpc}
   //widestring在fpc中的默认赋值动作是将utf8码每字节间插入一个00.
   //此处删除这些0, 同时统计这些0的数目, 若与字串长度相同
   //即认为是一个纯英文字串, 或者是一个直接赋值的widestring,
@@ -887,10 +880,10 @@ begin
     word2 := UTF8Decode(word1);
     word := @word2[1];
   end;
-{$ELSE}
+  {$ELSE}
   //word2 := UTF8Decode(string(word));
   //word := @word2[1];
-{$ENDIF}
+  {$ENDIF}
 
   GetRGBA(color, @r, @g, @b);
   tempcolor.r := r;
@@ -903,7 +896,7 @@ begin
 
   if SIMPLE = 1 then
   begin
-    t := Traditional2Simplified(PWideChar(word));
+    t := Traditional2Simplified(pwidechar(word));
     word := puint16(t);
   end;
 
@@ -984,8 +977,7 @@ end;
 
 
 //显示unicode中文阴影文字, 即将同样内容显示2次, 间隔1像素
-procedure DrawShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32;
-  Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil; realPosition: integer = 0; eng: integer = 0); overload;
+procedure DrawShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32; Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil; realPosition: integer = 0; eng: integer = 0); overload;
 var
   w, h: integer;
   ptex: PSDL_Texture;
@@ -1038,8 +1030,7 @@ end;
 
 //显示英文阴影文字
 
-procedure DrawEngShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32;
-  Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil);
+procedure DrawEngShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32; Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil);
 begin
   DrawShadowText(word, x_pos, y_pos + 4, color1, color2, Tex, Sur, 0, 1);
 end;
@@ -1051,13 +1042,13 @@ var
   len: integer;
   words: WideString;
 begin
-{$IFDEF fpc}
+  {$IFDEF fpc}
   words := UTF8Decode(CP950ToUTF8(str));
-{$ELSE}
+  {$ELSE}
   len := MultiByteToWideChar(950, 0, PChar(str), -1, nil, 0);
   setlength(words, len - 1);
-  MultiByteToWideChar(950, 0, PChar(str), length(str), PWideChar(words), len + 1);
-{$ENDIF}
+  MultiByteToWideChar(950, 0, PChar(str), length(str), pwidechar(words), len + 1);
+  {$ENDIF}
   DrawText(@words[1], x_pos, y_pos, color);
 
 end;
@@ -1069,13 +1060,13 @@ var
   len: integer;
   words: WideString;
 begin
-{$IFDEF fpc}
+  {$IFDEF fpc}
   words := UTF8Decode(CP950ToUTF8(word));
-{$ELSE}
+  {$ELSE}
   len := MultiByteToWideChar(950, 0, PChar(word), -1, nil, 0);
   setlength(words, len - 1);
-  MultiByteToWideChar(950, 0, PChar(word), length(word), PWideChar(words), len + 1);
-{$ENDIF}
+  MultiByteToWideChar(950, 0, PChar(word), length(word), pwidechar(words), len + 1);
+  {$ENDIF}
   DrawShadowText(@words[1], x_pos + 1, y_pos, color1, color2);
 
 end;
@@ -1087,13 +1078,13 @@ var
   len: integer;
   words: WideString;
 begin
-{$IFDEF fpc}
+  {$IFDEF fpc}
   words := UTF8Decode(CP936ToUTF8(word));
-{$ELSE}
+  {$ELSE}
   len := MultiByteToWideChar(950, 0, PChar(word), -1, nil, 0);
   setlength(words, len - 1);
-  MultiByteToWideChar(950, 0, PChar(word), length(word), PWideChar(words), len + 1);
-{$ENDIF}
+  MultiByteToWideChar(950, 0, PChar(word), length(word), pwidechar(words), len + 1);
+  {$ENDIF}
   DrawShadowText(@words[1], x_pos + 1, y_pos, color1, color2);
 
 end;
@@ -1104,7 +1095,7 @@ procedure DrawU16ShadowText(word: PChar; x_pos, y_pos: integer; color1, color2: 
 var
   words: WideString;
 begin
-  words := PWideChar(word);
+  words := pwidechar(word);
   DrawShadowText(@words[1], x_pos + 1, y_pos, color1, color2);
 
 end;
@@ -1465,7 +1456,7 @@ function Simplified2Traditional(mSimplified: ansistring): ansistring; //返回�
 var
   L: integer;
 begin
-{$IFDEF windows}
+  {$IFDEF windows}
   L := Length(mSimplified);
   SetLength(Result, L + 1);
   Result[L + 1] := char(0);
@@ -1473,9 +1464,9 @@ begin
     LCMapString(GetUserDefaultLCID,
       $04000000, PChar(mSimplified), L, @Result[1], L);
   //writeln(L,mSimplified,',',result,GetUserDefaultLCID);
-{$ELSE}
+  {$ELSE}
   Result := mSimplified;
-{$ENDIF}
+  {$ENDIF}
 end; {   Simplified2Traditional   }
 
 
@@ -1808,16 +1799,14 @@ begin
   begin
     if SW_SURFACE = 0 then
     begin
-      TextScreenTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET,
-        RESOLUTIONX, RESOLUTIONY);
+      TextScreenTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, RESOLUTIONX, RESOLUTIONY);
       SDL_SetTextureBlendMode(TextScreenTex, SDL_BLENDMODE_BLEND);
       CleanTextScreen;
     end
     else
     begin
       TextScreen := SDL_CreateRGBSurface(0, RESOLUTIONX, RESOLUTIONY, 32, RMask, GMask, BMask, AMASK);
-      TextScreenTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
-        RESOLUTIONX, RESOLUTIONY);
+      TextScreenTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, RESOLUTIONX, RESOLUTIONY);
       SDL_SetTextureBlendMode(TextScreenTex, SDL_BLENDMODE_BLEND);
     end;
     ResizeSimpleText(1);  //设定简单状态使用的字体层
@@ -1835,10 +1824,8 @@ begin
   if SW_SURFACE = 0 then
   begin
     screenTex := SDL_CreateTexture(render, 0, SDL_TEXTUREACCESS_TARGET, CENTER_X * 2, CENTER_Y * 2);
-    ImgSGroundTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET,
-      ImageWidth, ImageHeight);
-    ImgBGroundTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET,
-      ImageWidth, ImageHeight);
+    ImgSGroundTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, ImageWidth, ImageHeight);
+    ImgBGroundTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, ImageWidth, ImageHeight);
     SimpleStateTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, 270, 90);
     for i := 0 to 5 do
       SimpleStatusTex[i] := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, 270, 90);
@@ -1861,8 +1848,7 @@ begin
     //SDL_SetSurfaceBlendMode(ImgBGround, SDL_BLENDMODE_NONE);
     CurTargetSurface := screen;
 
-    screenTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
-      CENTER_X * 2, CENTER_Y * 2);
+    screenTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, CENTER_X * 2, CENTER_Y * 2);
     SDL_SetTextureBlendMode(screenTex, SDL_BLENDMODE_NONE);
   end;
   //FreshScreenTex:=TList.Create();
@@ -1920,8 +1906,7 @@ begin
       begin
         if SimpleTextTex[i] <> nil then
           SDL_DestroyTexture(SimpleTextTex[i]);
-        SimpleTextTex[i] := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET,
-          w1 + x, y + h1);
+        SimpleTextTex[i] := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, w1 + x, y + h1);
         //这里的混合方式需设为none, 才能正常合并到Text层不留白边, 必须人为保证不会盖住原本的文字
         SDL_SetTextureBlendMode(SimpleTextTex[i], SDL_BLENDMODE_NONE);
       end
@@ -2030,14 +2015,11 @@ var
     Result := 0;
     if inregion(x, y, VirtualKeyX, VirtualKeyY, VirtualKeySize, VirtualKeySize) then
       Result := SDLK_UP;
-    if inregion(x, y, VirtualKeyX - VirtualKeySize - VirtualKeySpace, VirtualKeyY +
-      VirtualKeySize + VirtualKeySpace, VirtualKeySize, VirtualKeySize) then
+    if inregion(x, y, VirtualKeyX - VirtualKeySize - VirtualKeySpace, VirtualKeyY + VirtualKeySize + VirtualKeySpace, VirtualKeySize, VirtualKeySize) then
       Result := SDLK_LEFT;
-    if inregion(x, y, VirtualKeyX, VirtualKeyY + VirtualKeySize * 2 + VirtualKeySpace * 2,
-      VirtualKeySize, VirtualKeySize) then
+    if inregion(x, y, VirtualKeyX, VirtualKeyY + VirtualKeySize * 2 + VirtualKeySpace * 2, VirtualKeySize, VirtualKeySize) then
       Result := SDLK_DOWN;
-    if inregion(x, y, VirtualKeyX + VirtualKeySize + VirtualKeySpace, VirtualKeyY + VirtualKeySize,
-      VirtualKeySize + VirtualKeySpace, VirtualKeySize) then
+    if inregion(x, y, VirtualKeyX + VirtualKeySize + VirtualKeySpace, VirtualKeyY + VirtualKeySize, VirtualKeySize + VirtualKeySpace, VirtualKeySize) then
       Result := SDLK_RIGHT;
     key := Result;
   end;
@@ -2430,10 +2412,10 @@ function ReadFileToBuffer(p: PChar; filename: string; size, malloc: integer): PC
 var
   i: integer;
 begin
-{$ifdef android0}
+  {$ifdef android0}
   filename := StringReplace(filename, AppPath, 'game/', [rfReplaceAll]);
   Result := Android_ReadFiletoBuffer(p, PChar(filename), size, malloc);
-{$else}
+  {$else}
   i := FileOpen(filename, fmopenread);
   if i > 0 then
   begin
@@ -2453,7 +2435,7 @@ begin
   else
   if malloc = 1 then
     Result := nil;
-{$endif}
+  {$endif}
 end;
 
 function ReadFileToBuffer(p: PChar; const filename: PChar; size, malloc: integer): PChar; overload;
@@ -2463,23 +2445,23 @@ end;
 
 function FileGetlength(filename: string): integer;
 begin
-{$ifdef android0}
+  {$ifdef android0}
   filename := StringReplace(filename, AppPath, 'game/', [rfReplaceAll]);
   Result := Android_FileGetlength(PChar(filename));
-{$else}
+  {$else}
   Result := 0;
-{$endif}
+  {$endif}
 end;
 
 procedure FreeFileBuffer(var p: PChar);
 begin
-{$ifdef android0}
+  {$ifdef android0}
   if p <> nil then
     Android_FileFreeBuffer(p);
-{$else}
+  {$else}
   if p <> nil then
     StrDispose(p);
-{$endif}
+  {$endif}
   p := nil;
 end;
 
@@ -2524,8 +2506,7 @@ end;
 
 //为了提高启动的速度, M之外的贴图均仅读入基本信息, 需要时才实际载入图, 并且游戏过程中通常不再释放资源
 
-function LoadPNGTiles(path: string; var PNGIndexArray: TPNGIndexArray; LoadPic: integer = 1;
-  frame: psmallint = nil): integer; overload;
+function LoadPNGTiles(path: string; var PNGIndexArray: TPNGIndexArray; LoadPic: integer = 1; frame: psmallint = nil): integer; overload;
 const
   maxCount: integer = 9999;
 var
@@ -2883,7 +2864,6 @@ var
       PNGIndexArray[i].CurPointerT := nil;
     end;
   end; }
-
 begin
 
   {ResetIndexArray(MPNGIndex);
@@ -2967,9 +2947,7 @@ begin
 end;
 
 
-procedure DrawPNGTile(render: PSDL_Renderer; PNGIndex: TPNGIndex; FrameNum: integer;
-  px, py: integer; region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer;
-  scalex, scaley, angle: real; center: PSDL_Point); overload;
+procedure DrawPNGTile(render: PSDL_Renderer; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer; region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer; scalex, scaley, angle: real; center: PSDL_Point); overload;
 var
   rect: TSDL_Rect;
   r, g, b, a, r1, g1, b1: byte;
@@ -3073,9 +3051,7 @@ begin
 
 end;
 
-procedure DrawPNGTileS(scr: PSDL_Surface; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer;
-  region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer;
-  scalex, scaley, angle: real); overload;
+procedure DrawPNGTileS(scr: PSDL_Surface; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer; region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer; scalex, scaley, angle: real); overload;
 var
   rect: TSDL_Rect;
   r, g, b, a, r1, g1, b1: byte;
@@ -3228,10 +3204,10 @@ function DrawLength(str: WideString): integer; overload;
 var
   l, i: integer;
 begin
-  Result := DrawLength(PWideChar(@str[1]));
+  Result := DrawLength(pwidechar(@str[1]));
 end;
 
-function DrawLength(p: PWideChar): integer; overload;
+function DrawLength(p: pwidechar): integer; overload;
 var
   l, i, Count, c: integer;
   str: string;
@@ -3272,7 +3248,7 @@ end;
 
 function DrawLength(p: PChar): integer; overload;
 begin
-  Result := DrawLength(PWideChar(p));
+  Result := DrawLength(pwidechar(p));
 end;
 
 //顺序ARGB
@@ -4041,14 +4017,14 @@ begin
     if cr then
       writeln();
   end;
-{$ifdef android}
+  {$ifdef android}
   str := format(formatstring, content);
   mythoutput.mythoutput(PChar(str));
   {i := fileopen(SDL_AndroidGetExternalStoragePath()+'/pig3_place_game_here',fmopenwrite);
   fileseek(i, 0, 2);
   filewrite(i, str[1], length(str));
   fileclose(i);}
-{$endif}
+  {$endif}
 end;
 
 procedure ConsoleLog(formatstring: string = ''; cr: boolean = True); overload; inline;
@@ -4062,14 +4038,14 @@ begin
     if cr then
       writeln();
   end;
-{$ifdef android}
+  {$ifdef android}
   str := format(formatstring, []);
   mythoutput.mythoutput(PChar(str));
   {i := fileopen(SDL_AndroidGetExternalStoragePath()+'/pig3_place_game_here',fmopenwrite);
   fileseek(i, 0, 2);
   filewrite(i, str[1], length(str));
   fileclose(i);}
-{$endif}
+  {$endif}
 end;
 
 end.

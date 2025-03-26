@@ -3,10 +3,10 @@ unit kys_script;
 interface
 
 uses
-{$IFDEF fpc}
-{$ELSE}
+  {$IFDEF fpc}
+  {$ELSE}
   Windows,
-{$ENDIF}
+  {$ENDIF}
   SysUtils,
   SDL2,
   Math,
@@ -665,7 +665,7 @@ function SetItemIntro(L: Plua_state): integer; cdecl;
 var
   n, itemnum, i, len: integer;
   str: WideString;
-  p: pWideChar;
+  p: pwidechar;
 begin
   itemnum := lua_tointeger(L, -2);
   str := UTF8Decode(lua_tostring(L, -1));
@@ -1544,7 +1544,7 @@ function GetNameAsString(L: Plua_state): integer; cdecl;
 var
   str: string;
   typenum, num: integer;
-  p1: pWideChar;
+  p1: pwidechar;
 begin
   typenum := lua_tointeger(L, -2);
   num := lua_tointeger(L, -1);
@@ -1554,11 +1554,11 @@ begin
     2: p1 := @Rscence[num].Name;
     3: p1 := @Rmagic[num].Name;
   end;
-{$IFDEF fpc}
+  {$IFDEF fpc}
   str := UTF8Encode(WideString(p1));
-{$ELSE}
+  {$ELSE}
   str := UTF8Encode(GBKToUnicode(p1));
-{$ENDIF}
+  {$ENDIF}
   lua_pushstring(L, @str[1]);
   Result := 1;
 
@@ -1567,9 +1567,9 @@ end;
 function SetNameAsString(L: Plua_state): integer; cdecl;
 var
   str: string;
-  strw: widestring;
+  strw: WideString;
   typenum, num, i: integer;
-  p1: pWideChar;
+  p1: pwidechar;
 begin
   typenum := lua_tointeger(L, -2);
   num := lua_tointeger(L, -1);
@@ -1579,10 +1579,11 @@ begin
     2: p1 := @Rscence[num].Name;
     3: p1 := @Rmagic[num].Name;
   end;
-  strw := UTF8Decode(lua_tostring(L, -3));;
+  strw := UTF8Decode(lua_tostring(L, -3));
+  ;
   Result := 0;
 
-  for i:= 0 to 4 do
+  for i := 0 to 4 do
   begin
     (p1 + i)^ := widechar(0);
     if i < length(strw) then (p1 + i)^ := strw[i + 1];
@@ -1595,18 +1596,18 @@ var
   str: string;
   strw: WideString;
   typenum, num: integer;
-  p1: pWideChar;
+  p1: pwidechar;
   a: array of byte;
 begin
   num := lua_tointeger(L, -1);
   ReadTalk(num, a);
-  strw := pWideChar(a);
+  strw := pwidechar(a);
 
-{$IFDEF fpc}
+  {$IFDEF fpc}
   str := UTF8Encode(strw);
-{$ELSE}
+  {$ELSE}
   str := UTF8Encode(GBKToUnicode(p1));
-{$ENDIF}
+  {$ENDIF}
   lua_pushstring(L, @str[1]);
   Result := 1;
 
@@ -1848,9 +1849,9 @@ var
 begin
   n := lua_gettop(L);
   if n = 0 then
-      instruct_64
+    instruct_64
   else
-      NewShop(lua_tointeger(L, -1));
+    NewShop(lua_tointeger(L, -1));
   Result := 0;
 end;
 
@@ -2084,8 +2085,7 @@ end;
 
 function SelectOneTeamMemberScript(L: Plua_state): integer; cdecl;
 begin
-  lua_pushinteger(L, SelectOneTeamMember(0, 0, UTF8Decode(lua_tostring(L, -3)),
-    lua_tointeger(L, -2), lua_tointeger(L, -1)));
+  lua_pushinteger(L, SelectOneTeamMember(0, 0, UTF8Decode(lua_tostring(L, -3)), lua_tointeger(L, -2), lua_tointeger(L, -1)));
   Result := 1;
 end;
 
@@ -2104,8 +2104,7 @@ end;
 
 function EnterNumberScript(L: Plua_state): integer; cdecl;
 begin
-  lua_pushinteger(L, EnterNumber(lua_tointeger(L, -5), lua_tointeger(L, -4), lua_tointeger(L, -3),
-    lua_tointeger(L, -2), lua_tointeger(L, -1)));
+  lua_pushinteger(L, EnterNumber(lua_tointeger(L, -5), lua_tointeger(L, -4), lua_tointeger(L, -3), lua_tointeger(L, -2), lua_tointeger(L, -1)));
   Result := 1;
 end;
 

@@ -1049,16 +1049,14 @@ begin
               for x1 := -2 to 2 do
                 for y1 := -2 to 2 do
                 begin
-                  if (Brole[i].X + x1 < 0) or (Brole[i].X + x1 > 63) or (Brole[i].Y + y1 < 0) or
-                    (Brole[i].Y + y1 > 63) then
+                  if (Brole[i].X + x1 < 0) or (Brole[i].X + x1 > 63) or (Brole[i].Y + y1 < 0) or (Brole[i].Y + y1 > 63) then
                     continue;
                   if BField[2, Brole[i].X + x1, Brole[i].Y + y1] >= 0 then
                   begin
                     bnum := BField[2, Brole[i].X + x1, Brole[i].Y + y1];
                     if Brole[bnum].Team <> Brole[i].Team then
                     begin
-                      pnum := Rmagic[neinum].addmp[0] + (Rmagic[neinum].addmp[1] - Rmagic[neinum].addmp[0]) *
-                        neilevel div 10;
+                      pnum := Rmagic[neinum].addmp[0] + (Rmagic[neinum].addmp[1] - Rmagic[neinum].addmp[0]) * neilevel div 10;
                       if pnum > Rrole[Brole[bnum].rnum].DefPoi then
                       begin
                         Rrole[Brole[bnum].rnum].Poison := Rrole[Brole[bnum].rnum].Poison + pnum;
@@ -1133,8 +1131,7 @@ begin
               for x1 := -2 to 2 do
                 for y1 := -2 to 2 do
                 begin
-                  if (Brole[i].X + x1 < 0) or (Brole[i].X + x1 > 63) or (Brole[i].Y + y1 < 0) or
-                    (Brole[i].Y + y1 > 63) then
+                  if (Brole[i].X + x1 < 0) or (Brole[i].X + x1 > 63) or (Brole[i].Y + y1 < 0) or (Brole[i].Y + y1 > 63) then
                     continue;
                   if BField[2, Brole[i].X + x1, Brole[i].Y + y1] >= 0 then
                   begin
@@ -1265,8 +1262,7 @@ begin
   if Result > 15 then
     Result := 15;
   //情侣和状态增加移动能力
-  Result := Result + Brole[bnum].StateLevel[3] + Brole[bnum].loverlevel[2] +
-    Ritem[Rrole[rnum].Equip[1]].AddMove + Ritem[Rrole[rnum].Equip[0]].AddMove;
+  Result := Result + Brole[bnum].StateLevel[3] + Brole[bnum].loverlevel[2] + Ritem[Rrole[rnum].Equip[1]].AddMove + Ritem[Rrole[rnum].Equip[0]].AddMove;
 
   if (SEMIREAL = 1) and (Result > 7) then
     Result := 7;
@@ -1404,9 +1400,7 @@ begin
     begin
       if Rrole[rnum].Magic[i] > 0 then
       begin
-        if (Rmagic[Rrole[rnum].Magic[i]].NeedItem < 0) or ((Rmagic[Rrole[rnum].Magic[i]].NeedItem >= 0) and
-          (Rmagic[Rrole[rnum].Magic[i]].NeedItemAmount <= GetItemAmount(Rmagic[Rrole[rnum].Magic[i]].NeedItem))) and
-          (Rmagic[Rrole[rnum].Magic[i]].NeedMP <= Rrole[rnum].CurrentMP) then
+        if (Rmagic[Rrole[rnum].Magic[i]].NeedItem < 0) or ((Rmagic[Rrole[rnum].Magic[i]].NeedItem >= 0) and (Rmagic[Rrole[rnum].Magic[i]].NeedItemAmount <= GetItemAmount(Rmagic[Rrole[rnum].Magic[i]].NeedItem))) and (Rmagic[Rrole[rnum].Magic[i]].NeedMP <= Rrole[rnum].CurrentMP) then
         begin
           p := 1;
           break;
@@ -1519,8 +1513,7 @@ begin
       end;
       SDL_MOUSEBUTTONUP:
       begin
-        if (event.button.button = SDL_BUTTON_LEFT) and (menu <> -1) and MouseInRegion(x, y,
-          120, (max + 1) * h, xm, ym) then
+        if (event.button.button = SDL_BUTTON_LEFT) and (menu <> -1) and MouseInRegion(x, y, 120, (max + 1) * h, xm, ym) then
           break;
         if (event.button.button = SDL_BUTTON_RIGHT) {and (menu <> -1)} then
         begin
@@ -2364,10 +2357,7 @@ begin
           Bgrid[i] := 4
         else if BField[layer, nextX, nextY] >= 0 then
           Bgrid[i] := 5
-        else if (BField[1, nextX, nextY] > 0) or ((BField[0, nextX, nextY] >= 358) and
-          (BField[0, nextX, nextY] <= 362)) or (BField[0, nextX, nextY] = 522) or
-          (BField[0, nextX, nextY] = 1022) or ((BField[0, nextX, nextY] >= 1324) and
-          (BField[0, nextX, nextY] <= 1330)) or (BField[0, nextX, nextY] = 1348) then
+        else if (BField[1, nextX, nextY] > 0) or ((BField[0, nextX, nextY] >= 358) and (BField[0, nextX, nextY] <= 362)) or (BField[0, nextX, nextY] = 522) or (BField[0, nextX, nextY] = 1022) or ((BField[0, nextX, nextY] >= 1324) and (BField[0, nextX, nextY] <= 1330)) or (BField[0, nextX, nextY] = 1348) then
           Bgrid[i] := 1
         else if (BField[2, nextX, nextY] >= 0) and (Brole[BField[2, nextX, nextY]].Dead = 0) and (mode = 0) then
         begin
@@ -2397,8 +2387,7 @@ begin
             nextnextX := nextX + Xinc[j];
             nextnextY := nextY + Yinc[j];
             if (nextnextX >= 0) and (nextnextX < 63) and (nextnextY >= 0) and (nextnextY < 63) then
-              if (BField[2, nextnextX, nextnextY] >= 0) and (Brole[BField[2, nextnextX, nextnextY]].Dead = 0) and
-                (Brole[BField[2, nextnextX, nextnextY]].Team <> myteam) then
+              if (BField[2, nextnextX, nextnextY] >= 0) and (Brole[BField[2, nextnextX, nextnextY]].Dead = 0) and (Brole[BField[2, nextnextX, nextnextY]].Team <> myteam) then
               begin
                 BField[7, nextX, nextY] := 1;
               end;
@@ -2764,12 +2753,12 @@ begin
   //出手一次, 获得1到10的经验值
   case MODVersion of
     13: Brole[bnum].ExpGot := Brole[bnum].ExpGot + 1 + random(10);
-    else Brole[bnum].ExpGot := Brole[bnum].ExpGot + 40 + random(10);
+    else
+      Brole[bnum].ExpGot := Brole[bnum].ExpGot + 40 + random(10);
   end;
 
   //武功的攻击超过1000且人物的攻击超过600, 则使用震动效果
-  if (Rmagic[mnum].Attack[0] + (Rmagic[mnum].Attack[1] - Rmagic[mnum].Attack[0]) * level div 10 > 1000) and
-    (Rrole[rnum].Attack > 600) then
+  if (Rmagic[mnum].Attack[0] + (Rmagic[mnum].Attack[1] - Rmagic[mnum].Attack[0]) * level div 10 > 1000) and (Rrole[rnum].Attack > 600) then
     needOffset := 1;
 
   if not UseSpecialAbility(bnum, mnum, level) then
@@ -2787,13 +2776,10 @@ begin
       neilevel := Rrole[Brole[bnum].rnum].NGLevel[i] div 100 + 1;
 
       //普通内功对应类型的加成
-      if ((Rmagic[neinum].MoveDistance[0] = 6) or (Rmagic[neinum].MoveDistance[0] = Rmagic[mnum].MagicType)) and
-        (Rmagic[neinum].MoveDistance[1] >= Rmagic[mnum].Attack[1] div 100) then
-        if (100 + Rmagic[neinum].movedistance[2] + (Rmagic[neinum].movedistance[3] - Rmagic[neinum].movedistance[2]) *
-          neilevel / 10) / 100 > p then
+      if ((Rmagic[neinum].MoveDistance[0] = 6) or (Rmagic[neinum].MoveDistance[0] = Rmagic[mnum].MagicType)) and (Rmagic[neinum].MoveDistance[1] >= Rmagic[mnum].Attack[1] div 100) then
+        if (100 + Rmagic[neinum].movedistance[2] + (Rmagic[neinum].movedistance[3] - Rmagic[neinum].movedistance[2]) * neilevel / 10) / 100 > p then
         begin
-          p := (100 + Rmagic[neinum].movedistance[2] + (Rmagic[neinum].movedistance[3] -
-            Rmagic[neinum].movedistance[2]) * neilevel / 10) / 100;
+          p := (100 + Rmagic[neinum].movedistance[2] + (Rmagic[neinum].movedistance[3] - Rmagic[neinum].movedistance[2]) * neilevel / 10) / 100;
           lastng := neinum;
         end;
 
@@ -2849,13 +2835,11 @@ begin
       if Rmagic[mnum].HurtType = 0 then
       begin
         //19号状态, 青翼, 被攻击后移动
-        if (Brole[bnum].Team <> Brole[i].Team) and (BField[4, Brole[i].X, Brole[i].Y] > 0) and
-          (Brole[i].StateLevel[19] = 1) then
+        if (Brole[bnum].Team <> Brole[i].Team) and (BField[4, Brole[i].X, Brole[i].Y] > 0) and (Brole[i].StateLevel[19] = 1) then
         begin
           movestep := Rrole[Brole[i].rnum].Movestep;
           movestep := movestep div 10;
-          movestep := movestep + Brole[i].StateLevel[3] + Brole[i].loverlevel[2] +
-            Ritem[Rrole[Brole[i].rnum].Equip[1]].AddMove + Ritem[Rrole[Brole[i].rnum].Equip[0]].AddMove;
+          movestep := movestep + Brole[i].StateLevel[3] + Brole[i].loverlevel[2] + Ritem[Rrole[Brole[i].rnum].Equip[1]].AddMove + Ritem[Rrole[Brole[i].rnum].Equip[0]].AddMove;
           Bx := Brole[i].X;
           By := Brole[i].Y;
           CalCanSelect(i, 0, movestep);
@@ -3011,9 +2995,7 @@ begin
   begin
     if Rrole[rnum].Magic[i] > 0 then
     begin
-      if ((Rmagic[Rrole[rnum].Magic[i]].NeedItem < 0) or ((Rmagic[Rrole[rnum].Magic[i]].NeedItem >= 0) and
-        (Rmagic[Rrole[rnum].Magic[i]].NeedItemAmount <= GetItemAmount(Rmagic[Rrole[rnum].Magic[i]].NeedItem)))) and
-        ((Rmagic[Rrole[rnum].Magic[i]].NeedMP <= Rrole[rnum].CurrentMP)) then
+      if ((Rmagic[Rrole[rnum].Magic[i]].NeedItem < 0) or ((Rmagic[Rrole[rnum].Magic[i]].NeedItem >= 0) and (Rmagic[Rrole[rnum].Magic[i]].NeedItemAmount <= GetItemAmount(Rmagic[Rrole[rnum].Magic[i]].NeedItem)))) and ((Rmagic[Rrole[rnum].Magic[i]].NeedMP <= Rrole[rnum].CurrentMP)) then
       begin
         MenuStatus := MenuStatus or (1 shl i);
         menuString[i] := pwidechar(@Rmagic[Rrole[rnum].Magic[i]].Name);
@@ -3141,8 +3123,7 @@ begin
     2, 3, 6: if bnum >= 0 then
         for i := 0 to BRoleAmount - 1 do
         begin
-          if (Brole[i].Dead = 0) and (((aimMode = 2) and (Brole[bnum].Team <> Brole[i].Team)) or
-            ((aimMode = 3) and (Brole[bnum].Team = Brole[i].Team)) or (aimMode = 6)) then
+          if (Brole[i].Dead = 0) and (((aimMode = 2) and (Brole[bnum].Team <> Brole[i].Team)) or ((aimMode = 3) and (Brole[bnum].Team = Brole[i].Team)) or (aimMode = 6)) then
             BField[4, Brole[i].X, Brole[i].Y] := 1 + random(6);
         end;
     4: BField[4, Bx, By] := 1;
@@ -3250,8 +3231,7 @@ begin
         end;
         7: //啥东西？
         begin
-          if ((Ax = Bx) and (i2 = Ay) and (abs(i1 - Ax) <= step)) or ((Ay = By) and (i1 = Ax) and
-            (abs(i2 - Ay) <= step)) then
+          if ((Ax = Bx) and (i2 = Ay) and (abs(i1 - Ax) <= step)) or ((Ay = By) and (i1 = Ax) and (abs(i2 - Ay) <= step)) then
             BField[4, i1, i2] := 1;
         end;
       end;
@@ -3308,8 +3288,7 @@ begin
   begin
     if EPNGIndex[enum].Loaded = 0 then
     begin
-      EPNGIndex[enum].Amount := LoadPNGTiles(formatfloat('resource/eft/eft000', enum),
-        EPNGIndex[enum].PNGIndexArray, 1);
+      EPNGIndex[enum].Amount := LoadPNGTiles(formatfloat('resource/eft/eft000', enum), EPNGIndex[enum].PNGIndexArray, 1);
       EPNGIndex[enum].Loaded := 1;
     end;
     endpic := EPNGIndex[enum].Amount;
@@ -3352,8 +3331,7 @@ begin
   writeln(Rrole[rnum].CurrentMP, level, Rmagic[mnum].NeedMP);}
   for i := 0 to BRoleAmount - 1 do
   begin
-    if (BField[4, Brole[i].X, Brole[i].Y] > 0) and (Brole[bnum].Team <> Brole[i].Team) and
-      (Brole[i].Dead = 0) and (bnum <> i) then
+    if (BField[4, Brole[i].X, Brole[i].Y] > 0) and (Brole[bnum].Team <> Brole[i].Team) and (Brole[i].Dead = 0) and (bnum <> i) then
     begin
       Brole[i].ShowNumber := -1;
       //生命伤害
@@ -3361,13 +3339,11 @@ begin
       begin
         hurt := CalHurtValue(bnum, i, mnum, level, mode) + Brole[bnum].AntiHurt;
         //刀系福利, 伤害有几率翻倍
-        if (Rmagic[mnum].MagicType = 3) and (random(1000) < Rrole[rnum].Knife *
-          (100 + Brole[bnum].StateLevel[31]) div 100) then
+        if (Rmagic[mnum].MagicType = 3) and (random(1000) < Rrole[rnum].Knife * (100 + Brole[bnum].StateLevel[31]) div 100) then
           hurt := min(9999, trunc(hurt * (15 + random(16)) / 10));
 
         //拳系福利, 几率降低目标的攻防轻
-        if (Rmagic[mnum].MagicType = 1) and (random(1000) < Rrole[rnum].Fist *
-          (100 + Brole[bnum].StateLevel[29]) div 100) then
+        if (Rmagic[mnum].MagicType = 1) and (random(1000) < Rrole[rnum].Fist * (100 + Brole[bnum].StateLevel[29]) div 100) then
         begin
           if random(100) < 30 then
             ModifyState(i, 0, -30, 3);
@@ -3378,8 +3354,7 @@ begin
         end;
 
         //特系福利, 几率打成脑残
-        if (Rmagic[mnum].MagicType = 4) and (random(5000) < Rrole[rnum].Unusual *
-          (100 + Brole[bnum].StateLevel[32]) div 100) then
+        if (Rmagic[mnum].MagicType = 4) and (random(5000) < Rrole[rnum].Unusual * (100 + Brole[bnum].StateLevel[32]) div 100) then
           ModifyState(i, 28, -1, 3);
 
         //暗系福利, 几率降低移动
@@ -3459,8 +3434,7 @@ begin
               Rrole[Brole[Brole[i].StateLevel[23]].rnum].CurrentHP - hurt;
             //受伤
             Rrole[Brole[Brole[i].StateLevel[23]].rnum].Hurt :=
-              Rrole[Brole[Brole[i].StateLevel[23]].rnum].Hurt + hurt * 100 div
-              Rrole[Brole[Brole[i].StateLevel[23]].rnum].MAXHP div LIFE_HURT;
+              Rrole[Brole[Brole[i].StateLevel[23]].rnum].Hurt + hurt * 100 div Rrole[Brole[Brole[i].StateLevel[23]].rnum].MAXHP div LIFE_HURT;
           end
           else
           begin
@@ -3503,8 +3477,7 @@ begin
             Brole[i].ShowNumber := hurt;
             Rrole[Brole[i].rnum].CurrentHP := Rrole[Brole[i].rnum].CurrentHP - hurt;
             //受伤
-            Rrole[Brole[i].rnum].Hurt := Rrole[Brole[i].rnum].Hurt + hurt * 100 div
-              Rrole[Brole[i].rnum].MAXHP div LIFE_HURT;
+            Rrole[Brole[i].rnum].Hurt := Rrole[Brole[i].rnum].Hurt + hurt * 100 div Rrole[Brole[i].rnum].MAXHP div LIFE_HURT;
           end;
 
           if Rrole[Brole[i].rnum].Hurt > 99 then
@@ -3517,7 +3490,8 @@ begin
           Rrole[Brole[i].rnum].CurrentHP := 0;
           case MODVersion of
             13: Brole[bnum].ExpGot := Brole[bnum].ExpGot + 30 + random(20);
-            else Brole[bnum].ExpGot := Brole[bnum].ExpGot + 300 + random(20) * 10;
+            else
+              Brole[bnum].ExpGot := Brole[bnum].ExpGot + 300 + random(20) * 10;
           end;
         end;
       end;
@@ -3611,11 +3585,9 @@ begin
   k2 := 0;
   for i := 0 to BRoleAmount - 1 do
   begin
-    if (Brole[i].Team = Brole[bnum1].Team) and (Brole[i].Dead = 0) and
-      (Rrole[Brole[i].rnum].Knowledge > MIN_KNOWLEDGE) then
+    if (Brole[i].Team = Brole[bnum1].Team) and (Brole[i].Dead = 0) and (Rrole[Brole[i].rnum].Knowledge > MIN_KNOWLEDGE) then
       k1 := k1 + Rrole[Brole[i].rnum].Knowledge;
-    if (Brole[i].Team = Brole[bnum2].Team) and (Brole[i].Dead = 0) and
-      (Rrole[Brole[i].rnum].Knowledge > MIN_KNOWLEDGE) then
+    if (Brole[i].Team = Brole[bnum2].Team) and (Brole[i].Dead = 0) and (Rrole[Brole[i].rnum].Knowledge > MIN_KNOWLEDGE) then
       k2 := k2 + Rrole[Brole[i].rnum].Knowledge;
   end;
 
@@ -3645,10 +3617,8 @@ begin
     if neinum <= 0 then
       break;
     neilevel := Rrole[Brole[bnum1].rnum].NGLevel[i] div 100 + 1;
-    if ((Rmagic[neinum].MoveDistance[0] = 6) or (Rmagic[neinum].MoveDistance[0] = Rmagic[mnum].MagicType)) and
-      (Rmagic[neinum].MoveDistance[1] >= Rmagic[mnum].Attack[1] div 100) then
-      p := max(p, (100 + Rmagic[neinum].movedistance[2] + (Rmagic[neinum].movedistance[3] -
-        Rmagic[neinum].movedistance[2]) * neilevel / 10) / 100);
+    if ((Rmagic[neinum].MoveDistance[0] = 6) or (Rmagic[neinum].MoveDistance[0] = Rmagic[mnum].MagicType)) and (Rmagic[neinum].MoveDistance[1] >= Rmagic[mnum].Attack[1] div 100) then
+      p := max(p, (100 + Rmagic[neinum].movedistance[2] + (Rmagic[neinum].movedistance[3] - Rmagic[neinum].movedistance[2]) * neilevel / 10) / 100);
 
     //特定武功加成
     if Rmagic[neinum].AttDistance[4] = mnum then
@@ -3693,8 +3663,7 @@ begin
       neilevel := R1.NGLevel[i] div 100 + 1;
       if Rmagic[neinum].MoveDistance[8] > 0 then
       begin
-        p := p * (100 + Rmagic[neinum].MoveDistance[8] + (Rmagic[neinum].MoveDistance[9] -
-          Rmagic[neinum].MoveDistance[8]) * neilevel / 10) / 100;
+        p := p * (100 + Rmagic[neinum].MoveDistance[8] + (Rmagic[neinum].MoveDistance[9] - Rmagic[neinum].MoveDistance[8]) * neilevel / 10) / 100;
       end;
     end;
     mhurt := trunc(mhurt * p);
@@ -3712,8 +3681,7 @@ begin
       neilevel := R1.NGLevel[i] div 100 + 1;
       if Rmagic[neinum].MoveDistance[6] > 0 then
       begin
-        p := p * (100 + Rmagic[neinum].MoveDistance[6] + (Rmagic[neinum].MoveDistance[7] -
-          Rmagic[neinum].MoveDistance[6]) * neilevel / 10) / 100;
+        p := p * (100 + Rmagic[neinum].MoveDistance[6] + (Rmagic[neinum].MoveDistance[7] - Rmagic[neinum].MoveDistance[6]) * neilevel / 10) / 100;
       end;
     end;
     mhurt := trunc(mhurt * p);
@@ -3737,8 +3705,7 @@ begin
     neilevel := R2.NGLevel[i] div 100 + 1;
     if Rmagic[neinum].MoveDistance[4] > 0 then
     begin
-      def := def * (100 + Rmagic[neinum].MoveDistance[4] + (Rmagic[neinum].MoveDistance[5] -
-        Rmagic[neinum].MoveDistance[4]) * neilevel div 10) div 100;
+      def := def * (100 + Rmagic[neinum].MoveDistance[4] + (Rmagic[neinum].MoveDistance[5] - Rmagic[neinum].MoveDistance[4]) * neilevel div 10) div 100;
       if mode = 1 then
         ShowStringOnBrole(pwidechar(@Rmagic[neinum].Name) + UTF8Decode('·剛體'), bnum2, 3);
     end;
@@ -4256,8 +4223,7 @@ begin
   for i := 0 to BRoleAmount - 1 do
   begin
     rnum := Brole[i].rnum;
-    while (uint16(Rrole[rnum].Exp) >= uint16(LevelUplist[Rrole[rnum].Level - 1])) and
-      (Rrole[rnum].Level < MAX_LEVEL) do
+    while (uint16(Rrole[rnum].Exp) >= uint16(LevelUplist[Rrole[rnum].Level - 1])) and (Rrole[rnum].Level < MAX_LEVEL) do
     begin
       Rrole[rnum].Exp := Rrole[rnum].Exp - LevelUplist[Rrole[rnum].Level - 1];
       LevelUp(i);
@@ -4366,8 +4332,7 @@ begin
       mlevel := max(1, GetMagicLevel(rnum, mnum));
       while (mlevel < 10) do
       begin
-        needexp := min(30000, trunc((1 + (mlevel - 1) * 0.5) * Ritem[Rrole[rnum].PracticeBook].NeedExp *
-          (1 + (7 - Rrole[rnum].Aptitude / 15) * 0.5)));
+        needexp := min(30000, trunc((1 + (mlevel - 1) * 0.5) * Ritem[Rrole[rnum].PracticeBook].NeedExp * (1 + (7 - Rrole[rnum].Aptitude / 15) * 0.5)));
         if (Rrole[rnum].ExpForBook >= needexp) and (mlevel < 10) then
         begin
           Redraw;
@@ -4389,8 +4354,7 @@ begin
       end;
 
       //是否能够炼出物品
-      if (Rrole[rnum].ExpForItem >= Ritem[inum].NeedExpForItem) and (Ritem[inum].NeedExpForItem > 0) and
-        (Brole[i].Team = 0) then
+      if (Rrole[rnum].ExpForItem >= Ritem[inum].NeedExpForItem) and (Ritem[inum].NeedExpForItem > 0) and (Brole[i].Team = 0) then
       begin
         //Redraw;
         //TransBlackScreen;
@@ -4588,8 +4552,7 @@ begin
     begin
       if (Brole[i].Dead = 0) and (Brole[i].Team <> Brole[bnum].Team) then
       begin
-        if (Rrole[Brole[i].rnum].DefPoi <= minDefPoi) and (Rrole[Brole[i].rnum].Poison < 100) and
-          (BField[3, Brole[i].X, Brole[i].Y] >= 0) then
+        if (Rrole[Brole[i].rnum].DefPoi <= minDefPoi) and (Rrole[Brole[i].rnum].Poison < 100) and (BField[3, Brole[i].X, Brole[i].Y] >= 0) then
         begin
           //bnum1 := i;
           minDefPoi := Rrole[Brole[i].rnum].DefPoi;
@@ -4788,8 +4751,7 @@ begin
           for i := 0 to 3 do
           begin
             if (Rrole[rnum].TakingItemAmount[i] > 0) and (Rrole[rnum].TakingItem[i] >= 0) then
-              if (Ritem[Rrole[rnum].TakingItem[i]].ItemType = 4) and
-                (Ritem[Rrole[rnum].TakingItem[i]].AddCurrentHP < maxhurt) then
+              if (Ritem[Rrole[rnum].TakingItem[i]].ItemType = 4) and (Ritem[Rrole[rnum].TakingItem[i]].AddCurrentHP < maxhurt) then
               begin
                 maxhurt := Ritem[RItemList[i].Number].AddCurrentHP;
                 inum := RItemList[i].Number;
@@ -4816,8 +4778,7 @@ begin
           //Brole[bnum1].ShowNumber := hurt;
           //Brole[bnum1].ExpGot := Brole[bnum1].ExpGot + hurt;
           //Rrole[rnum1].Hurt := min(Rrole[rnum1].Hurt + hurt div LIFE_HURT, 99);
-          Rrole[rnum1].Poison := min(Rrole[rnum1].Poison + Ritem[inum].AddPoi *
-            (100 - Rrole[rnum1].DefPoi) div 100, 99);
+          Rrole[rnum1].Poison := min(Rrole[rnum1].Poison + Ritem[inum].AddPoi * (100 - Rrole[rnum1].DefPoi) div 100, 99);
           SetAminationPosition(0, 0, 0);
           str := pwidechar(@Ritem[inum].Name);
           ShowMagicName(inum, str);
@@ -4884,18 +4845,14 @@ begin
       if Rmagic[neinum].AttDistance[0] > 0 then
       begin
         Rrole[Brole[bnum].rnum].CurrentMP :=
-          Rrole[Brole[bnum].rnum].CurrentMP + Rrole[Brole[bnum].rnum].MaxMP *
-          (Rmagic[neinum].AttDistance[0] + (Rmagic[neinum].AttDistance[1] - Rmagic[neinum].AttDistance[0]) *
-          neilevel div 10) div 100;
+          Rrole[Brole[bnum].rnum].CurrentMP + Rrole[Brole[bnum].rnum].MaxMP * (Rmagic[neinum].AttDistance[0] + (Rmagic[neinum].AttDistance[1] - Rmagic[neinum].AttDistance[0]) * neilevel div 10) div 100;
         ShowStringOnBrole(pwidechar(@Rmagic[neinum].Name) + UTF8Decode('·回内'), bnum, 3);
       end;
       Rrole[Brole[bnum].rnum].CurrentMP := min(Rrole[Brole[bnum].rnum].CurrentMP, Rrole[Brole[bnum].rnum].MaxMP);
       if Rmagic[neinum].AttDistance[2] > 0 then
       begin
         Rrole[Brole[bnum].rnum].CurrentHP :=
-          Rrole[Brole[bnum].rnum].CurrentHP + Rrole[Brole[bnum].rnum].MaxHP *
-          (Rmagic[neinum].AttDistance[2] + (Rmagic[neinum].AttDistance[3] - Rmagic[neinum].AttDistance[2]) *
-          neilevel div 10) div 100;
+          Rrole[Brole[bnum].rnum].CurrentHP + Rrole[Brole[bnum].rnum].MaxHP * (Rmagic[neinum].AttDistance[2] + (Rmagic[neinum].AttDistance[3] - Rmagic[neinum].AttDistance[2]) * neilevel div 10) div 100;
         ShowStringOnBrole(pwidechar(@Rmagic[neinum].Name) + UTF8Decode('·回命'), bnum, 3);
       end;
       Rrole[Brole[bnum].rnum].CurrentHP := min(Rrole[Brole[bnum].rnum].CurrentHP, Rrole[Brole[bnum].rnum].MaxHP);
@@ -5623,8 +5580,7 @@ begin
     for i := 0 to BRoleAmount - 1 do
     begin
       rnum := Brole[i].rnum;
-      if (((TeamMate = 0) and (myteam <> Brole[i].Team)) or ((TeamMate <> 0) and (myteam = Brole[i].Team))) and
-        (Brole[i].Dead = 0) and (Rrole[rnum].Data[Prolist] * sign(MaxMinPro) > tempPro * sign(MaxMinPro)) then
+      if (((TeamMate = 0) and (myteam <> Brole[i].Team)) or ((TeamMate <> 0) and (myteam = Brole[i].Team))) and (Brole[i].Dead = 0) and (Rrole[rnum].Data[Prolist] * sign(MaxMinPro) > tempPro * sign(MaxMinPro)) then
       begin
         if abs(Brole[i].X - Bx) + abs(Brole[i].Y - By) <= KeepDis + step then
         begin
@@ -5657,8 +5613,7 @@ begin
   begin
     for i := 0 to BRoleAmount - 1 do
     begin
-      if (((TeamMate = 0) and (myteam <> Brole[i].Team)) or ((TeamMate <> 0) and (myteam = Brole[i].Team))) and
-        (Brole[i].Dead = 0) then
+      if (((TeamMate = 0) and (myteam <> Brole[i].Team)) or ((TeamMate <> 0) and (myteam = Brole[i].Team))) and (Brole[i].Dead = 0) then
       begin
         tempdis := abs(Brole[i].X - Bx) + abs(Brole[i].Y - By);
         if tempdis < mindis then
@@ -5722,7 +5677,8 @@ begin
       n := n + 1;
       Result := random(n) = 0;
     end;
-    else Result := False;
+    else
+      Result := False;
   end;
 end;
 
@@ -5753,8 +5709,7 @@ begin
         for i := 0 to BRoleAmount - 1 do
         begin
           rnum := Brole[i].rnum;
-          if (Brole[i].Team = myteam) and (Brole[i].dead = 0) and (abs(Brole[i].X - curX) +
-            abs(Brole[i].Y - curY) < curedis) and (Rrole[rnum].CurrentHP < Rrole[rnum].MaxHP div 2) then
+          if (Brole[i].Team = myteam) and (Brole[i].dead = 0) and (abs(Brole[i].X - curX) + abs(Brole[i].Y - curY) < curedis) and (Rrole[rnum].CurrentHP < Rrole[rnum].MaxHP div 2) then
           begin
             if (Rrole[rnum].CurrentHP < tempminHP) then
             begin
@@ -6219,8 +6174,7 @@ begin
 
     //Physical power is less than 30%, 50% probality to eat a pill.
     //体力低于30%, 50%可能吃药
-    if (Brole[bnum].Acted <> 1) and (Brole[bnum].Team <> 0) and (Rrole[rnum].PhyPower <
-      (MAX_PHYSICAL_POWER * 3 div 10)) then
+    if (Brole[bnum].Acted <> 1) and (Brole[bnum].Team <> 0) and (Rrole[rnum].PhyPower < (MAX_PHYSICAL_POWER * 3 div 10)) then
     begin
       //showmessage(inttostr(3));
       if (Brole[bnum].Team <> 0) or ((Brole[bnum].Team = 0) and (Brole[bnum].AutoMode = 2)) then
@@ -6353,8 +6307,7 @@ begin
         Rest(bnum);
 
       end
-      else if (Rrole[rnum].CurrentHP < Rrole[rnum].MaxHP div 10) and (Rrole[rnum].CurrentMP <
-        Rrole[rnum].MaxMP div 10) then
+      else if (Rrole[rnum].CurrentHP < Rrole[rnum].MaxHP div 10) and (Rrole[rnum].CurrentMP < Rrole[rnum].MaxMP div 10) then
       begin
         FarthestMove(Movex, Movey, bnum);
         Ax := Movex;
@@ -6392,9 +6345,7 @@ begin
     mnum := Rrole[rnum].Magic[i];
     if (Rmagic[mnum].HurtType = 2) then
     begin
-      if (random(m * 100) < 100) or ((Rmagic[mnum].ScriptNum = 0) and (Rmagic[mnum].AddMP[0] in [3, 4]) and
-        ((Brole[bnum].StateLevel[Rmagic[mnum].AddMP[1]] <= 0) or
-        (Brole[bnum].StateRound[Rmagic[mnum].AddMP[1]] <= 1)) and (random(100) < 80)) then
+      if (random(m * 100) < 100) or ((Rmagic[mnum].ScriptNum = 0) and (Rmagic[mnum].AddMP[0] in [3, 4]) and ((Brole[bnum].StateLevel[Rmagic[mnum].AddMP[1]] <= 0) or (Brole[bnum].StateRound[Rmagic[mnum].AddMP[1]] <= 1)) and (random(100) < 80)) then
       begin
         select := True;
         magicid := i;
@@ -6529,11 +6480,8 @@ begin
             begin
               if (Brole[i].Dead = 0) and (BField[4, Brole[i].X, Brole[i].Y] > 0) then
               begin
-                if ((Rmagic[mnum].AddMP[0] = 0) and (Brole[i].Team <> Brole[bnum].Team)) or
-                  ((Rmagic[mnum].AddMP[0] = 1) and (Brole[i].Team = Brole[bnum].Team)) or
-                  (Rmagic[mnum].AddMP[0] = 5) then
-                  if ((Rmagic[mnum].ScriptNum = 0) and ((Brole[i].StateLevel[Rmagic[mnum].AddMP[1]] = 0) or
-                    (Brole[i].StateRound[Rmagic[mnum].AddMP[1]] <= 1))) or (Rmagic[mnum].ScriptNum > 0) then
+                if ((Rmagic[mnum].AddMP[0] = 0) and (Brole[i].Team <> Brole[bnum].Team)) or ((Rmagic[mnum].AddMP[0] = 1) and (Brole[i].Team = Brole[bnum].Team)) or (Rmagic[mnum].AddMP[0] = 5) then
+                  if ((Rmagic[mnum].ScriptNum = 0) and ((Brole[i].StateLevel[Rmagic[mnum].AddMP[1]] = 0) or (Brole[i].StateRound[Rmagic[mnum].AddMP[1]] <= 1))) or (Rmagic[mnum].ScriptNum > 0) then
                     tempcount := tempcount + 100 + random(20);
               end;
             end;
@@ -6724,8 +6672,7 @@ var
 begin
   f := Rrole[Brole[bnum].rnum].AmiFrameNum[0];
   mnum2 := GetMagicWithSA2(f);
-  if (mnum2 > 0) and (Rmagic[mnum2].HurtType = 4) and (Rmagic[mnum2].Poison = 0) and
-    (random(100) < Rmagic[mnum2].NeedMP) then
+  if (mnum2 > 0) and (Rmagic[mnum2].HurtType = 4) and (Rmagic[mnum2].Poison = 0) and (random(100) < Rmagic[mnum2].NeedMP) then
   begin
     Funcname := Format('SA2_%d', [f]);
     TMethod(pFunc).Code := TSpecialAbility2.MethodAddress(Funcname);
@@ -6741,8 +6688,7 @@ begin
     begin
       f := Rrole[Brole[i].rnum].AmiFrameNum[0];
       mnum2 := GetMagicWithSA2(f);
-      if (mnum2 > 0) and (Rmagic[mnum2].HurtType = 4) and (Rmagic[mnum2].Poison = 1) and
-        (random(100) < Rmagic[mnum2].NeedMP) then
+      if (mnum2 > 0) and (Rmagic[mnum2].HurtType = 4) and (Rmagic[mnum2].Poison = 1) and (random(100) < Rmagic[mnum2].NeedMP) then
       begin
         Funcname := Format('SA2_%d', [f]);
         TMethod(pFunc).Code := TSpecialAbility2.MethodAddress(Funcname);
@@ -6785,7 +6731,8 @@ begin
           7: Result := False;
         end;
       3: Result := False;
-      else Result := False;
+      else
+        Result := False;
     end;
 end;
 
@@ -6824,8 +6771,7 @@ begin
             //k当前人物的水平
             //j特技能达到的水平
             k := Brole[i].StateLevel[Rmagic[mnum].AddMP[s]];
-            j := Rmagic[mnum].Attack[(s - 1) * 2] + ((Rmagic[mnum].Attack[(s - 1) * 2 + 1] -
-              Rmagic[mnum].Attack[(s - 1) * 2]) * (level - 1) div 9);
+            j := Rmagic[mnum].Attack[(s - 1) * 2] + ((Rmagic[mnum].Attack[(s - 1) * 2 + 1] - Rmagic[mnum].Attack[(s - 1) * 2]) * (level - 1) div 9);
             //慈悲
             if Rmagic[mnum].AddMP[s] = 23 then
             begin
@@ -7301,8 +7247,7 @@ begin
       begin
         if Brole[i].StateLevel[Si] >= 0 then
         begin
-          Brole[i].StateLevel[Si] := Rmagic[mnum].Attack[0] + trunc(Rmagic[mnum].Attack[0] *
-            (100 + (Rmagic[mnum].Attack[1] - Rmagic[mnum].Attack[0]) * level / 10) / 100);
+          Brole[i].StateLevel[Si] := Rmagic[mnum].Attack[0] + trunc(Rmagic[mnum].Attack[0] * (100 + (Rmagic[mnum].Attack[1] - Rmagic[mnum].Attack[0]) * level / 10) / 100);
           Brole[i].StateRound[Si] := Rmagic[mnum].HurtMP[level];
         end
         else
@@ -7317,8 +7262,7 @@ begin
       begin
         if Brole[i].StateLevel[Si] <= 0 then
         begin
-          Brole[i].StateLevel[Si] := -(Rmagic[mnum].Attack[0] + trunc(Rmagic[mnum].Attack[0] *
-            (100 + (Rmagic[mnum].Attack[1] - Rmagic[mnum].Attack[0]) * level / 10) / 100));
+          Brole[i].StateLevel[Si] := -(Rmagic[mnum].Attack[0] + trunc(Rmagic[mnum].Attack[0] * (100 + (Rmagic[mnum].Attack[1] - Rmagic[mnum].Attack[0]) * level / 10) / 100));
           Brole[i].StateRound[Si] := Rmagic[mnum].HurtMP[level];
         end
         else
@@ -7827,8 +7771,7 @@ begin
       begin
         si := random(5);
         sn := Rmagic[mnum].addmp[si + 1];
-        sl := Rmagic[mnum].Attack[si * 2] + (Rmagic[mnum].Attack[si * 2 + 1] - Rmagic[mnum].Attack[si * 2]) *
-          level div 10;
+        sl := Rmagic[mnum].Attack[si * 2] + (Rmagic[mnum].Attack[si * 2 + 1] - Rmagic[mnum].Attack[si * 2]) * level div 10;
         sr := Rmagic[mnum].hurtmp[level - 1];
         if sl < Brole[bnumarray[i]].StateLevel[sn] then
           Brole[bnumarray[i]].StateLevel[sn] := sl;
@@ -7980,8 +7923,7 @@ begin
       begin
         if Rmagic[mnum].AddMP[1 + j] >= 0 then
         begin
-          sl := Rmagic[mnum].Attack[j * 2] + (Rmagic[mnum].Attack[j * 2 + 1] - Rmagic[mnum].Attack[j * 2]) *
-            level div 10;
+          sl := Rmagic[mnum].Attack[j * 2] + (Rmagic[mnum].Attack[j * 2 + 1] - Rmagic[mnum].Attack[j * 2]) * level div 10;
           Brole[i].StateLevel[Rmagic[mnum].AddMP[1 + j]] := sl;
           if Brole[i].StateRound[Rmagic[mnum].AddMP[1 + j]] < 3 then
             Brole[i].StateRound[Rmagic[mnum].AddMP[1 + j]] := 3;
@@ -8166,8 +8108,7 @@ begin
 
         //受伤
         Rrole[Brole[i].rnum].CurrentHP := Rrole[Brole[i].rnum].CurrentHP - hurt;
-        Rrole[Brole[i].rnum].Hurt := Rrole[Brole[i].rnum].Hurt + hurt * 100 div
-          Rrole[Brole[i].rnum].MAXHP div LIFE_HURT;
+        Rrole[Brole[i].rnum].Hurt := Rrole[Brole[i].rnum].Hurt + hurt * 100 div Rrole[Brole[i].rnum].MAXHP div LIFE_HURT;
 
         //定身
         rand := random(100);
@@ -8489,15 +8430,15 @@ begin
       begin
         case MODVersion of
           13: eachamount := 1;
-          else eachamount := 10
+          else
+            eachamount := 10
         end;
         for i1 := 0 to eachamount - 1 do
         begin
           if Rrole[Brole[i].rnum].magic[i1] > 0 then
           begin
             mnumarray[amount] := Rrole[Brole[i].rnum].magic[i1];
-            namemagic := pwidechar(@Rrole[Brole[i].rnum].Name) + StringOfChar(' ', 10 -
-              DrawLength(PChar(@Rrole[Brole[i].rnum].Name))) + pwidechar(@Rmagic[Rrole[Brole[i].rnum].magic[i1]].Name);
+            namemagic := pwidechar(@Rrole[Brole[i].rnum].Name) + StringOfChar(' ', 10 - DrawLength(PChar(@Rrole[Brole[i].rnum].Name))) + pwidechar(@Rmagic[Rrole[Brole[i].rnum].magic[i1]].Name);
             //menustring[amount] := pwidechar(@namemagic);
             menuString[amount] := namemagic;
             ConsoleLog(menuString[amount]);
@@ -8522,8 +8463,7 @@ begin
           if Rmagic[Rrole[rnum].magic[0]].HurtType = 2 then
           begin
             mnumarray[amount] := Rrole[rnum].magic[0];
-            namemagic := pwidechar(@Rrole[rnum].Name) + StringOfChar(' ', 10 -
-              DrawLength(pwidechar(@Rrole[rnum].Name))) + pwidechar(@Rmagic[Rrole[rnum].magic[0]].Name);
+            namemagic := pwidechar(@Rrole[rnum].Name) + StringOfChar(' ', 10 - DrawLength(pwidechar(@Rrole[rnum].Name))) + pwidechar(@Rmagic[Rrole[rnum].magic[0]].Name);
             menuString[amount] := namemagic;
             ConsoleLog(menuString[amount]);
             amount := amount + 1;
@@ -8541,8 +8481,7 @@ begin
       while res < 0 do
       begin
         //LoadFreshScreen;
-        res := CommonScrollMenu(CENTER_X - 60 - length(menuString[0]) * 5, 130, 105 +
-          length(menuString[0]) * 10, amount - 1, 12, menuString);
+        res := CommonScrollMenu(CENTER_X - 60 - length(menuString[0]) * 5, 130, 105 + length(menuString[0]) * 10, amount - 1, 12, menuString);
       end;
   end;
   //FreeFreshScreen;
@@ -8807,8 +8746,7 @@ begin
     begin
       if Brole[i].StateLevel[2] >= 0 then
       begin
-        Brole[i].StateLevel[2] := Rmagic[mnum].Attack[0] + trunc(Rmagic[mnum].Attack[0] *
-          (100 + (Rmagic[mnum].Attack[1] - Rmagic[mnum].Attack[0]) * level / 10) / 100);
+        Brole[i].StateLevel[2] := Rmagic[mnum].Attack[0] + trunc(Rmagic[mnum].Attack[0] * (100 + (Rmagic[mnum].Attack[1] - Rmagic[mnum].Attack[0]) * level / 10) / 100);
         Brole[i].StateRound[2] := Rmagic[mnum].HurtMP[level];
       end
       else
@@ -9323,8 +9261,7 @@ var
 begin
   rnum := Brole[bnum].rnum;
   //if (random(100) < 15) then
-  if HaveMagic(rnum, 128, 0) and (not HaveMagic(rnum, 127, 0)) and (not HaveMagic(rnum, 129, 0)) and
-    (Rrole[rnum].CurrentMP >= 9000) then
+  if HaveMagic(rnum, 128, 0) and (not HaveMagic(rnum, 127, 0)) and (not HaveMagic(rnum, 129, 0)) and (Rrole[rnum].CurrentMP >= 9000) then
   begin
     ShowMagicName(mnum2);
     //move(Bfield[4, 0, 0], Bfield[5, 0, 0], 4096 * 2);
