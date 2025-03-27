@@ -107,7 +107,8 @@ procedure LoadOnePNGTexture(path: string; p: PChar; var PNGIndex: TPNGIndex; for
 function LoadTileFromFile(filename: string; var pt: Pointer; usesur: integer; var w, h: integer): boolean;
 function LoadTileFromMem(p: PChar; len: integer; var pt: Pointer; usesur: integer; var w, h: integer): boolean;
 function LoadStringFromIMZMEM(path: string; p: PChar; num: integer): string;
-function LoadStringFromZIP(zfilename, filename: string): string;
+function LoadStringFromZIP(zfilename, filename: string): string; overload;
+function LoadStringFromZIP(zfile: unzFile; filename: string): string; overload;
 //function LoadSurfaceFromZIPFile(zipFile: unzFile; filename: string): PSDL_Surface;
 //procedure FreeAllSurface;
 procedure DestroyAllTextures(all: integer = 1);
@@ -2784,7 +2785,7 @@ begin
   move((p + index)^, Result[1], len);
 end;
 
-function LoadStringFromZIP(zfilename, filename: string): string;
+function LoadStringFromZIP(zfilename, filename: string): string; overload;
 var
   zfile: unzfile;
   file_info: unz_file_info;
@@ -2804,8 +2805,28 @@ begin
       unzReadCurrentFile(zfile, PChar(Result), len);
       unzCloseCurrentFile(zfile);
     end;
-
     unzClose(zfile);
+  end;
+end;
+
+function LoadStringFromZIP(zfile: unzFile; filename: string): string; overload;
+var
+  file_info: unz_file_info;
+  len: integer;
+begin
+  Result := '';
+  if (zfile <> nil) then
+  begin
+    if (unzLocateFile(zfile, PChar(filename), 2) = UNZ_OK) then
+    begin
+      unzLocateFile(zfile, PChar(filename), 2);
+      unzOpenCurrentFile(zfile);
+      unzGetCurrentFileInfo(zfile, @file_info, nil, 0, nil, 0, nil, 0);
+      len := file_info.uncompressed_size;
+      setlength(Result, len);
+      unzReadCurrentFile(zfile, PChar(Result), len);
+      unzCloseCurrentFile(zfile);
+    end;
   end;
 end;
 

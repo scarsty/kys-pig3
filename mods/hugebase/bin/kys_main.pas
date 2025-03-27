@@ -889,8 +889,8 @@ begin
     WALK_SPEED2 := Kys_ini.ReadInteger('system', 'WALK_SPEED2', WALK_SPEED);
     SMOOTH := Kys_ini.ReadInteger('system', 'SMOOTH', 1);
     RENDERER := Kys_ini.ReadInteger('system', 'RENDERER', 1);
-    CENTER_X := Kys_ini.ReadInteger('system', 'CENTER_X', 384);
-    CENTER_Y := Kys_ini.ReadInteger('system', 'CENTER_Y', 240);
+    //CENTER_X := Kys_ini.ReadInteger('system', 'CENTER_X', 384);
+    //CENTER_Y := Kys_ini.ReadInteger('system', 'CENTER_Y', 240);
     RESOLUTIONX := Kys_ini.ReadInteger('system', 'RESOLUTIONX', CENTER_X * 2);
     RESOLUTIONY := Kys_ini.ReadInteger('system', 'RESOLUTIONY', CENTER_Y * 2);
     MMAPAMI := Kys_ini.ReadInteger('system', 'MMAPAMI', 1);
@@ -5407,9 +5407,9 @@ begin
     end;
     if (event.type_ = SDL_MOUSEMOTION) then
     begin
-      if MouseInRegion(CENTER_X - 384, CENTER_Y - 240, 250, 480, xm, ym) then
+      if MouseInRegion(100, 50, 250, 600, xm, ym) then
       begin
-        menu := min(max, (ym - (CENTER_Y - 240)) div 80);
+        menu := min(max, (ym - 50) div 100);
       end;
       if MouseInRegion(item1x, item1y, d, d) then
       begin
@@ -6358,8 +6358,8 @@ begin
     end;
     if (event.type_ = SDL_MOUSEMOTION) then
     begin
-      if MouseInRegion(CENTER_X - 384, CENTER_Y - 240, 250, CENTER_Y * 2, xm, ym) then
-        menu := (ym - (CENTER_Y - 240)) div 80;
+      if MouseInRegion(100, 50, 250, 600, xm, ym) then
+        menu := (ym - 50) div 100;
       if menu > max then
         menu := max;
       mouseactive := 0;
