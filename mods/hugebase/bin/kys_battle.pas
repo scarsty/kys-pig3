@@ -3348,9 +3348,9 @@ begin
             ModifyState(i, 2, -30, 3);
         end;
 
-        //特系福利, 几率打成脑残
+        //特系福利, 几率增加攻击范围
         if (Rmagic[mnum].MagicType = 4) and (random(5000) < Rrole[rnum].Unusual * (100 + Brole[bnum].StateLevel[32]) div 100) then
-          ModifyState(i, 28, -1, 3);
+          ModifyState(bnum, 12, 1, 3);
 
         //暗系福利, 几率降低移动
         if (Rmagic[mnum].MagicType = 5) and (random(100) < 10 * (100 + Brole[bnum].StateLevel[33]) div 100) then
