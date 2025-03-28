@@ -5799,6 +5799,7 @@ begin
   begin
     if (Rrole[rnum].Magic[i1] > 0) and (Rmagic[Rrole[rnum].Magic[i1]].HurtType = 3) then
     begin
+      consolelog('Role %d, magic %d', [rnum, i1]);
       for i2 := 0 to 3 do
       begin
         if (Rrole[rnum].NeiGong[i2] = Rrole[rnum].Magic[i1]) then
@@ -5819,6 +5820,7 @@ begin
   begin
     if (Rrole[rnum].NeiGong[i1] > 0) and (Rmagic[Rrole[rnum].NeiGong[i1]].HurtType <> 3) then
     begin
+      consolelog('Role %d, inner magic %d', [rnum, i1]);
       for i2 := 0 to 9 do
       begin
         if (Rrole[rnum].Magic[i2] = Rrole[rnum].NeiGong[i1]) then

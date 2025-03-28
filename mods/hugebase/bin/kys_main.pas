@@ -1628,6 +1628,7 @@ begin
     Rrole[882].HeadNum := 149;
     end;}
 
+  //特别的修正
   if num = 0 then
   begin
     //if MODVersion = 13 then
@@ -1647,8 +1648,15 @@ begin
     //writeln(RRole[168].data[73], RRole[168].data[74]);
   end
   else
+  begin
+    if MODVersion = 13 then
+    begin
+      //修正星位事件
+      RRole[168].Data[73] := 97;
+    end;
     //物品使用者修正
     if MODVersion <> 13 then
+    begin
       for i := 0 to high(Rrole) do
       begin
         if Rrole[i].Level <= 0 then
@@ -1660,6 +1668,9 @@ begin
         if Rrole[i].Equip[1] >= 0 then
           Ritem[Rrole[i].Equip[1]].User := i;
       end;
+    end;
+
+  end;
 
   //物品修正, 判断标准为最后一个物品的数量
   if Ritemlist[MAX_ITEM_AMOUNT - 1].Amount <> 0 then
