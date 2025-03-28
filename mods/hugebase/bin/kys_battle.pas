@@ -7022,7 +7022,7 @@ procedure TSpecialAbility.SA_6(bnum, mnum, level: integer);
 var
   i, aimbnum, aimrnum, rnum, itemid, itemnum, k: integer;
   str: WideString;
-  stealitems: array [0 .. 22] of smallint = (0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 206, 207, 208, 209, 210);
+  stealitems: array [0 .. 22] of smallint = (0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 187,188,189.190,191,192,193,194,195,196,197,198,199,200,201,202,203,204,206, 207, 208, 209, 210);
   stealitems0: array [0 .. 29] of smallint = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 171, 172);
 
   procedure StealRandom;
