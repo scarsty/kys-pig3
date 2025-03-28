@@ -1632,8 +1632,19 @@ begin
   begin
     //if MODVersion = 13 then
     move(Rrole[low(Rrole)], Rrole0[low(Rrole0)], sizeof(TRole) * length(Rrole));
+    //writeln(RRole[168].data[73], RRole[168].data[74]);
+    //这里误将星位事件清掉了
     for i := 0 to high(Rrole) do
-      correctmagic(i);
+    begin
+      if (MODVersion = 13) then
+      begin
+        if (i <> 168) and (i <> 169) and (i <> 119) and (i <> 120) and (i <> 166) and (i <> 167) then
+          correctmagic(i);
+      end
+      else
+        correctmagic(1);
+    end;
+    //writeln(RRole[168].data[73], RRole[168].data[74]);
   end
   else
     //物品使用者修正
@@ -2034,7 +2045,7 @@ begin
             FillChar(Fway[0, 0], sizeof(Fway), -1);
             FindWay(Mx, My);
             gotoEntrance := -1;
-            if (Buildy[axp, ayp] > 0) and (Entrance[Axp, Ayp] < 0) then
+            if (axp >= 0) and (ayp >= 0) and (Buildy[axp, ayp] > 0) and (Entrance[Axp, Ayp] < 0) then
             begin
               //点到建筑在附近格内寻找入口
               axp := Buildx[axp, ayp];
@@ -2298,7 +2309,7 @@ var
   s, i, i1, i2, a, tempx, tx1, tx2, ty1, ty2, tempy: integer;
   Xinc, Yinc, dir: array [1 .. 4] of integer;
 begin
-  if Fway[x2, y2] > 0 then
+  if (x2 >= 0) and (y2 >= 0) and (Fway[x2, y2] > 0) then
   begin
     Xinc[1] := 0;
     Xinc[2] := 1;
@@ -2316,7 +2327,7 @@ begin
       begin
         tempx := linex[a - 1] + Xinc[i];
         tempy := liney[a - 1] + Yinc[i];
-        if Fway[tempx, tempy] = Fway[linex[a - 1], liney[a - 1]] - 1 then
+        if (tempx >= 0) and (tempy >= 0) and (Fway[tempx, tempy] = Fway[linex[a - 1], liney[a - 1]] - 1) then
         begin
           linex[a] := tempx;
           liney[a] := tempy;
@@ -2817,7 +2828,7 @@ begin
                     end;
                   end;
               end;
-              if (SData[CurScence, 3, axp, ayp] >= 0) then
+              if (axp >= 0) and (ayp >= 0) and (SData[CurScence, 3, axp, ayp] >= 0) then
               begin
                 if abs(Axp - Sx) + Abs(Ayp - Sy) = 1 then
                 begin
@@ -2870,8 +2881,11 @@ begin
                   end;
                 end;
               end;
-              Moveman(Sx, Sy, axp, ayp);
-              nowstep := Fway[axp, ayp] - 1;
+              if (axp >= 0) and (ayp >= 0) then
+              begin
+                Moveman(Sx, Sy, axp, ayp);
+                nowstep := Fway[axp, ayp] - 1;
+              end;
             end
             else
             begin
