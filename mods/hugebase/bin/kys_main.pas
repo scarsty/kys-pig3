@@ -47,7 +47,9 @@ uses
   unzip,
   ziputils,
   fileinfo,
+{$IFDEF windows}
   potdll,
+{$ENDIF}
   winpeimagereader, {need this for reading exe info}
   elfreader, {needed for reading ELF executables}
   machoreader; {needed for reading MACH-O executables}
@@ -370,7 +372,9 @@ begin
   end;
 
   ConsoleLog('Initial ended, start game');
+{$IFDEF windows}
   smallpot := PotCreateFromWindow(window);
+{$ENDIF}
   Start;
   Quit;
 end;
@@ -1154,7 +1158,7 @@ var
   i, x, y, len: integer;
   p: array [0 .. 14] of integer;
   str0, str2: WideString;
-  str, str1, Name: string;
+  str, str1, input_name: string;
   str3: string;
   p0, p1: pwidechar;
 {$IFDEF android}
@@ -1175,11 +1179,11 @@ begin
   //if FULLSCREEN = 1 then
   //RealScreen := SDL_SetVideoMode(RESOLUTIONX, RESOLUTIONY, 32, ScreenFlag);
 
-  name := '蕭笑竹'; //默认名
+  input_name := '蕭笑竹'; //默认名
   str := '請輸入主角之姓名';
   if SIMPLE = 1 then
   begin
-    name := '萧笑竹'; //默认名
+    input_name := '萧笑竹'; //默认名
     str := '请输入主角之姓名';
   end;
 
@@ -1194,12 +1198,12 @@ begin
   method_id := env^.GetMethodID(env, clazz, 'mythSetName', '()Ljava/lang/String;');
   jstr := jstring(env^.CallObjectMethod(env, activity, method_id));
   cstr := env^.GetStringUTFChars(env, jstr, 0);
-  name := strpas(cstr);
+  input_name := strpas(cstr);
   env^.ReleaseStringUTFChars(env, jstr, cstr);
   Result := True;
 {$ELSE}
   if FULLSCREEN = 0 then
-    Result := inputquery('Enter name', str, name)
+    Result := inputquery('Enter name', str, input_name)
   else
     Result := True;
 
@@ -1210,12 +1214,12 @@ begin
     UpdateAllScreen;
   end;
 {$ENDIF}
-  Result := Result and (name <> '');
+  Result := Result and (input_name <> '');
   if Result then
   begin
     //if SIMPLE <> 0 then
-    //Name := CP936ToUTF8(Simplified2Traditional(UTF8ToCP936(Name)));
-    str2 := UTF8Decode(name);
+    //input_name := CP936ToUTF8(Simplified2Traditional(UTF8ToCP936(input_name)));
+    str2 := UTF8Decode(input_name);
     p0 := @Rrole[0].Name;
     p1 := @str2[1];
     fillchar(Rrole[0].Name[0], 10, 0);
@@ -1283,7 +1287,7 @@ begin
     case MODVersion of
       0, 13, 31, 12, 41:
       begin
-        if name = '曹輕羽' then
+        if input_name = '曹輕羽' then
         begin
           Rrole[0].MaxHP := 125;
           Rrole[0].CurrentHP := 125;
@@ -1311,7 +1315,7 @@ begin
           Rrole[0].Aptitude := 100;
           Rrole[0].MagLevel[0] := 999;
         end;
-        if name = '小小豬' then
+        if input_name = '小小豬' then
         begin
           Rrole[0].addnum := 1;
           Rrole[0].Aptitude := 100;
@@ -1321,14 +1325,14 @@ begin
             Rrole[0].HeadNum := 448;
         end;
 
-        if name = '風劍琴' then
+        if input_name = '風劍琴' then
         begin
           Rrole[0].addnum := 1;
           Rrole[0].AmiFrameNum[0] := 0;
 
         end;
 
-        if (name = '阮小二') then
+        if (input_name = '阮小二') then
         begin
           Rrole[0].addnum := 1;
           Rrole[0].Aptitude := 100;
@@ -1338,7 +1342,7 @@ begin
             Rrole[0].HeadNum := 434;
         end;
 
-        if (name = '史進') then
+        if (input_name = '史進') then
         begin
           Rrole[0].addnum := 1;
           Rrole[0].Aptitude := 100;
@@ -1348,7 +1352,7 @@ begin
             Rrole[0].HeadNum := 435;
         end;
 
-        if (name = '晁蓋') then
+        if (input_name = '晁蓋') then
         begin
           Rrole[0].Aptitude := 100;
           Rrole[0].MagLevel[0] := 999;
@@ -1357,7 +1361,7 @@ begin
             Rrole[0].HeadNum := 454;
         end;
 
-        if (name = '筷子') then
+        if (input_name = '筷子') then
         begin
           instruct_32(277, 1);
           Rrole[0].Fist := 150;
@@ -1368,7 +1372,7 @@ begin
           Ritem[277].NeedMPType := 2;
         end;
 
-        if name = '獨孤令狐' then
+        if input_name = '獨孤令狐' then
         begin
           instruct_33(0, $A8, 1);
           Ritem[$27].AddAttack := 160;
@@ -3848,7 +3852,7 @@ var
 begin
   for i := 0 to 3 do
   begin
-    TitleMenu[i].x := CENTER_X + 320 + 60 * i;
+    TitleMenu[i].x := CENTER_X + 220 + 60 * i;
     TitleMenu[i].y := 15;
     TitleMenu[i].w := 60;
     TitleMenu[i].h := 30;
@@ -4211,16 +4215,16 @@ var
   begin
 
     dt := d * row;
-    l := 7; //介绍的列数
+    l := 6; //介绍的列数
     l1 := l - 1;
     w := 90; //介绍每列宽度
 
     //DrawMPic(2006, xp - 13, yp - 33);
-    DrawTextFrame(xp - 8, yp, 70, 10);
+    DrawTextFrame(xp - 8, yp, 60, 10);
     //DrawRectangle(xp, yp, d * col + 7, 26, 0, ColColor(255), 30);
     //DrawRectangle(xp, 30 + yp, d * col + 7, d * row + 10, 0, ColColor(255), 30);
     //DrawMPic(2006, xp - 3, 27 + yp, 0, 0, 30);
-    DrawTextFrame(xp - 8, 45 + dt + yp, 70, 10, 0, 20);
+    DrawTextFrame(xp - 8, 45 + dt + yp, 60, 10, 0, 20);
     //DrawRectangle(xp, 45 + dt + yp, d * col + 7, 26, 0, ColColor(255), 30);
     //i:=0;
     for i1 := 0 to row - 1 do
@@ -4255,10 +4259,10 @@ var
     if (RItemlist[listnum].Amount > 0) and (listnum < MAX_ITEM_AMOUNT) and (listnum >= 0) and (item >= 0) then
     begin
       amount := RItemlist[listnum].Amount;
-      str := format('%10d', [amount]);
-      DrawShadowText(@str[1], 580 + xp, 3 + yp, ColColor($64), ColColor($66));
+      str := format('%8d', [amount]);
+      DrawShadowText(@str[1], 510 + xp, 3 + yp, ColColor($64), ColColor($66));
       len := DrawLength(PChar(@Ritem[item].Name));
-      DrawU16ShadowText(@Ritem[item].Name, 335 - len * 5 + xp, 3 + yp, 0, $202020);
+      DrawU16ShadowText(@Ritem[item].Name, 290 - len * 5 + xp, 3 + yp, 0, $202020);
       //drawshadowtext(@words[Ritem[item].ItemType, 1], 252, 115 + row * 50, colcolor($21), colcolor($23));
 
       //如是罗盘则显示坐标
@@ -4327,7 +4331,7 @@ var
       if len2 + len3 > 0 then
       begin
         for i := 0 to (len2 + l1) div l + (len3 + l1) div l - 1 do
-          DrawTextFrame(xp - 8, 75 + dt + yp + i * 28, 70, 20, 0, 50);
+          DrawTextFrame(xp - 8, 75 + dt + yp + i * 28, 60, 20, 0, 50);
         //DrawRectangle(xp, 75 + dt + yp, d * col + 7, 20 * ((len2 + l1) div l + (len3 + l1) div l) + 7,
         //0, ColColor(255), 30);
       end;
@@ -4413,8 +4417,8 @@ var
   end;
 
 begin
-  col := 8;
-  row := 5;
+  col := 7;
+  row := 3;
   x := 0;
   y := 0;
   listLT := 0;
@@ -4422,7 +4426,7 @@ begin
   d := 83; //图片的尺寸
 
   //标题区的位置, 标题每项的宽度
-  titlex1 := CENTER_X - 250;
+  titlex1 := CENTER_X - 200;
   titley1 := 50;
   titlew := 45;
   titlemax := 8;
@@ -4546,17 +4550,17 @@ begin
         begin
           if CanEquip(teamlist[i], curitem) then
           begin
-            DrawSimpleStatusByTeam(i, 100, 50 + i * 100, 0, 0);
+            DrawSimpleStatusByTeam(i, ui_x, ui_y + i * 80, 0, 0);
           end
           else
           begin
-            DrawSimpleStatusByTeam(i, 100, 50 + i * 100, 0, 50);
+            DrawSimpleStatusByTeam(i, ui_x, ui_y + i * 80, 0, 50);
           end;
           if (curitem >= 0) and (teamlist[i] = Ritem[curitem].User) then
           begin
             //setfontsize(12, 19);
             str := '使用中';
-            DrawTextWithRect(@str[1], 115, 50 + 100 * i + 50, 0, ColColor($64), ColColor($66), 50, 0);
+            DrawTextWithRect(@str[1], ui_x+15, ui_y + i * 80 + 50, 0, ColColor($64), ColColor($66), 50, 0);
             //DrawMPic(2020, CENTER_X - 384 + 15, CENTER_Y - 240 + 80 * i + 50, 0, 0, 30);
           end;
           {if (menu = 2) and (Rrole[teamlist[i]].PracticeBook >= 0) then
@@ -4570,7 +4574,7 @@ begin
             if level > 0 then
             begin
               str := UTF8Decode(format('%2d級', [level]));
-              DrawShadowText(@str[1], 100 + 220, 50 + 100 * i + 60, ColColor($64), ColColor($66));
+              DrawShadowText(@str[1], ui_x + 220, ui_y + 80 * i + 60, ColColor($64), ColColor($66));
             end;
           end;
         end;
@@ -4778,9 +4782,9 @@ begin
         begin
           if dragitem >= 0 then
           begin
-            if MouseInRegion(100, 50, 250, 600, xm, ym) then
+            if MouseInRegion(ui_x, ui_y, 250, 480, xm, ym) then
             begin
-              dragteammate := (ym - (CENTER_Y - 240)) div 80;
+              dragteammate := (ym - ui_y) div 80;
               if (dragteammate > 5) then
                 dragteammate := -1;
               //writeln(dragteammate);
@@ -5383,11 +5387,11 @@ begin
       begin
         if i = menu then
         begin
-          DrawSimpleStatusByTeam(i, 100, 50 + i * 100, 0, 0);
+          DrawSimpleStatusByTeam(i, ui_x, ui_y + i * 80, 0, 0);
         end
         else
         begin
-          DrawSimpleStatusByTeam(i, 100, 50 + i * 100, 0, 50);
+          DrawSimpleStatusByTeam(i, ui_x, ui_y + i * 80, 0, 50);
         end;
       end;
       //DrawMPic(2008, 320, 0);
@@ -5432,9 +5436,9 @@ begin
     end;
     if (event.type_ = SDL_MOUSEMOTION) then
     begin
-      if MouseInRegion(100, 50, 250, 600, xm, ym) then
+      if MouseInRegion(ui_x, ui_y, 250, 480, xm, ym) then
       begin
-        menu := min(max, (ym - 50) div 100);
+        menu := min(max, (ym - ui_y) div 80);
       end;
       if MouseInRegion(item1x, item1y, d, d) then
       begin
@@ -6286,11 +6290,11 @@ begin
       begin
         if i = menu then
         begin
-          DrawSimpleStatusByTeam(i, 100, 50 + i * 100, 0, 0);
+          DrawSimpleStatusByTeam(i, ui_x, ui_y + i * 80, 0, 0);
         end
         else
         begin
-          DrawSimpleStatusByTeam(i, 100, 50 + i * 100, 0, 50);
+          DrawSimpleStatusByTeam(i, ui_x, ui_y + i * 80, 0, 50);
         end;
       end;
       //队伍中第一个人才显示离队
@@ -6383,8 +6387,8 @@ begin
     end;
     if (event.type_ = SDL_MOUSEMOTION) then
     begin
-      if MouseInRegion(100, 50, 250, 600, xm, ym) then
-        menu := (ym - 50) div 100;
+      if MouseInRegion(ui_x, ui_y, 250, 480, xm, ym) then
+        menu := (ym - ui_y) div 80;
       if menu > max then
         menu := max;
       mouseactive := 0;
@@ -6659,9 +6663,8 @@ var
   color1, color2: uint32;
   str: WideString;
 begin
-
   //标题区的位置, 标题每项的宽度
-  titlex1 := CENTER_X - 250;
+  titlex1 := CENTER_X;
   titley1 := 50;
   titlew := 60;
   max := 4;
@@ -6702,7 +6705,7 @@ begin
       begin
         for i := 0 to maxteam do
         begin
-          DrawSimpleStatusByTeam(i, 100, 50 + i * 100, 0, 0);
+          DrawSimpleStatusByTeam(i, ui_x, ui_y + i * 80, 0, 0);
         end;
       end;
       //DrawMPic(2007, titlex1 - 45, titley1 - 15);
@@ -6868,7 +6871,7 @@ begin
   Value[maxmenu] := 0;
   menuString[0] := '取消';
   menuString[1] := '確定';
-  x := CENTER_X - 250 + 120;
+  x := CENTER_X + 120;
   y := 90;
   w := 300;
   h0 := 28;
@@ -7200,7 +7203,7 @@ var
   menuString, menuEngString: array [0 .. 10] of WideString;
   filename: string;
 begin
-  x := CENTER_X - 250;
+  x := CENTER_X;
   y := 90;
   menuString[0] := '進度一';
   menuString[1] := '進度二';
@@ -7483,12 +7486,12 @@ begin
   begin
     str := '此時不可存檔！';
     //Redraw;
-    DrawTextWithRect(@str[1], CENTER_X - 250 + 60, 90, 152, ColColor($5), ColColor($7));
+    DrawTextWithRect(@str[1], CENTER_X + 60, 90, 152, ColColor($5), ColColor($7));
     WaitAnyKey;
   end
   else
   begin
-    menu := CommonMenu(CENTER_X - 250 + 60, 90, 280, 9, 0, menuString, menuEngString);
+    menu := CommonMenu(CENTER_X + 60, 90, 280, 9, 0, menuString, menuEngString);
     if menu >= 0 then
       if not SaveR(menu + 1) then
       begin
@@ -7517,7 +7520,7 @@ begin
   //n := 1;
   //if KDEF_SCRIPT > 0 then
   n := 2;
-  menu := CommonMenu(CENTER_X - 250 + 60 * 4, 90, 47, n, 0, menuString);
+  menu := CommonMenu(CENTER_X + 60 * 4, 90, 47, n, 0, menuString);
   if menu = 1 then
   begin
     where := 3;

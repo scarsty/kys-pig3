@@ -1352,6 +1352,9 @@ var
   end;
 
 begin
+  x := 50;
+  y := 40;
+  h := 28;
   MenuStatus := $FE0;
   max := 6;
   //for i := 0 to 9 do
@@ -1444,10 +1447,6 @@ begin
     MenuStatus := MenuStatus - 512;
     max := max - 1;
   end;
-
-  x := 150;
-  y := 140;
-  h := 28;
 
   Redraw;
   ShowSimpleStatus(Brole[bnum].rnum, 80, CENTER_Y * 2 - 150);
@@ -5894,8 +5893,8 @@ var
   end;
 
 begin
-  x := 260;
-  y := 182;
+  x := 160;
+  y := 82;
   w := 200;
   h := 28;
   /// /SDL_EnableKeyRepeat(20, 100);

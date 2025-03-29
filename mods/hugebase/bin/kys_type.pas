@@ -241,8 +241,11 @@ var
 
   iniFilename: string = 'config/kysmod.ini';
 
-  CENTER_X: integer = 640;
-  CENTER_Y: integer = 360;
+  CENTER_X: integer = 480;
+  CENTER_Y: integer = 270;
+
+  ui_x: integer = 10;
+  ui_y: integer = 10;
 
   AppPath: string; //程序的路径
 

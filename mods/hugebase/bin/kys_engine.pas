@@ -25,8 +25,10 @@ uses
   Math,
   unzip,
   ziputils,
-  mythoutput,
-  potdll;
+{$IFDEF windows}
+  potdll,
+{$endif}
+  mythoutput;
 
 function EventFilter(p: pointer; e: PSDL_Event): longint; cdecl;
 procedure SendKeyEvent(keyvalue: integer); stdcall; export;
@@ -1382,7 +1384,7 @@ begin
   //物品栏则计算物品的坐标, 否则按照绝对坐标绘图
   if realcoord = 0 then
   begin
-    xp := CENTER_X - 250;
+    xp := CENTER_X - 200;
     yp := 75;
     x := x * d + 5 + xp;
     y := y * d + 35 + yp;
@@ -3154,7 +3156,9 @@ end;
 
 function PlayMovie(filename: string): boolean;
 begin
+{$IFDEF windows}
   PotInputVideo(smallpot, @filename[1]);
+{$ENDIF}
 end;
 
 procedure Big5ToGBK(p: PChar);
