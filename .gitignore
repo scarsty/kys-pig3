@@ -73,3 +73,4 @@ mods/promise/__history
 *.dsk
 *.dsv
 修改器/abcd/.vs
+*.res
