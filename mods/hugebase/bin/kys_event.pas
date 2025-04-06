@@ -137,6 +137,7 @@ procedure NewShop(shop_num: integer);
 
 procedure ShowMap;
 function EnterNumber(MinValue, MaxValue, x, y: integer; Default: integer = 0): smallint;
+function EnterString(var str: string; x, y, w, h: integer): bool;
 
 implementation
 
@@ -6674,6 +6675,65 @@ begin
   end;
   CleanKeyValue;
   FreeFreshScreen;
+end;
+
+function EnterString(var str: string; x, y, w, h: integer): bool;
+var
+  r: TSDL_Rect;
+  str2: widestring;
+begin
+  r.x := x;
+  r.y := y;
+  r.w := w;
+  r.h := h;
+  SDL_StartTextInput();
+  SDL_SetTextInputRect(@r);
+  while True do
+  begin
+    loadfreshscreen;
+    str2 := utf8decode(str);
+    w := drawlength(str2);
+    DrawTextWithRect(@str2[1], x, y, drawlength(str2), ColColor($66), ColColor($63), 0, 1);
+    //SDL_UpdateRect2(screen, 0, 0, 0, 0);
+    SDL_PollEvent(@event);
+    CheckBasicEvent;
+    case event.type_ of
+      SDL_TEXTINPUT:
+      begin
+        str := str + event.Text.Text;
+      end;
+      SDL_MOUSEBUTTONUP:
+      begin
+        if (event.button.button = SDL_BUTTON_RIGHT) then
+        begin
+          Result := False;
+          break;
+        end;
+      end;
+      SDL_KEYUP:
+      begin
+        if event.key.keysym.sym = SDLK_RETURN then
+        begin
+          Result := True;
+          break;
+        end;
+        if event.key.keysym.sym = SDLK_ESCAPE then
+        begin
+          Result := False;
+          break;
+        end;
+        if event.key.keysym.sym = SDLK_BACKSPACE then
+        begin
+          if length(str) > 0 then
+          begin
+            setlength(str, length(str) - 1);
+          end;
+        end;
+      end;
+    end;
+    SDL_Delay(16);
+  end;
+  SDL_StopTextInput();
 end;
 
 end.

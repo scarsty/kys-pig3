@@ -272,6 +272,7 @@ begin
     SMOOTH := 0;
   end;
   SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, PChar(IntToStr(SMOOTH)));
+  SDL_SetHint('SDL_IME_SHOW_UI', '1');
 
   WindowFlag := 0;
   if RENDERER = 1 then
@@ -1152,7 +1153,6 @@ begin
 end;
 
 //初始化主角属性
-
 function InitialRole: boolean;
 var
   i, x, y, len: integer;
@@ -1161,6 +1161,7 @@ var
   str, str1, input_name: string;
   str3: string;
   p0, p1: pwidechar;
+  named: bool;
 {$IFDEF android}
   env: PJNIEnv;
   jstr: jstring;
@@ -1202,10 +1203,17 @@ begin
   env^.ReleaseStringUTFChars(env, jstr, cstr);
   Result := True;
 {$ELSE}
-  if FULLSCREEN = 0 then
-    Result := inputquery('Enter name', str, input_name)
-  else
-    Result := True;
+  //if FULLSCREEN = 0 then
+  //  Result := inputquery('Enter name', str, input_name)
+  //else
+  //  Result := True;
+  Redraw;
+  str2 := '請輸入主角之姓名';
+  DrawTextWithRect(@str2[1], CENTER_X - 103, CENTER_Y - 30, 156, ColColor($64), ColColor($66));
+  recordfreshscreen;
+  UpdateAllScreen;
+  result := EnterString(input_name, CENTER_X - 63, CENTER_Y + 10, 86, 100);
+  freefreshscreen;
 
   if FULLSCREEN = 1 then
   begin
@@ -8360,6 +8368,7 @@ begin
   words.Add('');
 
   words.Add('原鐵血丹心論壇出品');
+  words.Add('http://www.tiexuedanxin.net');
   words.Add('http://www.dawuxia.net');
   words.Add('http://www.txdx.net');
   words.Add('');
@@ -8368,7 +8377,7 @@ begin
   words.Add('小小猪');
   words.Add('');
 
-  words.Add('架構');
+  words.Add('總架構');
   words.Add('bttt');
   words.Add('');
 
