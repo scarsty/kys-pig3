@@ -197,8 +197,10 @@ begin
     sdl_windowevent:
     begin
       if e.window.event = SDL_WINDOWEVENT_RESIZED then
+      begin
         sdl_getwindowsize(window, @resolutionx, @resolutiony);
-      result := 0;
+        result := 0;
+      end;
     end;
   end;
 end;
@@ -1765,7 +1767,6 @@ begin
   while word^ > 0 do
   begin
     pword[1] := word^;
-
     Inc(word);
     if pword[1] > 128 then
     begin
@@ -6139,7 +6140,7 @@ var
   i, grp, idx, Count, len: integer;
   MOV: Tpic;
 begin
-  //PlayMp3(1, 1);
+  PlayMp3(106, 1);
 
   if (FileExists(AppPath + MOVIE_file) { *Converted from FileExists*  }) then
   begin
@@ -6171,7 +6172,6 @@ begin
                 (event.key.keysym.sym = sdlk_space) then
               begin
                 fileclose(grp);
-
                 event.key.keysym.sym := 0;
                 event.button.button := 0;
                 SDL_ShowCursor(SDL_ENABLE);
@@ -6182,7 +6182,6 @@ begin
         end;
         MOV := GetPngPic(grp, i);
         ZoomPic(MOV.pic, 0, 0, 0, screen.w, screen.h);
-
         sdl_delay(20);
         SDL_UpdateRect2(screen, 0, 0, screen.w, screen.h);
         //SDL_freeSurface(MOV.pic);
