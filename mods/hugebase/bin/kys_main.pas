@@ -423,8 +423,8 @@ begin
   StartMusic := 59;
   TitleString := 'Legend of Little Village III - 108 Brothers and Sisters';
 
-  OpenPicPosition.x := CENTER_X - 384;
-  OpenPicPosition.y := CENTER_Y - 240;
+  OpenPicPosition.x := 0;
+  OpenPicPosition.y := 0;
   TitlePosition.x := OpenPicPosition.x + 470;
   TitlePosition.y := OpenPicPosition.y + 230;
 
@@ -8519,6 +8519,7 @@ begin
   words.Add('kys-jedisdl');
   words.Add('UltraStar Deluxe');
   words.Add('Open Chinese Convert');
+  words.Add('smallpot');
   words.Add('');
 
   words.Add('特別致謝短歌行MIDI音色庫');

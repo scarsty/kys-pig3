@@ -2436,7 +2436,7 @@ var
   num, offset: integer;
   xp, yp, xp1, yp1, xp2, yp2, w2, w1, h1, h2, w, h: smallint;
 begin
-
+  if (xs<0)or(ys<0)or(xs>=64)or(ys>=64) then exit;
   x := -xs * 18 + ys * 18 + 1151;
   y := xs * 9 + ys * 9 + 9;
 
@@ -5972,6 +5972,7 @@ begin
   h := trunc(pic.pic.h * i);
   black := pic.black;
   //pic1.pic := zoomSurface(pic.pic, i, i, 0);
+  pic1.pic := pic.pic;
   if black <> 0 then
   begin
     for yy := 0 to h - 1 do
@@ -6098,7 +6099,7 @@ begin
         end;
     end;
   end;
-  sdl_freesurface(pic1.pic);
+  //sdl_freesurface(pic1.pic);
 end;
 
 procedure ZoomPic(scr: Psdl_surface; angle: double; x, y, w, h: integer);
@@ -6117,7 +6118,7 @@ begin
   //temp := rotozoomSurfaceXY(scr, angle, a, b, 0);
   temp := scr;
   SDL_BlitSurface(temp, nil, screen, @dest);
-  sdl_freesurface(temp);
+  //sdl_freesurface(temp);
 end;
 
 function GetZoomPic(scr: Psdl_surface; angle: double; x, y, w, h: integer): Psdl_surface;
