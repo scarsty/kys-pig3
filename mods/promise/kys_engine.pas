@@ -823,7 +823,8 @@ begin
     for i1 := rectarea.x to rectarea.x + rectarea.w do
       for i2 := rectarea.y to rectarea.y + rectarea.h do
       begin
-        MaskArray[i1, i2] := 0;
+        if (i1>=0)and(i2>=0)and(i1<2304)and(i2<1152)then
+          MaskArray[i1, i2] := 0;
       end;
   if JudgeInScreen(px, py, w, h, xs, ys, RectArea.x, RectArea.y, RectArea.w, RectArea.h) then
   begin

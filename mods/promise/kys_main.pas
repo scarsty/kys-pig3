@@ -1203,7 +1203,7 @@ var
   str, tip, str0: WideString;
 begin
   str := UTF8Decode(' 資質');
-  tip := UTF8Decode(' 選定屬性後按Y');
+  tip := UTF8Decode(' 選定屬性後按回車，Esc返回');
   if (ran = True) then
   begin
     Rrole[0].MaxHP := 51 + random(50);
@@ -1245,8 +1245,8 @@ begin
   repeat
     ShowRandomAttribute(True);
     keyvalue := waitanykey;
-  until (keyvalue = sdlk_y) or (keyvalue = sdlk_escape);
-  if (keyvalue = sdlk_y) then
+  until (keyvalue = sdlk_y) or (keyvalue = sdlk_escape) or (keyvalue = sdlk_return);
+  if (keyvalue = sdlk_y) or (keyvalue = sdlk_return) then
   begin
     ShowRandomAttribute(False);
     Result := True;
@@ -1601,6 +1601,7 @@ begin
       begin
         //keystate := PChar(SDL_GetKeyState(nil));
         walking := 0;
+        speed := 0;
         {if (puint8(keystate + sdlk_left)^ = 0) and (puint8(keystate + sdlk_right)^ = 0) and
           (puint8(keystate + sdlk_up)^ = 0) and (puint8(keystate + sdlk_down)^ = 0) then
         begin
@@ -2024,7 +2025,7 @@ end;}
 function WalkInScene(Open: integer): integer;
 var
   grp, idx, offset, axp, ayp, just, i3, i1, i2, x, y, old: integer;
-  Sx1, Sy1, updatearea, r, s, i, menu, walking, PreScene: integer;
+  Sx1, Sy1, updatearea, r, s, i, menu, walking, PreScene, speed: integer;
   filename: string;
   Scenename: WideString;
   now, next_time, next_time2: uint32;
@@ -2043,6 +2044,7 @@ begin
   walking := 0;
   just := 0;
   CurEvent := -1;
+  speed := 0;
   //SDL_EnableKeyRepeat(30, (30 * gamespeed) div 10);
   InitialScene;
 
@@ -2199,6 +2201,49 @@ begin
       end;
     end;
 
+    if walking = 2 then
+    begin
+      speed := speed + 1;
+      Sx1 := Sx;
+      Sy1 := Sy;
+      case Sface of
+        0: Sx1 := Sx1 - 1;
+        1: Sy1 := Sy1 + 1;
+        2: Sy1 := Sy1 - 1;
+        3: Sx1 := Sx1 + 1;
+      end;
+      SStep := Sstep + 1;
+          if SStep = 7 then
+            SStep := 1;
+      if canwalkinScene(Sx1, Sy1) then
+      begin
+        Sx := Sx1;
+        Sy := Sy1;
+      end;
+      if (speed <= 1) then
+        walking := 0;
+      //每走一步均重画屏幕, 并检测是否处于某场景入口
+      DrawScene;
+      SDL_UpdateRect2(screen, 0, 0, screen.w, screen.h);
+      //if CheckEntrance then
+      //  walking := 0;
+      //needrefresh := 1;
+      rs := 1;
+        SDL_Delay((5 * GameSpeed) div 10);
+        if (water < 0) then
+          SDL_Delay((10 * GameSpeed) div 10);
+        DrawScene;
+        nowstep := -1;
+        SDL_UpdateRect2(screen, 0, 0, screen.w, screen.h);
+        CheckEvent3;
+        if (RandomEvent > 0) and (Random(100) = 0) then
+        begin
+          //   saver(6);
+          callevent(RandomEvent);
+          nowstep := -1;
+        end;
+    end;
+
     case event.type_ of
       SDL_QUITEV:
         if messagedlg('Are you sure to quit?', mtConfirmation, [mbOK, mbCancel], 0) = idOk then
@@ -2206,7 +2251,8 @@ begin
 //
       SDL_KEYUP:
       begin
-
+        walking := 0;
+        speed := 0;
         rs := 1;
         if (event.key.keysym.sym = sdlk_escape) then
         begin
@@ -2358,68 +2404,22 @@ begin
         if (event.key.keysym.sym = sdlk_left) or (event.key.keysym.sym = sdlk_kp_4) then
         begin
           SFace := 2;
-          SStep := Sstep + 1;
-          if SStep = 7 then
-            SStep := 1;
-          if canwalkinScene(Sx, Sy - 1) = True then
-          begin
-            //  if (SData[CurScene, 3, sx, sy - 1] >= 0) and (DData[CurScene, SData[CurScene, 3, sx, sy - 1], 4] > 0) then
-            //  SaveR(6);
-            Sy := Sy - 1;
-          end;
+          walking := 2;
         end;
         if (event.key.keysym.sym = sdlk_right) or (event.key.keysym.sym = sdlk_kp_6) then
         begin
           SFace := 1;
-          SStep := Sstep + 1;
-          if SStep = 7 then
-            SStep := 1;
-          if canwalkinScene(Sx, Sy + 1) = True then
-          begin
-              {if (SData[CurScene, 3, sx, sy + 1] >= 0) and (DData[CurScene, SData[CurScene, 3, sx, sy + 1], 4] > 0) then
-                SaveR(6);  }
-            Sy := Sy + 1;
-          end;
+          walking := 2;
         end;
         if (event.key.keysym.sym = sdlk_up) or (event.key.keysym.sym = sdlk_kp_8) then
         begin
           SFace := 0;
-          SStep := Sstep + 1;
-          if SStep = 7 then
-            SStep := 1;
-          if canwalkinScene(Sx - 1, Sy) = True then
-          begin
-          {    if (SData[CurScene, 3, sx - 1, sy] >= 0) and (DData[CurScene, SData[CurScene, 3, sx - 1, sy], 4] > 0) then
-                SaveR(6);    }
-            Sx := Sx - 1;
-          end;
+          walking := 2;
         end;
         if (event.key.keysym.sym = sdlk_down) or (event.key.keysym.sym = sdlk_kp_2) then
         begin
           SFace := 3;
-          SStep := Sstep + 1;
-          if SStep = 7 then
-            SStep := 1;
-          if canwalkinScene(Sx + 1, Sy) = True then
-          begin
-          {    if (SData[CurScene, 3, sx + 1, sy] >= 0) and (DData[CurScene, SData[CurScene, 3, sx + 1, sy], 4] > 0) then
-                SaveR(6); }
-            Sx := Sx + 1;
-          end;
-        end;
-        rs := 1;
-        SDL_Delay((5 * GameSpeed) div 10);
-        if (water < 0) then
-          SDL_Delay((10 * GameSpeed) div 10);
-        DrawScene;
-        nowstep := -1;
-        SDL_UpdateRect2(screen, 0, 0, screen.w, screen.h);
-        CheckEvent3;
-        if (RandomEvent > 0) and (Random(100) = 0) then
-        begin
-          //   saver(6);
-          callevent(RandomEvent);
-          nowstep := -1;
+          walking := 2;
         end;
       end;
       Sdl_mousebuttonup:
