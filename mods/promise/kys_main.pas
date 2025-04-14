@@ -5717,8 +5717,10 @@ begin
       Entrance[i1, i2] := -1;
   for i := 0 to length(RScene) - 1 do
   begin
-    Entrance[RScene[i].MainEntranceX1, RScene[i].MainEntranceY1] := i;
-    Entrance[RScene[i].MainEntranceX2, RScene[i].MainEntranceY2] := i;
+    if InRegion(RScene[i].MainEntranceX1,0,479) and InRegion(RScene[i].MainEntranceY1,0,479) then      
+      Entrance[RScene[i].MainEntranceX1, RScene[i].MainEntranceY1] := i;
+    if InRegion(RScene[i].MainEntranceX2,0,479) and InRegion(RScene[i].MainEntranceY2,0,479) then
+      Entrance[RScene[i].MainEntranceX2, RScene[i].MainEntranceY2] := i;
   end;
 end;
 

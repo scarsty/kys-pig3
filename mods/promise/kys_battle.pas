@@ -5854,8 +5854,8 @@ begin
 
   for i := -range to range do
   begin
-    bnum := Bfield[2, curX + i, curY - i];
-    if (bnum >= 0) and (Brole[bnum].Dead = 0) and (Brole[bnum].Team <> myteam) then
+    ebnum := Bfield[2, curX + i, curY - i];
+    if (ebnum >= 0) and (Brole[ebnum].Dead = 0) and (Brole[ebnum].Team <> myteam) then
     begin
       temphurt := temphurt + CalHurtValue(bnum, ebnum, mnum, level);
     end;
@@ -5863,8 +5863,8 @@ begin
 
   for i := curX - distance to curX + distance do
   begin
-    bnum := Bfield[2, i, curY];
-    if (bnum >= 0) and (Brole[bnum].Dead = 0) and (Brole[bnum].Team <> myteam) then
+    ebnum := Bfield[2, i, curY];
+    if (ebnum >= 0) and (Brole[ebnum].Dead = 0) and (Brole[ebnum].Team <> myteam) then
     begin
       temphurt := temphurt + CalHurtValue(bnum, ebnum, mnum, level);
     end;
@@ -5872,8 +5872,8 @@ begin
 
   for i := curY - distance to curY + distance do
   begin
-    bnum := Bfield[2, curX, i];
-    if (bnum >= 0) and (Brole[bnum].Dead = 0) and (Brole[bnum].Team <> myteam) then
+    ebnum := Bfield[2, curX, i];
+    if (ebnum >= 0) and (Brole[ebnum].Dead = 0) and (Brole[ebnum].Team <> myteam) then
     begin
       temphurt := temphurt + CalHurtValue(bnum, ebnum, mnum, level);
     end;

@@ -1477,8 +1477,9 @@ begin
       sdl_freesurface(temp);
     end;
   end;
+  littlegamepic := gamepic.pic;
   //littlegamepic := rotozoomsurfacexy(gamepic.pic, 0, 0.3, 0.3, 0);
-  sdl_freesurface(gamepic.pic);
+  //sdl_freesurface(gamepic.pic);
 
   redraw;
   drawrectangle(x - 5, y - 5, w, h, 0, colcolor(255), 100);
@@ -1696,7 +1697,7 @@ begin
       sdl_freesurface(pic[j][i]);
     end;
   end;
-  sdl_freesurface(littlegamepic);
+  //sdl_freesurface(littlegamepic);
 end;
 
 end.

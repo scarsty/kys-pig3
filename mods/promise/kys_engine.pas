@@ -179,6 +179,8 @@ procedure SDL_GetMouseState2(var x, y: integer);
 procedure ResizeWindow(w, h: integer);
 procedure SwitchFullscreen;
 
+function InRegion(x, x0, x1: integer): boolean; overload;
+
 
 implementation
 
@@ -1763,6 +1765,7 @@ begin
     t := Traditional2Simplified(PwideChar(word));
     word := puint16(t);
   end;
+  x_pos := x_pos+3;
   x := x_pos;
   dest.x := x_pos;
   while word^ > 0 do
@@ -1787,11 +1790,9 @@ begin
         y_pos := y_pos + 19;
       end;
       Text := TTF_RenderUNICODE_blended(engfont, @pword[1], tempcolor);
-
       dest.x := x_pos + 10;
       dest.y := y_pos + 4;
       SDL_BlitSurface(Text, nil, sur, @dest);
-
       x_pos := x_pos + 10;
     end;
     SDL_FreeSurface(Text);
@@ -7592,6 +7593,14 @@ end;
 procedure SwitchFullscreen;
 begin
 
+end;
+
+function InRegion(x, x0, x1: integer): boolean; overload;
+begin
+  if (x >= x0) and (x <= x1) then
+    result := true
+  else
+    result := false;
 end;
 
 end.
