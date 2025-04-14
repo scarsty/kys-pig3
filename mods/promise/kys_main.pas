@@ -965,7 +965,6 @@ begin
       begin
         if InitialRole then
         begin
-
           showmr := False;
           CurScene := BEGIN_Scene;
           stopmp3;

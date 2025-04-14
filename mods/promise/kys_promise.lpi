@@ -47,6 +47,9 @@
           </Parsing>
           <CodeGeneration>
             <SmartLinkUnit Value="True"/>
+            <Checks>
+              <StackChecks Value="True"/>
+            </Checks>
             <Optimizations>
               <OptimizationLevel Value="0"/>
               <VariablesInRegisters Value="True"/>

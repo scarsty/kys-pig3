@@ -5201,10 +5201,10 @@ begin
         end
         else
           menu := teammate;
-        rnum := TeamList[menu];
       end;
       if menu >= 0 then
       begin
+        rnum := TeamList[menu];
         //redraw;
         TransBlackScreen;
         EatOneItem(rnum, inum);
