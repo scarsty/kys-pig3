@@ -5076,6 +5076,7 @@ function EnterString(var str: utf8string; x, y, w, h: integer): bool;
 var
   r: TSDL_Rect;
   str2: widestring;
+  l: integer;
 begin
   r.x := x;
   r.y := y;
@@ -5116,9 +5117,14 @@ begin
         end;
         if event.key.keysym.sym = SDLK_BACKSPACE then
         begin
-          if length(str) > 0 then
+          l := length(str);
+          if (l >= 3) and (byte(str[l]) >= 128) then
           begin
-            setlength(str, length(str) - 1);
+            setlength(str, l - 3);
+          end
+          else if (l >= 1) then
+          begin
+            setlength(str, l - 1);
           end;
         end;
       end;

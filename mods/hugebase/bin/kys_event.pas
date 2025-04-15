@@ -65,7 +65,7 @@ function instruct_43(inum, jump1, jump2: integer): integer;
 procedure instruct_44(enum1, beginpic1, endpic1, enum2, beginpic2, endpic2: integer);
 procedure instruct_44e(enum1, beginpic1, endpic1, enum2, beginpic2, enum3, beginpic3: integer);
 procedure Show3HintString(str1, str2, str3: pwidechar);
-procedure AddRoleProWithHint(rnum, datalist, num: integer; word: WideString = '');
+procedure AddRoleProWithHint(rnum, datalist, num: integer; word: widestring = '');
 procedure instruct_45(rnum, speed: integer);
 procedure instruct_46(rnum, mp: integer);
 procedure instruct_47(rnum, Attack: integer);
@@ -73,7 +73,7 @@ procedure instruct_48(rnum, hp: integer);
 procedure instruct_49(rnum, MPpro: integer);
 function instruct_50(list: array of integer): integer;
 procedure instruct_51;
-procedure ShowRolePro(rnum, datalist: integer; word: WideString);
+procedure ShowRolePro(rnum, datalist: integer; word: widestring);
 procedure instruct_52;
 procedure instruct_53;
 procedure instruct_54;
@@ -97,9 +97,9 @@ function HaveMagic(person, mnum, lv: integer): boolean;
 function HaveMagicAmount(rnum: integer; NeiGong: integer = 0): integer;
 function GetMagicLevel(person, mnum: integer): integer;
 procedure StudyMagic(rnum, magicnum, newmagicnum, level, dismode: integer);
-procedure DivideName(fullname: WideString; var surname, givenname: WideString);
-function ReplaceStr(const S, Srch, Replace: WideString): WideString;
-procedure NewTalk(headnum, talknum, namenum, place, showhead, color, frame: integer; content: WideString = ''; disname: WideString = '');
+procedure DivideName(fullname: widestring; var surname, givenname: widestring);
+function ReplaceStr(const S, Srch, Replace: widestring): widestring;
+procedure NewTalk(headnum, talknum, namenum, place, showhead, color, frame: integer; content: widestring = ''; disname: widestring = '');
 procedure ShowTitle(talknum, color: integer);
 function Digging(beginPic, goal, shovel, restrict: integer): integer;
 procedure ShowSurface(x, y, blank: integer; surface: array of integer);
@@ -164,7 +164,7 @@ procedure instruct_1(talknum, headnum, dismode: integer);
 var
   IDX, GRP, offset, len, i, p, l, headx, heady, diagx, diagy, namenum: integer;
   talkarray: array of byte;
-  Name: WideString;
+  Name: widestring;
 begin
   namenum := headnum;
   if dismode in [2, 3] then
@@ -189,7 +189,7 @@ end;
 procedure instruct_2(inum, amount: integer);
 var
   i, x, y, l1, l2: integer;
-  word: WideString;
+  word: widestring;
 begin
   instruct_32(inum, amount);
   SetRolePic(0);
@@ -373,8 +373,8 @@ end;
 function instruct_5(jump1, jump2: integer): integer;
 var
   menu: integer;
-  menuString: array [0 .. 1] of WideString;
-  str: WideString;
+  menuString: array [0 .. 1] of widestring;
+  str: widestring;
 begin
   menuString[0] := '取消';
   menuString[1] := '戰鬥';
@@ -408,8 +408,8 @@ end;
 function instruct_9(jump1, jump2: integer): integer;
 var
   menu: integer;
-  menuString: array [0 .. 1] of WideString;
-  str: WideString;
+  menuString: array [0 .. 1] of widestring;
+  str: widestring;
 begin
   menuString[0] := '取消';
   menuString[1] := '要求';
@@ -457,8 +457,8 @@ end;
 function instruct_11(jump1, jump2: integer): integer;
 var
   menu: integer;
-  menuString: array [0 .. 1] of WideString;
-  str: WideString;
+  menuString: array [0 .. 1] of widestring;
+  str: widestring;
 begin
   menuString[0] := '取消';
   menuString[1] := '住宿';
@@ -488,7 +488,7 @@ begin
   for i := 0 to 5 do
   begin
     rnum := Teamlist[i];
-    if not((rnum = -1) or (Rrole[rnum].Hurt > 33) or (Rrole[rnum].Poison > 0)) then
+    if not ((rnum = -1) or (Rrole[rnum].Hurt > 33) or (Rrole[rnum].Poison > 0)) then
     begin
       Rrole[rnum].CurrentHP := Rrole[rnum].MaxHP;
       Rrole[rnum].CurrentMP := Rrole[rnum].MaxMP;
@@ -549,7 +549,7 @@ end;
 procedure instruct_15;
 var
   i, x, y: integer;
-  str: WideString;
+  str: widestring;
 begin
   where := 3;
   Redraw;
@@ -902,7 +902,7 @@ end;
 procedure instruct_33(rnum, mnum, dismode: integer);
 var
   i, l, x, l1, p, pm: integer;
-  word: WideString;
+  word: widestring;
 begin
   if Rmagic[mnum].HurtType = 3 then
   begin
@@ -969,7 +969,7 @@ end;
 
 procedure instruct_34(rnum, iq: integer);
 var
-  word: WideString;
+  word: widestring;
 begin
   if Rrole[rnum].Aptitude + iq <= 100 then
   begin
@@ -1180,7 +1180,7 @@ begin
   Redraw;
 end;
 
-procedure AddRoleProWithHint(rnum, datalist, num: integer; word: WideString = '');
+procedure AddRoleProWithHint(rnum, datalist, num: integer; word: widestring = '');
 begin
   Rrole[rnum].Data[datalist] := Rrole[rnum].Data[datalist] + num;
   if word <> '' then
@@ -1245,7 +1245,7 @@ begin
   instruct_1(SOFTSTAR_BEGIN_TALK + random(SOFTSTAR_NUM_TALK), $72, 0);
 end;
 
-procedure ShowRolePro(rnum, datalist: integer; word: WideString);
+procedure ShowRolePro(rnum, datalist: integer; word: widestring);
 begin
   Redraw;
   Show3HintString(pwidechar(''), pwidechar(word), pwidechar(UTF8Decode(format('%4d', [Rrole[rnum].Data[datalist]]))));
@@ -1355,7 +1355,7 @@ begin
   begin
     p := random(2);
     instruct_1(2854 + i * 2 + p, headarray[i * 2 + p], random(2) * 4 + random(2));
-    if not(Battle(102 + i * 2 + p, 0)) then
+    if not (Battle(102 + i * 2 + p, 0)) then
     begin
       instruct_15;
       break;
@@ -1420,7 +1420,7 @@ end;
 procedure instruct_62(enum1, beginpic1, endpic1, enum2, beginpic2, endpic2: integer);
 var
   i: integer;
-  str: WideString;
+  str: widestring;
 begin
   ShowMR := False; //CurScenceRolePic := -1;
   instruct_44(enum1, beginpic1, endpic1, enum2, beginpic2, endpic2);
@@ -1435,7 +1435,7 @@ end;
 procedure TextAmi(filename: string);
 var
   x, y, i, len: integer;
-  str: WideString;
+  str: widestring;
   p: integer;
 begin
   TurnBlack;
@@ -1511,7 +1511,7 @@ procedure instruct_64;
 var
   i, amount, shopnum, menu, price: integer;
   list: array [0 .. 4] of integer;
-  menuString, menuEngString: array [0 .. 4] of WideString;
+  menuString, menuEngString: array [0 .. 4] of widestring;
 begin
   //amount := 0;
   //任选一个商店, 因未写他去其他客栈的指令
@@ -1578,13 +1578,13 @@ end;
 function instruct_50e(code, e1, e2, e3, e4, e5, e6: integer): integer;
 var
   i, t1, GRP, IDX, offset, len, i1, i2: integer;
-  p, p1: PChar;
+  p, p1: pchar;
   pw, pw1: puint16;
   //ps :pstring;
   str: string;
-  word: WideString;
-  wordutf8, word1utf8: WideString;
-  menuString, menuEngString: array of WideString;
+  word: widestring;
+  wordutf8, word1utf8: widestring;
+  menuString, menuEngString: array of widestring;
 begin
   Result := 0;
   //writeln('Expanded 50, the code is ', code);
@@ -1615,14 +1615,14 @@ begin
         1: x50[e3] := x50[e4] - t1;
         2: x50[e3] := x50[e4] * t1;
         3:
-        if t1 <> 0 then
-          x50[e3] := x50[e4] div t1;
+          if t1 <> 0 then
+            x50[e3] := x50[e4] div t1;
         4:
-        if t1 <> 0 then
-          x50[e3] := x50[e4] mod t1;
+          if t1 <> 0 then
+            x50[e3] := x50[e4] mod t1;
         5:
-        if t1 <> 0 then
-          x50[e3] := uint16(x50[e4]) div t1;
+          if t1 <> 0 then
+            x50[e3] := uint16(x50[e4]) div t1;
       end;
     end;
     4: //Judge the parameter.
@@ -1631,23 +1631,23 @@ begin
       t1 := e_GetValue(0, e1, e4);
       case e2 of
         0:
-        if not(x50[e3] < t1) then
-          x50[$7000] := 1;
+          if not (x50[e3] < t1) then
+            x50[$7000] := 1;
         1:
-        if not(x50[e3] <= t1) then
-          x50[$7000] := 1;
+          if not (x50[e3] <= t1) then
+            x50[$7000] := 1;
         2:
-        if not(x50[e3] = t1) then
-          x50[$7000] := 1;
+          if not (x50[e3] = t1) then
+            x50[$7000] := 1;
         3:
-        if not(x50[e3] <> t1) then
-          x50[$7000] := 1;
+          if not (x50[e3] <> t1) then
+            x50[$7000] := 1;
         4:
-        if not(x50[e3] >= t1) then
-          x50[$7000] := 1;
+          if not (x50[e3] >= t1) then
+            x50[$7000] := 1;
         5:
-        if not(x50[e3] > t1) then
-          x50[$7000] := 1;
+          if not (x50[e3] > t1) then
+            x50[$7000] := 1;
         6: x50[$7000] := 0;
         7: x50[$7000] := 1;
       end;
@@ -1716,7 +1716,7 @@ begin
       //p^:=char(0);
     end;
     12: //Build a string with spaces.
-    //Note: here the width of one 'space'is the same as one Chinese charactor.
+      //Note: here the width of one 'space'is the same as one Chinese charactor.
     begin
       e3 := e_GetValue(0, e1, e3);
       pw := @x50[e2];
@@ -2225,7 +2225,8 @@ begin
         352: ShowTitle(e3, 1);
         365: NewShop(e3); //商店
         369: x50[15205] := EnterNumber(0, e3, e5, e6);
-        else CallEvent(e2);
+        else
+          CallEvent(e2);
       end;
       //showmessage(inttostr(e2));
     end;
@@ -2292,20 +2293,20 @@ begin
         3: p := @Rscence[e3].Name[0];
       end;
       //ShowMessage(IntToStr(e4));
-{$IFDEF fpc}
+      {$IFDEF fpc}
       word1utf8 := CP950ToUTF8(p);
-{$ELSE}
+      {$ELSE}
       word1 := Big5ToUnicode(p);
       word1 := MidStr(word1, 2, length(word1) - 1);
-{$ENDIF}
+      {$ENDIF}
       wordutf8 := '請輸入名字：';
       if FULLSCREEN = 0 then
         wordutf8 := InputBox('Enter name', wordutf8, word1utf8);
-{$IFDEF fpc}
+      {$IFDEF fpc}
       str := UTF8ToCP950(wordutf8);
-{$ELSE}
+      {$ELSE}
       str := UnicodeToBig5(@word[1]);
-{$ENDIF}
+      {$ENDIF}
       p1 := @str[1];
       for i := 0 to min(e5, length(p1)) - 1 do
         (p + i)^ := (p1 + i)^;
@@ -2430,21 +2431,21 @@ begin
   begin
     case Rmagic[mnum].HurtType of
       3:
-      for i := 0 to 3 do
-      begin
-        if (Rrole[person].NeiGong[i] = mnum) then
-          Result := Rrole[person].NGLevel[i] div 100 + 1;
-        if Result > 0 then
-          break;
-      end;
+        for i := 0 to 3 do
+        begin
+          if (Rrole[person].NeiGong[i] = mnum) then
+            Result := Rrole[person].NGLevel[i] div 100 + 1;
+          if Result > 0 then
+            break;
+        end;
       else
-      for i := 0 to 9 do
-      begin
-        if (Rrole[person].Magic[i] = mnum) then
-          Result := Rrole[person].MagLevel[i] div 100 + 1;
-        if Result > 0 then
-          break;
-      end;
+        for i := 0 to 9 do
+        begin
+          if (Rrole[person].Magic[i] = mnum) then
+            Result := Rrole[person].MagLevel[i] div 100 + 1;
+          if Result > 0 then
+            break;
+        end;
     end;
   end;
 
@@ -2453,7 +2454,7 @@ end;
 procedure StudyMagic(rnum, magicnum, newmagicnum, level, dismode: integer);
 var
   i: integer;
-  word: WideString;
+  word: widestring;
 begin
   for i := 0 to 9 do
   begin
@@ -2481,7 +2482,7 @@ begin
   end;
 end;
 
-procedure DivideName(fullname: WideString; var surname, givenname: WideString);
+procedure DivideName(fullname: widestring; var surname, givenname: widestring);
 var
   surname2: TStringList;
   len, i, hysur: integer;
@@ -2613,10 +2614,10 @@ begin
   //writeln(len, ',', fullname, ',', surname, ',', givenname);
 end;
 
-function ReplaceStr(const S, Srch, Replace: WideString): WideString;
+function ReplaceStr(const S, Srch, Replace: widestring): widestring;
 var
   i: integer;
-  Source: WideString;
+  Source: widestring;
 begin
   Source := S;
   Result := '';
@@ -2633,17 +2634,17 @@ begin
   until i <= 0;
 end;
 
-procedure NewTalk(headnum, talknum, namenum, place, showhead, color, frame: integer; content: WideString = ''; disname: WideString = '');
+procedure NewTalk(headnum, talknum, namenum, place, showhead, color, frame: integer; content: widestring = ''; disname: widestring = '');
 var
   FileHandle, Offset, len, I, I2, ix, iy, xtemp, a: integer;
   Frame_X, Frame_Y, Frame_W, Frame_H, Head_X, Head_Y, Head_W, Head_H, Name_X, Name_Y, Name_W, Name_H, Talk_X, Talk_Y, Talk_W, Talk_H, MaxCol: integer;
   ForeGroundCol, BackGroundCol: byte;
   DrawForeGroundCol, DrawBackGroundCol: cardinal;
   Talk, Name, SurName, GivenName: array of byte;
-{$IFDEF fpc}
+  {$IFDEF fpc}
   FullNameUTF8Str, SurNameUTF8Str, GivenNameUTF8Str: string;
-{$ENDIF}
-  FullNameStr, SurNameStr, GivenNameStr, TalkStr, NameStr, TempStr: WideString;
+  {$ENDIF}
+  FullNameStr, SurNameStr, GivenNameStr, TalkStr, NameStr, TempStr: widestring;
   Changed: boolean;
   HeadNumR: integer; //用于重定头像的对应人物, 以正确读取名字
   skipSync: boolean = False;
@@ -2656,13 +2657,13 @@ const
   ColSpacing = 20; //列距
   MaxRow = 5;
   NameColSpacing = 20; //名字列距
-  FullNameCode: WideString = '&&';
-  SurNameCode: WideString = '$$';
-  GivenNameCode: WideString = '%%';
-  WaitAnyKeyCode: WideString = '@@';
-  DelayCode: WideString = '##';
-  NextLineCode: WideString = '**';
-  ChangeColorCode: WideString = '^';
+  FullNameCode: widestring = '&&';
+  SurNameCode: widestring = '$$';
+  GivenNameCode: widestring = '%%';
+  WaitAnyKeyCode: widestring = '@@';
+  DelayCode: widestring = '##';
+  NextLineCode: widestring = '**';
+  ChangeColorCode: widestring = '^';
   ExpressionMin: integer = 412;
   ExpressionMax: integer = 429;
 begin
@@ -2772,13 +2773,13 @@ begin
   begin
     case ModVersion of
       13:
-      if namenum > 0 then
-      begin
-        ReadTalk(namenum, name);
-      end;
+        if namenum > 0 then
+        begin
+          ReadTalk(namenum, Name);
+        end;
       else
-      if HeadNum > 0 then
-        ReadTalk(BEGIN_NAME_IN_TALK + HeadNum, name);
+        if HeadNum > 0 then
+          ReadTalk(BEGIN_NAME_IN_TALK + HeadNum, Name);
     end;
 
     HeadNumR := HeadNum;
@@ -2797,16 +2798,16 @@ begin
         if (Rrole[i].HeadNum = HeadNumR) or ((i = 0) and (HeadNumR = 0)) then
         begin
           len := 10;
-          setlength(name, len + 1);
-          Move(Rrole[i].Name[0], name[0], len);
-          name[len] := 0;
+          setlength(Name, len + 1);
+          Move(Rrole[i].Name[0], Name[0], len);
+          Name[len] := 0;
           break;
         end;
       end;
     end;
 
     if (namenum = -2) or (namenum > 0) then
-      NameStr := pwidechar(@name[0])
+      NameStr := pwidechar(@Name[0])
     else if (namenum = -1) or (namenum = 0) then
       NameStr := '';
     if {(MODVersion in [0, 31]) and} (namenum = 0) then
@@ -2823,16 +2824,16 @@ begin
   // ******************************************//
 
   // *****************分析名字*****************//
-  setlength(name, 10);
-  Move(Rrole[0].Name[0], name[0], 10);
+  setlength(Name, 10);
+  Move(Rrole[0].Name[0], Name[0], 10);
   //FullNameStr := UTF8Decode(CP950ToUTF8(PChar(@Name[0])));
-  FullNameStr := pwidechar(@name[0]);
+  FullNameStr := pwidechar(@Name[0]);
 
-{$IFDEF fpc}
+  {$IFDEF fpc}
   //FullNameUTF8Str := UTF8Encode(FullNameStr);
-{$ELSE}
+  {$ELSE}
   //DivideName(FullNameStr, SurNameStr, GivenNameStr);
-{$ENDIF}
+  {$ENDIF}
 
   // ******************************************//
 
@@ -2911,7 +2912,7 @@ begin
       end;
       if SkipTalk = 1 then
         break;
-      if not((ix < Talk_W) and (iy < Talk_H) and (I <= len)) then
+      if not ((ix < Talk_W) and (iy < Talk_H) and (I <= len)) then
         break;
       //检查是否等待按键
       setlength(TempStr, length(WaitAnyKeyCode));
@@ -3071,7 +3072,7 @@ function Digging(beginPic, goal, shovel, restrict: integer): integer;
 var
   p1, i, n, blankpic, holepic, goldpic, moneypic, boompic, x, y, x1, y1, position: integer;
   Surface, outcome: array [0 .. 80] of integer;
-  str, str1, goalstr: WideString;
+  str, str1, goalstr: widestring;
 begin
   position := 0;
   x := 80;
@@ -3284,8 +3285,8 @@ var
   x, y, i, n, len, t, menu, Count: integer;
   //StarList: array of widestring;
   mateList: array of integer;
-  temp: WideString;
-  menuString: array of WideString;
+  temp: widestring;
+  menuString: array of widestring;
 begin
   if (teamlist[0] >= 0) and (teamlist[1] >= 0) and (teamlist[2] >= 0) and (teamlist[3] >= 0) and (teamlist[4] >= 0) and (teamlist[5] >= 0) then
     exit;
@@ -3465,12 +3466,12 @@ procedure NewTeammateList;
 var
   xStar, yStar, xTeam, yTeam, xState, yState, Show, h: integer;
   CurrentStar, CurrentTeam, page, numStar, state, headn, menup, menu, x1, y1, pstar, pteam: integer;
-  StarMenu, TeamMenu: array of WideString;
+  StarMenu, TeamMenu: array of widestring;
   StateList: array of integer;
   i, n, menuid: integer;
-  temp, str1, str2, statusstr, str: WideString;
+  temp, str1, str2, statusstr, str: widestring;
   escape, refresh: Bool;
-  strs: array [0 .. 21] of WideString;
+  strs: array [0 .. 21] of widestring;
   color1, color2: uint32;
 begin
   xStar := 120;
@@ -3831,7 +3832,7 @@ end;
 procedure ShowTeamMate(position, headnum, Count: integer);
 var
   hx, hy, hw, hh, i, l: integer;
-  str1, str2, str: WideString;
+  str1, str2, str: widestring;
 begin
   if Count = 0 then
     Count := 1;
@@ -3864,7 +3865,7 @@ function ReSetName(t, inum, newnamenum: integer): integer;
 var
   NewName: string;
   offset, len, i, IDX, GRP: integer;
-  p, np: PChar;
+  p, np: pchar;
   talkarray: array of byte;
 begin
   ReadTalk(newnamenum, talkarray);
@@ -3915,9 +3916,9 @@ var
   pword: array [0 .. 1] of uint16;
   talkarray: array of byte;
   state: array [0 .. 107] of integer;
-  str1, str2: WideString;
+  str1, str2: widestring;
   head: array [0 .. 107] of integer;
-  menuString: array [0 .. 107] of WideString;
+  menuString: array [0 .. 107] of widestring;
 
   x, y, w, max, maxshow: integer;
   menu, menup, menutop, status1: integer;
@@ -3927,12 +3928,12 @@ var
   var
     i, p: integer;
     hx, hy, hw, hh, Count, len, IDX, GRP, r1, c1, offset, state: integer;
-    str1, str2: WideString;
+    str1, str2: widestring;
     talkarray: array of byte;
     pword: array [0 .. 1] of uint16;
-    str: PChar;
-    statusstr: WideString;
-    strs: array [0 .. 21] of WideString;
+    str: pchar;
+    statusstr: widestring;
+    strs: array [0 .. 21] of widestring;
     color1, color2: uint32;
     pw: puint16;
   begin
@@ -4791,10 +4792,10 @@ var
   x, y, i, n, len, t, menu, Count, tip: integer;
   //StarList: array of widestring;
   MissionList: array of integer;
-  temp: WideString;
-  str: WideString;
-  missionTip: array [0 .. 2] of WideString;
-  menuString: array of WideString;
+  temp: widestring;
+  str: widestring;
+  missionTip: array [0 .. 2] of widestring;
+  menuString: array of widestring;
 begin
   x := 150;
   y := 30;
@@ -4849,8 +4850,8 @@ end;
 procedure RoleEnding(starnum, headnum, talknum: integer);
 var
   status, newcolor, alen, n, ch, r1, c1, color1, color2, GRP, IDX, i, offset, len, hx, hy, Sx, Sy, nx, ny, tx, ty, cell, framex, l, w, h, framey: integer;
-  str1, str2, str, talkstr, namestr: WideString;
-  np3, np1, np2, tp, p1, ap: PChar;
+  str1, str2, str, talkstr, namestr: widestring;
+  np3, np1, np2, tp, p1, ap: pchar;
   actorarray, name1, name2, talkarray: array of byte;
   pword: array [0 .. 1] of uint16;
   r, g, b: byte;
@@ -4976,7 +4977,7 @@ function WoodMan(Chamber: integer): boolean;
 var
   x, y, x1, y1, i, i3, i2, sta, offset, eface1, eface2, position, roleface, xm, ym: integer;
   CanWalk, stay: boolean;
-  p: PChar;
+  p: pchar;
   picnum: integer = 4714;
 begin
   Redraw;
@@ -5552,7 +5553,7 @@ var
   x, y, w, h, i, x1, y1, r, right, menu, menu1, menu2, picnum, xm, ym: integer;
   pic: pointer;
   filename: string;
-  word1, word: WideString;
+  word1, word: widestring;
 begin
   setlength(gamearray, 1);
   setlength(gamearray[0], 25);
@@ -5807,7 +5808,7 @@ procedure BookList;
 var
   x, y, w, h, i, j: integer;
   itemlist: array of smallint;
-  menuString: array of WideString;
+  menuString: array of widestring;
 begin
   j := 0;
   x := 220;
@@ -5853,7 +5854,7 @@ end;
 function DancerAfter90S: integer;
 var
   now, ori_time, demand_time: uint32; //demand_time must be a ms-level
-  str: WideString;
+  str: widestring;
   i, DanceNum, DanceLong, tmp: integer; //计数器,当前的贴图
   DanceList: array [0 .. 9] of smallint;
   iskey: boolean;
@@ -5911,7 +5912,7 @@ begin
           end;
         end
         else if (event.key.keysym.sym = SDLK_SPACE) and (iskey = True) then
-        //done
+          //done
         begin
           Result := 1;
           break;
@@ -5984,17 +5985,17 @@ var
   totalbuy: array [0 .. 4] of smallint;
   sell: TShop;
   buy, pbuy: TShopList;
-  Shop_Str, word: WideString;
-  menuString: array [0 .. 4] of WideString;
+  Shop_Str, word: widestring;
+  menuString: array [0 .. 4] of widestring;
   refresh, sure: boolean;
 
   procedure NewShop_Show(menu, select, money, lr: integer; sell: TShop; buy: TShopList);
   var
     i, totalprice, mixalphal, mixalphar: integer;
     mixcolorl, mixcolorr: uint32;
-    word: array [0 .. 2] of WideString;
-    menuEngString: array [0 .. 4] of WideString;
-    word1, word2: WideString;
+    word: array [0 .. 2] of widestring;
+    menuEngString: array [0 .. 4] of widestring;
+    word1, word2: widestring;
   begin
     LoadFreshScreen(x, y);
     //畫商店菜單, 計算總價格
@@ -6293,8 +6294,8 @@ end;
 procedure ShowMap;
 var
   i, u, n, x, y, l, p, xp, yp: integer;
-  str1, str, strboat: WideString;
-  str2, str3: array of WideString;
+  str1, str, strboat: widestring;
+  str2, str3: array of widestring;
   scencex: array of integer;
   scencey: array of integer;
   scencenum: array of integer;
@@ -6318,7 +6319,8 @@ begin
   n := 0;
   p := 0;
   u := 0;
-  xp := CENTER_X - 320;;
+  xp := CENTER_X - 320;
+  ;
   yp := 10;
   Redraw;
   a11 := 1.2762;
@@ -6454,8 +6456,8 @@ begin
         event.key.keysym.sym := 0;
       end;
       SDL_MOUSEBUTTONUP:
-      if event.button.button = SDL_BUTTON_RIGHT then
-        break;
+        if event.button.button = SDL_BUTTON_RIGHT then
+          break;
       SDL_MOUSEMOTION:
       begin
         for i := 0 to length(scencey) - 1 do
@@ -6478,9 +6480,9 @@ end;
 function EnterNumber(MinValue, MaxValue, x, y: integer; Default: integer = 0): smallint;
 var
   Value, i, menu, sure, pvalue, pmenu, highButton: integer;
-  str: array [0 .. 13] of WideString;
+  str: array [0 .. 13] of widestring;
   color: uint32;
-  strv, strr: WideString;
+  strv, strr: widestring;
   //tempscr: psdl_surface;
   Button: array [0 .. 13] of TSDL_Rect;
 begin
@@ -6609,14 +6611,14 @@ begin
     begin
       case menu of
         0 .. 9:
-        if Value * 10 < 1E5 then
-          Value := 10 * Value + menu;
+          if Value * 10 < 1E5 then
+            Value := 10 * Value + menu;
         10: Value := -Value;
         11: Value := Value div 10;
         12: Value := 0;
         else
-        if menu = highButton then
-          break;
+          if menu = highButton then
+            break;
       end;
       if sure = 1 then
         menu := -1;
@@ -6642,6 +6644,7 @@ function EnterString(var str: string; x, y, w, h: integer): bool;
 var
   r: TSDL_Rect;
   str2: widestring;
+  l: integer;
 begin
   r.x := x;
   r.y := y;
@@ -6685,9 +6688,14 @@ begin
         end;
         if event.key.keysym.sym = SDLK_BACKSPACE then
         begin
-          if length(str) > 0 then
+          l := length(str);
+          if (l >= 3) and (byte(str[l]) >= 128) then
           begin
-            setlength(str, length(str) - 1);
+            setlength(str, l - 3);
+          end
+          else if (l >= 1) then
+          begin
+            setlength(str, l - 1);
           end;
         end;
       end;
