@@ -1409,7 +1409,7 @@ var
   x, y, w, h, i1, i2, i, j, x1, y1, r, right, menu, grp, idx, len, menu1, menu2: integer;
   temp, littlegamepic: psdl_surface;
   gamepic: tpic;
-  filename: string;
+  filename: ansistring;
   word1, word: WideString;
   srcrect: tsdl_rect;
   drect: tsdl_rect;

@@ -77,7 +77,7 @@ procedure DrawBRolePic(num, x, y, w, h, px, py, shadow, mask: integer); overload
 //显示文字的子程
 function Big5ToUnicode(str: pansichar): WideString;
 function GBKToUnicode(str: pansichar): WideString;
-function UnicodeToBig5(str: PWideChar): string;
+function UnicodeToBig5(str: PWideChar): ansistring;
 procedure DrawText(sur: PSDL_Surface; word: PUint16; x_pos, y_pos: integer; color: Uint32);
 procedure DrawEngText(sur: PSDL_Surface; word: PUint16; x_pos, y_pos: integer; color: Uint32);
 procedure DrawShadowText(word: PUint16; x_pos, y_pos: integer; color1, color2: Uint32);
@@ -126,13 +126,13 @@ function InModeMagic(rnum: integer): boolean;
 procedure UpdateHpMp(rnum, x, y: integer);
 procedure MenuMedcine(rnum: integer); overload;
 procedure MenuMedPoision(rnum: integer); overload;
-function GetPngPic(filename: string; num: integer): Tpic; overload;
+function GetPngPic(filename: ansistring; num: integer): Tpic; overload;
 function GetPngPic(f: integer; num: integer): Tpic; overload;
 procedure drawPngPic(image: Tpic; x, y, w, h, px, py, mask: integer); overload;
 procedure drawPngPic(image: Tpic; px, py, mask: integer); overload;
 function ReadPicFromByte(p_byte: Pbyte; size: integer): PSDL_SURFACE;
-function Simplified2Traditional(mSimplified: string): string;
-function Traditional2Simplified(mTraditional: string): string;
+function Simplified2Traditional(mSimplified: ansistring): ansistring;
+function Traditional2Simplified(mTraditional: ansistring): ansistring;
 procedure NewShowMenuSystem(menu: integer);
 function NewMenuSave: boolean;
 procedure NewShowSelect(row, menu: integer; word: array of WideString; Width: integer);
@@ -153,7 +153,7 @@ procedure DrawEftPic(Pic: Tpic; px, py, level: integer);
 procedure PlayBeginningMovie(beginnum, endnum: integer);
 procedure ZoomPic(scr: Psdl_surface; angle: double; x, y, w, h: integer);
 function GetZoomPic(scr: Psdl_surface; angle: double; x, y, w, h: integer): Psdl_surface;
-function UnicodeToGBK(str: PWideChar): string;
+function UnicodeToGBK(str: PWideChar): ansistring;
 procedure NewMenuTeammate;
 procedure ShowTeammateMenu(TeamListNum, RoleListNum: integer; rlist: psmallint; MaxCount, position: integer);
 procedure NewMenuItem;
@@ -316,12 +316,12 @@ end;
 {procedure PlayMP3(MusicNum, times: integer);
 var
   i: integer;
-  str: string;
+  str: ansistring;
   sf: BASS_MIDI_FONT;
   repeatable: boolean;
 begin
   BASS_StreamFree(Music);
-  sf.font := BASS_MIDI_FontInit(PChar(AppPath + 'music/mid.sf2'), 0);
+  sf.font := BASS_MIDI_FontInit(pansichar(AppPath + 'music/mid.sf2'), 0);
   BASS_MIDI_StreamSetFonts(0, sf, 1);
   sf.preset := -1; // use all presets
   sf.bank := 0;
@@ -329,14 +329,14 @@ begin
   str := 'music/' + inttostr(musicnum) + '.mp3';
   if FileExistsUTF8(AppPath + str) then
   begin
-    Music := BASS_StreamCreateFile(False, pchar(AppPath + str), 0, 0, 0);
+    Music := BASS_StreamCreateFile(False, pansichar(AppPath + str), 0, 0, 0);
   end
   else
   begin
     str := 'music/' + inttostr(musicnum) + '.mid';
     if FileExistsUTF8(AppPath + str) then
     begin
-      Music := BASS_MIDI_StreamCreateFile(false, PChar(AppPath + str), 0, 0, 0, 0);
+      Music := BASS_MIDI_StreamCreateFile(false, pansichar(AppPath + str), 0, 0, 0, 0);
       BASS_MIDI_StreamSetFonts(Music, sf, 1);
     end
     else
@@ -375,7 +375,7 @@ end;
 {procedure PlaySound(SoundNum, times: integer); overload;
 var
   i: integer;
-  str: string;
+  str: ansistring;
   ch: HCHANNEL;
   repeatable: boolean;
 begin
@@ -389,7 +389,7 @@ begin
     if str[i] = ' ' then str[i] := '0';
   if FileExistsUTF8(AppPath + str) then
   begin
-    Esound := BASS_SampleLoad(FALSE, pchar(AppPath + str), 0, 0, 1, 0);
+    Esound := BASS_SampleLoad(FALSE, pansichar(AppPath + str), 0, 0, 1, 0);
     ch := BASS_SampleGetChannel(Esound, False);
   end
   else
@@ -587,14 +587,11 @@ begin
     image := SDL_LoadBMP(file_name);
     if (image = nil) then
     begin
-      MessageBoxA(0, pansichar(Format('Couldn''t load %s : %s', [file_name, SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
       exit;
     end;
     dest.x := x;
     dest.y := y;
-    if (SDL_BlitSurface(image, nil, screen, @dest) < 0) then
-      MessageBoxA(0, pansichar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
-    //SDL_UpdateRect2(screen, 0, 0, image.w, image.h);
+    SDL_BlitSurface(image, nil, screen, @dest);
     SDL_FreeSurface(image);
   end;
 end;
@@ -611,8 +608,6 @@ begin
     image := IMG_Load(file_name);
     if (image = nil) then
     begin
-      MessageBoxA(0, pansichar(Format('Couldn''t load %s : %s', [file_name, SDL_GetError])),
-        'Error', MB_OK or MB_ICONHAND);
       exit;
     end;
     dest.x := x;
@@ -622,7 +617,7 @@ begin
     dest1.w := w;
     dest1.h := h;
     if (SDL_BlitSurface(image, @dest1, screen, @dest) < 0) then
-      MessageBoxA(0, pansichar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
+      exit;
     //SDL_UpdateRect2(screen, 0, 0, image.w, image.h);
     SDL_FreeSurface(image);
   end;
@@ -645,11 +640,7 @@ begin
   dest1.y := y1;
   dest1.w := w;
   dest1.h := h;
-  if (SDL_BlitSurface(image, @dest1, screen, @dest) < 0) then
-    MessageBoxA(0, pansichar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
-  //SDL_UpdateRect2(screen, 0, 0, image.w, image.h);
-  //SDL_FreeSurface(image);
-
+  SDL_BlitSurface(image, @dest1, screen, @dest);
 end;
 
 procedure display_imgFromSurface(image: Tpic; x, y, x1, y1, w, h: integer); overload;
@@ -667,11 +658,7 @@ begin
   dest1.y := y1;
   dest1.w := w;
   dest1.h := h;
-  if (SDL_BlitSurface(image.pic, @dest1, screen, @dest) < 0) then
-    MessageBoxA(0, pansichar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
-  //SDL_UpdateRect2(screen, 0, 0, image.w, image.h);
-  //SDL_FreeSurface(image);
-
+  SDL_BlitSurface(image.pic, @dest1, screen, @dest);
 end;
 
 procedure display_img(file_name: pansichar; x, y: integer); overload;
@@ -684,15 +671,11 @@ begin
     image := IMG_Load(file_name);
     if (image = nil) then
     begin
-      MessageBoxA(0, pansichar(Format('Couldn''t load %s : %s', [file_name, SDL_GetError])),
-        'Error', MB_OK or MB_ICONHAND);
       exit;
     end;
     dest.x := x;
     dest.y := y;
-    if (SDL_BlitSurface(image, nil, screen, @dest) < 0) then
-      MessageBoxA(0, pansichar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
-    //SDL_UpdateRect2(screen, 0, 0, image.w, image.h);
+    SDL_BlitSurface(image, nil, screen, @dest);
     SDL_FreeSurface(image);
   end;
 end;
@@ -707,9 +690,7 @@ begin
   end;
   dest.x := x;
   dest.y := y;
-  if (SDL_BlitSurface(image, nil, screen, @dest) < 0) then
-    MessageBoxA(0, pansichar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
-  //SDL_UpdateRect2(screen, 0, 0, image.w, image.h);
+  SDL_BlitSurface(image, nil, screen, @dest);
   //SDL_FreeSurface(image);
 end;
 
@@ -723,10 +704,7 @@ begin
   end;
   dest.x := x;
   dest.y := y;
-  if (SDL_BlitSurface(image.pic, nil, screen, @dest) < 0) then
-    MessageBoxA(0, pansichar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
-  //SDL_UpdateRect2(screen, 0, 0, image.w, image.h);
-  //SDL_FreeSurface(image);
+  SDL_BlitSurface(image.pic, nil, screen, @dest);
 end;
 
 //取调色板的颜色, 视频系统是32位色, 但很多时候仍需要原调色板的颜色
@@ -983,7 +961,7 @@ begin
                   putpixel(screen, w - xs + px, iy - ys + py, pix);
               end
               else
-                Pint(image + ((w - xs + px) * 1152 + (iy - ys + py)) * 4)^ :=
+                Pinteger(image + ((w - xs + px) * 1152 + (iy - ys + py)) * 4)^ :=
                   sdl_maprgb(screen.format, puint8(colorPanel + l1 * 3)^ * (4 + shadow), puint8(colorPanel + l1 * 3 + 1)^ *
                   (4 + shadow), puint8(colorPanel + l1 * 3 + 2)^ * (4 + shadow));
 
@@ -1423,7 +1401,7 @@ var
   c: Uint32;
   pix1, pix2, pix3, col1, col2, col3: byte;
   // Area: TRect;
-  // str: string;
+  // str: ansistring;
 begin
   if (Head_Pic[num].pic=nil) then
     exit;
@@ -1664,10 +1642,10 @@ end;
 function GBKToUnicode(str: pansichar): WideString;
 var
   len: integer;
-  word: string;
+  word: ansistring;
 begin
   //word := Simplified2Traditional(str);
-  // len := MultiByteToWideChar(936, 0, PChar(word), -1, nil, 0);
+  // len := MultiByteToWideChar(936, 0, pansichar(word), -1, nil, 0);
 {$IFDEF fpc}
   Result := UTF8Decode(CP936ToUTF8(str));
 {$ELSE}
@@ -1681,7 +1659,7 @@ end;
 
 //unicode转为big5, 仅用于输入姓名
 
-function UnicodeToBig5(str: PWideChar): string;
+function UnicodeToBig5(str: PWideChar): ansistring;
 var
   len: integer;
 begin
@@ -1694,7 +1672,7 @@ begin
 {$ENDIF}
 end;
 
-function UnicodeToGBK(str: PWideChar): string;
+function UnicodeToGBK(str: PWideChar): ansistring;
 var
   len: integer;
 begin
@@ -1715,7 +1693,7 @@ var
   dest: TSDL_Rect;
   len, i, x, y: integer;
   pword: array[0..2] of Uint16;
-  words: string;
+  words: ansistring;
   c1, c2, c3, c4: integer;
   t: WideString;
   tempcolor: TSdl_Color;
@@ -1747,7 +1725,7 @@ begin
     t := Traditional2Simplified(PwideChar(word));
     word := puint16(t);
   end;
-  x_pos := x_pos+3;
+  x_pos := x_pos;
   x := x_pos;
   dest.x := x_pos;
   while word^ > 0 do
@@ -1808,7 +1786,7 @@ begin
   tempcolor := TSDL_Color(color);
   //{$ENDIF}
 
-  //Text := TTF_RenderUNICODE_blended(engfont, word, tempcolor);
+  Text := TTF_RenderUNICODE_blended(engfont, system.PWord(word), tempcolor);
   dest.x := x_pos;
   dest.y := y_pos + 4;
   SDL_BlitSurface(Text, nil, sur, @dest);
@@ -2286,7 +2264,7 @@ var
   map: psdl_surface;
   bpp: integer;
   p: PInteger;
-  str: string;
+  str: ansistring;
 begin
   for i1 := 0 to 2303 do
     for i2 := 0 to 1151 do
@@ -3791,7 +3769,7 @@ var
   lv: array[0..15] of integer;
   lvstr, str, knowmagic, skill: WideString;
   gongti: array of array[0..1] of WideString;
-  magstr: array[0..71] of char;
+  magstr: array[0..71] of ansichar;
   needmp, needprogress: WideString;
 begin
   x := 90;
@@ -3845,7 +3823,7 @@ begin
     begin
       i1 := 0;
       i2 := 0;
-      while Rmagic[RRole[rnum].Magic[num - 6]].Introduction[i1] > char(0) do
+      while Rmagic[RRole[rnum].Magic[num - 6]].Introduction[i1] > ansichar(0) do
       begin
         magstr[i2] := Rmagic[RRole[rnum].Magic[num - 6]].Introduction[i1];
         if (i1 mod 18 = 17) then
@@ -3856,7 +3834,7 @@ begin
         Inc(i1);
         Inc(i2);
       end;
-      magstr[i2] := char(0);
+      magstr[i2] := ansichar(0);
       str := gbktoUnicode(@magstr);
     end
     else str := UTF8Decode(' ');
@@ -4507,7 +4485,7 @@ begin
   //Result.pic := nil;
 end;
 
-function GetPngPic(filename: string; num: integer): Tpic; overload;
+function GetPngPic(filename: ansistring; num: integer): Tpic; overload;
 var
   address, len: integer;
   Data: array of byte;
@@ -4635,7 +4613,7 @@ end;
 
 //简体汉字转化成繁体汉字
 
-function Simplified2Traditional(mSimplified: string): string; //返回繁体字符串   //Win98下无效
+function Simplified2Traditional(mSimplified: ansistring): ansistring; //返回繁体字符串   //Win98下无效
 var
   L: integer;
 begin
@@ -4643,7 +4621,7 @@ begin
   SetLength(Result, L);
 {$IFDEF windows}
   LCMapString(GetUserDefaultLCID,
-    $04000000, PChar(mSimplified), L, @Result[1], L);
+    $04000000, pansichar(mSimplified), L, @Result[1], L);
 {$ELSE}
   Result := mSimplified;
 {$ENDIF}
@@ -4651,7 +4629,7 @@ end; {   Simplified2Traditional   }
 
 //繁体汉字转化成简体汉字
 
-function Traditional2Simplified(mTraditional: string): string; //返回繁体字符串
+function Traditional2Simplified(mTraditional: ansistring): ansistring; //返回繁体字符串
 var
   L: integer;
 begin
@@ -4659,7 +4637,7 @@ begin
   SetLength(Result, L);
 {$IFDEF windows}
   LCMapString(GetUserDefaultLCID,
-    $02000000, PChar(mTraditional), L, @Result[1], L);
+    $02000000, pansichar(mTraditional), L, @Result[1], L);
 {$ELSE}
   Result := mTraditional;
 {$ENDIF}
@@ -7204,14 +7182,14 @@ begin
 end;
 
 //这是改写的绘制RLE8图片程序, 增加了选调色板, 遮挡控制, 亮度, 半透明, 混合色等
-//colorPanel: Pchar; 调色板的指针. 某些情况下需要使用静态调色板, 避免静态图跟随水的效果
+//colorPanel: pansichar; 调色板的指针. 某些情况下需要使用静态调色板, 避免静态图跟随水的效果
 //num, px, py: integer; 图片的编号和位置
 //Pidx: Pinteger; Ppic: PByte; 图片的索引和内容的资源所在地
-//RectArea: Pchar; 画图的范围, 所指向地址应为连续4个integer, 表示一个矩形, 仅图片的部分或全部会出现在这个矩形内才画
-//Image: PChar; widthI, heightI, sizeI: integer; 映像的位置, 尺寸, 每单位长度. 如果Img不为空, 则会将图画到这个镜像上, 否则画到屏幕
+//RectArea: pansichar; 画图的范围, 所指向地址应为连续4个integer, 表示一个矩形, 仅图片的部分或全部会出现在这个矩形内才画
+//Image: pansichar; widthI, heightI, sizeI: integer; 映像的位置, 尺寸, 每单位长度. 如果Img不为空, 则会将图画到这个镜像上, 否则画到屏幕
 //shadow, alpha: integer; 图片的暗度和透明度, 仅在画到屏幕上时有效
-//BlockImageW: PChar; 大小与场景和战场映像相同. 如果此地址不为空, 则会记录该像素的场景深度depth, 用于遮挡计算.
-//BlockScreenR: PChar; widthR, heightR, sizeR: integer; 该映像应该与屏幕像素数相同, 保存屏幕上每一点的深度值
+//BlockImageW: pansichar; 大小与场景和战场映像相同. 如果此地址不为空, 则会记录该像素的场景深度depth, 用于遮挡计算.
+//BlockScreenR: pansichar; widthR, heightR, sizeR: integer; 该映像应该与屏幕像素数相同, 保存屏幕上每一点的深度值
 //depth: integer; 所画物件的深度, 即场景坐标 x + y, 深度高的物件会遮挡深度低的.
 //当BlockImageW不为空时, 将该值写入BlockImageW, 如果该值超出范围(0~128), 会根据图片的y坐标计算一个,
 //但是需注意计算值在场景内包含高度的情况下是不准确的.
@@ -7252,9 +7230,9 @@ begin
 
   lenInt := sizeof(integer);
 
-  if (w > 1) and (h > 1) and (px - xs + w >= pint(RectArea)^) and (px - xs < pint(RectArea)^
-    + pint(RectArea + lenInt * 2)^) and (py - ys + h >= pint(RectArea + lenInt)^) and
-    (py - ys < pint(RectArea + lenInt)^ + pint(RectArea + lenInt * 3)^) then
+  if (w > 1) and (h > 1) and (px - xs + w >= Pinteger(RectArea)^) and (px - xs < Pinteger(RectArea)^
+    + Pinteger(RectArea + lenInt * 2)^) and (py - ys + h >= Pinteger(RectArea + lenInt)^) and
+    (py - ys < Pinteger(RectArea + lenInt)^ + Pinteger(RectArea + lenInt * 3)^) then
   begin
     for iy := 1 to h do
     begin
@@ -7278,9 +7256,9 @@ begin
         else if p > 2 then
         begin
           p := p - 1;
-          if (w - xs + px >= pint(RectArea)^) and (iy - ys + py >= pint(RectArea + lenInt)^) and
-            (w - xs + px < pint(RectArea)^ + pint(RectArea + lenInt * 2)^) and
-            (iy - ys + py < pint(RectArea + lenInt)^ + pint(RectArea + lenInt * 3)^) then
+          if (w - xs + px >= Pinteger(RectArea)^) and (iy - ys + py >= Pinteger(RectArea + lenInt)^) and
+            (w - xs + px < Pinteger(RectArea)^ + Pinteger(RectArea + lenInt * 2)^) and
+            (iy - ys + py < Pinteger(RectArea + lenInt)^ + Pinteger(RectArea + lenInt * 3)^) then
           begin
             if image = nil then
             begin
@@ -7296,7 +7274,7 @@ begin
                 begin
                   if ((w - xs + px) < widthR) and ((iy - ys + py) < heightR) then
                   begin
-                    pixdepth := pint(BlockScreenR + ((w - xs + px) * heightR + (iy - ys + py)) * sizeR)^;
+                    pixdepth := Pinteger(BlockScreenR + ((w - xs + px) * heightR + (iy - ys + py)) * sizeR)^;
                     if pixdepth > depth then
                     begin
                       isAlpha := 1;
@@ -7351,9 +7329,9 @@ begin
                 begin
                   if (depth < 0) or (depth > 128) then
                     depth := py div 9 - 1;
-                  Pint(BlockImageW + ((w - xs + px) * heightI + (iy - ys + py)) * sizeI)^ := depth;
+                  Pinteger(BlockImageW + ((w - xs + px) * heightI + (iy - ys + py)) * sizeI)^ := depth;
                 end;
-                Pint(image + ((w - xs + px) * heightI + (iy - ys + py)) * sizeI)^ :=
+                Pinteger(image + ((w - xs + px) * heightI + (iy - ys + py)) * sizeI)^ :=
                   sdl_maprgb(screen.format, puint8(colorPanel + l1 * 3)^ * (4 + shadow),
                   puint8(colorPanel + l1 * 3 + 1)^ * (4 + shadow), puint8(colorPanel + l1 * 3 + 2)^ * (4 + shadow));
               end;

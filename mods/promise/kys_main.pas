@@ -43,8 +43,8 @@ uses
   bass;
 type
   {$ifndef fpc}
-  puint16 = ^cuint16;
-  puint8 = ^cuint8;
+  puint16 = pword;
+  puint8 = pbyte;
   {$endif}
 
   TPosition = record
@@ -84,7 +84,7 @@ type
   TRole = record
     case TCallType of
       Element: (ListNum, HeadNum, IncLife, UnUse: smallint;
-        Name, Nick: array[0..9] of char;
+        Name, Nick: array[0..9] of ansichar;
         Sexual, Level: smallint;
         Exp: Uint16;
         CurrentHP, MaxHP, Hurt, Poision, PhyPower: smallint;
@@ -109,11 +109,11 @@ type
   TItem = record
     case TCallType of
       Element: (ListNum: smallint;
-        Name: array[0..19] of char;
+        Name: array[0..19] of ansichar;
         ExpOfMagic: smallint;
         SetNum, BattleEffect, WineEffect, needSex: smallint;
         unuse: array[0..4] of smallint;
-        Introduction: array[0..29] of char;
+        Introduction: array[0..29] of ansichar;
         Magic, AmiNum, User, EquipType, ShowIntro, ItemType, inventory, price, EventNum: smallint;
         AddCurrentHP, AddMaxHP, AddPoi, AddPhyPower, ChangeMPType, AddCurrentMP, AddMaxMP: smallint;
         AddAttack, AddSpeed, AddDefence, AddMedcine, AddUsePoi, AddMedPoi, AddDefPoi: smallint;
@@ -129,7 +129,7 @@ type
   TScene = record
     case TCallType of
       Element: (ListNum: smallint;
-        Name: array[0..9] of char;
+        Name: array[0..9] of ansichar;
         ExitMusic, EntranceMusic: smallint;
         Pallet, EnCondition: smallint;
         MainEntranceY1, MainEntranceX1, MainEntranceY2, MainEntranceX2: smallint;
@@ -142,7 +142,7 @@ type
   TMagic = record
     case TCallType of
       Element: (ListNum: smallint;
-        Name: array[0..9] of char;
+        Name: array[0..9] of ansichar;
         Useless, NeedHP, MinStep, bigami, EventNum: smallint;
         SoundNum, MagicType, AmiNum, HurtType, AttAreaType, NeedMP, Poision: smallint;
         MinHurt, MaxHurt, HurtModulus, AttackModulus, MPModulus, SpeedModulus, WeaponModulus,
@@ -153,7 +153,7 @@ type
         AddFist, AddSword, AddKnife, AddUnusual, AddHidWeapon, BattleState: smallint;
         NeedExp: array[0..2] of smallint;
         MaxLevel: smallint;
-        Introduction: array[0..59] of char;);
+        Introduction: array[0..59] of ansichar;);
       Address: (Data: array[0..110] of smallint);
   end;
 
@@ -452,7 +452,7 @@ var
   //字体
   ExitSceneMusicNum: integer;
   //离开场景的音乐
-  MusicName: string;
+  MusicName: ansistring;
 
   MenuString, MenuEngString: array of WideString;
   //选单所使用的字符串
@@ -497,7 +497,7 @@ var
   blue: integer = 0;
   gray: integer = 0;
 
-  versionstr: string = '  demo   '; //版本号
+  versionstr: ansistring = '  demo   '; //版本号
   FWay: array[0..479, 0..479] of smallint;
   linex, liney: array[0..480 * 480 - 1] of smallint;
   nowstep: integer;
@@ -522,7 +522,7 @@ var
   render: PSDL_Renderer;
   screenTex: PSDL_Texture;
 
-    CellPhone: integer = 0;
+  CellPhone: integer = 0;
   ScreenRotate: integer = 0;
   const
   //色值蒙版, 注意透明蒙版在创建RGB表面时需设为0
@@ -576,6 +576,9 @@ begin
     exit;
   end;
 
+  SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, pansichar(IntToStr(SMOOTH)));
+  SDL_SetHint(SDL_HINT_IME_SHOW_UI, '1');
+
   //freemem(users[0],sizeof(uint16)*length(users));
 
   //freemem(user,sizeof(uint16));
@@ -594,8 +597,6 @@ begin
       ScreenRotate := 0;
     //SDL_WarpMouseInWindow(window, RESOLUTIONX, RESOLUTIONY);
   end;
-
-  SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, pansichar(IntToStr(SMOOTH)));
 
   render := SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED or SDL_RENDERER_TARGETTEXTURE);
   screen := SDL_CreateRGBSurface(ScreenFlag, CENTER_X * 2, CENTER_Y * 2, 32, RMask, GMask, BMask, 0);
@@ -1081,6 +1082,7 @@ var
   p0, p1: pansichar;
   LanId: word;
   lan: ansistring;
+  input_name: utf8string;
 begin
 {$IFDEF fpc}
   lanID := 1028;
@@ -1155,6 +1157,9 @@ begin
     end;
   end;
   //Result := inputquery('Enter name', str, str1);
+  input_name := str1;
+  result := EnterString(input_name, CENTER_X - 113, CENTER_Y + 10, 86, 100);
+  str1 := input_name;
   if fullscreen = 1 then
   begin
     //realscreen := SDL_SetVideoMode(CENTER_X * 2, CENTER_Y * 2, 32, ScreenFlag or SDL_FULLSCREEN);
@@ -1600,7 +1605,7 @@ begin
       //功能键(esc)使用松开按键事件
       SDL_KEYUP:
       begin
-        //keystate := PChar(SDL_GetKeyState(nil));
+        //keystate := pansichar(SDL_GetKeyState(nil));
         walking := 0;
         speed := 0;
         {if (puint8(keystate + sdlk_left)^ = 0) and (puint8(keystate + sdlk_right)^ = 0) and
@@ -1622,7 +1627,7 @@ begin
         end;
           {if (event.key.keysym.sym = sdlk_f11) then
           begin
-            execscript(pchar('script/1.lua'), pchar('f1'));
+            execscript(pansichar('script/1.lua'), pansichar('f1'));
           end;
           if (event.key.keysym.sym = sdlk_f10) then
           begin

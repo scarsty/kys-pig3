@@ -1161,7 +1161,7 @@ var
   i, p, menustatus, menu, max, rnum, menup, i1, lv, i2: integer;
   realmenu: array[0..10] of integer;
   word: WideString;
-  str: string;
+  str: ansistring;
 begin
 
   menustatus := $F80;
@@ -2478,7 +2478,7 @@ end;
 procedure Attack(bnum: integer);
 var
   rnum, i, mnum, l1, level, step, range, AttAreaType, i1, i2, twice, temp: integer;
-  str: string;
+  str: ansistring;
   str1: WideString;
 begin
   rnum := brole[bnum].rnum;
@@ -2598,7 +2598,7 @@ begin
       if rmagic[mnum].EventNum > 0 then
       begin
         //rmagic[mnum].UnKnow[4] := strtoint(InputBox('Enter name', 'ssss', '10'));
-        //  execscript(pchar('script/SpecialMagic' + inttostr(rmagic[mnum].UnKnow[4]) + '.lua'), pchar('f' + inttostr(rmagic[mnum].UnKnow[4])));
+        //  execscript(pansichar('script/SpecialMagic' + inttostr(rmagic[mnum].UnKnow[4]) + '.lua'), pansichar('f' + inttostr(rmagic[mnum].UnKnow[4])));
         Callevent(rmagic[mnum].EventNum);
         if rmagic[mnum].NeedMP * level > rrole[rnum].CurrentMP then
         begin
@@ -2966,7 +2966,7 @@ end;
 procedure PlayMagicAmination(bnum, bigami, enum, level: integer);
 var
   i, grp, Count, len: integer;
-  filename, fn: string;
+  filename, fn: ansistring;
   dest, dest1: TSDL_Rect;
 begin
   //含音效
@@ -3541,7 +3541,7 @@ procedure ShowHurtValue(sign, color1, color2: integer); overload;
 var
   i, i1, x, a, y: integer;
   word: array of WideString;
-  str: string;
+  str: ansistring;
 begin
   a := 0;
   str := '+%d';
@@ -4194,7 +4194,7 @@ end;
 procedure PlayActionAmination(bnum, mode: integer);
 var
   d1, d2, dm, rnum, i1, i, Count, grp, beginpic, endpic, idx, tnum, len: integer;
-  filename, fn, modestr, rolestr: string;
+  filename, fn, modestr, rolestr: ansistring;
 begin
   d1 := Ax - Bx;
   d2 := Ay - By;
@@ -4912,7 +4912,7 @@ var
   p1, Cmnum1, Cmlevel1, Cmtype1, Cmdis1, Cmrange1: integer;
   Mx, My, Mx1, My1, tempmaxhurt, maxhurt, tempminHP: integer;
   str, str1: WideString;
-  words: string;
+  words: ansistring;
 begin
 
   rnum := brole[bnum].rnum;

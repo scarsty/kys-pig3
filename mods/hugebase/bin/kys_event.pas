@@ -6691,9 +6691,9 @@ begin
   while True do
   begin
     loadfreshscreen;
-    str2 := utf8decode(str);
+    str2 := utf8decode('請輸入主角之姓名：' + str);
     w := drawlength(str2);
-    DrawTextWithRect(@str2[1], x, y, drawlength(str2), ColColor($66), ColColor($63), 0, 1);
+    DrawTextWithRect(@str2[1], x, y, 260, ColColor($66), ColColor($63), 0, 1);
     //SDL_UpdateRect2(screen, 0, 0, 0, 0);
     SDL_PollEvent(@event);
     CheckBasicEvent;

@@ -134,8 +134,7 @@ procedure GongtiLevelUp(rnum, mnum: integer);
 function GetEquipState(person, state: integer): boolean;
 procedure AddSkillPoint(num: integer);
 function AddBattleStateToEquip: boolean;
-
-
+function EnterString(var str: utf8string; x, y, w, h: integer): bool;
 
 implementation
 
@@ -5156,6 +5155,62 @@ begin
       Result := True;
     end;
   end;
+end;
+
+function EnterString(var str: utf8string; x, y, w, h: integer): bool;
+var
+  r: TSDL_Rect;
+  str2: widestring;
+begin
+  r.x := x;
+  r.y := y;
+  r.w := w;
+  r.h := h;
+  SDL_StartTextInput();
+  SDL_SetTextInputRect(@r);
+  while True do
+  begin
+    str2 := utf8decode(' 請輸入名字：' + str);
+    DrawTextWithRect(@str2[1], x, y, 220, ColColor($66), ColColor($63));
+    SDL_UpdateRect2(screen, 0, 0, screen.w, screen.h);
+    SDL_PollEvent(@event);
+    case event.type_ of
+      SDL_TEXTINPUT:
+      begin
+        str := str + event.Text.Text;
+      end;
+      SDL_MOUSEBUTTONUP:
+      begin
+        if (event.button.button = SDL_BUTTON_RIGHT) then
+        begin
+          Result := False;
+          break;
+        end;
+      end;
+      SDL_KEYUP:
+      begin
+        if event.key.keysym.sym = SDLK_RETURN then
+        begin
+          Result := True;
+          break;
+        end;
+        if event.key.keysym.sym = SDLK_ESCAPE then
+        begin
+          Result := False;
+          break;
+        end;
+        if event.key.keysym.sym = SDLK_BACKSPACE then
+        begin
+          if length(str) > 0 then
+          begin
+            setlength(str, length(str) - 1);
+          end;
+        end;
+      end;
+    end;
+    SDL_Delay(16);
+  end;
+  SDL_StopTextInput();
 end;
 
 

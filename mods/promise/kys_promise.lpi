@@ -38,7 +38,7 @@
             <IncludeFiles Value="$(ProjOutDir)"/>
             <Libraries Value=".;\sw\lib;\usr\X11R6\lib"/>
             <OtherUnitFiles Value="lib"/>
-            <UnitOutputDirectory Value="tmp"/>
+            <UnitOutputDirectory Value="debug"/>
           </SearchPaths>
           <Parsing>
             <SyntaxOptions>
@@ -121,7 +121,7 @@
       <IncludeFiles Value="$(ProjOutDir)"/>
       <Libraries Value=".;\sw\lib;\usr\X11R6\lib"/>
       <OtherUnitFiles Value="lib"/>
-      <UnitOutputDirectory Value="tmp"/>
+      <UnitOutputDirectory Value="release"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>

@@ -1209,10 +1209,10 @@ begin
   //  Result := True;
   Redraw;
   str2 := '請輸入主角之姓名';
-  DrawTextWithRect(@str2[1], CENTER_X - 103, CENTER_Y - 30, 156, ColColor($64), ColColor($66));
+  //DrawTextWithRect(@str2[1], CENTER_X - 103, CENTER_Y - 30, 156, ColColor($64), ColColor($66));
   recordfreshscreen;
   UpdateAllScreen;
-  result := EnterString(input_name, CENTER_X - 63, CENTER_Y + 10, 86, 100);
+  result := EnterString(input_name, CENTER_X - 153, CENTER_Y + 10, 86, 100);
   freefreshscreen;
 
   if FULLSCREEN = 1 then
