@@ -2798,7 +2798,6 @@ begin
   tp := @talkarray[0];
 
   //read name
-  //read name
   if namenum > 0 then
   begin
     idx := fileopen(AppPath + NAME_IDX, fmopenread);
@@ -3035,10 +3034,8 @@ begin
     if namenum <> 0 then
     begin
       DrawRectangle(nx, ny, nw, nh, frame, colcolor(0, $FF), 60);
-      //namelen := length(np);
-      //np := @Rrole[0].Name;
-      //showmessage(inttostr(namenum));
-      //DrawgbkShadowText(np, nx + 20 - namelen * 9 div 2, ny + 4, colcolor(0, $63), colcolor(0, $70));
+      namelen := length(np);
+      DrawgbkShadowText(np, nx + 20 - namelen * 9 div 2, ny + 4, colcolor(0, $63), colcolor(0, $70));
     end;
 
     while r1 < row do
