@@ -92,7 +92,6 @@ function GetItemPro(L: Plua_state): integer; cdecl;
 function SetItemPro(L: Plua_state): integer; cdecl;
 
 function SetItemIntro(L: Plua_state): integer; cdecl; //冰枫月之怒添加
-
 function GetMagicPro(L: Plua_state): integer; cdecl;
 function SetMagicPro(L: Plua_state): integer; cdecl;
 function GetScencePro(L: Plua_state): integer; cdecl;
@@ -531,7 +530,6 @@ begin
 end;
 
 //处理50 32指令改写参数的问题
-
 function lua_tointeger(L: Plua_state; pos: integer): Lua_integer;
 var
   n: integer;
@@ -581,7 +579,6 @@ end;
 
 //检查按键
 //event.key.keysym.sym = 1 when mouse motion.
-
 function CheckButton(L: Plua_state): integer; cdecl;
 var
   t: integer;
@@ -627,7 +624,6 @@ begin
 end;
 
 //获取当前时间
-
 function GetTime(L: Plua_state): integer; cdecl;
 var
   t: integer;
@@ -698,7 +694,6 @@ end;
 //如果显示模式不指定则自动计算
 
 //talk(头像号, 内容[数字或字串], 姓名[数字或字串], 显示模式)
-
 function Talk(L: Plua_state): integer; cdecl;
 var
   //head, dismode, n: integer;
@@ -1029,7 +1024,6 @@ begin
 end;
 
 //非队友得到物品
-
 function AnotherGetItem(L: Plua_state): integer; cdecl;
 begin
   instruct_41(lua_tointeger(L, -3), lua_tointeger(L, -2), lua_tointeger(L, -1));
@@ -1038,7 +1032,6 @@ begin
 end;
 
 //队伍中某属性等于某值的人数
-
 function CompareProInTeam(L: Plua_state): integer; cdecl;
 var
   n, i: integer;
@@ -1193,7 +1186,6 @@ begin
 end;
 
 //获取主地图坐标
-
 function GetMainMapPosition(L: Plua_state): integer; cdecl;
 begin
   lua_pushinteger(L, My);
@@ -1202,7 +1194,6 @@ begin
 end;
 
 //改变主地图坐标
-
 function SetMainMapPosition(L: Plua_state): integer; cdecl;
 begin
   Mx := lua_tointeger(L, -1);
@@ -1211,7 +1202,6 @@ begin
 end;
 
 //获取场景坐标
-
 function GetScencePosition(L: Plua_state): integer; cdecl;
 begin
   lua_pushinteger(L, Sy);
@@ -1220,7 +1210,6 @@ begin
 end;
 
 //改变场景坐标
-
 function SetScencePosition(L: Plua_state): integer; cdecl;
 begin
   Sx := lua_tointeger(L, -1);
@@ -1247,7 +1236,6 @@ begin
 end;
 
 //延时
-
 function Delay(L: Plua_state): integer; cdecl;
 begin
   SDL_Delay(lua_tointeger(L, -1));
@@ -1255,7 +1243,6 @@ begin
 end;
 
 //绘制矩形
-
 function DrawRect(L: Plua_state): integer; cdecl;
 var
   n, i: integer;
@@ -1277,7 +1264,6 @@ begin
 end;
 
 //队伍人数
-
 function MemberAmount(L: Plua_state): integer; cdecl;
 var
   n, i: integer;
@@ -1295,7 +1281,6 @@ begin
 end;
 
 //读队伍信息
-
 function GetMember(L: Plua_state): integer; cdecl;
 var
   n: integer;
@@ -1310,7 +1295,6 @@ begin
 end;
 
 //写队伍信息
-
 function SetMember(L: Plua_state): integer; cdecl;
 begin
   TeamList[lua_tointeger(L, -1)] := lua_tointeger(L, -2);
@@ -1344,7 +1328,6 @@ end;
 
 
 //读人物信息
-
 function GetRolePro(L: Plua_state): integer; cdecl;
 begin
   lua_pushinteger(L, Rrole[lua_tointeger(L, -2)].Data[lua_tointeger(L, -1)]);
@@ -1353,7 +1336,6 @@ begin
 end;
 
 //写人物信息
-
 function SetRolePro(L: Plua_state): integer; cdecl;
 begin
   setpro(L, @Rrole[lua_tointeger(L, -2)].Data[lua_tointeger(L, -1)]);
@@ -1361,7 +1343,6 @@ begin
 end;
 
 //读物品信息
-
 function GetItemPro(L: Plua_state): integer; cdecl;
 begin
   lua_pushinteger(L, Ritem[lua_tointeger(L, -2)].Data[lua_tointeger(L, -1)]);
@@ -1369,7 +1350,6 @@ begin
 end;
 
 //写物品信息
-
 function SetItemPro(L: Plua_state): integer; cdecl;
 begin
   setpro(L, @Ritem[lua_tointeger(L, -2)].Data[lua_tointeger(L, -1)]);
@@ -1377,7 +1357,6 @@ begin
 end;
 
 //读武功信息
-
 function GetMagicPro(L: Plua_state): integer; cdecl;
 begin
   lua_pushinteger(L, Rmagic[lua_tointeger(L, -2)].Data[lua_tointeger(L, -1)]);
@@ -1385,7 +1364,6 @@ begin
 end;
 
 //写武功信息
-
 function SetMagicPro(L: Plua_state): integer; cdecl;
 begin
   setpro(L, @Rmagic[lua_tointeger(L, -2)].Data[lua_tointeger(L, -1)]);
@@ -1393,7 +1371,6 @@ begin
 end;
 
 //读场景信息
-
 function GetScencePro(L: Plua_state): integer; cdecl;
 begin
   lua_pushinteger(L, Rscence[lua_tointeger(L, -2)].Data[lua_tointeger(L, -1)]);
@@ -1402,7 +1379,6 @@ begin
 end;
 
 //写场景信息
-
 function SetScencePro(L: Plua_state): integer; cdecl;
 begin
   setpro(L, @Rscence[lua_tointeger(L, -2)].Data[lua_tointeger(L, -1)]);
@@ -1410,7 +1386,6 @@ begin
 end;
 
 //读场景图信息
-
 function GetScenceMapPro(L: Plua_state): integer; cdecl;
 begin
   lua_pushinteger(L, sdata[lua_tointeger(L, -4), lua_tointeger(L, -3), lua_tointeger(L, -1), lua_tointeger(L, -2)]);
@@ -1419,7 +1394,6 @@ begin
 end;
 
 //写场景图信息
-
 function SetScenceMapPro(L: Plua_state): integer; cdecl;
 begin
   sdata[lua_tointeger(L, -4), lua_tointeger(L, -3), lua_tointeger(L, -1), lua_tointeger(L, -2)] := lua_tointeger(L, -5);
@@ -1440,7 +1414,6 @@ begin
 end;
 
 //读场景事件信息
-
 function GetScenceEventPro(L: Plua_state): integer; cdecl;
 var
   snum, enum: integer;
@@ -1457,7 +1430,6 @@ begin
 end;
 
 //写场景事件信息
-
 function SetScenceEventPro(L: Plua_state): integer; cdecl;
 var
   snum, enum: integer;
@@ -1689,7 +1661,6 @@ begin
 end;
 
 //取得战斗序号
-
 function GetBattleNumber(L: Plua_state): integer; cdecl;
 var
   n, i, rnum, t: integer;
@@ -1716,7 +1687,6 @@ begin
 end;
 
 //选择目标
-
 function SelectOneAim(L: Plua_state): integer; cdecl;
 begin
   if lua_tointeger(L, -1) = 0 then
@@ -1726,7 +1696,6 @@ begin
 end;
 
 //取战斗属性
-
 function GetBattleRolePro(L: Plua_state): integer; cdecl;
 begin
   lua_pushinteger(L, Brole[lua_tointeger(L, -2)].Data[lua_tointeger(L, -1)]);
@@ -1735,7 +1704,6 @@ begin
 end;
 
 //写战斗属性
-
 function SetBattleRolePro(L: Plua_state): integer; cdecl;
 begin
   Brole[lua_tointeger(L, -2)].Data[lua_tointeger(L, -1)] := lua_tointeger(L, -3);
@@ -1757,7 +1725,6 @@ begin
 end;
 
 //function GetRoundNumber(L: Plua_state): integer; cdecl;
-
 function PlayHurtValue(L: Plua_state): integer; cdecl;
 var
   mode: integer;
@@ -1824,7 +1791,6 @@ begin
 end;
 
 //强制设置战斗结果
-
 function ForceBattleResult(L: Plua_state): integer; cdecl;
 begin
   Bstatus := lua_tointeger(L, -1);
@@ -2103,7 +2069,6 @@ begin
 end;
 
 //读战场信息
-
 function GetBattlePro(L: Plua_state): integer; cdecl;
 begin
   lua_pushinteger(L, WarStaList[lua_tointeger(L, -2)].Data[lua_tointeger(L, -1)]);
@@ -2112,7 +2077,6 @@ begin
 end;
 
 //写战场信息
-
 function SetBattlePro(L: Plua_state): integer; cdecl;
 begin
   WarStaList[lua_tointeger(L, -2)].Data[lua_tointeger(L, -1)] := lua_tointeger(L, -3);

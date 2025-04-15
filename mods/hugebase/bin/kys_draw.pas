@@ -123,7 +123,6 @@ begin
 end;
 
 //显示title.grp的内容(即开始的选单)
-
 procedure DrawTPic(imgnum, px, py: integer; region: PSDL_Rect = nil; shadow: integer = 0; Alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0; scalex: real = 1; scaley: real = 1; angle: real = 0);
 var
   len, grp, idx: integer;
@@ -140,7 +139,6 @@ begin
 end;
 
 //显示主地图贴图
-
 procedure DrawMPic(num, px, py: integer; Framenum: integer = -1; shadow: integer = 0; alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0; scalex: real = 1; scaley: real = 1; angle: real = 0); overload;
 var
   NeedGRP: integer;
@@ -169,7 +167,6 @@ begin
 end;
 
 //显示场景图片
-
 procedure DrawSPic(num, px, py: integer); overload;
 var
   Area: TSDL_Rect;
@@ -220,7 +217,6 @@ end;
 
 
 //显示头像
-
 procedure DrawHeadPic(num, px, py: integer; shadow: integer = 0; alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0; scalex: real = 1; scaley: real = 1); overload;
 var
   len, grp, idx: integer;
@@ -247,7 +243,6 @@ end;
 
 
 //显示效果图片
-
 procedure DrawEPic(num, px, py: integer; index: integer = 0); overload;
 begin
   DrawEPic(num, px, py, 0, 0, 0, 0, index);
@@ -275,7 +270,6 @@ begin
 end;
 
 //显示人物动作图片
-
 procedure DrawFPic(num, px, py, index: integer); overload;
 begin
   DrawFPic(num, px, py, 0, 0, 0, 0, index);
@@ -283,7 +277,6 @@ begin
 end;
 
 //用于画带透明度和遮挡的人物动作图片
-
 procedure DrawFPic(num, px, py, index, shadow, alpha: integer; mixColor: uint32; mixAlpha: integer); overload;
 begin
   case PNG_TILE of
@@ -305,7 +298,6 @@ begin
 end;
 
 //主地图上画云
-
 procedure DrawCPic(num, px, py, shadow, alpha: integer; mixColor: uint32; mixAlpha: integer);
 begin
   if PNG_TILE > 0 then
@@ -319,7 +311,6 @@ begin
 end;
 
 //画物品图
-
 procedure DrawIPic(num, px, py, shadow, alpha: integer; mixColor: uint32; mixAlpha: integer);
 begin
   if (num >= 0) and (num < IPicAmount) then
@@ -339,7 +330,6 @@ begin
 end;
 
 //重画屏幕, SDL_UpdateRect2(screen,0,0,screen.w,screen.h)可显示
-
 procedure Redraw;
 begin
   //ScreenTint := 1;
@@ -383,7 +373,6 @@ end;
 
 
 //显示主地图场景于屏幕
-
 procedure DrawMMap;
 var
   i1, i2, i, sum, x, y, k, c, widthregion, sumregion, num, axp, ayp, h: integer;
@@ -493,7 +482,6 @@ begin
 end;
 
 //画场景到屏幕
-
 procedure DrawScence;
 var
   x, y, xpoint, ypoint, axp, ayp, i, i1, i2, num, sum, widthregion, sumregion, cx1, cy1: integer;
@@ -616,7 +604,6 @@ begin
 end;
 
 //画不含主角的场景
-
 procedure DrawScenceWithoutRole(x, y: integer);
 var
   x1, y1: integer;
@@ -679,7 +666,6 @@ end;
 
 
 //画主角于场景
-
 procedure DrawRoleOnScence(x, y: integer);
 var
   i, xpoint, ypoint: integer;
@@ -772,7 +758,6 @@ end;
 //0-全部映像
 //1-可见部分
 //2-先刷新背景, 副线程专用
-
 procedure InitialScence(Visible: integer = 0);
 var
   i1, i2, x, y, x1, y1, w, h, num, mini, maxi, depth, sumi, j: integer;
@@ -926,7 +911,6 @@ end;
 
 
 //画战场
-
 procedure DrawBField();
 var
   sumi, i, i1, i2, num, picnum, widthregion, sumregion, sum, x, y: integer;
@@ -1001,7 +985,6 @@ begin
 end;
 
 //画不含主角的战场
-
 procedure DrawBfieldWithoutRole(x, y: integer);
 var
   x1, y1: integer;
@@ -1012,7 +995,6 @@ begin
 end;
 
 //画战场上人物, 需更新人物身前的遮挡
-
 procedure DrawRoleOnBfield(x, y: integer; mixColor: uint32 = 0; mixAlpha: integer = 0; Alpha: integer = 75);
 var
   i1, i2, depth, bnum, picnum: integer;
@@ -1068,7 +1050,6 @@ end;
 
 //画带光标的子程
 //此子程效率不高
-
 procedure DrawBFieldWithCursor(AttAreaType, step, range: integer);
 var
   i, i1, i2, bnum, minstep, shadow, mixAlpha, x, y, num: integer;
@@ -1308,7 +1289,6 @@ end;
 
 
 //画带人物动作的战场
-
 procedure DrawBFieldWithAction(bnum, Apicnum: integer);
 var
   i, i1, i2: integer;
@@ -1321,7 +1301,6 @@ end;
 
 
 //绘制云
-
 procedure DrawClouds;
 var
   i, x, y: integer;
@@ -1336,7 +1315,6 @@ begin
 end;
 
 //显示半即时进度
-
 procedure DrawProgress;
 var
   i, j, x, y, curHead, temp: integer;
@@ -1388,7 +1366,6 @@ begin
 end;
 
 //画动态光标, 只能是M图片
-
 procedure DrawMultiFramePic(num, x, y, time: integer);
 var
   tempsur: PSDL_Surface;
@@ -1448,7 +1425,6 @@ end;
 
 //显示带边框的文字, 仅用于unicode, 需自定义宽度
 //默认情况为透明度50, 立即刷新
-
 procedure DrawTextWithRect(word: puint16; x, y, w: integer; color1, color2: uint32; alpha: integer = 0; Refresh: integer = 1);
 var
   len, j: integer;

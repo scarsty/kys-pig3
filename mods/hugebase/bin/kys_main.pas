@@ -165,7 +165,6 @@ begin
 end;
 
 //初始化字体, 音效, 视频, 启动游戏
-
 procedure Run;
 var
   i: integer;
@@ -381,7 +380,6 @@ begin
 end;
 
 //关闭所有已打开的资源, 退出
-
 procedure Quit;
 begin
   if (SDL_JoystickGetAttached(joy)) then
@@ -511,7 +509,6 @@ end;
 
 //Main game.
 //显示开头画面
-
 procedure Start;
 var
   menu, menup, i, col, i1, i2, x, y, k, x1, y1, maxm: integer;
@@ -827,7 +824,6 @@ begin
 end;
 
 //开头字幕
-
 procedure StartAmi;
 var
   i: integer;
@@ -864,7 +860,6 @@ begin
 end;
 
 //读取必须的文件
-
 procedure ReadFiles;
 var
   tnum, beginnum, offset, len, IDX, GRP, col, t1, i, i1, b: integer;
@@ -1741,7 +1736,6 @@ begin
 end;
 
 //存档
-
 function SaveR(num: integer): boolean;
 var
   zfilename, filenamer, filenames, filenamed, s: string;
@@ -1855,7 +1849,6 @@ begin
 end;
 
 //等待任意按键
-
 function WaitAnyKey: integer;
 var
   x, y: integer;
@@ -1905,7 +1898,6 @@ begin
 end;
 
 //于主地图行走
-
 procedure Walk;
 var
   word: array [0 .. 10] of uint16;
@@ -2252,7 +2244,6 @@ end;
 
 //判定主地图某个位置能否行走, 是否变成船
 //function in kys_main.pas
-
 function CanWalk(x, y: integer): boolean;
 begin
   if (MODVersion = 13) and (CellPhone = 0) then
@@ -2501,7 +2492,6 @@ end;
 
 //Check able or not to ertrance a scence.
 //检测是否处于某入口, 并是否达成进入条件
-
 function CheckEntrance: boolean;
 var
   x, y, i, snum: integer;
@@ -2570,7 +2560,6 @@ end;
 //Walk in a scence, the returned value is the scence number when you exit. If it is -1.
 //InScence(1) means the new game.
 //在内场景行走, 如参数为1表示新游戏
-
 function WalkInScence(Open: integer): integer;
 var
   GRP, IDX, offset, just, i1, i2, x, y, haveAmi, preface, drawed: integer;
@@ -3086,7 +3075,6 @@ end;
 
 
 //判定场景内某个位置能否行走
-
 function CanWalkInScence(x, y: integer): boolean; overload;
 begin
   Result := CanWalkInScence(Sx, Sy, x, y);
@@ -3117,7 +3105,6 @@ end;
 
 //检查是否有第1类事件, 如有则调用
 //0号事件是否屏蔽, 需要注意
-
 function CheckEvent1: boolean;
 var
   x, y: integer;
@@ -3155,7 +3142,6 @@ begin
 end;
 
 //检查是否有第3类事件, 如有则调用
-
 function CheckEvent3: boolean;
 var
   enum: integer;
@@ -3193,7 +3179,6 @@ end;
 
 //显示通用选单(位置, 宽度, 最大值)
 //这个通用选单包含两个字符串组, 可分别显示中文和英文
-
 function CommonMenu(x, y, w, max, default: integer; menuString: array of WideString): integer; overload;
 var
   menuEngString: array of WideString;
@@ -3350,7 +3335,6 @@ end;
 
 
 //卷动选单
-
 function CommonScrollMenu(x, y, w, max, maxshow: integer; menuString: array of WideString): integer; overload;
 var
   menuEngString: array of WideString;
@@ -3589,7 +3573,6 @@ end;
 
 //仅有两个选项的横排选单, 为美观使用横排
 //此类选单中每个选项限制为两个中文字, 仅适用于提问'继续', '取消'的情况
-
 function CommonMenu2(x, y, w: integer; menuString: array of WideString; max: integer = 1): integer; overload;
 var
   menu, menup, x1, y1, len, len1, i: integer;
@@ -3730,7 +3713,6 @@ end;
 //选择一名队员
 //mask用来表示哪些人是可选的
 //当list1为-1时, 表示复数选择, 这时返回的结果是按位表示是否(unfinished)
-
 function SelectOneTeamMember(x, y: integer; str: WideString; list1, list2: integer; mask: integer = 63): integer;
 var
   menu, amount, i, premenu, max, x1, y1: integer;
@@ -3848,7 +3830,6 @@ begin
 end;
 
 //主选单
-
 procedure MenuEsc;
 var
   menu, menup, x1, y1, i, j, k: integer;
@@ -4136,7 +4117,6 @@ end;
 
 
 //医疗选单, 需两次选择队员
-
 procedure MenuMedcine;
 var
   role1, role2, menu: integer;
@@ -4163,7 +4143,6 @@ begin
 end;
 
 //解毒选单
-
 procedure MenuMedPoison;
 var
   role1, role2, menu: integer;
@@ -4191,7 +4170,6 @@ begin
 end;
 
 //物品选单, 返回值仅在战斗时有用
-
 function MenuItem: boolean;
 var
   listLT, x, y, px, py, col, row, xp, yp, plistLT, pmenu, iamount, menu, xm, ym, i, maxteam: integer;
@@ -4931,7 +4909,6 @@ end;
 //因为秘籍太多, 以下进行一些扩展
 //20-无武功秘籍, 21-拳法, 22-剑法, 23-刀法, 24-特殊, 25-暗器, 26-吸取内力, 27-特技, 28-内功
 //此处为游戏需要, 有扩展即30=24+25+27, 31=20+26+28
-
 function ReadItemList(ItemType: integer): integer;
 var
   i, p, subType, mnum: integer;
@@ -4983,7 +4960,6 @@ end;
 
 
 //使用物品, 只限队伍
-
 procedure UseItem(inum: integer; teammate: integer = -1);
 var
   x, y, menu, rnum, p, i, mask, potentialUser, preUser, off: integer;
@@ -5222,7 +5198,6 @@ begin
 end;
 
 //能否装备
-
 function CanEquip(rnum, inum: integer; use: integer = 0): boolean;
 var
   i, r, mnum: integer;
@@ -5340,7 +5315,6 @@ end;
   end;}
 
 //查看状态选单
-
 procedure MenuStatus;
 var
   str: WideString;
@@ -5525,7 +5499,6 @@ begin
 end;
 
 //显示状态
-
 procedure ShowStatusByTeam(tnum: integer);
 begin
   if TeamList[tnum] >= 0 then
@@ -5534,7 +5507,6 @@ end;
 
 //显示状态
 //bnum = -1, -2, 排列不同
-
 procedure ShowStatus(rnum: integer; bnum: integer = 0);
 var
   i, k, magicnum, mlevel, needexp, x, y, w, h, xp, yp: integer;
@@ -5943,7 +5915,6 @@ begin
 end;
 
 //显示简单状态(x, y表示位置)
-
 procedure ShowSimpleStatus(rnum, x, y: integer; forTeam: integer = -1);
 var
   i, magicnum, w: integer;
@@ -6243,7 +6214,6 @@ begin
 end;
 
 //技能选单
-
 procedure MenuAbility;
 var
   str: WideString;
@@ -6634,7 +6604,6 @@ begin
 end;
 
 //离队选单
-
 procedure MenuLeave;
 var
   str: WideString;
@@ -6660,7 +6629,6 @@ begin
 end;
 
 //系统选单
-
 procedure MenuSystem;
 var
   pmenu, iamount, menu, max, xm, ym, i, maxteam, l: integer;
@@ -7203,7 +7171,6 @@ end;
 
 
 //读档选单
-
 function MenuLoad: integer;
 var
   menu, i, x, y: integer;
@@ -7260,7 +7227,6 @@ begin
 end;
 
 //特殊的读档选单, 仅用在开始时读档
-
 function MenuLoadAtBeginning(mode: integer): integer;
 var
   menu, mixAlpha, i, x, y: integer;
@@ -7460,7 +7426,6 @@ begin
 end;
 
 //存档选单
-
 procedure MenuSave;
 var
   menu, i: integer;
@@ -7514,7 +7479,6 @@ begin
 end;
 
 //退出选单
-
 procedure MenuQuit;
 var
   menu, n: integer;
@@ -7574,7 +7538,6 @@ end;
 
 //医疗的效果
 //未添加体力的需求与消耗
-
 procedure EffectMedcine(role1, role2: integer);
 var
   word: WideString;
@@ -7620,7 +7583,6 @@ begin
 end;
 
 //解毒的效果
-
 procedure EffectMedPoison(role1, role2: integer);
 var
   word: WideString;
@@ -7653,7 +7615,6 @@ end;
 
 //使用物品的效果
 //练成秘笈的效果
-
 procedure EatOneItem(rnum, inum: integer);
 var
   i, j, p, l, x, y, xp, yp: integer;
@@ -7879,7 +7840,6 @@ end;
 
 //Event.
 //事件系统
-
 procedure CallEvent(num: integer);
 var
   e: array of smallint;

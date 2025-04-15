@@ -7,11 +7,11 @@ interface
 uses
   SysUtils,
 
-{$IFDEF fpc}
+  {$IFDEF fpc}
   LCLIntf, LCLType, LMessages, FileUtil,
-{$ELSE}
+  {$ELSE}
   Windows,
-{$ENDIF}
+  {$ENDIF}
 
   Math,
   Dialogs,
@@ -103,7 +103,7 @@ function ReSetName(t, inum, newnamenum: integer): integer;
 procedure ShowTitle(talknum, color: integer);
 procedure JmpScene(snum, y, x: integer);
 function GetItemCount(inum: integer): integer;
-function ReadTalk(talknum: integer): WideString;
+function ReadTalk(talknum: integer): widestring;
 procedure Puzzle;
 function GetPetSkill(rnum, skill: integer): boolean;
 procedure SetScene;
@@ -142,7 +142,6 @@ uses kys_engine, kys_battle;
 
 //事件系统
 //事件指令含义请参阅其他相关文献
-
 procedure instruct_0;
 begin
   redraw;
@@ -154,7 +153,7 @@ procedure instruct_1(talknum, headnum, dismode: integer);
 var
   idx, grp, offset, len, i, p, l, headx, heady, diagx, diagy: integer;
   talkarray: array of byte;
-  Name: WideString;
+  Name: widestring;
 begin
   case dismode of
     0:
@@ -259,11 +258,10 @@ begin
 end;
 
 //得到物品可显示数量, 数量为负显示失去物品
-
 procedure instruct_2(inum, amount: integer);
 var
   i, x: integer;
-  word: WideString;
+  word: widestring;
 begin
   i := 0;
   while (RItemList[i].Number >= 0) and (i < MAX_ITEM_AMOUNT) do
@@ -342,7 +340,6 @@ end;
 
 //改变事件, 如在当前场景需重置场景
 //在需改变贴图较多时效率较低
-
 procedure instruct_3(list: array of integer);
 var
   i, i1, i2, oldpic, newpic: integer;
@@ -360,8 +357,7 @@ begin
   oldpic := DData[list[0], list[1], 5];
   newpic := list[7];
 
-  if (list[0] = CurScene) and ((Ddata[list[0], list[1], 9] <> list[11]) or
-    (Ddata[list[0], list[1], 10] <> list[12])) then
+  if (list[0] = CurScene) and ((Ddata[list[0], list[1], 9] <> list[11]) or (Ddata[list[0], list[1], 10] <> list[12])) then
     UpdateScene(Ddata[list[0], list[1], 10], Ddata[list[0], list[1], 9], oldpic, 0);
   for i := 0 to 10 do
   begin
@@ -373,19 +369,15 @@ begin
   //if list[0] = CurScene then
   if (Ddata[list[0], list[1], 10] > 0) and (Ddata[list[0], list[1], 9] >= 0) then
     Sdata[list[0], 3, Ddata[list[0], list[1], 10], Ddata[list[0], list[1], 9]] := list[1];
-  if not (((sx = RScene[CurScene].ExitX[0]) and (sy = RScene[CurScene].ExitY[0])) or
-    ((sx = RScene[CurScene].ExitX[1]) and (sy = RScene[CurScene].ExitY[1])) or
-    ((sx = RScene[CurScene].ExitX[2]) and (sy = RScene[CurScene].ExitY[2]))) then
+  if not (((sx = RScene[CurScene].ExitX[0]) and (sy = RScene[CurScene].ExitY[0])) or ((sx = RScene[CurScene].ExitX[1]) and (sy = RScene[CurScene].ExitY[1])) or ((sx = RScene[CurScene].ExitX[2]) and (sy = RScene[CurScene].ExitY[2]))) then
   begin
-    if (list[0] = CurScene) and ((list[8] <> -2) or (list[9] <> -2) or (list[7] <> -2) or
-      (list[11] <> -2) or (list[10] <> -2)) then
+    if (list[0] = CurScene) and ((list[8] <> -2) or (list[9] <> -2) or (list[7] <> -2) or (list[11] <> -2) or (list[10] <> -2)) then
       UpdateScene(list[12], list[11], oldpic, newpic);
   end;
 
 end;
 
 //是否使用了某剧情物品
-
 function instruct_4(inum, jump1, jump2: integer): integer;
 begin
   if inum = CurItem then
@@ -396,7 +388,6 @@ begin
 end;
 
 //询问是否战斗
-
 function instruct_5(jump1, jump2: integer): integer;
 var
   menu: integer;
@@ -408,14 +399,15 @@ begin
   menustring[2] := UTF8Decode(' 是否與之戰鬥？');
   drawtextwithrect(@menustring[2][1], CENTER_X - 75, CENTER_Y - 85, 150, colcolor(0, 5), colcolor(0, 7));
   menu := commonmenu2(CENTER_X - 49, CENTER_Y - 50, 98);
-  if menu = 1 then Result := jump1 else Result := jump2;
+  if menu = 1 then Result := jump1
+  else
+    Result := jump2;
   redraw;
   SDL_UpdateRect2(screen, 0, 0, screen.w, screen.h);
 
 end;
 
 //战斗
-
 function instruct_6(battlenum, jump1, jump2, getexp: integer): integer;
 begin
 
@@ -426,7 +418,6 @@ begin
 end;
 
 //询问是否加入
-
 procedure instruct_8(musicnum: integer);
 begin
   exitScenemusicnum := musicnum;
@@ -443,14 +434,15 @@ begin
   menustring[2] := UTF8Decode(' 是否要求加入？');
   drawtextwithrect(@menustring[2][1], CENTER_X - 75, CENTER_Y - 85, 150, colcolor(0, 5), colcolor(0, 7));
   menu := commonmenu2(CENTER_X - 49, CENTER_Y - 50, 98);
-  if menu = 1 then Result := jump1 else Result := jump2;
+  if menu = 1 then Result := jump1
+  else
+    Result := jump2;
   redraw;
   SDL_UpdateRect2(screen, 0, 0, screen.w, screen.h);
 
 end;
 
 //加入队友, 同时得到其身上物品
-
 procedure instruct_10(rnum: integer);
 var
   i, i1: integer;
@@ -484,7 +476,6 @@ begin
 end;
 
 //询问是否住宿
-
 function instruct_11(jump1, jump2: integer): integer;
 var
   menu: integer;
@@ -496,14 +487,15 @@ begin
   menustring[2] := UTF8Decode(' 是否需要住宿？');
   drawtextwithrect(@menustring[2][1], CENTER_X - 75, CENTER_Y - 85, 150, colcolor(0, 5), colcolor(0, 7));
   menu := commonmenu2(CENTER_X - 49, CENTER_Y - 50, 98);
-  if menu = 1 then Result := jump1 else Result := jump2;
+  if menu = 1 then Result := jump1
+  else
+    Result := jump2;
   redraw;
   SDL_UpdateRect2(screen, 0, 0, screen.w, screen.h);
 
 end;
 
 //住宿
-
 procedure instruct_12;
 var
   i, rnum: integer;
@@ -540,7 +532,6 @@ begin
 end;
 
 //亮屏, 在亮屏之前重新初始化场景
-
 procedure instruct_13;
 var
   i: integer;
@@ -559,7 +550,6 @@ begin
 end;
 
 //黑屏
-
 procedure instruct_14;
 var
   i: integer;
@@ -574,11 +564,10 @@ begin
 end;
 
 //失败画面
-
 procedure instruct_15;
 var
   i: integer;
-  str: WideString;
+  str: widestring;
 begin
 
   PlayMp3(13, 20);
@@ -637,7 +626,6 @@ begin
 end;
 
 //Judge the team is full or not.
-
 function instruct_20(jump1, jump2: integer): integer;
 var
   i: integer;
@@ -709,14 +697,12 @@ end;
 
 //Black the screen when fail in battle.
 //Note: never be used, leave it as blank.
-
 procedure instruct_24;
 begin
 end;
 
 //Note: never display the leading role.
 //This will be improved when I have a better method.
-
 procedure instruct_25(x1, y1, x2, y2: integer);
 var
   i, s: integer;
@@ -773,7 +759,6 @@ end;
 
 //Note: of course an more effective engine can take place of it.
 //动画, 至今仍不完善
-
 procedure instruct_27(enum, beginpic, endpic: integer);
 var
   i, xpoint, ypoint, oldpic, picsign: integer;
@@ -842,7 +827,8 @@ begin
       sFace := 1
     else if sign(liney[a] - SX) > 0 then
       SFace := 3
-    else sFace := 0;
+    else
+      sFace := 0;
 
     SStep := SStep + 1;
 
@@ -901,18 +887,17 @@ begin
 end;
 
 //学到武功, 如果已有武功则升级, 如果已满10个不会洗武功
-
 procedure instruct_33(rnum, magicnum, dismode: integer);
 var
   i: integer;
-  word: WideString;
+  word: widestring;
 begin
   StudyMagic(rnum, 0, magicnum, 0, dismode);
 end;
 
 procedure instruct_34(rnum, iq: integer);
 var
-  word: WideString;
+  word: widestring;
 begin
   if RRole[rnum].Aptitude + iq <= 100 then
   begin
@@ -970,7 +955,9 @@ begin
   Result := jump2;
   if rrole[0].Sexual = sexual then Result := jump1;
   if sexual > 255 then
-    if x50[$7000] = 0 then Result := jump1 else Result := jump2;
+    if x50[$7000] = 0 then Result := jump1
+    else
+      Result := jump2;
 end;
 
 procedure instruct_37(Ethics: integer);
@@ -1095,7 +1082,7 @@ end;
 
 procedure instruct_45(rnum, speed: integer);
 var
-  word: WideString;
+  word: widestring;
 begin
   RRole[rnum].Speed := RRole[rnum].Speed + speed;
   DrawRectangle(CENTER_X - 75, 98, 145, 51, 0, colcolor(0, 255), 30);
@@ -1114,7 +1101,7 @@ end;
 
 procedure instruct_46(rnum, mp: integer);
 var
-  word: WideString;
+  word: widestring;
 begin
   RRole[rnum].MaxMP := RRole[rnum].MaxMP + mp;
   RRole[rnum].CurrentMP := RRole[rnum].MaxMP;
@@ -1134,7 +1121,7 @@ end;
 
 procedure instruct_47(rnum, attack: integer);
 var
-  word: WideString;
+  word: widestring;
 begin
   RRole[rnum].Attack := RRole[rnum].Attack + attack;
   DrawRectangle(CENTER_X - 75, 98, 145, 51, 0, colcolor(0, 255), 30);
@@ -1153,7 +1140,7 @@ end;
 
 procedure instruct_48(rnum, hp: integer);
 var
-  word: WideString;
+  word: widestring;
 begin
   RRole[rnum].MaxHP := RRole[rnum].MaxHP + hp;
   RRole[rnum].CurrentHP := RRole[rnum].MaxHP;
@@ -1173,7 +1160,7 @@ end;
 
 procedure AddDefense(rnum, def: integer);
 var
-  word: WideString;
+  word: widestring;
 begin
   RRole[rnum].Defence := RRole[rnum].Defence + def;
   DrawRectangle(CENTER_X - 75, 98, 145, 51, 0, colcolor(0, 255), 30);
@@ -1192,7 +1179,7 @@ end;
 
 procedure AddSkillPoint(num: integer);
 var
-  word: WideString;
+  word: widestring;
 begin
   Inc(RRole[0].AddSkillPoint, num);
   DrawRectangle(CENTER_X - 75, 98, 145, 30, 0, colcolor(0, 255), 30);
@@ -1243,7 +1230,7 @@ end;
 
 procedure instruct_52;
 var
-  word: WideString;
+  word: widestring;
 begin
   DrawRectangle(CENTER_X - 110, 98, 220, 26, 0, colcolor(0, 255), 30);
   word := UTF8Decode(' 你的品德指數為：');
@@ -1257,7 +1244,7 @@ end;
 
 procedure instruct_53;
 var
-  word: WideString;
+  word: widestring;
 begin
   DrawRectangle(CENTER_X - 110, 98, 220, 26, 0, colcolor(0, 255), 30);
   word := UTF8Decode(' 你的聲望指數為：');
@@ -1271,7 +1258,6 @@ end;
 
 //Open all Scenes.
 //Note: in primary game, some Scenes are set to different entrancing condition.
-
 procedure instruct_54;
 var
   i: integer;
@@ -1287,7 +1273,6 @@ begin
 end;
 
 //Judge the event number.
-
 function instruct_55(enum, Value, jump1, jump2: integer): integer;
 begin
   Result := jump2;
@@ -1296,7 +1281,6 @@ end;
 
 //Add repute.
 //声望刚刚超过200时家里出现请帖
-
 procedure instruct_56(Repute: integer);
 begin
   RRole[0].Repute := RRole[0].Repute + repute;
@@ -1354,7 +1338,6 @@ begin
 end;
 
 //全员离队, 但未清除相关事件
-
 procedure instruct_59;
 var
   i, rnum: integer;
@@ -1392,7 +1375,7 @@ end;
 procedure instruct_62;
 var
   i: smallint;
-  str: WideString;
+  str: widestring;
 begin
   where := 3;
   redraw;
@@ -1409,7 +1392,7 @@ end;
 procedure EndAmi;
 var
   x, y, i, len: integer;
-  str: WideString;
+  str: widestring;
   p: integer;
   t: uint32;
 begin
@@ -1447,14 +1430,12 @@ begin
 end;
 
 //Set sexual.
-
 procedure instruct_63(rnum, sexual: integer);
 begin
   RRole[rnum].Sexual := sexual;
 end;
 
 //韦小宝的商店
-
 procedure instruct_64;
 var
   i, amount, shopnum, menu, price: integer;
@@ -1505,24 +1486,24 @@ end;
 end;}
 
 //50指令中获取变量值
-
 function e_GetValue(bit, t, x: integer): integer;
 var
   i: integer;
 begin
   i := t and (1 shl bit);
-  if i = 0 then Result := x else Result := x50[x];
+  if i = 0 then Result := x
+  else
+    Result := x50[x];
 end;
 
 //Expanded 50 instructs.
-
 function instruct_50e(code, e1, e2, e3, e4, e5, e6: integer): integer;
 var
   i, t1, grp, idx, offset, len, i1, i2: integer;
   p, p1: pansichar;
   //ps :pstring;
   str: ansistring;
-  word, word1: WideString;
+  word, word1: widestring;
 begin
 
   Result := 0;
@@ -1552,7 +1533,7 @@ begin
         2: x50[e3] := x50[e4] * t1;
         3: x50[e3] := x50[e4] div t1;
         4: x50[e3] := x50[e4] mod t1;
-        5: x50[e3] := Uint16(x50[e4]) div t1;
+        5: x50[e3] := uint16(x50[e4]) div t1;
       end;
     end;
     4: //Judge the parameter.
@@ -1982,7 +1963,9 @@ begin
       drawgbkshadowtext(p1, e3 - 17, e4 + 22 * i + 2, colcolor(0, e5 and $FF), colcolor(0, (e5 and $FF00) shr 8));
       SDL_UpdateRect2(screen, 0, 0, screen.w, screen.h);
       i := waitanykey;
-      if i = sdlk_y then x50[$7000] := 0 else x50[$7000] := 1;
+      if i = sdlk_y then x50[$7000] := 0
+      else
+        x50[$7000] := 1;
       //redraw;
     end;
     37: //Delay.
@@ -2047,7 +2030,8 @@ begin
             else
               DrawSNewPic(-e5 div 2, e3, e4, 0, 0, screen.w, screen.h, 0);
           end
-          else DrawMPic(e5 div 2, e3, e4, 0);
+          else
+            DrawMPic(e5 div 2, e3, e4, 0);
         end;
         1: DrawHeadPic(e5, e3, e4);
         2: DrawItemPic(e5, e3, e4);
@@ -2289,16 +2273,19 @@ begin
         begin
           if (brole[i].rnum = -1) and (brole[i].Team = e4) then
           begin
-            if e5 = -2 then i1 := brole[i].X else i1 := e5;
-            if e6 = -2 then i2 := brole[i].Y else i2 := e6;
+            if e5 = -2 then i1 := brole[i].X
+            else
+              i1 := e5;
+            if e6 = -2 then i2 := brole[i].Y
+            else
+              i2 := e6;
             if (bfield[2, i1, i2] = -1) then
             begin
               brole[i].rnum := e3;
               brole[i].Dead := 0;
               brole[i].Show := 0;
               brole[i].speed := GetRoleSpeed(e3, True);
-              if CheckEquipSet(Rrole[e3].Equip[0], Rrole[e3].Equip[1], Rrole[e3].Equip[2],
-                Rrole[e3].Equip[3]) = 5 then
+              if CheckEquipSet(Rrole[e3].Equip[0], Rrole[e3].Equip[1], Rrole[e3].Equip[2], Rrole[e3].Equip[3]) = 5 then
                 Inc(brole[i].speed, 30);
               brole[i].Step := brole[i].speed div 15;
               brole[i].Progress := 0;
@@ -2522,7 +2509,6 @@ begin
 end;
 
 //判断某人有否某武功某级
-
 function HaveMagic(person, mnum, lv: integer): boolean;
 var
   i: integer;
@@ -2534,7 +2520,6 @@ begin
 end;
 
 //获取某人某武功级别
-
 function GetMagicLevel(person, mnum: integer): integer;
 var
   i: integer;
@@ -2607,22 +2592,15 @@ begin
           bnum := i;
 
       for i := 0 to length(brole) - 1 do
-        if (brole[i].Dead = 0) and (brole[i].rnum >= 0) and (brole[i].Team = 0) and
-          (i <> bnum) and (brole[i].Team = brole[bnum].Team) and
-          (brole[i].X in [brole[bnum].X - 3..brole[bnum].X + 3]) and (brole[i].Y in
-          [brole[bnum].Y - 3..brole[bnum].Y + 3]) then
-          if (rrole[brole[i].rnum].Gongti >= 0) and
-            (rmagic[rrole[brole[i].rnum].Gongti].MaxLevel <= GetGongtiLevel(brole[i].rnum,
-            rrole[brole[i].rnum].Gongti)) and (state = rmagic[rrole[brole[i].rnum].Gongti].BattleState) then
+        if (brole[i].Dead = 0) and (brole[i].rnum >= 0) and (brole[i].Team = 0) and (i <> bnum) and (brole[i].Team = brole[bnum].Team) and (brole[i].X in [brole[bnum].X - 3..brole[bnum].X + 3]) and (brole[i].Y in [brole[bnum].Y - 3..brole[bnum].Y + 3]) then
+          if (rrole[brole[i].rnum].Gongti >= 0) and (rmagic[rrole[brole[i].rnum].Gongti].MaxLevel <= GetGongtiLevel(brole[i].rnum, rrole[brole[i].rnum].Gongti)) and (state = rmagic[rrole[brole[i].rnum].Gongti].BattleState) then
             Result := True;
     end
     else
     begin
       for i := 0 to length(teamlist) - 1 do
         if (teamlist[i] >= 0) then
-          if (rrole[teamlist[i]].Gongti >= 0) and (rmagic[rrole[teamlist[i]].Gongti].MaxLevel <=
-            GetGongtiLevel(teamlist[i], rrole[teamlist[i]].Gongti)) and
-            (state = rmagic[rrole[teamlist[i]].Gongti].BattleState) then
+          if (rrole[teamlist[i]].Gongti >= 0) and (rmagic[rrole[teamlist[i]].Gongti].MaxLevel <= GetGongtiLevel(teamlist[i], rrole[teamlist[i]].Gongti)) and (state = rmagic[rrole[teamlist[i]].Gongti].BattleState) then
             Result := True;
     end;
   end;
@@ -2639,11 +2617,10 @@ begin
       Result := True;
 end;
 //重写的学会武功
-
 procedure StudyMagic(rnum, magicnum, newmagicnum, level, dismode: integer);
 var
   i, n: integer;
-  word: WideString;
+  word: widestring;
 label
   Next;
 begin
@@ -2729,13 +2706,12 @@ end;
 
 procedure NewTalk(headnum, talknum, namenum, place, showhead, color, frame: integer);
 var
-  alen, newcolor, color1, color2, nh, nw, ch, c1, r1, n, namelen, i, t1, grp, idx, offset,
-  len, i1, i2, face, c, nx, ny, hx, hy, hw, hh, x, y, w, h, cell, row: integer;
+  alen, newcolor, color1, color2, nh, nw, ch, c1, r1, n, namelen, i, t1, grp, idx, offset, len, i1, i2, face, c, nx, ny, hx, hy, hw, hh, x, y, w, h, cell, row: integer;
   np3, np, np1, np2, tp, p1, ap: pansichar;
   actorarray, talkarray, namearray, name1, name2: array of byte;
-  pword: array[0..1] of Uint16;
+  pword: array[0..1] of uint16;
   wd, str: string;
-  temp2: WideString;
+  temp2: widestring;
 begin
   pword[1] := 0;
   face := 4900;
@@ -2884,18 +2860,8 @@ begin
   end
   else if alen = 8 then
   begin
-    if ((puint16(ap)^ = $6EAB) and ((puint16(ap + 2)^ = $63AE))) or
-      ((puint16(ap)^ = $E8A6) and ((puint16(ap + 2)^ = $F9AA))) or ((puint16(ap)^ = $46AA) and
-      ((puint16(ap + 2)^ = $E8A4))) or ((puint16(ap)^ = $4FA5) and ((puint16(ap + 2)^ = $B0AA))) or
-      ((puint16(ap)^ = $7DBC) and ((puint16(ap + 2)^ = $65AE))) or ((puint16(ap)^ = $71A5) and
-      ((puint16(ap + 2)^ = $A8B0))) or ((puint16(ap)^ = $D1BD) and ((puint16(ap + 2)^ = $AFB8))) or
-      ((puint16(ap)^ = $71A5) and ((puint16(ap + 2)^ = $C5AA))) or ((puint16(ap)^ = $D3A4) and
-      ((puint16(ap + 2)^ = $76A5))) or ((puint16(ap)^ = $BDA4) and ((puint16(ap + 2)^ = $5DAE))) or
-      ((puint16(ap)^ = $DABC) and ((puint16(ap + 2)^ = $A7B6))) or ((puint16(ap)^ = $43AD) and
-      ((puint16(ap + 2)^ = $DFAB))) or ((puint16(ap)^ = $71A5) and ((puint16(ap + 2)^ = $7BAE))) or
-      ((puint16(ap)^ = $B9A7) and ((puint16(ap + 2)^ = $43C3))) or ((puint16(ap)^ = $61B0) and
-      ((puint16(ap + 2)^ = $D5C1))) or ((puint16(ap)^ = $74A6) and ((puint16(ap + 2)^ = $E5A4))) or
-      ((puint16(ap)^ = $DDA9) and ((puint16(ap + 2)^ = $5BB6))) then
+    if ((puint16(ap)^ = $6EAB) and ((puint16(ap + 2)^ = $63AE))) or ((puint16(ap)^ = $E8A6) and ((puint16(ap + 2)^ = $F9AA))) or ((puint16(ap)^ = $46AA) and ((puint16(ap + 2)^ = $E8A4))) or ((puint16(ap)^ = $4FA5) and ((puint16(ap + 2)^ = $B0AA))) or ((puint16(ap)^ = $7DBC) and ((puint16(ap + 2)^ = $65AE))) or ((puint16(ap)^ = $71A5) and ((puint16(ap + 2)^ = $A8B0))) or ((puint16(ap)^ = $D1BD) and ((puint16(ap + 2)^ = $AFB8))) or ((puint16(ap)^ = $71A5) and ((puint16(ap + 2)^ = $C5AA))) or ((puint16(ap)^ = $D3A4) and ((puint16(ap + 2)^ = $76A5))) or ((puint16(ap)^ = $BDA4) and ((puint16(ap + 2)^ = $5DAE))) or ((puint16(ap)^ = $DABC) and ((puint16(ap + 2)^ = $A7B6))) or ((puint16(ap)^ = $43AD) and ((puint16(ap + 2)^ = $DFAB))) or
+      ((puint16(ap)^ = $71A5) and ((puint16(ap + 2)^ = $7BAE))) or ((puint16(ap)^ = $B9A7) and ((puint16(ap + 2)^ = $43C3))) or ((puint16(ap)^ = $61B0) and ((puint16(ap + 2)^ = $D5C1))) or ((puint16(ap)^ = $74A6) and ((puint16(ap + 2)^ = $E5A4))) or ((puint16(ap)^ = $DDA9) and ((puint16(ap + 2)^ = $5BB6))) then
     begin
       setlength(name1, 6);
       np1 := @name1[0];
@@ -3074,9 +3040,7 @@ begin
         begin
           SDL_UpdateRect2(screen, 0, 0, screen.w, screen.h);
           n := waitanykey;
-          while (n = sdlk_up) or (n = sdlk_down) or (n = sdlk_right) or
-            (n = sdlk_left) or (n = sdlk_KP_2) or (n = sdlk_KP_4) or
-            (n = sdlk_KP_8) or (n = sdlk_KP_6) do
+          while (n = sdlk_up) or (n = sdlk_down) or (n = sdlk_right) or (n = sdlk_left) or (n = sdlk_KP_2) or (n = sdlk_KP_4) or (n = sdlk_KP_8) or (n = sdlk_KP_6) do
             n := waitanykey;
         end
         else if (pword[0] = $2626) or (pword[0] = $2525) or (pword[0] = $2424) then
@@ -3091,8 +3055,7 @@ begin
           begin
             pword[0] := puint16(np3 + i)^;
             i := i + 2;
-            DrawgbkShadowText(@pword[0], x - 14 + CHINESE_FONT_SIZE * c1, y + 4 + CHINESE_FONT_SIZE *
-              r1, colcolor(0, color1), colcolor(0, color2));
+            DrawgbkShadowText(@pword[0], x - 14 + CHINESE_FONT_SIZE * c1, y + 4 + CHINESE_FONT_SIZE * r1, colcolor(0, color1), colcolor(0, color2));
             Inc(c1);
             if c1 = cell then
             begin
@@ -3123,8 +3086,7 @@ begin
         end
         else //显示文字
         begin
-          DrawgbkShadowText(@pword, x - 14 + CHINESE_FONT_SIZE * c1, y + 4 + CHINESE_FONT_SIZE *
-            r1, colcolor(0, color1), colcolor(0, color2));
+          DrawgbkShadowText(@pword, x - 14 + CHINESE_FONT_SIZE * c1, y + 4 + CHINESE_FONT_SIZE * r1, colcolor(0, color1), colcolor(0, color2));
           Inc(c1);
           if c1 = cell then
           begin
@@ -3133,12 +3095,12 @@ begin
           end;
         end;
       end
-      else break;
+      else
+        break;
     end;
     SDL_UpdateRect2(screen, 0, 0, screen.w, screen.h);
     n := waitanykey;
-    while (n = sdlk_up) or (n = sdlk_down) or (n = sdlk_right) or (n = sdlk_left) or
-      (n = sdlk_kp_2) or (n = sdlk_kp_4) or (n = sdlk_kp_6) or (n = sdlk_kp_8) do
+    while (n = sdlk_up) or (n = sdlk_down) or (n = sdlk_right) or (n = sdlk_left) or (n = sdlk_kp_2) or (n = sdlk_kp_4) or (n = sdlk_kp_6) or (n = sdlk_kp_8) do
       n := waitanykey;
     if (pword[0] and $FF = 0) or (pword[0] and $FF00 = 0) then break;
   end;
@@ -3212,13 +3174,12 @@ end;
 
 procedure ShowTitle(talknum, color: integer);
 var
-  newcolor, alen, x1, y1, ch, color1, color2, c1, r1, n, namelen, i, t1, grp, idx, offset,
-  len, i1, i2, face, c, x, y, w, h, cell, row: integer;
+  newcolor, alen, x1, y1, ch, color1, color2, c1, r1, n, namelen, i, t1, grp, idx, offset, len, i1, i2, face, c, x, y, w, h, cell, row: integer;
   np3, np1, np2, tp, p1, ap: pansichar;
   actorarray, name1, name2, talkarray: array of byte;
-  pword: array[0..1] of Uint16;
+  pword: array[0..1] of uint16;
   wd, str: string;
-  temp2: WideString;
+  temp2: widestring;
 begin
   pword[1] := 0;
   face := 4900;
@@ -3233,10 +3194,14 @@ begin
   color1 := color and $FF;
   color2 := (color shr 8) and $FF;
   x := 0;
-  if where <> 3 then y := 30 else y := 60;
+  if where <> 3 then y := 30
+  else
+    y := 60;
   w := 640;
   h := 109;
-  if where <> 3 then row := 5 else row := 15;
+  if where <> 3 then row := 5
+  else
+    row := 15;
   cell := 25;
   //read talk
   idx := fileopen(AppPath + TALK_IDX, fmopenread);
@@ -3271,13 +3236,15 @@ begin
   begin
     x1 := 300 - cell * 10;
   end
-  else x1 := 300 - length(tp) * 5;
+  else
+    x1 := 300 - length(tp) * 5;
 
   if ((length(tp) div 2) > cell * row) then
   begin
     y1 := y + (h div 2) - 50;
   end
-  else y1 := y + (h div 2) - 10 - ((length(tp) div 2) div cell) * 10;
+  else
+    y1 := y + (h div 2) - 10 - ((length(tp) div 2) div cell) * 10;
 
   p1 := @Rrole[0].Name;
   alen := length(p1) + 2;
@@ -3322,18 +3289,8 @@ begin
   end
   else if alen = 8 then
   begin
-    if ((puint16(ap)^ = $6EAB) and ((puint16(ap + 2)^ = $63AE))) or
-      ((puint16(ap)^ = $E8A6) and ((puint16(ap + 2)^ = $F9AA))) or ((puint16(ap)^ = $46AA) and
-      ((puint16(ap + 2)^ = $E8A4))) or ((puint16(ap)^ = $4FA5) and ((puint16(ap + 2)^ = $B0AA))) or
-      ((puint16(ap)^ = $7DBC) and ((puint16(ap + 2)^ = $65AE))) or ((puint16(ap)^ = $71A5) and
-      ((puint16(ap + 2)^ = $A8B0))) or ((puint16(ap)^ = $D1BD) and ((puint16(ap + 2)^ = $AFB8))) or
-      ((puint16(ap)^ = $71A5) and ((puint16(ap + 2)^ = $C5AA))) or ((puint16(ap)^ = $D3A4) and
-      ((puint16(ap + 2)^ = $76A5))) or ((puint16(ap)^ = $BDA4) and ((puint16(ap + 2)^ = $5DAE))) or
-      ((puint16(ap)^ = $DABC) and ((puint16(ap + 2)^ = $A7B6))) or ((puint16(ap)^ = $43AD) and
-      ((puint16(ap + 2)^ = $DFAB))) or ((puint16(ap)^ = $71A5) and ((puint16(ap + 2)^ = $7BAE))) or
-      ((puint16(ap)^ = $B9A7) and ((puint16(ap + 2)^ = $43C3))) or ((puint16(ap)^ = $61B0) and
-      ((puint16(ap + 2)^ = $D5C1))) or ((puint16(ap)^ = $74A6) and ((puint16(ap + 2)^ = $E5A4))) or
-      ((puint16(ap)^ = $DDA9) and ((puint16(ap + 2)^ = $5BB6))) then
+    if ((puint16(ap)^ = $6EAB) and ((puint16(ap + 2)^ = $63AE))) or ((puint16(ap)^ = $E8A6) and ((puint16(ap + 2)^ = $F9AA))) or ((puint16(ap)^ = $46AA) and ((puint16(ap + 2)^ = $E8A4))) or ((puint16(ap)^ = $4FA5) and ((puint16(ap + 2)^ = $B0AA))) or ((puint16(ap)^ = $7DBC) and ((puint16(ap + 2)^ = $65AE))) or ((puint16(ap)^ = $71A5) and ((puint16(ap + 2)^ = $A8B0))) or ((puint16(ap)^ = $D1BD) and ((puint16(ap + 2)^ = $AFB8))) or ((puint16(ap)^ = $71A5) and ((puint16(ap + 2)^ = $C5AA))) or ((puint16(ap)^ = $D3A4) and ((puint16(ap + 2)^ = $76A5))) or ((puint16(ap)^ = $BDA4) and ((puint16(ap + 2)^ = $5DAE))) or ((puint16(ap)^ = $DABC) and ((puint16(ap + 2)^ = $A7B6))) or ((puint16(ap)^ = $43AD) and ((puint16(ap + 2)^ = $DFAB))) or
+      ((puint16(ap)^ = $71A5) and ((puint16(ap + 2)^ = $7BAE))) or ((puint16(ap)^ = $B9A7) and ((puint16(ap + 2)^ = $43C3))) or ((puint16(ap)^ = $61B0) and ((puint16(ap + 2)^ = $D5C1))) or ((puint16(ap)^ = $74A6) and ((puint16(ap + 2)^ = $E5A4))) or ((puint16(ap)^ = $DDA9) and ((puint16(ap + 2)^ = $5BB6))) then
     begin
       setlength(name1, 6);
       np1 := @name1[0];
@@ -3457,7 +3414,8 @@ begin
   while ((puint16(tp + ch))^ shl 8 <> 0) and ((puint16(tp + ch))^ shr 8 <> 0) do
   begin
     if where <> 3 then redraw
-    else drawrectanglewithoutframe(0, 0, screen.w, screen.h, 0, 0);
+    else
+      drawrectanglewithoutframe(0, 0, screen.w, screen.h, 0, 0);
     c1 := 0;
     r1 := 0;
     DrawRectangleWithoutFrame(x, y, w, h, 0, 40);
@@ -3500,9 +3458,7 @@ begin
         begin
           SDL_UpdateRect2(screen, 0, 0, screen.w, screen.h);
           n := waitanykey;
-          while (n = sdlk_up) or (n = sdlk_down) or (n = sdlk_right) or
-            (n = sdlk_left) or (n = sdlk_kp_2) or (n = sdlk_kp_4) or
-            (n = sdlk_kp_6) or (n = sdlk_kp_8) do
+          while (n = sdlk_up) or (n = sdlk_down) or (n = sdlk_right) or (n = sdlk_left) or (n = sdlk_kp_2) or (n = sdlk_kp_4) or (n = sdlk_kp_6) or (n = sdlk_kp_8) do
             n := waitanykey;
 
         end
@@ -3518,8 +3474,7 @@ begin
           begin
             pword[0] := puint16(np3 + i)^;
             i := i + 2;
-            DrawgbkShadowText(@pword[0], x1 + CHINESE_FONT_SIZE * c1, y1 + CHINESE_FONT_SIZE *
-              r1, colcolor(0, color1), colcolor(0, color2));
+            DrawgbkShadowText(@pword[0], x1 + CHINESE_FONT_SIZE * c1, y1 + CHINESE_FONT_SIZE * r1, colcolor(0, color1), colcolor(0, color2));
             Inc(c1);
             if c1 = cell then
             begin
@@ -3529,7 +3484,8 @@ begin
               if r1 = row then
               begin
                 if where <> 3 then redraw
-                else drawrectanglewithoutframe(0, 0, screen.w, screen.h, 0, 0);
+                else
+                  drawrectanglewithoutframe(0, 0, screen.w, screen.h, 0, 0);
                 c1 := 0;
                 r1 := 0;
                 DrawRectangleWithoutFrame(x, y, w, h, 0, 40);
@@ -3550,17 +3506,18 @@ begin
           end;
         end;
       end
-      else break;
+      else
+        break;
     end;
     SDL_UpdateRect2(screen, 0, 0, screen.w, screen.h);
     n := waitanykey;
-    while (n = sdlk_up) or (n = sdlk_down) or (n = sdlk_right) or (n = sdlk_left) or
-      (n = sdlk_kp_2) or (n = sdlk_kp_4) or (n = sdlk_kp_6) or (n = sdlk_kp_8) do
+    while (n = sdlk_up) or (n = sdlk_down) or (n = sdlk_right) or (n = sdlk_left) or (n = sdlk_kp_2) or (n = sdlk_kp_4) or (n = sdlk_kp_6) or (n = sdlk_kp_8) do
       n := waitanykey;
     if (pword[0] and $FF = 0) or (pword[0] and $FF00 = 0) then break;
   end;
   if where <> 3 then redraw
-  else drawrectanglewithoutframe(0, 0, screen.w, screen.h, 0, 0);
+  else
+    drawrectanglewithoutframe(0, 0, screen.w, screen.h, 0, 0);
   //DrawgbkShadowText(@pword, x1 + CHINESE_FONT_SIZE * c1, y1 + CHINESE_FONT_SIZE * r1, colcolor(0, color1), colcolor(0, color2));
 
   setlength(wd, 0);
@@ -3608,7 +3565,7 @@ begin
   end;
 end;
 
-function ReadTalk(talknum: integer): WideString;
+function ReadTalk(talknum: integer): widestring;
 var
   i, idx, grp, len, offset: integer;
   p: pansichar;
@@ -3831,8 +3788,7 @@ begin
     begin
       for i := 0 to 639 do
       begin
-        b := ((i - (screen.w shr 1)) * (i - (screen.w shr 1)) + (i1 - (screen.h shr 1)) *
-          (i1 - (screen.h shr 1))) div 150;
+        b := ((i - (screen.w shr 1)) * (i - (screen.w shr 1)) + (i1 - (screen.h shr 1)) * (i1 - (screen.h shr 1))) div 150;
         if b > 100 then b := 100;
         snowalpha[i1][i] := b;
       end;
@@ -3954,7 +3910,7 @@ end;
 
 function InputAmount: integer;
 var
-  str, countstr: WideString;
+  str, countstr: widestring;
   amount: integer;
 begin
   Result := 0;
@@ -4303,9 +4259,9 @@ procedure StudyGongti;
 var
   rnum, mnum, i, position, moveable, lv, max1, max2, x, y, w, h, x1, y1, w1, h1, x2, y2, w2, h2: integer;
   teammenu, magicmenu, menu1, menu2: integer;
-  personname: array of WideString;
+  personname: array of widestring;
   magic: array of integer;
-  str: WideString;
+  str: widestring;
 begin
   x := 10;
   y := 10;
@@ -4330,8 +4286,7 @@ begin
   max2 := 0;
   for i := 0 to 9 do
   begin
-    if (rrole[teamlist[teammenu]].Magic[i] > 0) and
-      (rmagic[rrole[teamlist[teammenu]].Magic[i]].MagicType = 5) then
+    if (rrole[teamlist[teammenu]].Magic[i] > 0) and (rmagic[rrole[teamlist[teammenu]].Magic[i]].MagicType = 5) then
     begin
       Inc(max2);
       setlength(magic, max2);
@@ -4399,8 +4354,7 @@ begin
           max2 := 0;
           for i := 0 to 9 do
           begin
-            if (rrole[teamlist[teammenu]].Magic[i] > 0) and
-              (rmagic[rrole[teamlist[teammenu]].Magic[i]].MagicType = 5) then
+            if (rrole[teamlist[teammenu]].Magic[i] > 0) and (rmagic[rrole[teamlist[teammenu]].Magic[i]].MagicType = 5) then
             begin
               Inc(max2);
               setlength(magic, max2);
@@ -4412,7 +4366,8 @@ begin
             position := 1;
             magicmenu := 0;
           end
-          else magicmenu := -1;
+          else
+            magicmenu := -1;
         end
         else
         begin
@@ -4457,8 +4412,7 @@ begin
           max2 := 0;
           for i := 0 to 9 do
           begin
-            if (rrole[teamlist[teammenu]].Magic[i] > 0) and
-              (rmagic[rrole[teamlist[teammenu]].Magic[i]].MagicType = 5) then
+            if (rrole[teamlist[teammenu]].Magic[i] > 0) and (rmagic[rrole[teamlist[teammenu]].Magic[i]].MagicType = 5) then
             begin
               Inc(max2);
               setlength(magic, max2);
@@ -4470,7 +4424,8 @@ begin
             position := 1;
             magicmenu := 0;
           end
-          else magicmenu := -1;
+          else
+            magicmenu := -1;
         end
         else
         begin
@@ -4502,17 +4457,13 @@ begin
     begin
       menu1 := teammenu;
       menu2 := magicmenu;
-      if (round(event.button.x / (resolutionx / screen.w)) >= x2) and
-        (round(event.button.x / (resolutionx / screen.w)) <= x2 + w2) and
-        (round(event.button.y / (resolutiony / screen.h)) >= y2) and
-        (round(event.button.y / (resolutiony / screen.h)) <= y2 + h2) then
+      if (round(event.button.x / (resolutionx / screen.w)) >= x2) and (round(event.button.x / (resolutionx / screen.w)) <= x2 + w2) and (round(event.button.y / (resolutiony / screen.h)) >= y2) and (round(event.button.y / (resolutiony / screen.h)) <= y2 + h2) then
       begin
 
         max2 := 0;
         for i := 0 to 9 do
         begin
-          if (rrole[teamlist[teammenu]].Magic[i] > 0) and
-            (rmagic[rrole[teamlist[teammenu]].Magic[i]].MagicType = 5) then
+          if (rrole[teamlist[teammenu]].Magic[i] > 0) and (rmagic[rrole[teamlist[teammenu]].Magic[i]].MagicType = 5) then
           begin
             Inc(max2);
             setlength(magic, max2);
@@ -4527,12 +4478,10 @@ begin
           magicmenu := min(max2 - 1, magicmenu);
           magicmenu := max(0, magicmenu);
         end
-        else magicmenu := -1;
+        else
+          magicmenu := -1;
       end
-      else if (round(event.button.x / (resolutionx / screen.w)) >= x) and
-        (round(event.button.x / (resolutionx / screen.w)) <= x + w) and
-        (round(event.button.y / (resolutiony / screen.h)) >= y) and
-        (round(event.button.y / (resolutiony / screen.h)) <= y + h) then
+      else if (round(event.button.x / (resolutionx / screen.w)) >= x) and (round(event.button.x / (resolutionx / screen.w)) <= x + w) and (round(event.button.y / (resolutiony / screen.h)) >= y) and (round(event.button.y / (resolutiony / screen.h)) <= y + h) then
       begin
         if (position <> 0) then position := 0
         else
@@ -4548,8 +4497,7 @@ begin
         max2 := 0;
         for i := 0 to 9 do
         begin
-          if (rrole[teamlist[teammenu]].Magic[i] > 0) and
-            (rmagic[rrole[teamlist[teammenu]].Magic[i]].MagicType = 5) then
+          if (rrole[teamlist[teammenu]].Magic[i] > 0) and (rmagic[rrole[teamlist[teammenu]].Magic[i]].MagicType = 5) then
           begin
             Inc(max2);
             setlength(magic, max2);
@@ -4571,8 +4519,8 @@ procedure ShowStudyGongti(menu, menu2, max: integer);
 var
   mnum, i1, i, lv, l, max2, rnum, x, y, w, h, x1, y1, w1, h1, x2, y2, w2, h2, x3, y3, w3, h3: integer;
   teammenu, magicmenu: integer;
-  personname, magicname: array of WideString;
-  str: WideString;
+  personname, magicname: array of widestring;
+  str: widestring;
 begin
   x := 10;
   y := 10;
@@ -4726,8 +4674,7 @@ begin
           if rmagic[mnum].AddHP[lv] <> 0 then
           begin
             str := format('%d', [rmagic[mnum].AddHP[lv]]);
-            drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90 + 50, y3 - 5 + 98 + (i1 div 4) *
-              22, colcolor(0, $5), colcolor(0, $7));
+            drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90 + 50, y3 - 5 + 98 + (i1 div 4) * 22, colcolor(0, $5), colcolor(0, $7));
             str := UTF8Decode(' 生命');
             drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90, y3 - 5 + 98 + (i1 div 4) * 22,
               colcolor(0, $5), colcolor(0, $7));
@@ -4736,8 +4683,7 @@ begin
           if rmagic[mnum].AddMP[lv] <> 0 then
           begin
             str := format('%d', [rmagic[mnum].AddMP[lv]]);
-            drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90 + 50, y3 - 5 + 98 + (i1 div 4) *
-              22, colcolor(0, $5), colcolor(0, $7));
+            drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90 + 50, y3 - 5 + 98 + (i1 div 4) * 22, colcolor(0, $5), colcolor(0, $7));
             str := UTF8Decode(' 內力');
             drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90, y3 - 5 + 98 + (i1 div 4) * 22,
               colcolor(0, $5), colcolor(0, $7));
@@ -4746,8 +4692,7 @@ begin
           if rmagic[mnum].AddAtt[lv] <> 0 then
           begin
             str := format('%d', [rmagic[mnum].AddAtt[lv]]);
-            drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90 + 50, y3 - 5 + 98 + (i1 div 4) *
-              22, colcolor(0, $5), colcolor(0, $7));
+            drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90 + 50, y3 - 5 + 98 + (i1 div 4) * 22, colcolor(0, $5), colcolor(0, $7));
             str := UTF8Decode(' 攻擊');
             drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90, y3 - 5 + 98 + (i1 div 4) * 22,
               colcolor(0, $5), colcolor(0, $7));
@@ -4756,8 +4701,7 @@ begin
           if rmagic[mnum].AddDef[lv] <> 0 then
           begin
             str := format('%d', [rmagic[mnum].AddDef[lv]]);
-            drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90 + 50, y3 - 5 + 98 + (i1 div 4) *
-              22, colcolor(0, $5), colcolor(0, $7));
+            drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90 + 50, y3 - 5 + 98 + (i1 div 4) * 22, colcolor(0, $5), colcolor(0, $7));
             str := UTF8Decode(' 防禦');
             drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90, y3 - 5 + 98 + (i1 div 4) * 22,
               colcolor(0, $5), colcolor(0, $7));
@@ -4766,8 +4710,7 @@ begin
           if rmagic[mnum].AddSpd[lv] <> 0 then
           begin
             str := format('%d', [rmagic[mnum].AddSpd[lv]]);
-            drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90 + 50, y3 - 5 + 98 + (i1 div 4) *
-              22, colcolor(0, $5), colcolor(0, $7));
+            drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90 + 50, y3 - 5 + 98 + (i1 div 4) * 22, colcolor(0, $5), colcolor(0, $7));
             str := UTF8Decode(' 輕功');
             drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90, y3 - 5 + 98 + (i1 div 4) * 22,
               colcolor(0, $5), colcolor(0, $7));
@@ -4778,91 +4721,73 @@ begin
             if rmagic[mnum].AddMedcine <> 0 then
             begin
               str := format('%d', [rmagic[mnum].AddMedcine]);
-              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90 + 50, y3 - 5 + 98 + (i1 div 4) *
-                22, colcolor(0, $5), colcolor(0, $7));
+              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90 + 50, y3 - 5 + 98 + (i1 div 4) * 22, colcolor(0, $5), colcolor(0, $7));
               str := UTF8Decode(' 醫療');
-              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90, y3 - 5 + 98 + (i1 div 4) *
-                22, colcolor(0, $5), colcolor(0, $7));
+              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90, y3 - 5 + 98 + (i1 div 4) * 22, colcolor(0, $5), colcolor(0, $7));
               Inc(i1);
             end;
             if rmagic[mnum].AddUsepoi <> 0 then
             begin
               str := format('%d', [rmagic[mnum].AddUsePoi]);
-              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90 + 50, y3 - 5 + 98 + (i1 div 4) *
-                22, colcolor(0, $5), colcolor(0, $7));
+              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90 + 50, y3 - 5 + 98 + (i1 div 4) * 22, colcolor(0, $5), colcolor(0, $7));
               str := UTF8Decode(' 用毒');
-              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90, y3 - 5 + 98 + (i1 div 4) *
-                22, colcolor(0, $5), colcolor(0, $7));
+              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90, y3 - 5 + 98 + (i1 div 4) * 22, colcolor(0, $5), colcolor(0, $7));
               Inc(i1);
             end;
             if rmagic[mnum].AddMedPoi <> 0 then
             begin
               str := format('%d', [rmagic[mnum].AddMedPoi]);
-              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90 + 50, y3 - 5 + 98 + (i1 div 4) *
-                22, colcolor(0, $5), colcolor(0, $7));
+              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90 + 50, y3 - 5 + 98 + (i1 div 4) * 22, colcolor(0, $5), colcolor(0, $7));
               str := UTF8Decode(' 解毒');
-              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90, y3 - 5 + 98 + (i1 div 4) *
-                22, colcolor(0, $5), colcolor(0, $7));
+              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90, y3 - 5 + 98 + (i1 div 4) * 22, colcolor(0, $5), colcolor(0, $7));
               Inc(i1);
             end;
             if rmagic[mnum].AddDefPoi <> 0 then
             begin
               str := format('%d', [rmagic[mnum].AddDefPoi]);
-              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90 + 50, y3 - 5 + 98 + (i1 div 4) *
-                22, colcolor(0, $5), colcolor(0, $7));
+              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90 + 50, y3 - 5 + 98 + (i1 div 4) * 22, colcolor(0, $5), colcolor(0, $7));
               str := UTF8Decode(' 抗毒');
-              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90, y3 - 5 + 98 + (i1 div 4) *
-                22, colcolor(0, $5), colcolor(0, $7));
+              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90, y3 - 5 + 98 + (i1 div 4) * 22, colcolor(0, $5), colcolor(0, $7));
               Inc(i1);
             end;
             if rmagic[mnum].AddFist <> 0 then
             begin
               str := format('%d', [rmagic[mnum].AddFist]);
-              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90 + 50, y3 - 5 + 98 + (i1 div 4) *
-                22, colcolor(0, $5), colcolor(0, $7));
+              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90 + 50, y3 - 5 + 98 + (i1 div 4) * 22, colcolor(0, $5), colcolor(0, $7));
               str := UTF8Decode(' 拳掌');
-              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90, y3 - 5 + 98 + (i1 div 4) *
-                22, colcolor(0, $5), colcolor(0, $7));
+              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90, y3 - 5 + 98 + (i1 div 4) * 22, colcolor(0, $5), colcolor(0, $7));
               Inc(i1);
             end;
             if rmagic[mnum].AddSword <> 0 then
             begin
               str := format('%d', [rmagic[mnum].AddSword]);
-              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90 + 50, y3 - 5 + 98 + (i1 div 4) *
-                22, colcolor(0, $5), colcolor(0, $7));
+              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90 + 50, y3 - 5 + 98 + (i1 div 4) * 22, colcolor(0, $5), colcolor(0, $7));
               str := UTF8Decode(' 禦劍 ');
-              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90, y3 - 5 + 98 + (i1 div 4) *
-                22, colcolor(0, $5), colcolor(0, $7));
+              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90, y3 - 5 + 98 + (i1 div 4) * 22, colcolor(0, $5), colcolor(0, $7));
               Inc(i1);
             end;
             if rmagic[mnum].AddKnife <> 0 then
             begin
               str := format('%d', [rmagic[mnum].AddKnife]);
-              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90 + 50, y3 - 5 + 98 + (i1 div 4) *
-                22, colcolor(0, $5), colcolor(0, $7));
+              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90 + 50, y3 - 5 + 98 + (i1 div 4) * 22, colcolor(0, $5), colcolor(0, $7));
               str := UTF8Decode(' 耍刀');
-              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90, y3 - 5 + 98 + (i1 div 4) *
-                22, colcolor(0, $5), colcolor(0, $7));
+              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90, y3 - 5 + 98 + (i1 div 4) * 22, colcolor(0, $5), colcolor(0, $7));
               Inc(i1);
             end;
             if rmagic[mnum].AddUnusual <> 0 then
             begin
               str := format('%d', [rmagic[mnum].AddUnusual]);
-              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90 + 50, y3 - 5 + 98 + (i1 div 4) *
-                22, colcolor(0, $5), colcolor(0, $7));
+              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90 + 50, y3 - 5 + 98 + (i1 div 4) * 22, colcolor(0, $5), colcolor(0, $7));
               str := UTF8Decode(' 奇門');
-              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90, y3 - 5 + 98 + (i1 div 4) *
-                22, colcolor(0, $5), colcolor(0, $7));
+              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90, y3 - 5 + 98 + (i1 div 4) * 22, colcolor(0, $5), colcolor(0, $7));
               Inc(i1);
             end;
             if rmagic[mnum].AddHidWeapon <> 0 then
             begin
               str := format('%d', [rmagic[mnum].AddHidWeapon]);
-              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90 + 50, y3 - 5 + 98 + (i1 div 4) *
-                22, colcolor(0, $5), colcolor(0, $7));
+              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90 + 50, y3 - 5 + 98 + (i1 div 4) * 22, colcolor(0, $5), colcolor(0, $7));
               str := UTF8Decode(' 暗器');
-              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90, y3 - 5 + 98 + (i1 div 4) *
-                22, colcolor(0, $5), colcolor(0, $7));
+              drawshadowtext(@str[1], x3 - 10 + (i1 mod 4) * 90, y3 - 5 + 98 + (i1 div 4) * 22, colcolor(0, $5), colcolor(0, $7));
 
             end;
           end;
@@ -4929,8 +4854,7 @@ begin
       end;}
       SDL_KEYDown:
       begin
-        if (event.key.keysym.sym = sdlk_left) or (event.key.keysym.sym = sdlk_right) or
-          (event.key.keysym.sym = sdlk_KP_4) or (event.key.keysym.sym = sdlk_KP_6) then
+        if (event.key.keysym.sym = sdlk_left) or (event.key.keysym.sym = sdlk_right) or (event.key.keysym.sym = sdlk_KP_4) or (event.key.keysym.sym = sdlk_KP_6) then
         begin
           if menu = 1 then
             menu := 0
@@ -4974,10 +4898,7 @@ begin
       end;
       SDL_MOUSEMOTION:
       begin
-        if (round(event.button.x / (resolutionx / screen.w)) >= x) and
-          (round(event.button.x / (resolutionx / screen.w)) < x + w) and
-          (round(event.button.y / (resolutiony / screen.h)) > y) and
-          (round(event.button.y / (resolutiony / screen.h)) < y + 29) then
+        if (round(event.button.x / (resolutionx / screen.w)) >= x) and (round(event.button.x / (resolutionx / screen.w)) < x + w) and (round(event.button.y / (resolutiony / screen.h)) > y) and (round(event.button.y / (resolutiony / screen.h)) < y + 29) then
         begin
           menup := menu;
           menu := (round(event.button.x / (resolutionx / screen.w)) - x - 2) div 50;
@@ -5043,7 +4964,7 @@ var
   i, i1, i2, menu, n: integer;
   str: array[1..25] of string;
   state: array[1..25] of integer;
-  str1: WideString;
+  str1: widestring;
   battlestate, EquipList: array of smallint;
   SelectedState, SelectEquip: smallint;
 begin
@@ -5086,9 +5007,7 @@ begin
     begin
       for i1 := 0 to 9 do
       begin
-        if (rrole[i].Magic[i1] > 0) and (Rmagic[rrole[i].Magic[i1]].MagicType = 5) and
-          (rmagic[rrole[i].Magic[i1]].BattleState > 0) and (getgongtilevel(i, rrole[i].Magic[i1]) >=
-          Rmagic[rrole[i].Magic[i1]].MaxLevel) then
+        if (rrole[i].Magic[i1] > 0) and (Rmagic[rrole[i].Magic[i1]].MagicType = 5) and (rmagic[rrole[i].Magic[i1]].BattleState > 0) and (getgongtilevel(i, rrole[i].Magic[i1]) >= Rmagic[rrole[i].Magic[i1]].MaxLevel) then
         begin
           state[rmagic[rrole[i].Magic[i1]].BattleState] := 1;
         end;
@@ -5126,8 +5045,7 @@ begin
     setlength(menuengstring, 0);
     for i := 0 to length(Ritem) - 1 do
     begin
-      if (getitemcount(i) > 0) and (ritem[i].ItemType = 1) and (ritem[i].SetNum > 0) and
-        (ritem[i].BattleEffect <= 0) then
+      if (getitemcount(i) > 0) and (ritem[i].ItemType = 1) and (ritem[i].SetNum > 0) and (ritem[i].BattleEffect <= 0) then
       begin
         Inc(n);
         setlength(menustring, n);

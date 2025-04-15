@@ -121,7 +121,6 @@ uses kys_event, kys_engine;
 
 //Battle.
 //战斗, 返回值为是否胜利
-
 function Battle(battlenum, getexp: integer): boolean;
 var
   i, i1, SelectTeamList, W, x, b, y: integer;
@@ -282,7 +281,6 @@ end;
 //The 2nd: 0: rnum, 1: Friend or enemy, 2: y, 3: x, 4: Face, 5: Dead or alive,
 //         7: Acted, 8: Pic Num, 9: The number, 10, 11, 12: Auto, 13: Exp gotten.
 //初始化战场
-
 function InitialBField: boolean;
 var
   sta, grp, autocount, idx, offset, l, i, i1, i2, x, y, fieldnum: integer;
@@ -410,7 +408,6 @@ begin
 end;
 
 //选择人物, 返回值为整型, 按bit表示人物是否参战
-
 function SelectTeamMembers: integer;
 var
   i, menu, max, menup: integer;
@@ -520,7 +517,6 @@ begin
 end;
 
 //显示选择参战人物选单
-
 procedure ShowMultiMenu(max, menu, status: integer);
 var
   i, x, y: integer;
@@ -592,7 +588,6 @@ begin
 end;
 
 //战斗主控制
-
 procedure BattleMainControl;
 var
   i, n, i1, i2, add, a, k: integer;
@@ -785,7 +780,6 @@ begin
   end;
 
 end; //战斗主控制
-
 procedure OldBattleMainControl;
 var
   i, n, a, add: integer;
@@ -1015,7 +1009,6 @@ begin
 end;
 
 //按轻功重排人物(未考虑装备)
-
 procedure ReArrangeBRole;
 var
   i, n, n1, i1, i2, x, t, s1, s2: integer;
@@ -1100,7 +1093,6 @@ begin
 end;
 
 //计算可移动步数(考虑装备)
-
 procedure CalMoveAbility;
 var
   i, rnum, addspeed: integer;
@@ -1133,7 +1125,6 @@ end;
 
 //0: Continue; 1: Victory; 2:Failed.
 //检查是否有一方全部阵亡
-
 function BattleStatus: integer;
 var
   i, sum0, sum1: integer;
@@ -1155,7 +1146,6 @@ begin
 end;
 
 //战斗主选单, menustatus按bit保存可用项
-
 function BattleMenu(bnum: integer): integer;
 var
   i, p, menustatus, menu, max, rnum, menup, i1, lv, i2: integer;
@@ -1330,7 +1320,6 @@ begin
 end;
 
 //显示战斗主选单
-
 procedure ShowBMenu(MenuStatus, menu, max: integer);
 var
   i, p: integer;
@@ -1410,7 +1399,6 @@ begin
 end;
 
 //移动
-
 procedure MoveRole(bnum: integer);
 var
   s, i: integer;
@@ -1422,7 +1410,6 @@ begin
 end;
 
 //移动动画
-
 procedure MoveAmination(bnum: integer);
 var
   s, i, a, tempx, tempy: integer;
@@ -1489,7 +1476,6 @@ begin
 end;
 
 //选择查看状态的目标
-
 function Selectshowstatus(bnum: integer): boolean;
 var
   Axp, Ayp, rnum, step, range, i, i1, i2, AttAreaType: integer;
@@ -1639,7 +1625,6 @@ begin
 end;
 
 //选择点
-
 function SelectAim(bnum, step: integer): boolean;
 var
   Axp, Ayp: integer;
@@ -1744,7 +1729,6 @@ begin
 end;
 
 //选择原地
-
 function SelectCross(bnum, AttAreaType, step, range: integer): boolean;
 var
   Axp, Ayp: integer;
@@ -1795,7 +1779,6 @@ begin
 end;
 
 //目标系点叉菱方型、原地系菱方型
-
 function SelectRange(bnum, AttAreaType, step, range: integer): boolean;
 var
   Axp, Ayp: integer;
@@ -1899,7 +1882,6 @@ begin
 end;
 
 //选择远程
-
 function SelectFar(bnum, mnum, level: integer): boolean;
 var
   Axp, Ayp: integer;
@@ -2020,7 +2002,6 @@ begin
 end;
 
 //选择方向
-
 function SelectDirector(bnum, AttAreaType, step, range: integer): boolean;
 var
   str: WideString;
@@ -2162,7 +2143,6 @@ end;
 
 //计算可以被选中的位置
 //利用递归确定
-
 procedure SeekPath(x, y, step: integer);
 begin
   if step > 0 then
@@ -2195,7 +2175,6 @@ end;
 //计算可以被选中的位置
 //利用队列
 //移动过程中，旁边有敌人，则不能继续移动
-
 procedure SeekPath2(x, y, step, myteam, mode: integer);
 
 var
@@ -2300,7 +2279,6 @@ end;
 
 //初始化范围
 //mode=0移动，1攻击用毒医疗等，2查看状态
-
 procedure CalCanSelect(bnum, mode, step: integer);
 var
   i, i1, i2: integer;
@@ -2337,7 +2315,6 @@ begin
 end;
 
 //无定向直线
-
 function SelectLine(bnum, AttAreaType, step, range: integer): boolean;
 var
   Axp, Ayp: integer;
@@ -2474,7 +2451,6 @@ end;
  }
 
 //攻击
-
 procedure Attack(bnum: integer);
 var
   rnum, i, mnum, l1, level, step, range, AttAreaType, i1, i2, twice, temp: integer;
@@ -2649,7 +2625,6 @@ begin
 end;
 
 //攻击效果
-
 procedure AttackAction(bnum, mnum, level: integer);
 var
   needprogress, step, range, AttAreaType, twice, t1, ax1, ay1: integer;
@@ -2714,7 +2689,6 @@ begin
 end;
 
 //选择武功
-
 function SelectMagic(bnum: integer): integer;
 var
   i, p, lv, menustatus, mnum, max, menu, menup: integer;
@@ -2854,7 +2828,6 @@ begin
 end;
 
 //显示武功选单
-
 procedure ShowMagicMenu(bnum, menustatus, menu, max: integer);
 var
   i, p: integer;
@@ -2888,7 +2861,6 @@ begin
 end;
 
 //设定攻击范围
-
 procedure SetAminationPosition(mode, step, range: integer);
 var
   i, i1, i2: integer;
@@ -2962,7 +2934,6 @@ begin
 end;
 
 //显示武功效果
-
 procedure PlayMagicAmination(bnum, bigami, enum, level: integer);
 var
   i, grp, Count, len: integer;
@@ -2999,7 +2970,6 @@ begin
 end;
 
 //判断是否有非行动方角色在攻击范围之内
-
 procedure CalHurtRole(bnum, mnum, level: integer);
 var
   i, frozen, rnum, dodge, bang, hurt, addpoi, needmp, n, hurtmp, hurt1, addmpvalue, addhpvalue, injury, angry: integer;
@@ -3297,7 +3267,6 @@ begin
 end;
 
 //乾坤大挪移的效果
-
 function ReMoveHurt(bnum, AttackBnum: integer): smallint;
 var
   i1, i2, x, y, i, n, realhurt: integer;
@@ -3337,7 +3306,6 @@ begin
 end;
 
 // 反弹攻击
-
 function RetortHurt(bnum, AttackBnum: integer): smallint;
 var
   i1, i2, x, y, i, realhurt: integer;
@@ -3361,7 +3329,6 @@ begin
 end;
 
 //计算伤害值, 所谓“武功威力3”即武功威力成长值，1000为基准，大于1000则越高级增长速度越快，反之增长速度越慢
-
 function CalNewHurtValue(lv, min, max, Proportion: integer): integer;
 var
   p, n: double;
@@ -3493,7 +3460,6 @@ end;
 
 //0: red. 1: purple, 2: green
 //显示数字
-
 procedure ShowHurtValue(mode: integer); overload;
 var
   i: integer;
@@ -3616,7 +3582,6 @@ begin
 end;
 
 //计算中毒减少的生命
-
 procedure CalPoiHurtLife(bnum: integer);
 var
   i, hurt: integer;
@@ -3692,7 +3657,6 @@ begin
 end;
 
 //设置生命低于0的人物为已阵亡, 主要是清除所占的位置
-
 procedure ClearDeadRolePic;
 var
   i: integer;
@@ -3718,7 +3682,6 @@ begin
 end;
 
 //显示简单状态(x, y表示位置)
-
 procedure ShowSimpleStatus(rnum, x, y: integer);
 var
   i, bnum, n, l, c: integer;
@@ -3829,7 +3792,6 @@ begin
 end;
 
 //等待, 似乎不太完善
-
 procedure Wait(bnum: integer);
 var
   i, i1, i2, x: integer;
@@ -3865,7 +3827,6 @@ begin
 end;
 
 //战斗结束恢复人物状态
-
 procedure RestoreRoleStatus;
 var
   i, rnum: integer;
@@ -3900,7 +3861,6 @@ begin
 end;
 
 //增加经验
-
 procedure AddExp;
 var
   i, rnum, basicvalue, amount, levels: integer;
@@ -3990,7 +3950,6 @@ begin
 end;
 
 //检查是否能够升级
-
 procedure CheckLevelUp;
 var
   i, rnum: integer;
@@ -4014,7 +3973,6 @@ begin
 end;
 
 //升级, 如是我方人物显示状态
-
 procedure LevelUp(bnum: integer);
 var
   i, rnum, add: integer;
@@ -4063,7 +4021,6 @@ begin
 end;
 
 //检查身上秘笈
-
 procedure CheckBook;
 var
   i, i1, i2, Aptitude, p, rnum, inum, mnum, mlevel, needexp, needitem, needitemamount, itemamount: integer;
@@ -4137,7 +4094,6 @@ begin
 end;
 
 //统计一方人数
-
 function CalRNum(team: integer): integer;
 var
   i: integer;
@@ -4151,7 +4107,6 @@ begin
 end;
 
 //战斗中物品选单
-
 procedure BattleMenuItem(bnum: integer);
 var
   rnum, inum, mode: integer;
@@ -4190,7 +4145,6 @@ begin
 end;
 
 //动作动画
-
 procedure PlayActionAmination(bnum, mode: integer);
 var
   d1, d2, dm, rnum, i1, i, Count, grp, beginpic, endpic, idx, tnum, len: integer;
@@ -4267,7 +4221,6 @@ begin
 end;
 
 //用毒
-
 procedure UsePoision(bnum: integer);
 var
   rnum, bnum1, rnum1, poi, step, addpoi: integer;
@@ -4324,7 +4277,6 @@ begin
 end;
 
 //医疗
-
 procedure Medcine(bnum: integer);
 var
   rnum, bnum1, rnum1, med, step, i, addlife: integer;
@@ -4400,7 +4352,6 @@ begin
 end;
 
 //解穴
-
 procedure MedFrozen(bnum: integer);
 var
   rnum, bnum1, rnum1, med, step, addlife: integer;
@@ -4443,7 +4394,6 @@ end;
 
 
 //解毒
-
 procedure MedPoision(bnum: integer);
 var
   rnum, bnum1, i, rnum1, medpoi, step, minuspoi: integer;
@@ -4520,7 +4470,6 @@ begin
 end;
 
 //使用暗器
-
 procedure UseHiddenWeapen(bnum, inum: integer);
 var
   rnum, i, bnum1, rnum1, hidden, step, poi, hurt: integer;
@@ -4597,7 +4546,6 @@ begin
 end;
 
 //休息
-
 procedure Rest(bnum: integer);
 var
   rnum: integer;
@@ -4616,7 +4564,6 @@ begin
 end;
 
 //The AI.
-
 procedure AutoBattle(bnum: integer);
 var
   i, p, a, h, temp, rnum, inum, eneamount, aim, mnum, level, Ax1, Ay1, i1, i2, step, step1, dis0, dis: integer;
@@ -4842,7 +4789,6 @@ begin
 end;
 
 //自动使用list的值最大的物品
-
 procedure AutoUseItem(bnum, list: integer);
 var
   i, p, temp, rnum, inum: integer;
@@ -4904,7 +4850,6 @@ begin
 end;
 
 //自动战斗AI，小小猪更改
-
 procedure AutoBattle2(bnum: integer);
 var
   i, p, a, temp, rnum, inum, eneamount, aim, mnum, l1, level, Ax1, h, Ay1, i1, i2, step, step1, dis0, dis: integer;
@@ -5242,7 +5187,6 @@ end;
 //尝试移动并攻击，step为最大移动步数
 //武功已经事先选好，distance为武功距离，range为武功范围，AttAreaType为武功类型
 //尝试每一个可以移动到的点，考察在该点攻击的情况，选择最合适的目标点
-
 procedure trymoveattack(var Mx1, My1, Ax1, Ay1, tempmaxhurt: integer; bnum, mnum, level: integer);
 var
   Xlist: array[0..4096] of integer;
@@ -5402,7 +5346,6 @@ begin
 end;
 
 //线型攻击的情况，分四个方向考虑，分别计算伤血量
-
 procedure calline(var Mx1, My1, Ax1, Ay1, tempmaxhurt: integer; curX, curY, bnum, mnum, level: integer);
 var
   i, tempX, tempY, ebnum, rnum, tempHP, temphurt: integer;
@@ -5493,7 +5436,6 @@ begin
 end;
 
 //无定向方向
-
 procedure calNewline(var Mx1, My1, Ax1, Ay1, tempmaxhurt: integer; curX, curY, bnum, mnum, level: integer);
 var
   i, j, k, m, n, tempX, tempY, temphurt: integer;
@@ -5550,7 +5492,6 @@ begin
 end;
 
 //方向系菱型
-
 procedure caldirdiamond(var Mx1, My1, Ax1, Ay1, tempmaxhurt: integer; curX, curY, bnum, mnum, level: integer);
 var
   i, tempX, tempY: integer;
@@ -5639,7 +5580,6 @@ begin
 end;
 
 //方向系角型
-
 procedure caldirangle(var Mx1, My1, Ax1, Ay1, tempmaxhurt: integer; curX, curY, bnum, mnum, level: integer);
 var
   i, tempX, tempY: integer;
@@ -5729,7 +5669,6 @@ begin
 end;
 
 //目标系方、原地系方
-
 procedure calarea(var Mx1, My1, Ax1, Ay1, tempmaxhurt: integer; curX, curY, bnum, mnum, level: integer);
 var
   i, j, k, m, n, tempX, tempY, temphurt: integer;
@@ -5777,7 +5716,6 @@ begin
 end;
 
 //目标系点十菱，原地系菱
-
 procedure calpoint(var Mx1, My1, Ax1, Ay1, tempmaxhurt: integer; curX, curY, bnum, mnum, level: integer);
 var
   i, j, k, m, n, tempX, tempY, temphurt, ebnum, ernum, tempHP: integer;
@@ -5825,7 +5763,6 @@ begin
 end;
 
 //原地系十叉米
-
 procedure calcross(var Mx1, My1, Ax1, Ay1, tempmaxhurt: integer; curX, curY, bnum, mnum, level: integer);
 var
   i, tempX, tempY, temphurt, ebnum, rnum: integer;
@@ -5890,7 +5827,6 @@ begin
 end;
 
 //远程系
-
 procedure calfar(var Mx1, My1, Ax1, Ay1, tempmaxhurt: integer; curX, curY, bnum, mnum, level: integer);
 var
   i, j, k, m, n, tempX, tempY, temphurt: integer;
@@ -5941,7 +5877,6 @@ begin
 end;
 
 //移动到离最近的敌人最近的地方
-
 procedure nearestmove(var Mx, My: integer; bnum: integer);
 var
   i, i1, i2, tempdis, mindis: integer;
@@ -6064,7 +5999,6 @@ begin
 end;
 
 //移动到离敌人最远的地方（与每一个敌人的距离之和最大）
-
 procedure farthestmove(var Mx, My: integer; bnum: integer);
 var
   i, i1, i2, k, tempdis, maxdis: integer;
@@ -6175,7 +6109,6 @@ begin
 end;
 
 //在可医疗范围内，寻找生命不足一半的生命最少的友军，
-
 procedure trymovecure(var Mx1, My1, Ax1, Ay1: integer; bnum: integer);
 var
   Xlist: array[0..4096] of integer;
@@ -6465,7 +6398,6 @@ end;
 
 
 //显示模式选单
-
 function SelectAutoMode: integer;
 var
   i, p, menustatus, max, menu, menup: integer;
@@ -6562,7 +6494,6 @@ begin
 end;
 
 //显示模式选单
-
 procedure ShowModeMenu(menu: integer);
 var
   i, x, y: integer;
@@ -6809,7 +6740,6 @@ begin
 end;
 
 //在可医疗范围内，寻找生命不足一半的生命最少的友军，
-
 procedure trymoveHidden(var Mx1, My1, Ax1, Ay1: integer; bnum, inum: integer);
 var
   Xlist: array[0..4096] of integer;

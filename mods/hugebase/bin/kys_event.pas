@@ -160,7 +160,6 @@ begin
 end;
 
 //对话
-
 procedure instruct_1(talknum, headnum, dismode: integer);
 var
   IDX, GRP, offset, len, i, p, l, headx, heady, diagx, diagy, namenum: integer;
@@ -176,7 +175,6 @@ begin
 end;
 
 //设置主角的步数及图片
-
 procedure SetRolePic(step: integer; pic: integer = -1);
 begin
   if step >= 0 then
@@ -188,7 +186,6 @@ begin
 end;
 
 //得到物品可显示数量, 数量为负显示失去物品
-
 procedure instruct_2(inum, amount: integer);
 var
   i, x, y, l1, l2: integer;
@@ -310,7 +307,6 @@ end;
 
 //改变事件, 如在当前场景需重置场景
 //在需改变贴图较多时效率较低
-
 procedure instruct_3(list: array of integer);
 var
   i, i1, i2, curPic, preEventPic: integer;
@@ -364,7 +360,6 @@ begin
 end;
 
 //是否使用了某剧情物品
-
 function instruct_4(inum, jump1, jump2: integer): integer;
 begin
   if inum = CurItem then
@@ -375,7 +370,6 @@ begin
 end;
 
 //询问是否战斗
-
 function instruct_5(jump1, jump2: integer): integer;
 var
   menu: integer;
@@ -397,7 +391,6 @@ begin
 end;
 
 //战斗
-
 function instruct_6(battlenum, jump1, jump2, getexp: integer): integer;
 begin
   Result := jump2;
@@ -407,7 +400,6 @@ begin
 end;
 
 //询问是否加入
-
 procedure instruct_8(musicnum: integer);
 begin
   exitscencemusicnum := musicnum;
@@ -434,7 +426,6 @@ begin
 end;
 
 //加入队友, 同时得到其身上物品
-
 procedure instruct_10(rnum: integer);
 var
   i, i1: integer;
@@ -463,7 +454,6 @@ end;
 
 //询问是否住宿
 //改为通用
-
 function instruct_11(jump1, jump2: integer): integer;
 var
   menu: integer;
@@ -491,7 +481,6 @@ begin
 end;
 
 //住宿
-
 procedure instruct_12;
 var
   i, rnum: integer;
@@ -512,7 +501,6 @@ end;
 
 
 //亮屏, 在亮屏之前重新初始化场景
-
 procedure instruct_13;
 var
   i: integer;
@@ -539,7 +527,6 @@ begin
 end;
 
 //黑屏
-
 procedure instruct_14;
 var
   i: integer;
@@ -559,7 +546,6 @@ begin
 end;
 
 //失败画面
-
 procedure instruct_15;
 var
   i, x, y: integer;
@@ -581,7 +567,6 @@ begin
 end;
 
 //队伍中是否有某人
-
 function instruct_16(rnum, jump1, jump2: integer): integer;
 var
   i: integer;
@@ -598,7 +583,6 @@ begin
 end;
 
 //改变场景数据
-
 procedure instruct_17(list: array of integer);
 var
   i1, i2: integer;
@@ -611,7 +595,6 @@ begin
 end;
 
 //是否有某物品
-
 function instruct_18(inum, jump1, jump2: integer): integer;
 var
   i: integer;
@@ -628,7 +611,6 @@ begin
 end;
 
 //改变坐标
-
 procedure instruct_19(x, y: integer);
 begin
   Sx := y;
@@ -641,7 +623,6 @@ begin
 end;
 
 //Judge the team is full or not.
-
 function instruct_20(jump1, jump2: integer): integer;
 var
   i: integer;
@@ -658,7 +639,6 @@ begin
 end;
 
 //加入某人
-
 procedure instruct_21(rnum: integer);
 var
   i, p: integer;
@@ -693,14 +673,12 @@ end;
 
 //Black the screen when fail in battle.
 //Note: never be used, leave it as blank.
-
 procedure instruct_24;
 begin
 end;
 
 //Note: never display the leading role.
 //This will be improved when I have a better method.
-
 procedure instruct_25(x1, y1, x2, y2: integer);
 var
   i, s: integer;
@@ -754,7 +732,6 @@ end;
 
 //Note: of course an more effective engine can take place of it.
 //动画, 至今仍不完善
-
 procedure instruct_27(enum, beginpic, endpic: integer);
 var
   i, xpoint, ypoint: integer;
@@ -922,7 +899,6 @@ begin
 end;
 
 //学到武功, 如果已有武功则升级, 如果已满10个不会洗武功
-
 procedure instruct_33(rnum, mnum, dismode: integer);
 var
   i, l, x, l1, p, pm: integer;
@@ -1288,7 +1264,6 @@ end;
 
 //Open all scences.
 //Note: in primary game, some scences are set to different entrancing condition.
-
 procedure instruct_54;
 var
   i: integer;
@@ -1304,7 +1279,6 @@ begin
 end;
 
 //Judge the event number.
-
 function instruct_55(enum, num, jump1, jump2: integer): integer;
 begin
   Result := jump2;
@@ -1314,7 +1288,6 @@ end;
 
 //Add repute.
 //声望刚刚超过200时家里出现请帖
-
 procedure instruct_56(Repute: integer);
 begin
   Rrole[0].Repute := Rrole[0].Repute + repute;
@@ -1411,7 +1384,6 @@ begin
 end;
 
 //全员离队, 但未清除相关事件
-
 procedure instruct_59;
 var
   i: integer;
@@ -1529,14 +1501,12 @@ begin
 end;
 
 //Set sexual.
-
 procedure instruct_63(rnum, sexual: integer);
 begin
   Rrole[rnum].Sexual := sexual;
 end;
 
 //韦小宝的商店
-
 procedure instruct_64;
 var
   i, amount, shopnum, menu, price: integer;
@@ -1593,7 +1563,6 @@ begin
 end;
 
 //50指令中获取变量值
-
 function e_GetValue(bit, t, x: integer): integer;
 var
   i: integer;
@@ -1606,7 +1575,6 @@ begin
 end;
 
 //Expanded 50 instructs.
-
 function instruct_50e(code, e1, e2, e3, e4, e5, e6: integer): integer;
 var
   i, t1, GRP, IDX, offset, len, i1, i2: integer;
@@ -2411,7 +2379,6 @@ begin
 end;
 
 //判断某人有否某武功某级
-
 function HaveMagic(person, mnum, lv: integer): boolean;
 var
   i: integer;
@@ -2435,7 +2402,6 @@ begin
 end;
 
 //计算某人武功数量
-
 function HaveMagicAmount(rnum: integer; NeiGong: integer = 0): integer;
 var
   i: integer;
@@ -3894,7 +3860,6 @@ begin
 end;
 
 //未使用指令
-
 function ReSetName(t, inum, newnamenum: integer): integer;
 var
   NewName: string;
@@ -4359,7 +4324,6 @@ begin
 end;
 
 //下棋小游戏
-
 function Lamp(c, beginpic, whitecount, chance: integer): boolean;
 var
   x, y, r, temp, i, pic2, pic3, menu, x1, y1: integer;
@@ -5886,7 +5850,6 @@ end;
 
 //劲舞团模式, 用于机关, 返回值为0=失败, 1=胜利；没有分数的计算, 可以内嵌入50指令
 //此版本为非pic版本, 使用的贴图为：1000-1003, 1100-1103
-
 function DancerAfter90S: integer;
 var
   now, ori_time, demand_time: uint32; //demand_time must be a ms-level
@@ -6010,7 +5973,6 @@ end;
 
 //改自winson7891的完美商店
 //商店, 改成只有一頁
-
 procedure NewShop(shop_num: integer);
 type
   TShopList = record
@@ -6513,7 +6475,6 @@ begin
 end;
 
 //输入数字, 最小值, 最大值, 坐标x, y. 当结果被范围修正时有提示.
-
 function EnterNumber(MinValue, MaxValue, x, y: integer; Default: integer = 0): smallint;
 var
   Value, i, menu, sure, pvalue, pmenu, highButton: integer;

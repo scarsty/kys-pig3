@@ -326,7 +326,6 @@ end;
 
 
 //播放mp3音乐
-
 procedure PlayMP3(MusicNum, times: integer; frombeginning: integer = 1); overload;
 var
   repeatable: boolean;
@@ -375,7 +374,6 @@ begin
 end;
 
 //停止当前播放的音乐
-
 procedure StopMP3(frombeginning: integer = 1);
 begin
   BASS_ChannelStop(Music[nowmusic]);
@@ -385,7 +383,6 @@ begin
 end;
 
 //播放wav音效
-
 procedure PlaySound(SoundNum, times: integer); overload;
 var
   ch: HCHANNEL;
@@ -508,7 +505,6 @@ end;
 
 
 //获取某像素信息
-
 function GetPixel(surface: PSDL_Surface; x: integer; y: integer): uint32;
 type
   TByteArray = array [0 .. 2] of byte;
@@ -538,7 +534,6 @@ begin
 end;
 
 //画像素
-
 procedure PutPixel(surface: PSDL_Surface; x: integer; y: integer; pixel: uint32);
 type
   TByteArray = array [0 .. 2] of byte;
@@ -575,7 +570,6 @@ end;
 
 
 //取调色板的颜色, 视频系统是32位色, 但很多时候仍需要原调色板的颜色
-
 function ColColor(num: integer): uint32;
 begin
   //result.
@@ -583,7 +577,6 @@ begin
 end;
 
 //判断像素是否在屏幕内
-
 function JudgeInScreen(px, py, w, h, xs, ys: integer): boolean;
 begin
   //Result := False;
@@ -592,7 +585,6 @@ begin
 end;
 
 //判断像素是否在指定范围内(重载)
-
 function JudgeInScreen(px, py, w, h, xs, ys, xx, yy, xw, yh: integer): boolean;
 begin
   //Result := False;
@@ -600,7 +592,6 @@ begin
 end;
 
 //获取游戏中坐标在屏幕上的位置
-
 function GetPositionOnScreen(x, y, CenterX, CenterY: integer): TPosition;
 begin
   Result.x := -(x - CenterX) * 18 + (y - CenterY) * 18 + CENTER_X;
@@ -614,7 +605,6 @@ end;
 
 
 //big5转为unicode
-
 function Big5ToUnicode(str: PChar): WideString;
 var
   len: integer;
@@ -652,7 +642,6 @@ begin
 end;
 
 //unicode转为big5, 仅用于输入姓名
-
 function UnicodeToBig5(str: pwidechar): string;
 var
   len: integer;
@@ -667,7 +656,6 @@ begin
 end;
 
 //unicode转为GBK, 仅用于输入姓名
-
 function UnicodeToGBK(str: pwidechar): string;
 var
   len: integer;
@@ -682,7 +670,6 @@ begin
 end;
 
 //繁体汉字转化成简体汉字
-
 function Traditional2Simplified(mTraditional: string): string; //返回繁体字符串
 var
   L: integer;
@@ -702,7 +689,6 @@ end; {Traditional2Simplified}
 
 //生成或查找已知纹理, 返回其指针, 是否销毁由调用者决定
 //返回值为建议是否销毁是否已经保存
-
 function CreateFontTile(num: uint16; usesur: integer; var p: pointer; var w, h: integer): boolean;
 var
   size0, size: integer;
@@ -816,7 +802,6 @@ end;
 
 //显示unicode文字
 //engsize如果未指定则按照中文宽度一半
-
 procedure DrawText(word: puint16; x_pos, y_pos: integer; color: uint32; engwidth: integer = -1);
 var
   dest, src, dst: TSDL_Rect;
@@ -943,7 +928,6 @@ end;
 
 
 //显示英文
-
 procedure DrawEngText(word: puint16; x_pos, y_pos: integer; color: uint32);
 var
   dest: TSDL_Rect;
@@ -1017,14 +1001,12 @@ begin
 end;
 
 //显示英文阴影文字
-
 procedure DrawEngShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32; Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil);
 begin
   DrawShadowText(word, x_pos, y_pos + 4, color1, color2, Tex, Sur, 0, 1);
 end;
 
 //显示big5文字
-
 procedure DrawBig5Text(sur: PSDL_Surface; str: PChar; x_pos, y_pos: integer; color: uint32);
 var
   len: integer;
@@ -1042,7 +1024,6 @@ begin
 end;
 
 //显示big5阴影文字
-
 procedure DrawBig5ShadowText(word: PChar; x_pos, y_pos: integer; color1, color2: uint32);
 var
   len: integer;
@@ -1060,7 +1041,6 @@ begin
 end;
 
 //显示GBK阴影文字
-
 procedure DrawGBKShadowText(word: PChar; x_pos, y_pos: integer; color1, color2: uint32);
 var
   len: integer;
@@ -1078,7 +1058,6 @@ begin
 end;
 
 //显示Unicode16阴影文字
-
 procedure DrawU16ShadowText(word: PChar; x_pos, y_pos: integer; color1, color2: uint32);
 var
   words: WideString;
@@ -1089,7 +1068,6 @@ begin
 end;
 
 //画带边框矩形, (x坐标, y坐标, 宽度, 高度, 内部颜色, 边框颜色, 透明度, 可能转为单行框）
-
 procedure DrawRectangle(x, y, w, h: integer; colorin, colorframe: uint32; alpha: integer; trans: integer = 1);
 var
   i1, i2, l1, l2, l3, l4, x1, y1, w1, h1: integer;
@@ -1438,7 +1416,6 @@ end;
 
 
 //简体汉字转化成繁体汉字
-
 function Simplified2Traditional(mSimplified: ansistring): ansistring; //返回繁体字符串
 var
   L: integer;
@@ -2054,7 +2031,6 @@ end;
 //读取贴图
 
 //在另一线程中操作可变量长度不正常, 改为首先初始化全部图片, 在线程中读取
-
 procedure InitialPicArrays;
 var
   i: integer;
@@ -2170,7 +2146,6 @@ end;
 //读入文件到缓冲区
 //当读入的位置并非变长数据时, 务必设置 malloc = 0!
 //size小于0时, 则读整个文件.
-
 function ReadFileToBuffer(p: PChar; filename: string; size, malloc: integer): PChar; overload;
 var
   i: integer;
@@ -2228,7 +2203,6 @@ begin
 end;
 
 //载入IDX和GRP文件到变长数据, 不适于非变长数据
-
 function LoadIdxGrp(stridx, strgrp: string): TIDXGRP;
 var
   IDX, GRP, len, tnum: integer;
@@ -2267,7 +2241,6 @@ begin
 end;
 
 //为了提高启动的速度, M之外的贴图均仅读入基本信息, 需要时才实际载入图, 并且游戏过程中通常不再释放资源
-
 function LoadPNGTiles(path: string; var PNGIndexArray: TPNGIndexArray; LoadPic: integer = 1; frame: psmallint = nil): integer; overload;
 const
   maxCount: integer = 9999;
@@ -2418,7 +2391,6 @@ end;
 
 //这个函数没有容错处理, 在独立文件和打包文件都不存在时会引起游戏崩溃, 需要特别注意!
 //p如果为nil, 则试图读取文件
-
 procedure LoadOnePNGTexture(path: string; p: PChar; var PNGIndex: TPNGIndex; forceLoad: integer = 0); overload;
 var
   j, k, index, len, off, w1, h1: integer;
@@ -2487,7 +2459,6 @@ begin
 end;
 
 //从文件载入表面
-
 function LoadTileFromFile(filename: string; var pt: Pointer; usesur: integer; var w, h: integer): boolean;
 var
   tempscr: PSDL_Surface;
@@ -2526,7 +2497,6 @@ end;
 
 
 //从内存载入表面
-
 function LoadTileFromMem(p: PChar; len: integer; var pt: Pointer; usesur: integer; var w, h: integer): boolean;
 var
   tempscr: PSDL_Surface;
@@ -3031,7 +3001,6 @@ begin
 end;
 
 //顺序ARGB
-
 function MapRGBA(r, g, b: byte; a: byte = 255): uint32;
 begin
   Result := (r shl 16) or (g shl 8) or b or (a shl 24);

@@ -186,7 +186,6 @@ uses
 
 //Battle.
 //战斗, 返回值为是否胜利
-
 function Battle(battlenum, getexp: integer; forceSingle: integer = 0): boolean;
 var
   i, j, k, SelectTeamList, x, y, num, prewhere, i1, i2, dis, mindis: integer;
@@ -428,7 +427,6 @@ end;
 //The 2nd: 0: rnum, 1: Friend or enemy, 2: y, 3: x, 4: Face, 5: Dead or alive,
 //7: Acted, 8: Pic Num, 9: The number, 10, 11, 12: Auto, 13: Exp gotten.
 //初始化战场
-
 function InitialBField: boolean;
 var
   sta, GRP, IDX, offset, i, i1, i2, x, y, fieldnum: integer;
@@ -520,7 +518,6 @@ end;
 
 
 //选择人物, 返回值为整型, 按bit表示人物是否参战
-
 function SelectTeamMembers(forceSingle: integer = 0): integer;
 var
   i, menu, max, menup, xm, ym, x, y, h, forall: integer;
@@ -688,7 +685,6 @@ end;
 
 
 //设定敌方角色的状态
-
 procedure SetEnemyAttribute;
 var
   i, rnum: integer;
@@ -733,7 +729,6 @@ begin
 end;
 
 //计算面对的方向
-
 function CalFace(x1, y1, x2, y2: integer): integer; overload;
 var
   d1, d2, dm: integer;
@@ -764,7 +759,6 @@ begin
 end;
 
 //战斗主控制
-
 procedure BattleMainControl;
 var
   i, j, neinum, neilevel, bnum, pnum, act: integer;
@@ -1159,7 +1153,6 @@ begin
 end;
 
 //判断某人是否出场
-
 function IFinbattle(num: integer): integer;
 var
   i, r: integer;
@@ -1179,7 +1172,6 @@ end;
 
 //按轻功重排人物(考虑装备)
 //2号状态, 轻功有加成
-
 procedure ReArrangeBRole;
 var
   i, i1, i2, x, t, s1, s2: integer;
@@ -1227,7 +1219,6 @@ begin
 end;
 
 //计算可移动步数(考虑装备)
-
 function CalBroleMoveAbility(bnum: integer): integer;
 var
   rnum, addspeed, step: integer;
@@ -1289,7 +1280,6 @@ end;
 
 //0: Continue; 1: Victory; 2:Failed.
 //检查是否有一方全部阵亡
-
 function BattleStatus: integer;
 var
   i, sum0, sum1: integer;
@@ -1314,7 +1304,6 @@ begin
 end;
 
 //战斗主选单, menustatus按bit保存可用项
-
 function BattleMenu(bnum: integer): integer;
 var
   i, p, MenuStatus, menu, max, rnum, menup, xm, ym, step, x, y, h, l: integer;
@@ -1552,7 +1541,6 @@ end;
 
 
 //移动
-
 procedure MoveRole(bnum: integer);
 var
   s, i: integer;
@@ -1568,7 +1556,6 @@ begin
 end;
 
 //移动动画
-
 function MoveAmination(bnum: integer): boolean;
 var
   s, i, a, tempx, tempy: integer;
@@ -1650,7 +1637,6 @@ end;
 
 
 //选择查看状态的目标
-
 function SelectShowStatus(bnum: integer): boolean;
 var
   Axp, Ayp, rnum, step, range, AttAreaType, pAx, pAy: integer;
@@ -1758,7 +1744,6 @@ end;
 
 
 //选择点
-
 function SelectAim(bnum, step: integer): boolean;
 var
   Axp, Ayp: integer;
@@ -1857,7 +1842,6 @@ begin
 end;
 
 //选择原地
-
 function SelectCross(bnum, AttAreaType, step, range: integer): boolean;
 var
   Axp, Ayp: integer;
@@ -1903,7 +1887,6 @@ begin
 end;
 
 //目标系点叉菱方型、原地系菱方型
-
 function SelectRange(bnum, AttAreaType, step, range: integer): boolean;
 var
   Axp, Ayp: integer;
@@ -2001,7 +1984,6 @@ begin
 end;
 
 //选择远程
-
 function SelectFar(bnum, mnum, level: integer): boolean;
 var
   Axp, Ayp: integer;
@@ -2126,7 +2108,6 @@ end;
 
 
 //选择方向
-
 function SelectDirector(bnum, AttAreaType, step, range: integer): boolean;
 var
   str: WideString;
@@ -2298,7 +2279,6 @@ end;
 //移动过程中, 旁边有敌人, 则不能继续移动
 //mode=0移动, 1攻击用毒医疗等, 2查看状态, 3标记出两个人物之间的步数
 //1,2并未使用此子程
-
 procedure SeekPath2(x, y, step, myteam, mode: integer; bnum: integer = -1);
 var
   Xlist: array [0 .. 4096] of integer;
@@ -2533,7 +2513,6 @@ end;
 
 //初始化范围
 //mode=0移动, 1攻击用毒医疗等, 2查看状态, 3类似0但是忽略人物
-
 procedure CalCanSelect(bnum, mode, step: integer);
 var
   i, i1, i2, step0: integer;
@@ -2586,7 +2565,6 @@ end;
 
 
 //攻击
-
 procedure Attack(bnum: integer);
 var
   rnum, i, mnum, level, step, range, AttAreaType, i1, twice, temp: integer;
@@ -2675,7 +2653,6 @@ begin
 end;
 
 //武学的统一入口
-
 procedure AttackAction(bnum, i, mnum, level: integer); overload;
 var
   twice, i1, rnum: integer;
@@ -2938,7 +2915,6 @@ begin
 end;
 
 //选择武功
-
 function SelectMagic(rnum: integer): integer;
 var
   i, p, MenuStatus, max, menu, menup, xm, ym, h: integer;
@@ -3097,7 +3073,6 @@ end;
 
 //设定攻击范围
 //使用比较复杂但是高效的方式重写, 主要是为AI计算也可使用
-
 procedure SetAminationPosition(mode, step, range: integer; aimMode: integer = 0); overload;
 begin
   SetAminationPosition(Bx, By, Ax, Ay, mode, step, range, aimMode);
@@ -3244,7 +3219,6 @@ begin
 end;
 
 //显示武功效果
-
 procedure PlayMagicAmination(bnum, enum: integer; aimMode: integer = 0; mode: integer = 0);
 var
   beginpic, i, i1, i2, endpic, x, y, z, min, max, rnum: integer;
@@ -3310,7 +3284,6 @@ begin
 end;
 
 //判断是否有非行动方角色在攻击范围之内, 以及对状态的控制
-
 procedure CalHurtRole(bnum, mnum, level: integer; mode: integer = 0);
 var
   i, rnum, hurt, addpoi, mp, hurt1: integer;
@@ -3518,7 +3491,6 @@ begin
 end;
 
 //计算伤害值, 第一公式如小于0则取一个随机数, 无第二公式
-
 function CalHurtValue(bnum1, bnum2, mnum, level: integer; mode: integer = 0): integer;
 var
   i, j, rnum1, rnum2, mhurt, R1Att, R1Def, R2Att, R2Def, att, def, k1, k2, dis, neinum, neilevel, livenum, speed1, speed2: integer;
@@ -3806,7 +3778,6 @@ begin
 end;
 
 //显示数字: 0-红色负, 1-紫色负, 2-绿色正, 3-黄色正, 4-蓝色负
-
 procedure ShowHurtValue(mode: integer; team: integer = 0; fstr: string = '');
 var
   i, i1, x, y: integer;
@@ -3901,7 +3872,6 @@ end;
 
 
 //计算中毒减少的生命
-
 procedure CalPoiHurtLife;
 var
   i: integer;
@@ -3925,7 +3895,6 @@ begin
 end;
 
 //设置生命低于0的人物为已阵亡, 主要是清除所占的位置
-
 procedure ClearDeadRolePic;
 var
   i, j, i1, i2, rnum, bpicnum: integer;
@@ -4030,7 +3999,6 @@ end;
 
 
 //等待, 似乎不太完善
-
 procedure Wait(bnum: integer);
 var
   i, i1, i2, x: integer;
@@ -4052,7 +4020,6 @@ begin
 end;
 
 //战斗结束恢复人物状态
-
 procedure RestoreRoleStatus;
 var
   i, j, rnum: integer;
@@ -4108,7 +4075,6 @@ end;
 
 
 //增加经验
-
 procedure AddExp;
 var
   i, mnum, mlevel, i1, i2, rnum, basicvalue, amount, levels, p, x, y: integer;
@@ -4201,7 +4167,6 @@ begin
 end;
 
 //检查是否能够升级
-
 procedure CheckLevelUp;
 var
   i, rnum: integer;
@@ -4219,7 +4184,6 @@ begin
 end;
 
 //升级, 如是我方人物显示状态
-
 procedure LevelUp(bnum: integer; rnum: integer = -1);
 var
   i, add, levelA, i0, i1: integer;
@@ -4302,7 +4266,6 @@ begin
 end;
 
 //检查身上秘笈
-
 procedure CheckBook;
 var
   i, i1, i2, p, rnum, inum, mnum, mlevel, needexp, needitem, needitemamount, itemamount: integer;
@@ -4387,7 +4350,6 @@ begin
 end;
 
 //统计一方人数
-
 function CalRNum(team: integer): integer;
 var
   i: integer;
@@ -4402,7 +4364,6 @@ begin
 end;
 
 //战斗中物品选单
-
 procedure BattleMenuItem(bnum: integer);
 var
   rnum, inum, mode: integer;
@@ -4434,7 +4395,6 @@ begin
 end;
 
 //动作动画
-
 procedure PlayActionAmination(bnum, mode: integer);
 var
   rnum, i, beginpic, endpic, IDX, GRP, tnum, len, Ax1, Ay1, actnum, k: integer;
@@ -4516,7 +4476,6 @@ begin
 end;
 
 //用毒
-
 procedure UsePoison(bnum: integer);
 var
   rnum, bnum1, rnum1, poi, step, addpoi, minDefPoi, i: integer;
@@ -4577,7 +4536,6 @@ begin
 end;
 
 //医疗
-
 procedure Medcine(bnum: integer);
 var
   rnum, bnum1, rnum1, med, step, addlife: integer;
@@ -4632,7 +4590,6 @@ begin
 end;
 
 //解毒
-
 procedure MedPoison(bnum: integer);
 var
   rnum, bnum1, rnum1, medpoi, step, minuspoi: integer;
@@ -4679,7 +4636,6 @@ begin
 end;
 
 //使用暗器
-
 procedure UseHiddenWeapon(bnum, inum: integer);
 var
   rnum, bnum1, rnum1, hidden, step, hurt, poison, i, maxhurt, eventnum: integer;
@@ -4853,7 +4809,6 @@ end;
 
 
 //The AI.
-
 procedure AutoBattle(bnum: integer);
 {var
   i, p, a, temp, rnum, inum, eneamount, aim, mnum, level, Ax1, Ay1, i1, i2, step, step1, dis0, dis: integer;
@@ -5085,7 +5040,6 @@ end;
 
 //自动使用list的值最大的物品
 //test 仅检测是否有相关物品
-
 function AutoUseItem(bnum, list: integer; test: integer = 0): boolean;
 var
   i, p, temp, rnum, inum: integer;
@@ -5379,7 +5333,6 @@ end;
 //尝试移动并攻击, step为最大移动步数
 //武功已经事先选好, distance为武功距离, range为武功范围, AttAreaType为武功类型
 //尝试每一个可以移动到的点, 考察在该点攻击的情况, 选择最合适的目标点
-
 procedure TryMoveAttack(var Mx1, My1, Ax1, Ay1, tempmaxhurt: integer; bnum, mnum, level: integer);
 var
   i, i1, i2, eneamount, aim, curX, curY, dis, dis0: integer;
@@ -5475,7 +5428,6 @@ end;
 
 
 //移动到离最近的敌人最近的地方
-
 procedure NearestMove(var Mx1, My1: integer; bnum: integer);
 var
   temp1, temp2: integer;
@@ -5486,7 +5438,6 @@ end;
 
 
 //移动到离敌人最远的地方（与每一个敌人的距离之和最大）
-
 procedure FarthestMove(var Mx1, My1: integer; bnum: integer);
 var
   i, i1, i2, k, tempdis, maxdis: integer;
@@ -5531,7 +5482,6 @@ end;
 //Prolist: the properties of role.
 //MaxMinPro: 1-search max, -1-search min, 0-any.
 //mode: 0-nearest only, 1-medcine, 2-use poison, 3-force keepdis
-
 procedure NearestMoveByPro(var Mx1, My1, Ax1, Ay1: integer; bnum, TeamMate, KeepDis, Prolist, MaxMinPro, mode: integer);
 var
   i, tempdis, mindis, tempPro, rnum, n: integer;
@@ -5667,7 +5617,6 @@ begin
 end;
 
 //在可医疗范围内, 寻找生命不足一半的生命最少的友军,
-
 procedure TryMoveCure(var Mx1, My1, Ax1, Ay1: integer; bnum: integer);
 var
   curX, curY: integer;
@@ -6305,7 +6254,6 @@ begin
 end;
 
 //AI使用特技
-
 function SpecialAttack(bnum: integer): boolean;
 var
   rnum, mnum, level, rnd, r, movetype, Movex, Movey, dis, dis0, distance, range, minstep, maxCount, tempcount, i, i1, i2, m, magicid, twice: integer;
@@ -6714,7 +6662,6 @@ begin
 end;
 
 //0特技, 状态类特技总入口
-
 procedure TSpecialAbility.SA_0(bnum, mnum, level: integer);
 var
   i, hurt, s, k, j, r: integer;
@@ -6794,7 +6741,6 @@ begin
 end;
 
 //状态增减
-
 procedure ModifyState(bnum, statenum: integer; MaxValue, maxround: smallint);
 var
   curvalue, curround: smallint;
@@ -6857,7 +6803,6 @@ begin
 end;
 
 //1特技, 娇生惯养
-
 procedure TSpecialAbility.SA_1(bnum, mnum, level: integer);
 begin
   ShowMagicName(mnum);
@@ -6865,7 +6810,6 @@ begin
 end;
 
 //人人为我, 自私自利
-
 procedure GiveMeLife(bnum, mnum, level, Si: integer);
 var
   i, addvalue, rnum, aimbnum: integer;
@@ -6903,7 +6847,6 @@ begin
 end;
 
 //2特技, 舍己为人
-
 procedure TSpecialAbility.SA_2(bnum, mnum, level: integer);
 var
   i, aimbnum, rnum, MPnum: integer;
@@ -6932,7 +6875,6 @@ begin
 end;
 
 //3特技, 药王神篇
-
 procedure TSpecialAbility.SA_3(bnum, mnum, level: integer);
 var
   i, curenum, rnum, m: integer;
@@ -6974,7 +6916,6 @@ end;
 
 
 //4打坐吐纳, 减体加内
-
 procedure TSpecialAbility.SA_4(bnum, mnum, level: integer);
 var
   dePhy, addMP, rnum: integer;
@@ -7016,7 +6957,6 @@ end;
 
 //5妙手空空, 偷取敌人物品
 //当敌人身上没有物品时有一个列表, 几率与物品价格相关
-
 procedure TSpecialAbility.SA_6(bnum, mnum, level: integer);
 var
   i, aimbnum, aimrnum, rnum, itemid, itemnum, k: integer;
@@ -7127,7 +7067,6 @@ begin
 end;
 
 //7特技, 阎王敌, 全体加生命
-
 procedure TSpecialAbility.SA_7(bnum, mnum, level: integer);
 var
   i, curenum, rnum, m: integer;
@@ -7169,7 +7108,6 @@ begin
 end;
 
 //8特技, 运功疗伤, 减内加血
-
 procedure TSpecialAbility.SA_8(bnum, mnum, level: integer);
 var
   deMP, addHP, rnum: integer;
@@ -7214,7 +7152,6 @@ begin
 end;
 
 //十面埋伏, 潇湘夜雨
-
 procedure ambush(bnum, mnum, level, Si: integer);
 var
   i, rnum: integer;
@@ -7259,7 +7196,6 @@ begin
 end;
 
 //11特技, 狮子吼
-
 procedure TSpecialAbility.SA_11(bnum, mnum, level: integer);
 var
   i, hurt, rnum: integer;
@@ -7298,7 +7234,6 @@ begin
 end;
 
 //吸星大法, 直线攻击, 吸内, 并拉近目标
-
 procedure TSpecialAbility.SA_12(bnum, mnum, level: integer);
 var
   i, incx, incy, curx, cury, aimx, aimy, aimbnum, hurt, rnum: integer;
@@ -7356,7 +7291,6 @@ begin
 end;
 
 //13特技, 含沙射影, 全体下毒
-
 procedure TSpecialAbility.SA_13(bnum, mnum, level: integer);
 var
   i, curenum, rnum: integer;
@@ -7384,7 +7318,6 @@ begin
 end;
 
 //14特技乱石嶙峋
-
 procedure TSpecialAbility.SA_14(bnum, mnum, level: integer);
 var
   stonenum, i, x, y, i1, i2, k, k1, havestone, rnum: integer;
@@ -7453,7 +7386,6 @@ begin
 end;
 
 //15特技同仇敌忾, 多人围殴目标敌人
-
 procedure TSpecialAbility.SA_15(bnum, mnum, level: integer);
 var
   gridnum, Ax1, Ax2, Ay1, Ay2, x, y: integer;
@@ -7498,7 +7430,6 @@ begin
 end;
 
 //16静诵黄庭, 全体恢复体力
-
 procedure TSpecialAbility.SA_16(bnum, mnum, level: integer);
 var
   i, curenum, rnum, m: integer;
@@ -7543,7 +7474,6 @@ begin
 end;
 
 //17乱世浮萍, 把行动机会让给目标队友
-
 procedure TSpecialAbility.SA_17(bnum, mnum, level: integer);
 var
   bnum2, oldactstatus: integer;
@@ -7590,7 +7520,6 @@ begin
 end;
 
 //18神照功, 复活队友
-
 procedure TSpecialAbility.SA_18(bnum, mnum, level: integer);
 var
   i, res, newlife, amount, k, k1, i1, i2, rnum, hurt, rnum2, bnum2: integer;
@@ -7674,7 +7603,6 @@ begin
 end;
 
 //19神行百变, 直线敌人随机陷入负面状态
-
 procedure TSpecialAbility.SA_19(bnum, mnum, level: integer);
 var
   bnumarray, bnumx, bnumy: array [0 .. 30] of smallint;
@@ -7774,7 +7702,6 @@ begin
 end;
 
 //20万里独行
-
 procedure TSpecialAbility.SA_20(bnum, mnum, level: integer);
 var
   step, pstep, rnum, hurtvalue, i1, i2, k, aimbnum, ax1, ay1, ax2, ay2: integer;
@@ -7842,7 +7769,6 @@ begin
 end;
 
 //21策马啸西风, 装备马匹者, 移动+4, 其余人+2
-
 procedure TSpecialAbility.SA_21(bnum, mnum, level: integer);
 var
   i, m: integer;
@@ -7885,7 +7811,6 @@ end;
 
 
 //22侠之大者, 全体队友获得五种正面状态
-
 procedure TSpecialAbility.SA_22(bnum, mnum, level: integer);
 var
   i, j, sl: integer;
@@ -7915,7 +7840,6 @@ end;
 
 
 //23赏善, 将目标队友的正面状态分享给所有队员
-
 procedure TSpecialAbility.SA_23(bnum, mnum, level: integer);
 var
   i, j: integer;
@@ -7961,7 +7885,6 @@ end;
 
 
 //24罚恶, 将目标敌人的负面状态分享给所有敌人
-
 procedure TSpecialAbility.SA_24(bnum, mnum, level: integer);
 var
   i, j: integer;
@@ -8008,7 +7931,6 @@ begin
 end;
 
 //25清心普善, 全体补内力
-
 procedure TSpecialAbility.SA_25(bnum, mnum, level: integer);
 var
   i, addmp, rnum, m: integer;
@@ -8061,7 +7983,6 @@ begin
 end;
 
 //26先天一阳指, 直线攻击, 敌人减血, 并有一定概率定身, 我方加血
-
 procedure TSpecialAbility.SA_26(bnum, mnum, level: integer);
 var
   i, rand, rnum, hurt: integer;
@@ -8126,7 +8047,6 @@ begin
 end;
 
 //27韦编三绝, 控制目标敌人
-
 procedure TSpecialAbility.SA_27(bnum, mnum, level: integer);
 var
   i, Pctrl, Pm, aimBnum, enemyamount: integer;
@@ -8170,7 +8090,6 @@ end;
 
 
 //28断己相杀, 与目标敌人死磕, 直至一方死亡
-
 procedure TSpecialAbility.SA_28(bnum, mnum, level: integer);
 var
   i, Anum, rnumA, rnumB, hurt: integer;
@@ -8279,7 +8198,6 @@ end;
 
 
 //29七窍玲珑, 将目标队友的正面状态延长
-
 procedure TSpecialAbility.SA_29(bnum, mnum, level: integer);
 var
   i, j, ERound, aimbnum: integer;
@@ -8318,7 +8236,6 @@ end;
 
 
 //30特技排兵布阵, 改变目标队友的位置
-
 procedure TSpecialAbility.SA_30(bnum, mnum, level: integer);
 var
   i, x, y, aimbnum, k, i1, i2, k1: integer;
@@ -8374,7 +8291,6 @@ end;
 
 //31森罗万象, 学会场上某队友的特技, 10级为从全部队友中选择
 //在原版中运行时, 设定为
-
 procedure TSpecialAbility.SA_31(bnum, mnum, level: integer);
 var
   i, i1, amount, res, rnum, eachamount: integer;
@@ -8469,7 +8385,6 @@ begin
 end;
 
 //32众生平等
-
 procedure TSpecialAbility.SA_32(bnum, mnum, level: integer);
 var
   i, minlife, rnum, life, sum: integer;
@@ -8509,7 +8424,6 @@ begin
 end;
 
 //33不知所措, 交换两人mp
-
 procedure TSpecialAbility.SA_33(bnum, mnum, level: integer);
 var
   i, x, y, aimbnum1, aimbnum2, tempmp, rnum, k, k1: integer;
@@ -8582,7 +8496,6 @@ begin
 end;
 
 //34颠三倒四, 交换两人hp
-
 procedure TSpecialAbility.SA_34(bnum, mnum, level: integer);
 var
   i, x, y, aimbnum1, aimbnum2, temphp, rnum, k, k1, i1, i2: integer;
@@ -8656,7 +8569,6 @@ begin
 end;
 
 //35特技, 破甲, 消除敌人正面状态, 变得容易受伤
-
 procedure TSpecialAbility.SA_35(bnum, mnum, level: integer);
 var
   i, aimbnum, rnum: integer;
@@ -8689,7 +8601,6 @@ begin
 end;
 
 //36特技, 无坚不摧
-
 procedure TSpecialAbility.SA_36(bnum, mnum, level: integer);
 begin
   ShowMagicName(mnum);
@@ -8709,7 +8620,6 @@ begin
 end;
 
 //37千娇百媚, 减少所有敌人轻功
-
 procedure TSpecialAbility.SA_37(bnum, mnum, level: integer);
 var
   i, rnum: integer;
