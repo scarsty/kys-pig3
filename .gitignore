@@ -74,3 +74,6 @@ mods/promise/__history
 *.dsv
 修改器/abcd/.vs
 *.res
+*.otares
+*.rsm
+*.tvsconfig

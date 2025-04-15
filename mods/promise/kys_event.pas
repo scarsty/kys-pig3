@@ -1520,9 +1520,9 @@ end;
 function instruct_50e(code, e1, e2, e3, e4, e5, e6: integer): integer;
 var
   i, t1, grp, idx, offset, len, i1, i2: integer;
-  p, p1: PChar;
+  p, p1: pansichar;
   //ps :pstring;
-  str: string;
+  str: ansistring;
   word, word1: WideString;
 begin
 
@@ -1600,10 +1600,10 @@ begin
       p := @x50[e3];
       for i := 0 to len - 1 do
       begin
-        p^ := char(byte(p^) xor $FF);
+        p^ := ansichar(byte(p^) xor $FF);
         p := p + 1;
       end;
-      p^ := char(0);
+      p^ := ansichar(0);
       //x50[e3+i]:=0;
     end;
     9: //Format the string.
@@ -1621,7 +1621,7 @@ begin
     end;
     10: //Get the length of a string.
     begin
-      x50[e2] := length(PChar(@x50[e1]));
+      x50[e2] := length(pansichar(@x50[e1]));
       //showmessage(inttostr(x50[e2]));
     end;
     11: //Combine 2 strings.
@@ -1642,16 +1642,16 @@ begin
       //p^:=char(0);
     end;
     12: //Build a string with spaces.
-      //Note: here the width of one 'space' is the same as one Chinese charactor.
+      //Note: here the width of one 'space' is the same as one Chinese ansicharactor.
     begin
       e3 := e_getvalue(0, e1, e3);
       p := @x50[e2];
       for i := 0 to e3 do
       begin
-        p^ := char($20);
+        p^ := ansichar($20);
         p := p + 1;
       end;
-      p^ := char(0);
+      p^ := ansichar(0);
     end;
     16: //Write R data.
     begin
@@ -1845,10 +1845,10 @@ begin
       for i := 0 to 19 do
       begin
         (p + i)^ := (p1 + i)^;
-        if (p1 + i)^ = char(0) then break;
+        if (p1 + i)^ = ansichar(0) then break;
       end;
-      (p + i)^ := char($20);
-      (p + i + 1)^ := char(0);
+      (p + i)^ := ansichar($20);
+      (p + i + 1)^ := ansichar(0);
     end;
     28: //Get the battle number.
     begin
@@ -1898,7 +1898,7 @@ begin
       begin
         if byte(p^) = $2A then
         begin
-          p^ := char(0);
+          p^ := ansichar(0);
           drawgbkshadowtext(p1, e3 - 22, e4 + 22 * i - 25, colcolor(0, e5 and $FF),
             colcolor(0, (e5 and $FF00) shr 8));
           i := i + 1;
@@ -1924,7 +1924,7 @@ begin
     begin
       waitanykey(@x50[e1], @x50[e2], @x50[e3]);
       x50[e3] := x50[e3] - 30;
-      case x50[e1] of
+      {case x50[e1] of
         sdlk_left: x50[e1] := 154;
         sdlk_right: x50[e1] := 156;
         sdlk_up: x50[e1] := 158;
@@ -1933,7 +1933,7 @@ begin
         sdlk_KP_6: x50[e1] := 156;
         sdlk_KP_8: x50[e1] := 158;
         sdlk_KP_2: x50[e1] := 152;
-      end;
+      end;}
     end;
     36: //Draw a string with background then pause, if the key pressed is 'Y' then jump=0.
     begin
@@ -1972,7 +1972,7 @@ begin
       begin
         if byte(p^) = $2A then
         begin
-          p^ := char(0);
+          p^ := ansichar(0);
           drawgbkshadowtext(p1, e3 - 17, e4 + 22 * i + 2, colcolor(0, e5 and $FF),
             colcolor(0, (e5 and $FF00) shr 8));
           i := i + 1;
@@ -2008,7 +2008,7 @@ begin
       for i := 0 to e2 - 1 do
       begin
         menustring[i] := gbktounicode(@x50[x50[e3 + i]]);
-        i1 := length(PChar(@x50[x50[e3 + i]]));
+        i1 := length(pansichar(@x50[x50[e3 + i]]));
         if i1 > t1 then t1 := i1;
       end;
       x50[e4] := commonmenu(e5, e6, t1 * 10 + 3, e2 - 1) + 1;
@@ -2025,7 +2025,7 @@ begin
       for i := 0 to e2 - 1 do
       begin
         menustring[i] := gbktounicode(@x50[x50[e3 + i]]);
-        i1 := length(PChar(@x50[x50[e3 + i]]));
+        i1 := length(pansichar(@x50[x50[e3 + i]]));
         if i1 > i2 then i2 := i1;
       end;
       t1 := (e1 shr 8) and $FF;
@@ -2453,7 +2453,7 @@ begin
     begin
       str := '';
       for i := e1 to e1 + e2 - 1 do
-        str := str + 'x' + IntToStr(i) + '=' + IntToStr(x50[i]) + char(13) + char(10);
+        str := str + 'x' + IntToStr(i) + '=' + IntToStr(x50[i]) + ansichar(13) + ansichar(10);
       messagebox(0, @str[1], 'KYS Windows', MB_OK);
     end;
     49: //In PE files, you can't call any procedure as your wish.
@@ -2732,7 +2732,7 @@ procedure NewTalk(headnum, talknum, namenum, place, showhead, color, frame: inte
 var
   alen, newcolor, color1, color2, nh, nw, ch, c1, r1, n, namelen, i, t1, grp, idx, offset,
   len, i1, i2, face, c, nx, ny, hx, hy, hw, hh, x, y, w, h, cell, row: integer;
-  np3, np, np1, np2, tp, p1, ap: PChar;
+  np3, np, np1, np2, tp, p1, ap: pansichar;
   actorarray, talkarray, namearray, name1, name2: array of byte;
   pword: array[0..1] of Uint16;
   wd, str: string;
@@ -2834,10 +2834,10 @@ begin
         for n := 0 to namelen - 3 do
         begin
           (np + n)^ := (p1 + n)^;
-          if (p1 + n)^ = char(0) then break;
+          if (p1 + n)^ = ansichar(0) then break;
         end;
-        //(np + n)^ := char(0);
-        (np + n + 1)^ := char(0);
+        //(np + n)^ := ansichar(0);
+        (np + n + 1)^ := ansichar(0);
         break;
       end;
     end;
@@ -2850,10 +2850,10 @@ begin
   for n := 0 to alen - 1 do
   begin
     (ap + n)^ := (p1 + n)^;
-    if (p1 + n)^ = char(0) then break;
+    if (p1 + n)^ = ansichar(0) then break;
   end;
-  (ap + n)^ := char($0);
-  (ap + n + 1)^ := char(0);
+  (ap + n)^ := ansichar($0);
+  (ap + n + 1)^ := ansichar(0);
 
   if alen = 6 then
   begin
@@ -2861,8 +2861,8 @@ begin
     np1 := @name1[0];
     np1^ := ap^;
     (np1 + 1)^ := (ap + 1)^;
-    (np1 + 2)^ := char(0);
-    (np1 + 3)^ := char(0);
+    (np1 + 2)^ := ansichar(0);
+    (np1 + 3)^ := ansichar(0);
     setlength(name2, 4);
     np2 := @name2[0];
     np2^ := ap^;
@@ -2877,8 +2877,8 @@ begin
     (np1 + 1)^ := (ap + 1)^;
     (np1 + 2)^ := (ap + 2)^;
     (np1 + 3)^ := (ap + 3)^;
-    (np1 + 4)^ := char(0);
-    (np1 + 5)^ := char(0);
+    (np1 + 4)^ := ansichar(0);
+    (np1 + 5)^ := ansichar(0);
     setlength(name2, 6);
     np2 := @name2[0];
     for i := 0 to length(name2) - 1 do
@@ -2905,8 +2905,8 @@ begin
       (np1 + 1)^ := (ap + 1)^;
       (np1 + 2)^ := (ap + 2)^;
       (np1 + 3)^ := (ap + 3)^;
-      (np1 + 4)^ := char(0);
-      (np1 + 5)^ := char(0);
+      (np1 + 4)^ := ansichar(0);
+      (np1 + 5)^ := ansichar(0);
       setlength(name2, 4);
       np2 := @name2[0];
       for i := 0 to length(name2) - 1 do
@@ -2918,8 +2918,8 @@ begin
       np1 := @name1[0];
       np1^ := ap^;
       (np1 + 1)^ := (ap + 1)^;
-      (np1 + 2)^ := char(0);
-      (np1 + 3)^ := char(0);
+      (np1 + 2)^ := ansichar(0);
+      (np1 + 3)^ := ansichar(0);
       setlength(name2, 6);
       np2 := @name2[0];
       for i := 0 to length(name2) - 1 do
@@ -3009,8 +3009,8 @@ begin
         continue;
       end;
       setlength(wd, length(wd) + 1);
-      wd[length(wd) - 1] := char($A0 + (smallint(str[i]) - 32));
-      wd[length(wd) - 2] := char($A3);
+      wd[length(wd) - 1] := ansichar($A0 + (smallint(str[i]) - 32));
+      wd[length(wd) - 2] := ansichar($A3);
     end;
     inc(i);
   end;
@@ -3036,10 +3036,10 @@ begin
     if namenum <> 0 then
     begin
       DrawRectangle(nx, ny, nw, nh, frame, colcolor(0, $FF), 60);
-      namelen := length(np);
+      //namelen := length(np);
       //np := @Rrole[0].Name;
       //showmessage(inttostr(namenum));
-      DrawgbkShadowText(np, nx + 20 - namelen * 9 div 2, ny + 4, colcolor(0, $63), colcolor(0, $70));
+      //DrawgbkShadowText(np, nx + 20 - namelen * 9 div 2, ny + 4, colcolor(0, $63), colcolor(0, $70));
     end;
 
     while r1 < row do
@@ -3157,7 +3157,7 @@ function ReSetName(t, inum, newnamenum: integer): integer;
 var
   NewName: string;
   offset, len, i, idx, grp: integer;
-  p, np: PChar;
+  p, np: pansichar;
   talkarray: array of byte;
 begin
 
@@ -3208,7 +3208,7 @@ begin
   begin
     (p + i)^ := (np + i)^;
   end;
-  (p + i)^ := char(0);
+  (p + i)^ := ansichar(0);
 
   Result := 0;
 
@@ -3218,7 +3218,7 @@ procedure ShowTitle(talknum, color: integer);
 var
   newcolor, alen, x1, y1, ch, color1, color2, c1, r1, n, namelen, i, t1, grp, idx, offset,
   len, i1, i2, face, c, x, y, w, h, cell, row: integer;
-  np3, np1, np2, tp, p1, ap: PChar;
+  np3, np1, np2, tp, p1, ap: pansichar;
   actorarray, name1, name2, talkarray: array of byte;
   pword: array[0..1] of Uint16;
   wd, str: string;
@@ -3290,10 +3290,10 @@ begin
   for n := 0 to alen - 1 do
   begin
     (ap + n)^ := (p1 + n)^;
-    if (p1 + n)^ = char(0) then break;
+    if (p1 + n)^ = ansichar(0) then break;
   end;
-  (ap + n)^ := char($0);
-  (ap + n + 1)^ := char(0);
+  (ap + n)^ := ansichar($0);
+  (ap + n + 1)^ := ansichar(0);
 
   if alen = 6 then
   begin
@@ -3301,8 +3301,8 @@ begin
     np1 := @name1[0];
     np1^ := ap^;
     (np1 + 1)^ := (ap + 1)^;
-    (np1 + 2)^ := char(0);
-    (np1 + 3)^ := char(0);
+    (np1 + 2)^ := ansichar(0);
+    (np1 + 3)^ := ansichar(0);
     setlength(name2, 4);
     np2 := @name2[0];
     np2^ := ap^;
@@ -3317,8 +3317,8 @@ begin
     (np1 + 1)^ := (ap + 1)^;
     (np1 + 2)^ := (ap + 2)^;
     (np1 + 3)^ := (ap + 3)^;
-    (np1 + 4)^ := char(0);
-    (np1 + 5)^ := char(0);
+    (np1 + 4)^ := ansichar(0);
+    (np1 + 5)^ := ansichar(0);
     setlength(name2, 6);
     np2 := @name2[0];
     for i := 0 to length(name2) - 1 do
@@ -3345,8 +3345,8 @@ begin
       (np1 + 1)^ := (ap + 1)^;
       (np1 + 2)^ := (ap + 2)^;
       (np1 + 3)^ := (ap + 3)^;
-      (np1 + 4)^ := char(0);
-      (np1 + 5)^ := char(0);
+      (np1 + 4)^ := ansichar(0);
+      (np1 + 5)^ := ansichar(0);
       setlength(name2, 4);
       np2 := @name2[0];
       for i := 0 to length(name2) - 1 do
@@ -3358,8 +3358,8 @@ begin
       np1 := @name1[0];
       np1^ := ap^;
       (np1 + 1)^ := (ap + 1)^;
-      (np1 + 2)^ := char(0);
-      (np1 + 3)^ := char(0);
+      (np1 + 2)^ := ansichar(0);
+      (np1 + 3)^ := ansichar(0);
       setlength(name2, 6);
       np2 := @name2[0];
       for i := 0 to length(name2) - 1 do
@@ -3447,8 +3447,8 @@ begin
         continue;
       end;
       setlength(wd, length(wd) + 1);
-      wd[length(wd) - 1] := char($A0 + (smallint(str[i]) - 32));
-      wd[length(wd) - 2] := char($A3);
+      wd[length(wd) - 1] := ansichar($A0 + (smallint(str[i]) - 32));
+      wd[length(wd) - 2] := ansichar($A3);
     end;
     inc(i);
   end;
@@ -3615,7 +3615,7 @@ end;
 function ReadTalk(talknum: integer): WideString;
 var
   i, idx, grp, len, offset: integer;
-  p: PChar;
+  p: pansichar;
   talkarray: array of byte;
 begin
   idx := fileopen(AppPath + TALK_IDX, fmopenread);
@@ -4256,7 +4256,7 @@ end;
 function SelectList(begintalknum, amount: integer): integer;
 var
   i, x, y, w, h, idx, talknum, grp, len, offset: integer;
-  p: PChar;
+  p: pansichar;
   talkarray: array of byte;
 begin
   w := 0;

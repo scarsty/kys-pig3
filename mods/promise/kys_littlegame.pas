@@ -1,4 +1,4 @@
-unit kys_littlegame;
+﻿unit kys_littlegame;
 
 //{$MODE Delphi}
 
@@ -1264,12 +1264,12 @@ begin
   for i := 0 to len - 1 do
   begin
     wd[0] := gamearray[1][i];
-    drawgbkShadowText(PChar(@wd[0]), wx + (i mod c) * 40, wy + (i div c) * 40, colcolor(0, 5), colcolor(0, 7));
+    drawgbkShadowText(pansichar(@wd[0]), wx + (i mod c) * 40, wy + (i div c) * 40, colcolor(0, 5), colcolor(0, 7));
   end;
   for i := 0 to Count - 1 do
   begin
     wd[0] := gamearray[2][i];
-    drawgbkShadowText(PChar(@wd[0]), wx1 + (i mod (Count div r1)) * 40, wy1 + (i div (Count div r1)) * 40,
+    drawgbkShadowText(pansichar(@wd[0]), wx1 + (i mod (Count div r1)) * 40, wy1 + (i div (Count div r1)) * 40,
       colcolor(0, 5), colcolor(0, 7));
   end;
   drawrectangle(wx + (menu mod c) * 40 + 11, wy + (menu div c) * 40 - 9, 39, 39, 0, colcolor(0, 255), 0);
@@ -1343,12 +1343,12 @@ begin
     for i := 0 to len - 1 do
     begin
       wd[0] := gamearray[1][i];
-      drawgbkShadowText(PChar(@wd[0]), wx + (i mod c) * 40, wy + (i div c) * 40, colcolor(0, 5), colcolor(0, 7));
+      drawgbkShadowText(pansichar(@wd[0]), wx + (i mod c) * 40, wy + (i div c) * 40, colcolor(0, 5), colcolor(0, 7));
     end;
     for i := 0 to Count - 1 do
     begin
       wd[0] := gamearray[2][i];
-      drawgbkShadowText(PChar(@wd[0]), wx1 + (i mod (Count div r1)) * 40, wy1 +
+      drawgbkShadowText(pansichar(@wd[0]), wx1 + (i mod (Count div r1)) * 40, wy1 +
         (i div (Count div r1)) * 40, colcolor(0, 5), colcolor(0, 7));
     end;
     drawrectangle(wx + (menu mod c) * 40 + 11, wy + (menu div c) * 40 - 9, 39, 39, 0, colcolor(0, 255), 0);

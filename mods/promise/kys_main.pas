@@ -1,4 +1,4 @@
-unit kys_main;
+﻿unit kys_main;
 
 //{$MODE Delphi}
 
@@ -42,6 +42,10 @@ uses
   //Lua52,
   bass;
 type
+  {$ifndef fpc}
+  puint16 = ^cuint16;
+  puint8 = ^cuint8;
+  {$endif}
 
   TPosition = record
     x, y: integer;
@@ -226,7 +230,7 @@ function CommonScrollMenu(x, y, w, max, maxshow: integer): integer;
 procedure ShowCommonScrollMenu(x, y, w, max, maxshow, menu, menutop: integer);
 function CommonMenu2(x, y, w: integer): integer;
 procedure ShowCommonMenu2(x, y, w, menu: integer);
-function SelectOneTeamMember(x, y: integer; str: string; list1, list2: integer): integer;
+function SelectOneTeamMember(x, y: integer; str: ansistring; list1, list2: integer): integer;
 procedure MenuEsc;
 procedure ShowMenu(menu: integer);
 procedure MenuMedcine;
@@ -281,8 +285,8 @@ procedure CloudCreateOnSide(num: integer);
 {$IFDEF fpc}
 
 {$ELSE}
-function FileExistsUTF8(filename: PChar): boolean; overload;
-function FileExistsUTF8(filename: string): boolean; overload;
+function FileExistsUTF8(filename: pansichar): boolean; overload;
+function FileExistsUTF8(filename: ansistring): boolean; overload;
 function UTF8Decode(str: WideString): WideString;
 {$ENDIF}
 
@@ -499,7 +503,7 @@ var
   nowstep: integer;
   SetNum: array[1..5] of array[0..3] of smallint;
 
-  AppPath: string = '';
+  AppPath: ansistring = '';
   RegionRect: TRect;
 
   CLOUD_AMOUNT: integer = 60; //云的数量
@@ -539,8 +543,8 @@ uses kys_event, kys_battle, kys_littlegame, kys_engine;
 
 procedure Run;
 var
-  p, p1: PChar;
-  title: string;
+  p, p1: pansichar;
+  title: ansistring;
 begin
 {$IFDEF UNIX}
   AppPath := ExtractFilePath(ParamStr(0));
@@ -550,11 +554,10 @@ begin
   ReadFiles;
   //初始化字体
   TTF_Init();
-  font := TTF_OpenFont(PChar(AppPath + CHINESE_FONT), CHINESE_FONT_SIZE);
-  engfont := TTF_OpenFont(PChar(AppPath + ENGLISH_FONT), ENGLISH_FONT_SIZE);
+  font := TTF_OpenFont(pansichar(AppPath + CHINESE_FONT), CHINESE_FONT_SIZE);
+  engfont := TTF_OpenFont(pansichar(AppPath + ENGLISH_FONT), ENGLISH_FONT_SIZE);
   if font = nil then
   begin
-    MessageBox(0, PChar(Format('Error:%s!', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
     exit;
   end;
 
@@ -569,7 +572,6 @@ begin
   Randomize;
   if (SDL_Init(SDL_INIT_VIDEO) < 0) then
   begin
-    MessageBox(0, PChar(Format('Couldn''t initialize SDL : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
     SDL_Quit;
     exit;
   end;
@@ -581,7 +583,7 @@ begin
 
   title := 'The Story Before That Legend v1.22';
   ScreenFlag := SDL_WINDOW_RESIZABLE;
-  window := SDL_CreateWindow(pchar(title), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+  window := SDL_CreateWindow(pansichar(title), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
     RESOLUTIONX, RESOLUTIONY, ScreenFlag);
 
   SDL_GetWindowSize(window, @RESOLUTIONX, @RESOLUTIONY);
@@ -593,7 +595,7 @@ begin
     //SDL_WarpMouseInWindow(window, RESOLUTIONX, RESOLUTIONY);
   end;
 
-  SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, pchar(IntToStr(SMOOTH)));
+  SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, pansichar(IntToStr(SMOOTH)));
 
   render := SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED or SDL_RENDERER_TARGETTEXTURE);
   screen := SDL_CreateRGBSurface(ScreenFlag, CENTER_X * 2, CENTER_Y * 2, 32, RMask, GMask, BMask, 0);
@@ -653,7 +655,7 @@ end;
 procedure ReadFiles;
 var
   grp, idx, tnum, len, c, i, i1, l: integer;
-  filename, str: string;
+  filename, str: ansistring;
   p: puint16;
   cc: uint16;
 begin
@@ -1069,16 +1071,16 @@ var
   i, battlemode2, x, y, t: integer;
   p: array[0..14] of integer;
   {str,} str0 {, name}: WideString;
-  str: string;
+  str: ansistring;
   {$IFDEF fpc}
-  Name: string;
+  Name: ansistring;
   {$ELSE}
   Name: WideString;
   {$ENDIF}
-  str1: string;
-  p0, p1: PChar;
+  str1: ansistring;
+  p0, p1: pansichar;
   LanId: word;
-  lan: string;
+  lan: ansistring;
 begin
 {$IFDEF fpc}
   lanID := 1028;
@@ -1152,7 +1154,7 @@ begin
       str := '金先生，請輸入你的名字              ';
     end;
   end;
-  Result := inputquery('Enter name', str, str1);
+  //Result := inputquery('Enter name', str, str1);
   if fullscreen = 1 then
   begin
     //realscreen := SDL_SetVideoMode(CENTER_X * 2, CENTER_Y * 2, 32, ScreenFlag or SDL_FULLSCREEN);
@@ -1271,12 +1273,12 @@ end;
 
 procedure LoadR(num: integer);
 var
-  filename1, filename, filename2: string;
+  filename1, filename, filename2: ansistring;
   idx, grp, i1, i2, len, len1: integer;
   BasicOffset, RoleOffset, ItemOffset, SceneOffset, MagicOffset, WeiShopOffset, i: integer;
-  str: string;
+  str: ansistring;
   str1: WideString;
-  p1, p0: PChar;
+  p1, p0: pansichar;
 begin
   SaveNum := num;
   filename := 'R' + IntToStr(num);
@@ -1365,7 +1367,7 @@ end;
 
 procedure SaveR(num: integer);
 var
-  filename: string;
+  filename: ansistring;
   sgrp, dgrp, ridx, rgrp, i1, i2, len, SceneAmount: integer;
   BasicOffset, RoleOffset, ItemOffset, SceneOffset, MagicOffset, WeiShopOffset, i: integer;
   //key: uint16;
@@ -1494,7 +1496,7 @@ var
   word: array[0..10] of Uint16;
   x, y, i1, i, Ayp, menu, Axp, walking, Mx1, My1, Mx2, My2, speed, stillcount, needrefresh: integer;
   now, next_time, next_time2, next_time3: uint32;
-  keystate: PChar;
+  keystate: pansichar;
 begin
 
   Where := 0;
@@ -2025,7 +2027,7 @@ function WalkInScene(Open: integer): integer;
 var
   grp, idx, offset, axp, ayp, just, i3, i1, i2, x, y, old: integer;
   Sx1, Sy1, updatearea, r, s, i, menu, walking, PreScene, speed: integer;
-  filename: string;
+  filename: ansistring;
   Scenename: WideString;
   now, next_time, next_time2: uint32;
   //UpDate: PSDL_Thread;
@@ -2506,7 +2508,7 @@ begin
   end;
   Name[9] := 0;
   Scenename := gbktounicode(@Name[0]);
-  drawtextwithrect(@Scenename[1], 320 - length(PChar(@Name)) * 5 + 7, 100, length(PChar(@Name)) *
+  drawtextwithrect(@Scenename[1], 320 - length(pansichar(@Name)) * 5 + 7, 100, length(pansichar(@Name)) *
     10 + 6, colcolor(0, 5), colcolor(0, 7));
   //waitanykey;
   //改变音乐
@@ -3161,7 +3163,7 @@ end;
 
 //选择一名队员, 可以附带两个属性显示
 
-function SelectOneTeamMember(x, y: integer; str: string; list1, list2: integer): integer;
+function SelectOneTeamMember(x, y: integer; str: ansistring; list1, list2: integer): integer;
 var
   i, amount: integer;
 begin
@@ -3724,9 +3726,9 @@ begin
   begin
     str := format('%5d', [RItemlist[listnum].Amount]);
     drawengshadowtext(@str[1], 431 + 62 + 12, 32 - 14, colcolor(0, $64), colcolor(0, $66));
-    len := length(PChar(@Ritem[item].Name));
+    len := length(pansichar(@Ritem[item].Name));
     drawgbkshadowtext(@RItem[item].Name, 357 - len * 5 + 12, 32 - 14, colcolor(0, $21), colcolor(0, $23));
-    len := length(PChar(@Ritem[item].Introduction));
+    len := length(pansichar(@Ritem[item].Introduction));
     drawgbkshadowtext(@RItem[item].Introduction, 357 - len * 5 + 12, 62 - 14, colcolor(0, $5), colcolor(0, $7));
     drawshadowtext(@words[Ritem[item].ItemType, 1], 97 + 12, 315 + 36 - 14, colcolor(0, $21), colcolor(0, $23));
     //如有人使用则显示
@@ -4212,7 +4214,7 @@ begin
   drawheadpic(Rrole[rnum].HeadNum, x + 60, y + 80);
   //显示姓名
   Name := gbktounicode(@Rrole[rnum].Name);
-  drawshadowtext(@Name[1], x + 68 - length(PChar(@Rrole[rnum].Name)) * 5, y + 85, colcolor($64), colcolor($66));
+  drawshadowtext(@Name[1], x + 68 - length(pansichar(@Rrole[rnum].Name)) * 5, y + 85, colcolor($64), colcolor($66));
   //显示所需字符
   for i := 0 to 5 do
     drawshadowtext(@strs[i, 1], x - 10, y + 110 + 21 * i, colcolor($21), colcolor($23));
@@ -6117,14 +6119,14 @@ end;
 procedure CloudCreate(num: integer);
 begin
   CloudCreateOnSide(num);
-  if num in [low(cloud)..high(cloud)] then
+  if inregion(num ,low(Cloud),high(Cloud)) then
     Cloud[num].Positionx := random(17280);
 
 end;
 
 procedure CloudCreateOnSide(num: integer);
 begin
-  if num in [low(Cloud)..high(Cloud)] then
+  if inregion(num ,low(Cloud),high(Cloud)) then
   begin
     Cloud[num].Picnum := random(9);
     Cloud[num].Shadow := 0;
@@ -6145,12 +6147,12 @@ end;
 
 {$ELSE}
 
-function FileExistsUTF8(filename: PChar): boolean; overload;
+function FileExistsUTF8(filename: pansichar): boolean; overload;
 begin
   Result := FileExists(filename);
 end;
 
-function FileExistsUTF8(filename: string): boolean; overload;
+function FileExistsUTF8(filename: ansistring): boolean; overload;
 begin
   Result := FileExists(filename);
 end;

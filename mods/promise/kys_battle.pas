@@ -1,4 +1,4 @@
-unit kys_battle;
+﻿unit kys_battle;
 
 //{$MODE Delphi}
 
@@ -3798,7 +3798,7 @@ begin
   green := 0;
   red := 0;
   gray := 0;
-  drawshadowtext(@str[1], x + 30 - length(PChar(@rrole[rnum].Name)) * 5, y + 69, colcolor($63), colcolor($66));
+  drawshadowtext(@str[1], x + 30 - length(pansichar(@rrole[rnum].Name)) * 5, y + 69, colcolor($63), colcolor($66));
   drawshadowtext(@strs[1], x + 77, y + 5, colcolor($21), colcolor($23));
   if (battlemode > 0) then
   begin

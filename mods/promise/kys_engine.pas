@@ -1,4 +1,4 @@
-unit kys_engine;
+﻿unit kys_engine;
 
 //{$MODE Delphi}
 
@@ -40,8 +40,8 @@ procedure PlaySoundA(SoundNum, times: integer);
 function getpixel(surface: PSDL_Surface; x: integer; y: integer): Uint32;
 procedure putpixel(surface_: PSDL_Surface; x: integer; y: integer; pixel: Uint32);
 procedure drawscreenpixel(x, y: integer; color: Uint32);
-procedure display_bmp(file_name: PChar; x, y: integer);
-procedure display_img(file_name: PChar; x, y: integer); overload;
+procedure display_bmp(file_name: pansichar; x, y: integer);
+procedure display_img(file_name: pansichar; x, y: integer); overload;
 function ColColor(num: integer): Uint32; overload;
 function ColColor(colnum, num: integer): Uint32; overload;
 procedure DrawLine(x1, y1, x2, y2, color, Width: integer);
@@ -50,11 +50,11 @@ procedure DrawLine(x1, y1, x2, y2, color, Width: integer);
 function JudgeInScreen(px, py, w, h, xs, ys: integer): boolean; overload;
 function JudgeInScreen(px, py, w, h, xs, ys, xx, yy, xw, yh: integer): boolean; overload;
 procedure DrawRLE8Pic(num, px, py: integer; Pidx: Pinteger; Ppic: PByte; RectArea: TRect;
-  Image: PChar; Shadow: integer); overload;
+  Image: pansichar; Shadow: integer); overload;
 procedure DrawRLE8Pic(num, px, py: integer; Pidx: Pinteger; Ppic: PByte; RectArea: TRect;
-  Image: PChar; Shadow: integer; mask: integer); overload;
+  Image: pansichar; Shadow: integer; mask: integer); overload;
 procedure DrawRLE8Pic(num, px, py: integer; Pidx: Pinteger; Ppic: PByte; RectArea: TRect;
-  Image: PChar; Shadow: integer; mask: integer; colorPanel: PChar); overload;
+  Image: pansichar; Shadow: integer; mask: integer; colorPanel: pansichar); overload;
 function GetPositionOnScreen(x, y, CenterX, CenterY: integer): TPosition;
 procedure DrawTitlePic(imgnum, px, py: integer);
 procedure DrawMPic(num, px, py, mask: integer);
@@ -75,17 +75,17 @@ procedure DrawBRolePic(num, px, py, shadow, mask: integer); overload;
 procedure DrawBRolePic(num, x, y, w, h, px, py, shadow, mask: integer); overload;
 
 //显示文字的子程
-function Big5ToUnicode(str: PChar): WideString;
-function GBKToUnicode(str: PChar): WideString;
+function Big5ToUnicode(str: pansichar): WideString;
+function GBKToUnicode(str: pansichar): WideString;
 function UnicodeToBig5(str: PWideChar): string;
 procedure DrawText(sur: PSDL_Surface; word: PUint16; x_pos, y_pos: integer; color: Uint32);
 procedure DrawEngText(sur: PSDL_Surface; word: PUint16; x_pos, y_pos: integer; color: Uint32);
 procedure DrawShadowText(word: PUint16; x_pos, y_pos: integer; color1, color2: Uint32);
 procedure DrawEngShadowText(word: PUint16; x_pos, y_pos: integer; color1, color2: Uint32);
-procedure DrawBig5Text(sur: PSDL_Surface; str: PChar; x_pos, y_pos: integer; color: Uint32);
-procedure DrawBig5ShadowText(word: PChar; x_pos, y_pos: integer; color1, color2: Uint32);
-procedure DrawGBKText(sur: PSDL_Surface; str: PChar; x_pos, y_pos: integer; color: Uint32);
-procedure DrawGBKShadowText(word: PChar; x_pos, y_pos: integer; color1, color2: Uint32);
+procedure DrawBig5Text(sur: PSDL_Surface; str: pansichar; x_pos, y_pos: integer; color: Uint32);
+procedure DrawBig5ShadowText(word: pansichar; x_pos, y_pos: integer; color1, color2: Uint32);
+procedure DrawGBKText(sur: PSDL_Surface; str: pansichar; x_pos, y_pos: integer; color: Uint32);
+procedure DrawGBKShadowText(word: pansichar; x_pos, y_pos: integer; color1, color2: Uint32);
 procedure DrawTextWithRect(word: puint16; x, y, w: integer; color1, color2: uint32);
 procedure DrawRectangle(x, y, w, h: integer; colorin, colorframe: Uint32; alpha: integer);
 procedure DrawRectangleWithoutFrame(x, y, w, h: integer; colorin: Uint32; alphe: integer);
@@ -117,7 +117,7 @@ procedure NewShowStatus(rnum: integer);
 procedure SelectShowMagic;
 procedure NewShowMagic(rnum: integer);
 procedure ShowMagic(rnum, num, x1, y1, w, h: integer; showit: boolean);
-procedure display_img(file_name: PChar; x, y, x1, y1, w, h: integer); overload;
+procedure display_img(file_name: pansichar; x, y, x1, y1, w, h: integer); overload;
 procedure display_imgFromSurface(image: PSDL_Surface; x, y, x1, y1, w, h: integer); overload;
 procedure display_imgFromSurface(image: PSDL_Surface; x, y: integer); overload;
 procedure display_imgFromSurface(image: Tpic; x, y, x1, y1, w, h: integer); overload;
@@ -169,9 +169,9 @@ procedure DrawClouds;
 
 procedure ChangeCol;
 
-procedure DrawRLE8Pic3(colorPanel: PChar; num, px, py: integer; Pidx: Pinteger; Ppic: PByte;
-  RectArea: PChar; Image: PChar; widthI, heightI, sizeI: integer; shadow, alpha: integer;
-  BlockImageW: PChar; BlockScreenR: PChar; widthR, heightR, sizeR: integer; depth: integer;
+procedure DrawRLE8Pic3(colorPanel: pansichar; num, px, py: integer; Pidx: Pinteger; Ppic: PByte;
+  RectArea: pansichar; Image: pansichar; widthI, heightI, sizeI: integer; shadow, alpha: integer;
+  BlockImageW: pansichar; BlockScreenR: pansichar; widthR, heightR, sizeR: integer; depth: integer;
   mixColor: Uint32; mixAlpha: integer);
 
 procedure SDL_UpdateRect2(scr1: PSDL_Surface; x, y, w, h: integer);
@@ -210,11 +210,11 @@ end;
 procedure InitialMusic;
 var
   i: integer;
-  str: string;
+  str: ansistring;
   sf: BASS_MIDI_FONT;
   Flag: longword;
 begin
-  sf.font := BASS_MIDI_FontInit(PChar(AppPath + 'music/mid.sf2'), 0);
+  sf.font := BASS_MIDI_FontInit(pansichar(AppPath + 'music/mid.sf2'), 0);
   BASS_MIDI_StreamSetFonts(0, sf, 1);
   sf.preset := -1; // use all presets
   sf.bank := 0;
@@ -225,10 +225,10 @@ begin
   for i := low(Music) to high(Music) do
   begin
     str := AppPath + 'music/' + IntToStr(i) + '.mp3';
-    if fileexists(PChar(str)) then
+    if fileexists(pansichar(str)) then
     begin
       try
-        Music[i] := BASS_StreamCreateFile(False, PChar(str), 0, 0, 0);
+        Music[i] := BASS_StreamCreateFile(False, pansichar(str), 0, 0, 0);
       finally
 
       end;
@@ -236,10 +236,10 @@ begin
     else
     begin
       str := AppPath + 'music/' + IntToStr(i) + '.mid';
-      if fileexists(PChar(str)) then
+      if fileexists(pansichar(str)) then
       begin
         try
-          Music[i] := BASS_MIDI_StreamCreateFile(False, PChar(str), 0, 0, 0, 0);
+          Music[i] := BASS_MIDI_StreamCreateFile(False, pansichar(str), 0, 0, 0, 0);
           BASS_MIDI_StreamSetFonts(Music[i], sf, 1);
           //showmessage(inttostr(Music[i]));
         finally
@@ -255,8 +255,8 @@ begin
   for i := low(ESound) to high(ESound) do
   begin
     str := AppPath + formatfloat('sound/e00', i) + '.wav';
-    if fileexists(PChar(str)) then
-      ESound[i] := BASS_SampleLoad(False, PChar(str), 0, 0, 1, Flag)
+    if fileexists(pansichar(str)) then
+      ESound[i] := BASS_SampleLoad(False, pansichar(str), 0, 0, 1, Flag)
     else
       ESound[i] := 0;
     //showmessage(inttostr(esound[i]));
@@ -264,8 +264,8 @@ begin
   for i := low(ASound) to high(ASound) do
   begin
     str := AppPath + formatfloat('sound/atk00', i) + '.wav';
-    if fileexists(PChar(str)) then
-      ASound[i] := BASS_SampleLoad(False, PChar(str), 0, 0, 1, Flag)
+    if fileexists(pansichar(str)) then
+      ASound[i] := BASS_SampleLoad(False, pansichar(str), 0, 0, 1, Flag)
     else
       ASound[i] := 0;
   end;
@@ -489,14 +489,14 @@ begin
   begin
     bpp := surface.format.BytesPerPixel;
     // Here p is the address to the pixel we want to retrieve
-    p := Pointer(Uint32(surface.pixels) + y * surface.pitch + x * bpp);
+    p := Pointer(nativeint(surface.pixels) + y * surface.pitch + x * bpp);
     case bpp of
       1:
         Result := longword(p^);
       2:
         Result := PUint16(p)^;
       3:
-        if (SDL_BYTEORDER = SDL_BIG_ENDIAN) then
+        if (true) then
           Result := PByteArray(p)[0] shl 16 or PByteArray(p)[1] shl 8 or PByteArray(p)[2]
         else
           Result := PByteArray(p)[0] or PByteArray(p)[1] shl 8 or PByteArray(p)[2] shl 16;
@@ -540,7 +540,7 @@ begin
   begin
     bpp := surface_.format.BytesPerPixel;
     // Here p is the address to the pixel we want to set
-    p := Pointer(Uint32(surface_.pixels) + y * surface_.pitch + x * bpp);
+    p := Pointer(nativeint(surface_.pixels) + y * surface_.pitch + x * bpp);
 
     case bpp of
       1:
@@ -548,7 +548,7 @@ begin
       2:
         PUint16(p)^ := pixel;
       3:
-        if (SDL_BYTEORDER = SDL_BIG_ENDIAN) then
+        if (true) then
         begin
           PByteArray(p)[0] := (pixel shr 16) and $FF;
           PByteArray(p)[1] := (pixel shr 8) and $FF;
@@ -571,31 +571,13 @@ end;
 
 procedure drawscreenpixel(x, y: integer; color: Uint32);
 begin
-  (* Map the color yellow to this display (R := $ff, G := $FF, B := $00)
-     Note:  If the display is palettized, you must set the palette first.
-  *)
-  if (SDL_MustLock(screen)) then
-  begin
-    if (SDL_LockSurface(screen) < 0) then
-    begin
-      MessageBox(0, PChar(Format('Can''t lock screen : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
-      exit;
-    end;
-  end;
-
   putpixel(screen, x, y, color);
-
-  if (SDL_MustLock(screen)) then
-  begin
-    SDL_UnlockSurface(screen);
-  end;
-  // Update just the part of the display that we've changed
   SDL_UpdateRect2(screen, x, y, 1, 1);
 end;
 
 //显示bmp文件
 
-procedure display_bmp(file_name: PChar; x, y: integer);
+procedure display_bmp(file_name: pansichar; x, y: integer);
 var
   image: PSDL_Surface;
   dest: TSDL_Rect;
@@ -605,13 +587,13 @@ begin
     image := SDL_LoadBMP(file_name);
     if (image = nil) then
     begin
-      MessageBox(0, PChar(Format('Couldn''t load %s : %s', [file_name, SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
+      MessageBoxA(0, pansichar(Format('Couldn''t load %s : %s', [file_name, SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
       exit;
     end;
     dest.x := x;
     dest.y := y;
     if (SDL_BlitSurface(image, nil, screen, @dest) < 0) then
-      MessageBox(0, PChar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
+      MessageBoxA(0, pansichar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
     //SDL_UpdateRect2(screen, 0, 0, image.w, image.h);
     SDL_FreeSurface(image);
   end;
@@ -619,7 +601,7 @@ end;
 
 //显示tif, png, jpg等格式图片
 
-procedure display_img(file_name: PChar; x, y, x1, y1, w, h: integer); overload;
+procedure display_img(file_name: pansichar; x, y, x1, y1, w, h: integer); overload;
 var
   image: PSDL_Surface;
   dest, dest1: TSDL_Rect;
@@ -629,7 +611,7 @@ begin
     image := IMG_Load(file_name);
     if (image = nil) then
     begin
-      MessageBox(0, PChar(Format('Couldn''t load %s : %s', [file_name, SDL_GetError])),
+      MessageBoxA(0, pansichar(Format('Couldn''t load %s : %s', [file_name, SDL_GetError])),
         'Error', MB_OK or MB_ICONHAND);
       exit;
     end;
@@ -640,7 +622,7 @@ begin
     dest1.w := w;
     dest1.h := h;
     if (SDL_BlitSurface(image, @dest1, screen, @dest) < 0) then
-      MessageBox(0, PChar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
+      MessageBoxA(0, pansichar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
     //SDL_UpdateRect2(screen, 0, 0, image.w, image.h);
     SDL_FreeSurface(image);
   end;
@@ -664,7 +646,7 @@ begin
   dest1.w := w;
   dest1.h := h;
   if (SDL_BlitSurface(image, @dest1, screen, @dest) < 0) then
-    MessageBox(0, PChar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
+    MessageBoxA(0, pansichar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
   //SDL_UpdateRect2(screen, 0, 0, image.w, image.h);
   //SDL_FreeSurface(image);
 
@@ -686,13 +668,13 @@ begin
   dest1.w := w;
   dest1.h := h;
   if (SDL_BlitSurface(image.pic, @dest1, screen, @dest) < 0) then
-    MessageBox(0, PChar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
+    MessageBoxA(0, pansichar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
   //SDL_UpdateRect2(screen, 0, 0, image.w, image.h);
   //SDL_FreeSurface(image);
 
 end;
 
-procedure display_img(file_name: PChar; x, y: integer); overload;
+procedure display_img(file_name: pansichar; x, y: integer); overload;
 var
   image: PSDL_Surface;
   dest: TSDL_Rect;
@@ -702,14 +684,14 @@ begin
     image := IMG_Load(file_name);
     if (image = nil) then
     begin
-      MessageBox(0, PChar(Format('Couldn''t load %s : %s', [file_name, SDL_GetError])),
+      MessageBoxA(0, pansichar(Format('Couldn''t load %s : %s', [file_name, SDL_GetError])),
         'Error', MB_OK or MB_ICONHAND);
       exit;
     end;
     dest.x := x;
     dest.y := y;
     if (SDL_BlitSurface(image, nil, screen, @dest) < 0) then
-      MessageBox(0, PChar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
+      MessageBoxA(0, pansichar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
     //SDL_UpdateRect2(screen, 0, 0, image.w, image.h);
     SDL_FreeSurface(image);
   end;
@@ -726,7 +708,7 @@ begin
   dest.x := x;
   dest.y := y;
   if (SDL_BlitSurface(image, nil, screen, @dest) < 0) then
-    MessageBox(0, PChar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
+    MessageBoxA(0, pansichar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
   //SDL_UpdateRect2(screen, 0, 0, image.w, image.h);
   //SDL_FreeSurface(image);
 end;
@@ -742,7 +724,7 @@ begin
   dest.x := x;
   dest.y := y;
   if (SDL_BlitSurface(image.pic, nil, screen, @dest) < 0) then
-    MessageBox(0, PChar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
+    MessageBoxA(0, pansichar(Format('BlitSurface error : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
   //SDL_UpdateRect2(screen, 0, 0, image.w, image.h);
   //SDL_FreeSurface(image);
 end;
@@ -786,7 +768,7 @@ end;
 //0为不处理遮罩，1为创建遮罩，2为使用遮罩  ,3为创建反向遮罩
 
 procedure DrawRLE8Pic(num, px, py: integer; Pidx: Pinteger; Ppic: PByte; RectArea: TRect;
-  Image: PChar; Shadow: integer; mask: integer; colorPanel: PChar); overload;
+  Image: pansichar; Shadow: integer; mask: integer; colorPanel: pansichar); overload;
 var
   w, h, xs, ys: smallint;
   os, offset, ix, iy, length, p, i1, i2, i, a, b: integer;
@@ -1020,7 +1002,7 @@ end;
 
 
 procedure DrawRLE8Pic(num, px, py: integer; Pidx: Pinteger; Ppic: PByte; RectArea: TRect;
-  Image: PChar; shadow: integer; mask: integer); overload;
+  Image: pansichar; shadow: integer; mask: integer); overload;
 begin
   DrawRLE8Pic(num, px, py, Pidx, Ppic, RectArea, Image, shadow, mask, @ACol[0]);
 end;
@@ -1028,7 +1010,7 @@ end;
 
 
 procedure DrawRLE8Pic(num, px, py: integer; Pidx: Pinteger; Ppic: PByte; RectArea: TRect;
-  Image: PChar; shadow: integer); overload;
+  Image: pansichar; shadow: integer); overload;
 begin
   DrawRLE8Pic(num, px, py, Pidx, Ppic, RectArea, Image, shadow, 0);
 end;
@@ -1456,9 +1438,9 @@ begin
     begin
       if ((x1 + i1) >= 0) and ((x1 + i1) <= screen.w) and (y1 + i2 >= 0) and (y1 + i2 <= screen.h) then
       begin
-        p := Pointer(Uint32(Head_Pic[num].pic.pixels) + i2 * Head_Pic[num].pic.pitch + i1 * bpp);
+        p := Pointer(nativeint(Head_Pic[num].pic.pixels) + i2 * Head_Pic[num].pic.pitch + i1 * bpp);
         c := PUint32(p)^;
-        p := Pointer(Uint32(screen.pixels) + (y1 + i2) * screen.pitch + (x1 + i1) * bpp);
+        p := Pointer(nativeint(screen.pixels) + (y1 + i2) * screen.pitch + (x1 + i1) * bpp);
         pix := PUint32(p)^;
 
 
@@ -1664,22 +1646,22 @@ begin
 end;
 //big5转为unicode
 
-function Big5ToUnicode(str: PChar): WideString;
+function Big5ToUnicode(str: pansichar): WideString;
 var
   len: integer;
 begin
 {$IFDEF fpc}
   Result := UTF8Decode(CP950ToUTF8(str));
 {$ELSE}
-  len := MultiByteToWideChar(950, 0, PChar(str), -1, nil, 0);
+  len := MultiByteToWideChar(950, 0, pansichar(str), -1, nil, 0);
   setlength(Result, len - 1);
-  MultiByteToWideChar(950, 0, PChar(str), length(str), pwidechar(Result), len + 1);
+  MultiByteToWideChar(950, 0, pansichar(str), length(str), pwidechar(Result), len + 1);
 {$ENDIF}
   Result := ' ' + Result;
 
 end;
 
-function GBKToUnicode(str: PChar): WideString;
+function GBKToUnicode(str: pansichar): WideString;
 var
   len: integer;
   word: string;
@@ -1689,9 +1671,9 @@ begin
 {$IFDEF fpc}
   Result := UTF8Decode(CP936ToUTF8(str));
 {$ELSE}
-  len := MultiByteToWideChar(936, 0, PChar(str), -1, nil, 0);
+  len := MultiByteToWideChar(936, 0, pansichar(str), -1, nil, 0);
   setlength(Result, len - 1);
-  MultiByteToWideChar(936, 0, PChar(str), length(str), pwidechar(Result), len + 1);
+  MultiByteToWideChar(936, 0, pansichar(str), length(str), pwidechar(Result), len + 1);
 {$ENDIF}
   Result := ' ' + Result;
 
@@ -1708,7 +1690,7 @@ begin
 {$ELSE}
   len := WideCharToMultiByte(950, 0, PWideChar(str), -1, nil, 0, nil, nil);
   setlength(Result, len + 1);
-  WideCharToMultiByte(950, 0, PWideChar(str), -1, PChar(Result), len + 1, nil, nil);
+  WideCharToMultiByte(950, 0, PWideChar(str), -1, pansichar(Result), len + 1, nil, nil);
 {$ENDIF}
 end;
 
@@ -1721,7 +1703,7 @@ begin
 {$ELSE}
   len := WideCharToMultiByte(936, 0, PWideChar(str), -1, nil, 0, nil, nil);
   setlength(Result, len + 1);
-  WideCharToMultiByte(936, 0, PWideChar(str), -1, PChar(Result), len + 1, nil, nil);
+  WideCharToMultiByte(936, 0, PWideChar(str), -1, pansichar(Result), len + 1, nil, nil);
 {$ENDIF}
 
 end;
@@ -1826,7 +1808,7 @@ begin
   tempcolor := TSDL_Color(color);
   //{$ENDIF}
 
-  Text := TTF_RenderUNICODE_blended(engfont, word, tempcolor);
+  //Text := TTF_RenderUNICODE_blended(engfont, word, tempcolor);
   dest.x := x_pos;
   dest.y := y_pos + 4;
   SDL_BlitSurface(Text, nil, sur, @dest);
@@ -1855,7 +1837,7 @@ end;
 
 //显示big5文字
 
-procedure DrawBig5Text(sur: PSDL_Surface; str: PChar; x_pos, y_pos: integer; color: Uint32);
+procedure DrawBig5Text(sur: PSDL_Surface; str: pansichar; x_pos, y_pos: integer; color: Uint32);
 var
   len: integer;
   words: WideString;
@@ -1863,9 +1845,9 @@ begin
 {$IFDEF fpc}
   words := UTF8Decode(CP950ToUTF8(str));
 {$ELSE}
-  len := MultiByteToWideChar(950, 0, PChar(str), -1, nil, 0);
+  len := MultiByteToWideChar(950, 0, pansichar(str), -1, nil, 0);
   setlength(words, len - 1);
-  MultiByteToWideChar(950, 0, PChar(str), length(str), pwidechar(words), len + 1);
+  MultiByteToWideChar(950, 0, pansichar(str), length(str), pwidechar(words), len + 1);
 {$ENDIF}
   words := ' ' + words;
   //words := Simplified2Traditional(words);
@@ -1875,7 +1857,7 @@ end;
 
 //显示Big5阴影文字
 
-procedure DrawBig5ShadowText(word: PChar; x_pos, y_pos: integer; color1, color2: Uint32);
+procedure DrawBig5ShadowText(word: pansichar; x_pos, y_pos: integer; color1, color2: Uint32);
 
 var
   len: integer;
@@ -1884,9 +1866,9 @@ begin
 {$IFDEF fpc}
   words := UTF8Decode(CP950ToUTF8(word));
 {$ELSE}
-  len := MultiByteToWideChar(950, 0, PChar(word), -1, nil, 0);
+  len := MultiByteToWideChar(950, 0, pansichar(word), -1, nil, 0);
   setlength(words, len - 1);
-  MultiByteToWideChar(950, 0, PChar(word), length(word), pwidechar(words), len + 1);
+  MultiByteToWideChar(950, 0, pansichar(word), length(word), pwidechar(words), len + 1);
 {$ENDIF}
   words := ' ' + words;
   //words := Simplified2Traditional(words);
@@ -1897,7 +1879,7 @@ end;
 
 //显示GBK文字
 
-procedure DrawGBKText(sur: PSDL_Surface; str: PChar; x_pos, y_pos: integer; color: Uint32);
+procedure DrawGBKText(sur: PSDL_Surface; str: pansichar; x_pos, y_pos: integer; color: Uint32);
 var
   len: integer;
   words: WideString;
@@ -1909,7 +1891,7 @@ end;
 
 //显示GBK阴影文字
 
-procedure DrawGBKShadowText(word: PChar; x_pos, y_pos: integer; color1, color2: Uint32);
+procedure DrawGBKShadowText(word: pansichar; x_pos, y_pos: integer; color1, color2: Uint32);
 var
   len: integer;
   words: WideString;
@@ -1924,7 +1906,7 @@ end;
 procedure DrawTextWithRect(word: puint16; x, y, w: integer; color1, color2: uint32);
 var
   len: integer;
-  p: PChar;
+  p: pansichar;
 begin
   DrawRectangle(x, y, w, 28, 0, colcolor(0, 255), 30);
   DrawShadowText(word, x - 17, y + 2, color1, color2);
@@ -1981,10 +1963,6 @@ var
   dest: TSDL_Rect;
   r, g, b, r1, g1, b1, a: byte;
 begin
-  {if (SDL_MustLock(screen)) then
-  begin
-    SDL_LockSurface(screen);
-  end;}
   w := abs(w);
   h := abs(h);
   {if (Text_Layer = 1) and (sur = screen) then
@@ -2031,12 +2009,6 @@ begin
 
   SDL_BlitSurface(tempscr, nil, screen, @dest);
   SDL_FreeSurface(tempscr);
-
-  {if (SDL_MustLock(screen)) then
-  begin
-    SDL_UnlockSurface(screen);
-  end;}
-
 end;
 
 //画不含边框的矩形, 用于对话和黑屏
@@ -2047,10 +2019,6 @@ var
   pix: Uint32;
   pix1, pix2, pix3, pix4, color1, color2, color3, color4: byte;
 begin
-  if (SDL_MustLock(screen)) then
-  begin
-    SDL_LockSurface(screen);
-  end;
   for i1 := x to x + w do
     for i2 := y to y + h do
     begin
@@ -2070,11 +2038,6 @@ begin
       pix := pix1 + pix2 shl 8 + pix3 shl 16 + pix4 shl 24;
       putpixel(screen, i1, i2, pix);
     end;
-  if (SDL_MustLock(screen)) then
-  begin
-    SDL_UnlockSurface(screen);
-  end;
-
 end;
 
 //重画屏幕, SDL_UpdateRect2(screen,0,0,screen.w,screen.h)可显示
@@ -2104,14 +2067,6 @@ var
   pos: TPosition;
   BuildingList, CenterList: array[0..1000] of TPosition;
 begin
-  if (SDL_MustLock(screen)) then
-  begin
-    if (SDL_LockSurface(screen) < 0) then
-    begin
-      MessageBox(0, PChar(Format('Can''t lock screen : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
-      exit;
-    end;
-  end;
   for i1 := 0 to screen.w do
     for i2 := 0 to screen.h do
     begin
@@ -2211,13 +2166,6 @@ begin
     end;
 
   DrawClouds;
-
-  if (SDL_MustLock(screen)) then
-  begin
-    SDL_UnlockSurface(screen);
-  end;
-  //SDL_UpdateRect2(screen, 0,0,screen.w,screen.h);
-
 end;
 
 //画场景到屏幕
@@ -2228,16 +2176,6 @@ var
   dest: tsdl_rect;
   word: WideString;
 begin
-
-  if (SDL_MustLock(screen)) then
-  begin
-    if (SDL_LockSurface(screen) < 0) then
-    begin
-      MessageBox(0, PChar(Format('Can''t lock screen : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
-      exit;
-    end;
-  end;
-
   //先画无主角的场景, 再画主角
   //如在事件中, 则以Cx, Cy为中心, 否则以主角坐标为中心
   if (CurEvent < 0) then
@@ -2258,11 +2196,6 @@ begin
     else DrawRoleOnScene(cx, cy);
   end;
 
-  if (SDL_MustLock(screen)) then
-  begin
-    SDL_UnlockSurface(screen);
-  end;
-  //SDL_UpdateRect2(screen, 0,0,screen.w,screen.h);
   if time > 0 then
   begin
     word := formatfloat('0', time div 60) + ':' + formatfloat('00', time mod 60);
@@ -2276,22 +2209,7 @@ procedure DrawSceneWithoutRole(x, y: integer);
 var
   i1, i2, xpoint, ypoint: integer;
 begin
-  if (SDL_MustLock(screen)) then
-  begin
-    if (SDL_LockSurface(screen) < 0) then
-    begin
-      MessageBox(0, PChar(Format('Can''t lock screen : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
-      exit;
-    end;
-  end;
-
   loadScenePart(-x * 18 + y * 18 + 1151 - CENTER_X, x * 9 + y * 9 + 9 - CENTER_Y);
-
-  if (SDL_MustLock(screen)) then
-  begin
-    SDL_UnlockSurface(screen);
-  end;
-  //SDL_UpdateRect2(screen, 0,0,screen.w,screen.h);
 end;
 
 //画主角于场景
@@ -2305,14 +2223,6 @@ var
 begin
   if ShowMR then
   begin
-    if (SDL_MustLock(screen)) then
-    begin
-      if (SDL_LockSurface(screen) < 0) then
-      begin
-        MessageBox(0, PChar(Format('Can''t lock screen : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
-        exit;
-      end;
-    end;
     pos := getpositiononscreen(Sx, Sy, x, y);
     DrawSPic(2501 + SFace * 7 + SStep, pos.x, pos.y - SData[CurScene, 4, Sx, Sy], pos.x - 20,
       pos.y - 60 - SData[CurScene, 4, Sx, Sy], 40, 60, 1);
@@ -2362,10 +2272,6 @@ begin
 
         end;
       end;
-  end;
-  if (SDL_MustLock(screen)) then
-  begin
-    SDL_UnlockSurface(screen);
   end;
 end;
 
@@ -2630,14 +2536,6 @@ procedure DrawWholeBField;
 var
   i, i1, i2: integer;
 begin
-  if (SDL_MustLock(screen)) then
-  begin
-    if (SDL_LockSurface(screen) < 0) then
-    begin
-      MessageBox(0, PChar(Format('Can''t lock screen : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
-      exit;
-    end;
-  end;
   DrawBFieldWithoutRole(Bx, By);
 
   for i1 := 0 to 63 do
@@ -2654,11 +2552,6 @@ begin
           DrawRoleOnBfield(i1, i2);
       end;
     end;
-  if (SDL_MustLock(screen)) then
-  begin
-    SDL_UnlockSurface(screen);
-  end;
-
 end;
 
 //画不含主角的战场
@@ -2667,23 +2560,7 @@ procedure DrawBFieldWithoutRole(x, y: integer);
 var
   i1, i2, xpoint, ypoint: integer;
 begin
-  if (SDL_MustLock(screen)) then
-  begin
-    if (SDL_LockSurface(screen) < 0) then
-    begin
-      MessageBox(0, PChar(Format('Can''t lock screen : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
-      exit;
-    end;
-  end;
-
   loadBfieldPart(-x * 18 + y * 18 + 1151 - CENTER_X, x * 9 + y * 9 + 9 - CENTER_Y);
-
-  if (SDL_MustLock(screen)) then
-  begin
-    SDL_UnlockSurface(screen);
-  end;
-  //SDL_UpdateRect2(screen, 0,0,screen.w,screen.h);
-
 end;
 
 //画战场上人物, 需更新人物身前的遮挡
@@ -2695,14 +2572,6 @@ var
   Ppic: pbyte;
   Pidx: pinteger;
 begin
-  if (SDL_MustLock(screen)) then
-  begin
-    if (SDL_LockSurface(screen) < 0) then
-    begin
-      MessageBox(0, PChar(Format('Can''t lock screen : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
-      exit;
-    end;
-  end;
   if (Bfield[2, x, y] >= 0) then num := Rrole[Brole[Bfield[2, x, y]].rnum].HeadNum * 4 +
       Brole[Bfield[2, x, y]].Face + BEGIN_BATTLE_ROLE_PIC
   else if (Bfield[5, x, y] >= 0) then num := Rrole[Brole[Bfield[5, x, y]].rnum].HeadNum * 4 +
@@ -2725,8 +2594,6 @@ begin
   Inc(Ppic, 2);
   ys := Psmallint((Ppic))^;
   Inc(Ppic, 2);
-
-
   pos := GetPositionOnScreen(x, y, Bx, By);
 
   if (Bfield[2, x, y] >= 0) then
@@ -2751,12 +2618,6 @@ begin
         DrawBPic(Bfield[1, i1, i2] div 2, pos.x - xs, pos.y - ys, w, h, pos1.x, pos1.y, 0, 2);
       end;
     end;
-
-  if (SDL_MustLock(screen)) then
-  begin
-    SDL_UnlockSurface(screen);
-  end;
-
 end;
 
 //初始化战场映像
@@ -2813,14 +2674,6 @@ var
 begin
   p := 0;
   redraw;
-  if (SDL_MustLock(screen)) then
-  begin
-    if (SDL_LockSurface(screen) < 0) then
-    begin
-      MessageBox(0, PChar(Format('Can''t lock screen : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
-      exit;
-    end;
-  end;
   case AttAreaType of
     0: //目标系点型(用于移动、点攻、用毒、医疗等)、目标系十型、目标系菱型、原地系菱型
     begin
@@ -3037,10 +2890,6 @@ begin
         end;
       end;
     end;
-  if (SDL_MustLock(screen)) then
-  begin
-    SDL_UnlockSurface(screen);
-  end;
   showprogress;
 end;
 
@@ -3052,14 +2901,6 @@ var
   pos: TPosition;
   image: Tpic;
 begin
-  if (SDL_MustLock(screen)) then
-  begin
-    if (SDL_LockSurface(screen) < 0) then
-    begin
-      MessageBox(0, PChar(Format('Can''t lock screen : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
-      exit;
-    end;
-  end;
   image := getpngpic(f, epicnum);
   DrawBfieldWithoutRole(Bx, By);
   n := 0;
@@ -3071,10 +2912,6 @@ begin
         if (Brole[Bfield[2, i1, i2]].rnum >= 0) then
           DrawRoleOnBfield(i1, i2);
     end;
-  if (SDL_MustLock(screen)) then
-  begin
-    SDL_UnlockSurface(screen);
-  end;
   if bigami = 0 then
   begin
     for i1 := 0 to 63 do
@@ -3123,14 +2960,6 @@ var
   pos1, pos: TPosition;
   image: Tpic;
 begin
-  if (SDL_MustLock(screen)) then
-  begin
-    if (SDL_LockSurface(screen) < 0) then
-    begin
-      MessageBox(0, PChar(Format('Can''t lock screen : %s', [SDL_GetError])), 'Error', MB_OK or MB_ICONHAND);
-      exit;
-    end;
-  end;
   DrawBfieldWithoutRole(Bx, By);
   image := getpngpic(f, Apicnum);
 
@@ -3161,10 +2990,6 @@ begin
 
       end;
     end;
-  if (SDL_MustLock(screen)) then
-  begin
-    SDL_UnlockSurface(screen);
-  end;
   SDL_FreeSurface(image.pic);
 
 end;
@@ -4741,9 +4566,9 @@ begin
       if ((y1 + i2) >= 0) and ((y1 + i2) < 440) and ((x1 + i1) >= 0) and ((x1 + i1) < 640) then
         if (MaskArray[x1 + i1, y1 + i2] = 1) or (Mask <= 1) then
         begin
-          p := Pointer(Uint32(image.pic.pixels) + (i2 + y) * image.pic.pitch + (i1 + x) * bpp);
+          p := Pointer(nativeint(image.pic.pixels) + (i2 + y) * image.pic.pitch + (i1 + x) * bpp);
           c := PUint32(p)^;
-          p := Pointer(Uint32(screen.pixels) + (y1 + i2) * screen.pitch + (x1 + i1) * bpp);
+          p := Pointer(nativeint(screen.pixels) + (y1 + i2) * screen.pitch + (x1 + i1) * bpp);
           pix := PUint32(p)^;
 
 {$IFDEF darwin}
@@ -4773,7 +4598,7 @@ begin
 
           if (alpha = 0) and (Mask = 1) then MaskArray[x1 + i1, y1 + i2] := 1;
 
-          p := Pointer(Uint32(screen.pixels) + (y1 + i2) * screen.pitch + (x1 + i1) * bpp);
+          p := Pointer(nativeint(screen.pixels) + (y1 + i2) * screen.pitch + (x1 + i1) * bpp);
 
           pix1 := (alpha * col1 + (255 - alpha) * pix1) div 255;
           pix2 := (alpha * col2 + (255 - alpha) * pix2) div 255;
@@ -7395,9 +7220,9 @@ end;
 //如果在画到屏幕时避免该值起作用, 可以设为128, 这是深度理论上的最大值(实际达不到)
 //MixColor: Uint32; MixAlpha: integer 图片的混合颜色和混合度, 仅在画到屏幕上时有效
 
-procedure DrawRLE8Pic3(colorPanel: PChar; num, px, py: integer; Pidx: Pinteger; Ppic: PByte;
-  RectArea: PChar; Image: PChar; widthI, heightI, sizeI: integer; shadow, alpha: integer;
-  BlockImageW: PChar; BlockScreenR: PChar; widthR, heightR, sizeR: integer; depth: integer;
+procedure DrawRLE8Pic3(colorPanel: pansichar; num, px, py: integer; Pidx: Pinteger; Ppic: PByte;
+  RectArea: pansichar; Image: pansichar; widthI, heightI, sizeI: integer; shadow, alpha: integer;
+  BlockImageW: pansichar; BlockScreenR: pansichar; widthR, heightR, sizeR: integer; depth: integer;
   MixColor: Uint32; MixAlpha: integer);
 var
   w, h, xs, ys: smallint;
@@ -7566,7 +7391,7 @@ begin
   if scr1 = screen then
   begin
     // Here p is the address to the pixel we want to set
-    p := Pointer(uint32(screen.pixels) + y * screen.pitch + x * screen.format.BytesPerPixel);
+    p := Pointer(nativeint(screen.pixels) + y * screen.pitch + x * screen.format.BytesPerPixel);
     SDL_UpdateTexture(screenTex, @dest, p, screen.pitch);
     SDL_RenderCopy(render, screenTex, nil, nil);
     SDL_RenderPresent(render);
