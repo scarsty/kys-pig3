@@ -77,3 +77,4 @@ mods/promise/__history
 *.otares
 *.rsm
 *.tvsconfig
+mods/hugebase/bin/lib/backup/*

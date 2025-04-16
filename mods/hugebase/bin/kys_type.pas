@@ -214,8 +214,8 @@ type
 
   TLoadTileData = record
     amount: integer;
-    path: string;
-    filemem: PChar;
+    path: utf8string;
+    filemem: putf8char;
     beginIndex: ^TPNGIndex;
   end;
 
@@ -230,7 +230,7 @@ var
   //仅为标记用
 
   //初始值
-  TitleString: string;
+  TitleString: utf8string;
 
   CHINESE_FONT: pansichar = 'font/chinese.ttf';
   CHINESE_FONT_SIZE: integer = 20;
@@ -239,7 +239,7 @@ var
   ENGLISH_FONT_SIZE: integer = 18;
   ENGLISH_FONT_REALSIZE: integer = 18;
 
-  iniFilename: string = 'config/kysmod.ini';
+  iniFilename: utf8string = 'config/kysmod.ini';
 
   CENTER_X: integer = 480;
   CENTER_Y: integer = 270;
@@ -247,7 +247,7 @@ var
   ui_x: integer = 10;
   ui_y: integer = 10;
 
-  AppPath: string; //程序的路径
+  AppPath: utf8string; //程序的路径
 
   //以下为常数表, 其中多数可以由ini文件改变
   BEGIN_MISSION_NUM: integer = 100; //任务起始对话
@@ -380,7 +380,7 @@ var
   StartMusic: integer;
   ExitScenceMusicNum: integer; //离开场景的音乐
   nowmusic: integer = -1; //正在播放的音乐
-  //MusicName: string;
+  //MusicName: utf8string;
 
   //事件和脚本部分
   x50: array [-$8000 .. $7FFF] of smallint;
@@ -454,8 +454,8 @@ var
   LastShowScene: smallint = -1;
   WoodManSta: TWoodMan;
 
-  Star: array [0 .. 107] of WideString;
-  RoleName: array [0 .. 107] of WideString;
+  Star: array [0 .. 107] of utf8string;
+  RoleName: array [0 .. 107] of utf8string;
   loverlist: array [0 .. 24, 0 .. 4] of smallint;
   ScenceAmount: integer;
 
@@ -468,7 +468,7 @@ var
   //freshscreen: array of PSDL_Surface;  //用于菜单/事件中快速重画的画面,
   TimeInWater: integer;
 
-  //MenuString, MenuEngString: array of WideString;
+  //MenuString, MenuEngString: array of utf8string;
   //选单所使用的字符串-应避免使用全局变量
 
   gamearray: array of array of smallint;
@@ -477,13 +477,13 @@ var
   //黑幕遮罩, 似乎未使用
   showBlackScreen: boolean;
 
-  MissionStr: array of WideString;
+  MissionStr: array of utf8string;
 
   LoadingTiles: boolean = True; //表示正在载入贴图
   ReadingTiles: boolean = False;
   LoadingBattleTiles: boolean = False;
 
-  pMPic, pSPic, {pBPic,} pEPic, pHPic, pIPic: PChar; //图片文件保存的位置
+  pMPic, pSPic, {pBPic,} pEPic, pHPic, pIPic: putf8char; //图片文件保存的位置
 
   ScreenBlendMode: integer = 0; //色调 0-白天 1-夜晚 2-黄昏 3-水下
 
@@ -513,13 +513,13 @@ var
   //InMenuEsc: integer = 0;  //表示是否处于菜单中, 无需刷新场景
 
   openAudio: HSTREAM;
-  MovieName: string;
+  MovieName: utf8string;
 
   BasicOffset, RoleOffset, ItemOffset, ScenceOffset, MagicOffset, WeiShopOffset, LenR: integer;
 
-  versionstr: WideString = '  108 Brothers and Sisters';
+  versionstr: utf8string = '  108 Brothers and Sisters';
 
-  BattleNames, statestrs: array of WideString; //状态的字串
+  BattleNames, statestrs: array of utf8string; //状态的字串
 
   EXPAND_GROUND: integer = 1;
   ExGroundS, ExGroundB: array [-64 .. 127, -64 .. 127] of smallint; //用来使场景边缘的显示效果改善
@@ -530,12 +530,12 @@ var
   offsetX, offsetY: integer;
   needOffset: integer = 0; //偏移值, 震动效果用
 
-  EventScriptPath: string = 'script/event/ka';
-  EventScriptExt: string = '.lua';
+  EventScriptPath: utf8string = 'script/event/ka';
+  EventScriptExt: utf8string = '.lua';
   p5032pos: integer = -100; //脚本用于处理50 32使用
   p5032value: integer = -1;
 
-  pEvent: PChar;
+  pEvent: putf8char;
 
   CHNFONT_SPACEWIDTH: integer;
 
@@ -545,15 +545,15 @@ var
   screenTex, ImgSGroundTex, ImgBGroundTex, TextScreenTex, BlackScreenTex, SimpleStateTex: PSDL_Texture;
   //FreshScreenTex: TList;
 
-  keystate: PChar;
+  keystate: putf8char;
   keyup, keydown, keyright, keyleft: puint8;
 
   SimpleStatusTex: array [0 .. 5] of PSDL_Texture; //全队简明状态的表面
   SimpleTextTex: array [0 .. 5] of PSDL_Texture; //全队简明状态文字的表面
 
-  CharTex: array [$0 .. $FFFF] of PSDL_Texture; //字符的纹理
-  CharSur: array [$0 .. $FFFF] of PSDL_Surface; //字符的纹理
-  CharSize: array [$0 .. $FFFF] of byte;
+  CharTex: array [$0 .. $FFFFFF] of PSDL_Texture; //字符的纹理
+  CharSur: array [$0 .. $FFFFFF] of PSDL_Surface; //字符的表面
+  CharSize: array [$0 .. $FFFFFF] of byte;
   WoodPic: Pointer; //木人游戏的纹理
 
   PRESENT_SYNC: integer = 1; //屏幕刷新同步

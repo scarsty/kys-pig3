@@ -55,7 +55,7 @@ procedure LoadGroundTex(x, y: integer);
 
 function DrawTextFrame(x, y: integer; len: integer; alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0): integer;
 
-procedure DrawTextWithRect(word: puint16; x, y, w: integer; color1, color2: uint32; alpha: integer = 0; Refresh: integer = 1);
+procedure DrawTextWithRect(word: utf8string; x, y, w: integer; color1, color2: uint32; alpha: integer = 0; Refresh: integer = 1);
 procedure DrawVirtualKey;
 
 implementation
@@ -69,7 +69,7 @@ var
   PNGIndex: TPNGIndex;
   pPNGIndex: ^TPNGIndex;
   //pSurface: PPSDL_Surface;
-  path: string;
+  path: utf8string;
   inRegion: boolean;
   pPicByte: pbyte;
 begin
@@ -220,7 +220,7 @@ end;
 procedure DrawHeadPic(num, px, py: integer; shadow: integer = 0; alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0; scalex: real = 1; scaley: real = 1); overload;
 var
   len, grp, idx: integer;
-  str: string;
+  str: utf8string;
 begin
   if (num >= 0) and (num < HPicAmount) then
   begin
@@ -353,7 +353,7 @@ begin
       DrawTPic(12, CENTER_X - 384 + 112, CENTER_Y - 240 + 15);
       DrawTPic(10, CENTER_X - 384 + 110, CENTER_Y - 240 + 5);
       DrawTPic(10, CENTER_X - 384 + 591, CENTER_Y - 240 + 5);
-      DrawShadowText(@versionstr[1], 5, CENTER_Y * 2 - 30, ColColor($64), ColColor($66));
+      DrawShadowText(versionstr, 5, CENTER_Y * 2 - 30, ColColor($64), ColColor($66));
     end;
     4: //处于标题动画中
     begin
@@ -365,7 +365,7 @@ begin
         OpenPicPosition.x:=-random(titlePNGIndex[0].w-center_x*2);
         OpenPicPosition.y:=-random(titlePNGIndex[0].h-center_y*2);
       end;
-      DrawShadowText(@versionstr[1], 5, CENTER_Y * 2 - 30, ColColor($64), ColColor($66));
+      DrawShadowText(versionstr, 5, CENTER_Y * 2 - 30, ColColor($64), ColColor($66));
     end;
   end;
 
@@ -486,7 +486,7 @@ procedure DrawScence;
 var
   x, y, xpoint, ypoint, axp, ayp, i, i1, i2, num, sum, widthregion, sumregion, cx1, cy1: integer;
   dest: TSDL_Rect;
-  word: WideString;
+  word: utf8string;
   pos: Tposition;
 begin
   //DrawScenceWithoutRole(Sx, Sy);
@@ -588,7 +588,7 @@ begin
   if (CurScence = 71) and (MODVersion = 13) then
   begin
     word := formatfloat('0', TimeInWater div 60) + ':' + formatfloat('00', TimeInWater mod 60);
-    DrawShadowText(@word[1], 5, 5, ColColor(5), ColColor(7));
+    DrawShadowText(word, 5, 5, ColColor(5), ColColor(7));
     if (time <= 0) then
     begin
       instruct_15;
@@ -1425,13 +1425,13 @@ end;
 
 //显示带边框的文字, 仅用于unicode, 需自定义宽度
 //默认情况为透明度50, 立即刷新
-procedure DrawTextWithRect(word: puint16; x, y, w: integer; color1, color2: uint32; alpha: integer = 0; Refresh: integer = 1);
+procedure DrawTextWithRect(word: utf8string; x, y, w: integer; color1, color2: uint32; alpha: integer = 0; Refresh: integer = 1);
 var
   len, j: integer;
-  p: PChar;
+  p: putf8char;
 begin
   //DrawRectangle(x, y, w, 26, 0, ColColor(255), alpha);
-  len := DrawLength(pwidechar(word));
+  len := DrawLength(putf8char(word));
   len := max((w + 9) div 10, len);
   DrawTextFrame(x, y, len, alpha);
   DrawShadowText(word, x + 19, y + 3, color1, color2);

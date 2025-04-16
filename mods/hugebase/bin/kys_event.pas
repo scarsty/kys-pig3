@@ -64,8 +64,8 @@ function instruct_42(jump1, jump2: integer): integer;
 function instruct_43(inum, jump1, jump2: integer): integer;
 procedure instruct_44(enum1, beginpic1, endpic1, enum2, beginpic2, endpic2: integer);
 procedure instruct_44e(enum1, beginpic1, endpic1, enum2, beginpic2, enum3, beginpic3: integer);
-procedure Show3HintString(str1, str2, str3: pwidechar);
-procedure AddRoleProWithHint(rnum, datalist, num: integer; word: widestring = '');
+procedure Show3HintString(str1, str2, str3: putf8char);
+procedure AddRoleProWithHint(rnum, datalist, num: integer; word: utf8string = '');
 procedure instruct_45(rnum, speed: integer);
 procedure instruct_46(rnum, mp: integer);
 procedure instruct_47(rnum, Attack: integer);
@@ -73,7 +73,7 @@ procedure instruct_48(rnum, hp: integer);
 procedure instruct_49(rnum, MPpro: integer);
 function instruct_50(list: array of integer): integer;
 procedure instruct_51;
-procedure ShowRolePro(rnum, datalist: integer; word: widestring);
+procedure ShowRolePro(rnum, datalist: integer; word: utf8string);
 procedure instruct_52;
 procedure instruct_53;
 procedure instruct_54;
@@ -85,7 +85,7 @@ procedure instruct_59;
 function instruct_60(snum, enum, pic, jump1, jump2: integer): integer;
 function instruct_61(jump1, jump2: integer): integer;
 procedure instruct_62(enum1, beginpic1, endpic1, enum2, beginpic2, endpic2: integer);
-procedure TextAmi(filename: string);
+procedure TextAmi(filename: utf8string);
 procedure EndAmi;
 procedure instruct_63(rnum, sexual: integer);
 procedure instruct_64;
@@ -99,7 +99,7 @@ function GetMagicLevel(person, mnum: integer): integer;
 procedure StudyMagic(rnum, magicnum, newmagicnum, level, dismode: integer);
 procedure DivideName(fullname: widestring; var surname, givenname: widestring);
 function ReplaceStr(const S, Srch, Replace: widestring): widestring;
-procedure NewTalk(headnum, talknum, namenum, place, showhead, color, frame: integer; content: widestring = ''; disname: widestring = '');
+procedure NewTalk(headnum, talknum, namenum, place, showhead, color, frame: integer; content: utf8string = ''; disname: utf8string = '');
 procedure ShowTitle(talknum, color: integer);
 function Digging(beginPic, goal, shovel, restrict: integer): integer;
 procedure ShowSurface(x, y, blank: integer; surface: array of integer);
@@ -137,7 +137,7 @@ procedure NewShop(shop_num: integer);
 
 procedure ShowMap;
 function EnterNumber(MinValue, MaxValue, x, y: integer; Default: integer = 0): smallint;
-function EnterString(var str: string; x, y, w, h: integer): bool;
+function EnterString(var str: utf8string; x, y, w, h: integer): bool;
 
 implementation
 
@@ -164,7 +164,7 @@ procedure instruct_1(talknum, headnum, dismode: integer);
 var
   IDX, GRP, offset, len, i, p, l, headx, heady, diagx, diagy, namenum: integer;
   talkarray: array of byte;
-  Name: widestring;
+  Name: utf8string;
 begin
   namenum := headnum;
   if dismode in [2, 3] then
@@ -189,7 +189,7 @@ end;
 procedure instruct_2(inum, amount: integer);
 var
   i, x, y, l1, l2: integer;
-  word: widestring;
+  word: utf8string;
 begin
   instruct_32(inum, amount);
   SetRolePic(0);
@@ -202,12 +202,12 @@ begin
   end;
 
   //DrawRectangle(x - 85, y, 170, 76, 0, ColColor(255), 30);
-  word := UTF8Decode(format('%d', [amount]));
-  l1 := DrawLength(pwidechar(@Ritem[inum].Name));
+  word := format('%d', [amount]);
+  l1 := DrawLength(putf8char(@Ritem[inum].Name));
   l2 := DrawLength(word);
   DrawTextFrame(CENTER_X - (6 + l1 + l2) * 5 - 20, y, 6 + l1 + l2);
   x := CENTER_X - (6 + l1 + l2) * 5 + 1;
-  DrawEngShadowText(@word[1], x + 40 + 20 + l1 * 10, 3 + y, 0, $202020);
+  DrawEngShadowText(word, x + 40 + 20 + l1 * 10, 3 + y, 0, $202020);
   if amount >= 0 then
     word := '得到'
   else
@@ -215,7 +215,7 @@ begin
     word := '失去';
     amount := -amount;
   end;
-  DrawShadowText(@word[1], x, 3 + y, 0, $202020);
+  DrawShadowText(word, x, 3 + y, 0, $202020);
   //word := '數量';
   //DrawShadowText(@word[1], x - 60, 3 + y, ColColor($64), ColColor($66));
   DrawIPic(inum, CENTER_X - 40, y - 90, 0, 0, 0, 0);
@@ -373,13 +373,13 @@ end;
 function instruct_5(jump1, jump2: integer): integer;
 var
   menu: integer;
-  menuString: array [0 .. 1] of widestring;
-  str: widestring;
+  menuString: array [0 .. 1] of utf8string;
+  str: utf8string;
 begin
   menuString[0] := '取消';
   menuString[1] := '戰鬥';
   str := '是否與之戰鬥？';
-  DrawTextWithRect(@str[1], CENTER_X - 75, CENTER_Y - 85, 0, 0, $202020);
+  DrawTextWithRect(str, CENTER_X - 75, CENTER_Y - 85, 0, 0, $202020);
   menu := CommonMenu2(CENTER_X - 49, CENTER_Y - 50, 48, menuString);
   if menu = 1 then
     Result := jump1
@@ -408,13 +408,13 @@ end;
 function instruct_9(jump1, jump2: integer): integer;
 var
   menu: integer;
-  menuString: array [0 .. 1] of widestring;
-  str: widestring;
+  menuString: array [0 .. 1] of utf8string;
+  str: utf8string;
 begin
   menuString[0] := '取消';
   menuString[1] := '要求';
   str := '是否要求加入？';
-  DrawTextWithRect(@str[1], CENTER_X - 75, CENTER_Y - 85, 0, 0, $202020);
+  DrawTextWithRect(str, CENTER_X - 75, CENTER_Y - 85, 0, 0, $202020);
   menu := CommonMenu2(CENTER_X - 49, CENTER_Y - 50, 48, menuString);
   if menu = 1 then
     Result := jump1
@@ -457,8 +457,8 @@ end;
 function instruct_11(jump1, jump2: integer): integer;
 var
   menu: integer;
-  menuString: array [0 .. 1] of widestring;
-  str: widestring;
+  menuString: array [0 .. 1] of utf8string;
+  str: utf8string;
 begin
   menuString[0] := '取消';
   menuString[1] := '住宿';
@@ -469,7 +469,7 @@ begin
     menuString[1] := 'Y-是';
     str := '請作出您的選擇';
   end;
-  DrawTextWithRect(@str[1], CENTER_X - 75, CENTER_Y - 85, 0, 0, $202020);
+  DrawTextWithRect(str, CENTER_X - 75, CENTER_Y - 85, 0, 0, $202020);
   menu := CommonMenu2(CENTER_X - 49, CENTER_Y - 50, 48, menuString);
   if menu = 1 then
     Result := jump1
@@ -549,15 +549,15 @@ end;
 procedure instruct_15;
 var
   i, x, y: integer;
-  str: widestring;
+  str: utf8string;
 begin
   where := 3;
   Redraw;
   DrawRectangleWithoutFrame(0, 0, CENTER_X * 2, CENTER_Y * 2, MapRGBA(196, 25, 16), 60);
   str := ' 小村的傳說失敗了…';
-  DrawShadowText(@str[1], CENTER_X - 120, CENTER_Y - 25, ColColor(255), ColColor(255));
+  DrawShadowText(str, CENTER_X - 120, CENTER_Y - 25, ColColor(255), ColColor(255));
   str := '但是遊戲是可以重來的！';
-  DrawShadowText(@str[1], CENTER_X - 120, CENTER_Y, ColColor(255), ColColor(255));
+  DrawShadowText(str, CENTER_X - 120, CENTER_Y, ColColor(255), ColColor(255));
   x := 425;
   y := 275;
   //DrawTitlePic(0, x, y);
@@ -902,7 +902,7 @@ end;
 procedure instruct_33(rnum, mnum, dismode: integer);
 var
   i, l, x, l1, p, pm: integer;
-  word: widestring;
+  word: utf8string;
 begin
   if Rmagic[mnum].HurtType = 3 then
   begin
@@ -962,14 +962,14 @@ begin
   //if i = 10 then rrole[rnum].data[i+63] := magicnum;
   if dismode = 0 then
   begin
-    word := UTF8Decode('學會');
+    word := '學會';
     Show3HintString(@Rrole[rnum].Name, @word[1], @Rmagic[mnum].Name);
   end;
 end;
 
 procedure instruct_34(rnum, iq: integer);
 var
-  word: widestring;
+  word: utf8string;
 begin
   if Rrole[rnum].Aptitude + iq <= 100 then
   begin
@@ -982,8 +982,8 @@ begin
   end;
   if iq > 0 then
   begin
-    word := UTF8Decode('資質增加');
-    Show3HintString(@Rrole[rnum].Name, @word[1], pwidechar(UTF8Decode(format('%3d', [iq]))));
+    word := '資質增加';
+    Show3HintString(@Rrole[rnum].Name, @word[1], putf8char(format('%3d', [iq])));
   end;
 end;
 
@@ -1158,7 +1158,7 @@ begin
   //SData[CurScence, 3, DData[CurScence, [enum,10],DData[CurScence, [enum,9]]:=-1;
 end;
 
-procedure Show3HintString(str1, str2, str3: pwidechar);
+procedure Show3HintString(str1, str2, str3: putf8char);
 var
   l, l1, l2, l3, x: integer;
 begin
@@ -1170,44 +1170,44 @@ begin
   DrawTextFrame(x - 19, 150, l);
   //DrawRectangle(CENTER_X - 75, 98, 150, 51, 0, ColColor(255), 30);
   if l1 > 0 then
-    DrawShadowText(puint16(str1), x, 153, ColColor($64), ColColor($66));
+    DrawShadowText(str1, x, 153, ColColor($64), ColColor($66));
   if l2 > 0 then
-    DrawShadowText(puint16(str2), x + l1 * 10, 153, 0, $202020);
+    DrawShadowText(str2, x + l1 * 10, 153, 0, $202020);
   if l3 > 0 then
-    DrawShadowText(puint16(str3), x + l1 * 10 + l2 * 10, 153, ColColor($64), ColColor($66));
+    DrawShadowText(str3, x + l1 * 10 + l2 * 10, 153, ColColor($64), ColColor($66));
   UpdateAllScreen;
   WaitAnyKey;
   Redraw;
 end;
 
-procedure AddRoleProWithHint(rnum, datalist, num: integer; word: widestring = '');
+procedure AddRoleProWithHint(rnum, datalist, num: integer; word: utf8string = '');
 begin
   Rrole[rnum].Data[datalist] := Rrole[rnum].Data[datalist] + num;
   if word <> '' then
   begin
-    Show3HintString((@Rrole[rnum].Name), @word[1], pwidechar(UTF8Decode(format('%d', [num]))));
+    Show3HintString((@Rrole[rnum].Name), @word[1], putf8char(format('%d', [num])));
   end;
 end;
 
 procedure instruct_45(rnum, speed: integer);
 begin
-  AddRoleProWithHint(rnum, (pointer(@Rrole[0].Speed) - pointer(@Rrole[0])) div 2, speed, UTF8Decode('輕功增加'));
+  AddRoleProWithHint(rnum, (pointer(@Rrole[0].Speed) - pointer(@Rrole[0])) div 2, speed, '輕功增加');
 end;
 
 procedure instruct_46(rnum, mp: integer);
 begin
-  AddRoleProWithHint(rnum, (pointer(@Rrole[0].MaxMP) - pointer(@Rrole[0])) div 2, mp, UTF8Decode('內力增加'));
+  AddRoleProWithHint(rnum, (pointer(@Rrole[0].MaxMP) - pointer(@Rrole[0])) div 2, mp, '內力增加');
   Rrole[rnum].CurrentMP := Rrole[rnum].MaxMP;
 end;
 
 procedure instruct_47(rnum, Attack: integer);
 begin
-  AddRoleProWithHint(rnum, (pointer(@Rrole[0].Attack) - pointer(@Rrole[0])) div 2, Attack, UTF8Decode('武力增加'));
+  AddRoleProWithHint(rnum, (pointer(@Rrole[0].Attack) - pointer(@Rrole[0])) div 2, Attack, '武力增加');
 end;
 
 procedure instruct_48(rnum, hp: integer);
 begin
-  AddRoleProWithHint(rnum, (pointer(@Rrole[0].MaxHP) - pointer(@Rrole[0])) div 2, hp, UTF8Decode('生命增加'));
+  AddRoleProWithHint(rnum, (pointer(@Rrole[0].MaxHP) - pointer(@Rrole[0])) div 2, hp, '生命增加');
   Rrole[rnum].CurrentHP := Rrole[rnum].MaxHP;
 end;
 
@@ -1245,21 +1245,21 @@ begin
   instruct_1(SOFTSTAR_BEGIN_TALK + random(SOFTSTAR_NUM_TALK), $72, 0);
 end;
 
-procedure ShowRolePro(rnum, datalist: integer; word: widestring);
+procedure ShowRolePro(rnum, datalist: integer; word: utf8string);
 begin
   Redraw;
-  Show3HintString(pwidechar(''), pwidechar(word), pwidechar(UTF8Decode(format('%4d', [Rrole[rnum].Data[datalist]]))));
+  Show3HintString(putf8char(''), putf8char(word), putf8char(format('%4d', [Rrole[rnum].Data[datalist]])));
   //Redraw;
 end;
 
 procedure instruct_52;
 begin
-  ShowRolePro(0, (pointer(@Rrole[0].Ethics) - pointer(@Rrole[0])) div 2, UTF8Decode('你的品德指數為：'));
+  ShowRolePro(0, (pointer(@Rrole[0].Ethics) - pointer(@Rrole[0])) div 2, '你的品德指數為：');
 end;
 
 procedure instruct_53;
 begin
-  ShowRolePro(0, (pointer(@Rrole[0].Repute) - pointer(@Rrole[0])) div 2, UTF8Decode('你的聲望指數為：'));
+  ShowRolePro(0, (pointer(@Rrole[0].Repute) - pointer(@Rrole[0])) div 2, '你的聲望指數為：');
 end;
 
 //Open all scences.
@@ -1420,7 +1420,7 @@ end;
 procedure instruct_62(enum1, beginpic1, endpic1, enum2, beginpic2, endpic2: integer);
 var
   i: integer;
-  str: widestring;
+  str: utf8string;
 begin
   ShowMR := False; //CurScenceRolePic := -1;
   instruct_44(enum1, beginpic1, endpic1, enum2, beginpic2, endpic2);
@@ -1432,10 +1432,10 @@ begin
   //where := 3;
 end;
 
-procedure TextAmi(filename: string);
+procedure TextAmi(filename: utf8string);
 var
   x, y, i, len: integer;
-  str: widestring;
+  str: utf8string;
   p: integer;
 begin
   TurnBlack;
@@ -1457,7 +1457,7 @@ begin
     if str[i] = widechar(13) then
     begin
       str[i] := widechar(0);
-      DrawShadowText(@str[p], x, y, ColColor($FF), ColColor($FF));
+      DrawShadowText(str, x, y, ColColor($FF), ColColor($FF));
       p := i + 1;
       y := y + 25;
       UpdateAllScreen;
@@ -1511,7 +1511,7 @@ procedure instruct_64;
 var
   i, amount, shopnum, menu, price: integer;
   list: array [0 .. 4] of integer;
-  menuString, menuEngString: array [0 .. 4] of widestring;
+  menuString, menuEngString: array [0 .. 4] of utf8string;
 begin
   //amount := 0;
   //任选一个商店, 因未写他去其他客栈的指令
@@ -1578,13 +1578,13 @@ end;
 function instruct_50e(code, e1, e2, e3, e4, e5, e6: integer): integer;
 var
   i, t1, GRP, IDX, offset, len, i1, i2: integer;
-  p, p1: pchar;
+  p, p1: putf8char;
   pw, pw1: puint16;
   //ps :pstring;
-  str: string;
-  word: widestring;
-  wordutf8, word1utf8: widestring;
-  menuString, menuEngString: array of widestring;
+  str: utf8string;
+  word: utf8string;
+  wordutf8, word1utf8: utf8string;
+  menuString, menuEngString: array of utf8string;
 begin
   Result := 0;
   //writeln('Expanded 50, the code is ', code);
@@ -1682,8 +1682,8 @@ begin
       e4 := e_GetValue(0, e1, e4);
       pw := @x50[e2];
       pw1 := @x50[e3];
-      word := format(pwidechar(pw1), [e4]);
-      //showmessage(pwidechar(pw1)+word);
+      word := format(putf8char(pw1), [e4]);
+      //showmessage(putf8char(pw1)+word);
       for i := 0 to length(word) - 1 do
       begin
         pw^ := uint16(word[i + 1]);
@@ -1693,21 +1693,21 @@ begin
     end;
     10: //Get the length of a string.
     begin
-      x50[e2] := DrawLength(pwidechar(@x50[e1]));
+      x50[e2] := DrawLength(putf8char(@x50[e1]));
       //showmessage(inttostr(x50[e2]));
     end;
     11: //Combine 2 strings.
     begin
       pw := @x50[e1];
       pw1 := @x50[e2];
-      for i := 0 to length(pwidechar(pw1)) - 1 do
+      for i := 0 to length(putf8char(pw1)) - 1 do
       begin
         pw^ := pw1^;
         Inc(pw);
         Inc(pw1);
       end;
       pw1 := @x50[e3];
-      for i := 0 to length(pwidechar(pw1)) do
+      for i := 0 to length(putf8char(pw1)) do
       begin
         pw^ := pw1^;
         Inc(pw);
@@ -1976,22 +1976,22 @@ begin
       t1 := 0;
       pw := @x50[e2];
       pw1 := pw;
-      //writeln(WideString(PWideChar(pw)));
+      //writeln(utf8string(putf8char(pw)));
       while uint16(pw^) > 0 do
       begin
         if uint16(pw^) = $2A then
         begin
           pw^ := 0;
-          //DrawU16ShadowText(pchar(pw1), e3 - 2, e4 + 22 * i - 25, ColColor(e5 and $FF), ColColor((e5 and $FF00) shr 8));
-          DrawU16ShadowText(PChar(pw1), e3 - 2, e4 + 22 * i - 25, 0, $202020);
+          //DrawU16ShadowText(putf8char(pw1), e3 - 2, e4 + 22 * i - 25, ColColor(e5 and $FF), ColColor((e5 and $FF00) shr 8));
+          DrawU16ShadowText(pw1, e3 - 2, e4 + 22 * i - 25, 0, $202020);
           i := i + 1;
           pw1 := pw;
           Inc(pw1);
         end;
         Inc(pw);
       end;
-      //Drawu16ShadowText(pchar(pw1), e3 - 2, e4 + 22 - 25, ColColor(e5 and $FF), ColColor((e5 and $FF00) shr 8));
-      Drawu16ShadowText(PChar(pw1), e3 - 2, e4 + 22 - 25, 0, $202020);
+      //Drawu16ShadowText(putf8char(pw1), e3 - 2, e4 + 22 - 25, ColColor(e5 and $FF), ColColor((e5 and $FF00) shr 8));
+      Drawu16ShadowText(pw1, e3 - 2, e4 + 22 - 25, 0, $202020);
       UpdateAllScreen;
       //waitanykey;
     end;
@@ -2062,14 +2062,14 @@ begin
         if uint16(pw^) = $2A then
         begin
           pw^ := 0;
-          DrawU16ShadowText(PChar(pw1), e3 + 3, e4 + 22 * i + 2, ColColor(e5 and $FF), ColColor((e5 and $FF00) shr 8));
+          DrawU16ShadowText(pw1, e3 + 3, e4 + 22 * i + 2, ColColor(e5 and $FF), ColColor((e5 and $FF00) shr 8));
           i := i + 1;
           pw1 := pw;
           Inc(pw1);
         end;
         Inc(pw);
       end;
-      DrawU16ShadowText(PChar(pw1), e3 + 3, e4 + 22 * i + 2, ColColor(e5 and $FF), ColColor((e5 and $FF00) shr 8));
+      DrawU16ShadowText(pw1, e3 + 3, e4 + 22 * i + 2, ColColor(e5 and $FF), ColColor((e5 and $FF00) shr 8));
       UpdateAllScreen;
       i := WaitAnyKey;
       if i = SDLK_y then
@@ -2099,8 +2099,8 @@ begin
       for i := 0 to e2 - 1 do
       begin
         menuString[i] := '';
-        menuString[i] := pwidechar(@x50[x50[e3 + i]]);
-        i1 := DrawLength(pwidechar(@x50[x50[e3 + i]]));
+        menuString[i] := u16toutf8(@x50[x50[e3 + i]]);
+        i1 := DrawLength(u16toutf8(@x50[x50[e3 + i]]));
         if i1 > t1 then
           t1 := i1;
       end;
@@ -2117,8 +2117,8 @@ begin
       for i := 0 to e2 - 1 do
       begin
         menuString[i] := '';
-        menuString[i] := pwidechar(@x50[x50[e3 + i]]);
-        i1 := DrawLength(pwidechar(@x50[x50[e3 + i]]));
+        menuString[i] := u16toutf8(@x50[x50[e3 + i]]);
+        i1 := DrawLength(u16toutf8(@x50[x50[e3 + i]]));
         if i1 > i2 then
           i2 := i1;
       end;
@@ -2144,7 +2144,7 @@ begin
         2:
         begin
           //str := 'pic/' + IntToStr(e5) + '.png';
-          //display_img(@str[1], e3, e4);
+          //display_img(str, e3, e4);
         end;
       end;
       UpdateAllScreen;
@@ -2454,7 +2454,7 @@ end;
 procedure StudyMagic(rnum, magicnum, newmagicnum, level, dismode: integer);
 var
   i: integer;
-  word: widestring;
+  word: utf8string;
 begin
   for i := 0 to 9 do
   begin
@@ -2473,7 +2473,7 @@ begin
   begin
     DrawRectangle(CENTER_X - 75, 98, 145, 76, 0, ColColor(255), 30);
     word := '學會';
-    DrawShadowText(@word[1], CENTER_X - 90, 125, ColColor(5), ColColor(7));
+    DrawShadowText(word, CENTER_X - 90, 125, ColColor(5), ColColor(7));
     DrawU16ShadowText(@Rrole[rnum].Name, CENTER_X - 90, 100, ColColor($21), ColColor($23));
     DrawU16ShadowText(@Rmagic[newmagicnum].Name, CENTER_X - 90, 150, ColColor($64), ColColor($66));
     UpdateAllScreen;
@@ -2588,7 +2588,7 @@ begin
       hysur := 0;
       for i := 0 to surname2.Count - 1 do
       begin
-        if surname = UTF8Decode(surname2.Strings[i]) then
+        if surname = surname2.Strings[i] then
         begin
           hysur := 1;
           break;
@@ -2617,7 +2617,7 @@ end;
 function ReplaceStr(const S, Srch, Replace: widestring): widestring;
 var
   i: integer;
-  Source: widestring;
+  Source: utf8string;
 begin
   Source := S;
   Result := '';
@@ -2634,7 +2634,7 @@ begin
   until i <= 0;
 end;
 
-procedure NewTalk(headnum, talknum, namenum, place, showhead, color, frame: integer; content: widestring = ''; disname: widestring = '');
+procedure NewTalk(headnum, talknum, namenum, place, showhead, color, frame: integer; content: utf8string = ''; disname: utf8string = '');
 var
   FileHandle, Offset, len, I, I2, ix, iy, xtemp, a: integer;
   Frame_X, Frame_Y, Frame_W, Frame_H, Head_X, Head_Y, Head_W, Head_H, Name_X, Name_Y, Name_W, Name_H, Talk_X, Talk_Y, Talk_W, Talk_H, MaxCol: integer;
@@ -2642,7 +2642,7 @@ var
   DrawForeGroundCol, DrawBackGroundCol: cardinal;
   Talk, Name, SurName, GivenName: array of byte;
   {$IFDEF fpc}
-  FullNameUTF8Str, SurNameUTF8Str, GivenNameUTF8Str: string;
+  FullNameUTF8Str, SurNameUTF8Str, GivenNameUTF8Str: utf8string;
   {$ENDIF}
   FullNameStr, SurNameStr, GivenNameStr, TalkStr, NameStr, TempStr: widestring;
   Changed: boolean;
@@ -2657,13 +2657,13 @@ const
   ColSpacing = 20; //列距
   MaxRow = 5;
   NameColSpacing = 20; //名字列距
-  FullNameCode: widestring = '&&';
-  SurNameCode: widestring = '$$';
-  GivenNameCode: widestring = '%%';
-  WaitAnyKeyCode: widestring = '@@';
-  DelayCode: widestring = '##';
-  NextLineCode: widestring = '**';
-  ChangeColorCode: widestring = '^';
+  FullNameCode: utf8string = '&&';
+  SurNameCode: utf8string = '$$';
+  GivenNameCode: utf8string = '%%';
+  WaitAnyKeyCode: utf8string = '@@';
+  DelayCode: utf8string = '##';
+  NextLineCode: utf8string = '**';
+  ChangeColorCode: utf8string = '^';
   ExpressionMin: integer = 412;
   ExpressionMax: integer = 429;
 begin
@@ -2807,11 +2807,11 @@ begin
     end;
 
     if (namenum = -2) or (namenum > 0) then
-      NameStr := pwidechar(@Name[0])
+      NameStr := u16toutf8(@Name[0])
     else if (namenum = -1) or (namenum = 0) then
       NameStr := '';
     if {(MODVersion in [0, 31]) and} (namenum = 0) then
-      NameStr := pwidechar(@Rrole[0].Name);
+      NameStr := putf8char(@Rrole[0].Name);
   end
   else
     NameStr := disname;
@@ -2826,8 +2826,8 @@ begin
   // *****************分析名字*****************//
   setlength(Name, 10);
   Move(Rrole[0].Name[0], Name[0], 10);
-  //FullNameStr := UTF8Decode(CP950ToUTF8(PChar(@Name[0])));
-  FullNameStr := pwidechar(@Name[0]);
+  //FullNameStr := CP950ToUTF8(putf8char(@Name[0]));
+  FullNameStr := pwidechar(@Name[1]);
 
   {$IFDEF fpc}
   //FullNameUTF8Str := UTF8Encode(FullNameStr);
@@ -2838,7 +2838,7 @@ begin
   // ******************************************//
 
   // ***************替换对话字符串*************//
-  //TalkStr := ReplaceStr(TalkStr, utf8decode('＜'), utf8decode('^4'));
+  //TalkStr := ReplaceStr(TalkStr, '＜'), utf8decode('^4');
   //替换字符串中的姓名
   if (Pos(FullNameCode, TalkStr) > 0) then
     TalkStr := ReplaceStr(TalkStr, FullNameCode, FullNameStr);
@@ -2847,8 +2847,8 @@ begin
   if (Pos(SurNameCode, TalkStr) > 0) or (Pos(GivenNameCode, TalkStr) > 0) then
   begin
     DivideName(FullNameStr, SurNameStr, GivenNameStr);
-    //SurNameStr := UTF8Decode(SurNameUTF8Str);
-    //GivenNameStr := UTF8Decode(GivenNameUTF8Str);
+    //SurNameStr := SurNameUTF8Str;
+    //GivenNameStr := GivenNameUTF8Str;
     TalkStr := ReplaceStr(TalkStr, SurNameCode, SurNameStr);
     TalkStr := ReplaceStr(TalkStr, GivenNameCode, GivenNameStr);
   end;
@@ -2886,7 +2886,7 @@ begin
         Setlength(TempStr, 2);
         Move(NameStr[ix], TempStr[1], Sizeof(widechar));
         tempstr[2] := widechar(0);
-        DrawShadowText(@TempStr[1], Name_X + (ix - 1) * NameColSpacing, Name_Y, ColColor(5), ColColor(7));
+        DrawShadowText(TempStr, Name_X + (ix - 1) * NameColSpacing, Name_Y, ColColor(5), ColColor(7));
       end;
     end;
     UpdateAllScreen;
@@ -2973,7 +2973,7 @@ begin
       begin
         Move(TalkStr[I], TempStr[1], length(TempStr) * sizeof(widechar));
         for I2 := 0 to 5 do
-          if TempStr = ChangeColorCode + UTF8Decode(IntToStr(I2)) then
+          if TempStr = ChangeColorCode + IntToStr(I2) then
           begin
             DrawBackGroundCol := ColColor($6F);
             case I2 of
@@ -3016,7 +3016,7 @@ begin
         //调整半角字符的位置
         if uint16(tempstr[1]) < $1000 then
           xtemp := xtemp + 5;
-        DrawShadowText(@TempStr[1], xtemp, Talk_Y + RowSpacing * iy, DrawForeGroundCol, DrawBackGroundCol);
+        DrawShadowText(TempStr, xtemp, Talk_Y + RowSpacing * iy, DrawForeGroundCol, DrawBackGroundCol);
       end;
       Inc(I);
       if not skipSync then
@@ -3072,7 +3072,7 @@ function Digging(beginPic, goal, shovel, restrict: integer): integer;
 var
   p1, i, n, blankpic, holepic, goldpic, moneypic, boompic, x, y, x1, y1, position: integer;
   Surface, outcome: array [0 .. 80] of integer;
-  str, str1, goalstr: widestring;
+  str, str1, goalstr: utf8string;
 begin
   position := 0;
   x := 80;
@@ -3139,9 +3139,9 @@ begin
   setlength(str1, length(str));
   str1 := UnicodeToGBK(@str[1]);
 
-  DrawShadowText(@str[1], x - 5, y - 25, ColColor($21), ColColor($23));
+  DrawShadowText(str, x - 5, y - 25, ColColor($21), ColColor($23));
   DrawSPic(goldpic div 2, 55 + x, y - 25);
-  DrawShadowText(@goalstr[1], x + 85, y - 25, ColColor($21), ColColor($23));
+  DrawShadowText(goalstr, x + 85, y - 25, ColColor($21), ColColor($23));
   for i := 0 to restrict - 1 do
     DrawSPic(shovel div 2, x - 27, y - 29 + (10 - i) * 20);
 
@@ -3227,9 +3227,9 @@ begin
     Redraw;
     ShowSurface(x, y, blankpic, surface);
     DrawSPic(shovel div 2, (position mod 9) * 20 + 10 + x, (position div 9) * 20 + 5 + y);
-    DrawShadowText(@str[1], x - 5, y - 25, ColColor($21), ColColor($23));
+    DrawShadowText(str, x - 5, y - 25, ColColor($21), ColColor($23));
     DrawSPic(goldpic div 2, 55 + x, y - 25);
-    DrawShadowText(@goalstr[1], x + 85, y - 25, ColColor($21), ColColor($23));
+    DrawShadowText(goalstr, x + 85, y - 25, ColColor($21), ColColor($23));
     for i := 0 to restrict - 1 do
       DrawSPic(shovel div 2, x - 27, y - 29 + (10 - i) * 20);
 
@@ -3283,10 +3283,10 @@ end;
 procedure TeammateList;
 var
   x, y, i, n, len, t, menu, Count: integer;
-  //StarList: array of widestring;
+  //StarList: array of utf8string;
   mateList: array of integer;
-  temp: widestring;
-  menuString: array of widestring;
+  temp: utf8string;
+  menuString: array of utf8string;
 begin
   if (teamlist[0] >= 0) and (teamlist[1] >= 0) and (teamlist[2] >= 0) and (teamlist[3] >= 0) and (teamlist[4] >= 0) and (teamlist[5] >= 0) then
     exit;
@@ -3466,12 +3466,12 @@ procedure NewTeammateList;
 var
   xStar, yStar, xTeam, yTeam, xState, yState, Show, h: integer;
   CurrentStar, CurrentTeam, page, numStar, state, headn, menup, menu, x1, y1, pstar, pteam: integer;
-  StarMenu, TeamMenu: array of widestring;
+  StarMenu, TeamMenu: array of utf8string;
   StateList: array of integer;
   i, n, menuid: integer;
-  temp, str1, str2, statusstr, str: widestring;
+  temp, str1, str2, statusstr, str: utf8string;
   escape, refresh: Bool;
-  strs: array [0 .. 21] of widestring;
+  strs: array [0 .. 21] of utf8string;
   color1, color2: uint32;
 begin
   xStar := 120;
@@ -3527,7 +3527,7 @@ begin
         temp := '  ';
       if TeamList[i] <> -1 then
       begin
-        temp := temp + pwidechar(@Rrole[TeamList[i]].Name[0]);
+        temp := temp + u16toutf8(Rrole[TeamList[i]].Name);
         temp := temp + StringOfChar(' ', 12 - DrawLength(temp)) + IntToStr(Rrole[TeamList[i]].Level);
       end
       else
@@ -3546,35 +3546,35 @@ begin
         if (i = numStar) and (menuid = 0) then
         begin
           DrawTextFrame(xStar - 16, yStar + h * i, 18);
-          DrawShadowText(@StarMenu[i][1], xStar + 3, yStar + 3 + h * i, ColColor($64), ColColor($66));
+          DrawShadowText(StarMenu[i], xStar + 3, yStar + 3 + h * i, ColColor($64), ColColor($66));
         end
         else if StateList[i] = 2 then
         begin
-          DrawShadowText(@StarMenu[i][1], xStar + 3, yStar + 3 + h * i, ColColor($78), ColColor($7A));
+          DrawShadowText(StarMenu[i], xStar + 3, yStar + 3 + h * i, ColColor($78), ColColor($7A));
         end
         else if StateList[i] > 2 then
         begin
-          DrawShadowText(@StarMenu[i][1], xStar + 3, yStar + 3 + h * i, $E02020, $A04040);
+          DrawShadowText(StarMenu[i], xStar + 3, yStar + 3 + h * i, $E02020, $A04040);
         end
         else
-          DrawShadowText(@StarMenu[i][1], xStar + 3, yStar + 3 + h * i, 0, $202020);
+          DrawShadowText(StarMenu[i], xStar + 3, yStar + 3 + h * i, 0, $202020);
       end;
 
       //DrawRectangle(xTeam, yTeam, 200, 28, 0, ColColor(255), 50);
       DrawTextFrame(xTeam - 16, yTeam, 16);
-      DrawShadowText(@TeamMenu[0][1], xTeam + 3, yTeam + 3, 0, $202020);
+      DrawShadowText(TeamMenu[0], xTeam + 3, yTeam + 3, 0, $202020);
 
       DrawRectangle(xTeam, yTeam + 38, 200, 4 * 22 + 28, 0, ColColor(255), 50);
       for i := 1 to 5 do
         if (i = CurrentTeam) and (menuid = 1) then
         begin
           DrawTextFrame(xTeam - 16, yTeam + 37 + h * (i - 1), 16);
-          DrawShadowText(@TeamMenu[i][1], xTeam + 3, yTeam + 40 + h * (i - 1), ColColor($64), ColColor($66));
+          DrawShadowText(TeamMenu[i], xTeam + 3, yTeam + 40 + h * (i - 1), ColColor($64), ColColor($66));
         end
         else
         begin
           DrawTextFrame(xTeam - 16, yTeam + 37 + h * (i - 1), 16, 10);
-          DrawShadowText(@TeamMenu[i][1], xTeam + 3, yTeam + 40 + h * (i - 1), 0, $202020);
+          DrawShadowText(TeamMenu[i], xTeam + 3, yTeam + 40 + h * (i - 1), 0, $202020);
         end;
 
       //显示当前人物的状态
@@ -3832,7 +3832,7 @@ end;
 procedure ShowTeamMate(position, headnum, Count: integer);
 var
   hx, hy, hw, hh, i, l: integer;
-  str1, str2, str: widestring;
+  str1, str2, str: utf8string;
 begin
   if Count = 0 then
     Count := 1;
@@ -3851,10 +3851,10 @@ begin
   end;
 
   str1 := concat(Star[position], ' ');
-  str2 := concat(RoleName[position], UTF8Decode(' 成為夥伴'));
+  str2 := concat(RoleName[position], ' 成為夥伴');
   str := concat(str1, str2);
   l := length(str);
-  DrawShadowText(@str[1], CENTER_X - 20 * (l div 2) - 10, 230, ColColor($5), ColColor($8));
+  DrawShadowText(str, CENTER_X - 20 * (l div 2) - 10, 230, ColColor($5), ColColor($8));
   UpdateAllScreen;
   WaitAnyKey;
   Redraw;
@@ -3863,9 +3863,9 @@ end;
 //未使用指令
 function ReSetName(t, inum, newnamenum: integer): integer;
 var
-  NewName: string;
+  NewName: utf8string;
   offset, len, i, IDX, GRP: integer;
-  p, np: pchar;
+  p, np: putf8char;
   talkarray: array of byte;
 begin
   ReadTalk(newnamenum, talkarray);
@@ -3876,7 +3876,7 @@ begin
     3: p := @Rmagic[inum].Name; //武功
     4: p := @Ritem[inum].Introduction; //物品说明
   end;
-  for i := 0 to length(pwidechar(talkarray)) * 2 - 1 do
+  for i := 0 to length(putf8char(talkarray)) * 2 - 1 do
   begin
     (p + i)^ := (np + i)^;
   end;
@@ -3912,13 +3912,13 @@ end;
 procedure ShowStarList;
 var
   hx, hy, hw, hh, headnum, Count, n, i, c1, r1, offset, IDX, len, GRP, h: integer;
-  str: ansistring;
+  str: utf8string;
   pword: array [0 .. 1] of uint16;
   talkarray: array of byte;
   state: array [0 .. 107] of integer;
-  str1, str2: widestring;
+  str1, str2: utf8string;
   head: array [0 .. 107] of integer;
-  menuString: array [0 .. 107] of widestring;
+  menuString: array [0 .. 107] of utf8string;
 
   x, y, w, max, maxshow: integer;
   menu, menup, menutop, status1: integer;
@@ -3928,12 +3928,12 @@ var
   var
     i, p: integer;
     hx, hy, hw, hh, Count, len, IDX, GRP, r1, c1, offset, state: integer;
-    str1, str2: widestring;
+    str1, str2: utf8string;
     talkarray: array of byte;
     pword: array [0 .. 1] of uint16;
-    str: pchar;
-    statusstr: widestring;
-    strs: array [0 .. 21] of widestring;
+    str: putf8char;
+    statusstr: utf8string;
+    strs: array [0 .. 21] of utf8string;
     color1, color2: uint32;
     pw: puint16;
   begin
@@ -3947,12 +3947,12 @@ var
       if i = menu then
       begin
         DrawTextFrame(x - 16, y + h * (i - menutop), 16);
-        DrawShadowText(@menuString[i][1], x + 3, y + 3 + h * (i - menutop), ColColor($64), ColColor($66));
+        DrawShadowText(menuString[i], x + 3, y + 3 + h * (i - menutop), ColColor($64), ColColor($66));
       end
       else
       begin
         DrawTextFrame(x - 16, y + h * (i - menutop), 16, 10);
-        DrawShadowText(@menuString[i][1], x + 3, y + 3 + h * (i - menutop), 0, $202020);
+        DrawShadowText(menuString[i], x + 3, y + 3 + h * (i - menutop), 0, $202020);
       end;
 
     if (GetStarState(menu) > 0) then
@@ -3972,7 +3972,7 @@ var
       str1 := concat(Star[menu], ' ');
       str2 := concat(str1, RoleName[menu]);
       len := length(str2);
-      DrawShadowText(@str2[1], CENTER_X - 384 + 484 - 20 * (len div 2), CENTER_Y - 240 + 220, ColColor($21), ColColor($23));
+      DrawShadowText(str2, CENTER_X - 384 + 484 - 20 * (len div 2), CENTER_Y - 240 + 220, ColColor($21), ColColor($23));
       for i := 0 to Count - 1 do
       begin
         //DrawRectangle(screen, hx + 57 * (i + 1), hy, hw, hh, 0, ColColor($FF), 0);
@@ -3981,9 +3981,9 @@ var
 
       //简介
       ReadTalk(menu + 600, talkarray);
-      str1 := ' ' + pwidechar(@talkarray[0]);
-      pw := @str1[1];
-      for i := 0 to length(str1) - 1 do
+      str1 := ' ' + u16toutf8(@talkarray[0]);
+      pw := @talkarray[0];
+      for i := 0 to length(talkarray) div 2 - 1 do
       begin
         if (pw^ = $2A) then
           pw^ := 0;
@@ -3991,11 +3991,11 @@ var
       end;
 
       pword[1] := 0;
-      pw := @str1[1];
+      pw := @talkarray[0];
       i := 0;
       r1 := 0;
       c1 := 0;
-      len := length(pwidechar(pw));
+      len := length(talkarray) div 2;
       while i < len do
       begin
         pword[0] := puint16(pw)^;
@@ -4790,22 +4790,22 @@ end;
 procedure MissionList(mode: integer);
 var
   x, y, i, n, len, t, menu, Count, tip: integer;
-  //StarList: array of widestring;
-  MissionList: array of integer;
-  temp: widestring;
-  str: widestring;
-  missionTip: array [0 .. 2] of widestring;
-  menuString: array of widestring;
+  //StarList: array of utf8string;
+  MissionListIndex: array of integer;
+  temp: utf8string;
+  str: utf8string;
+  missionTip: array [0 .. 2] of utf8string;
+  menuString: array of utf8string;
 begin
   x := 150;
   y := 30;
   n := 0;
   menu := 0;
   setlength(menuString, MISSION_AMOUNT);
-  setlength(MissionList, MISSION_AMOUNT);
-  missiontip[0] := UTF8Decode('未開啟');
-  missiontip[1] := UTF8Decode('未完成');
-  missiontip[2] := UTF8Decode('已完成');
+  setlength(MissionListIndex, MISSION_AMOUNT);
+  missiontip[0] := '未開啟';
+  missiontip[1] := '未完成';
+  missiontip[2] := '已完成';
   for i := 0 to MISSION_AMOUNT - 1 do
   begin
     tip := GetMissionState(i);
@@ -4814,18 +4814,24 @@ begin
       if (mode = 0) or (tip = mode) then
       begin
         menuString[n] := ' ' + missiontip[tip] + ' ' + MissionStr[i] + '  ';
-        MissionList[n] := i;
+        MissionListIndex[n] := i;
         n := n + 1;
       end;
     end;
   end;
   Redraw;
   UpdateAllScreen;
-  if length(MissionList) > 0 then
+  if n > 0 then
   begin
     menu := CommonScrollMenu(x, y, 500, n - 1, 15, menuString);
     Redraw;
     UpdateAllScreen;
+  end
+  else
+  begin
+    setlength(menustring, 1);
+    menustring[0] := '沒有符合的任務';
+    CommonScrollMenu(x, y, 500, 0, 15, menuString);
   end;
 end;
 
@@ -4850,8 +4856,8 @@ end;
 procedure RoleEnding(starnum, headnum, talknum: integer);
 var
   status, newcolor, alen, n, ch, r1, c1, color1, color2, GRP, IDX, i, offset, len, hx, hy, Sx, Sy, nx, ny, tx, ty, cell, framex, l, w, h, framey: integer;
-  str1, str2, str, talkstr, namestr: widestring;
-  np3, np1, np2, tp, p1, ap: pchar;
+  str1, str2, str, talkstr, namestr: utf8string;
+  np3, np1, np2, tp, p1, ap: putf8char;
   actorarray, name1, name2, talkarray: array of byte;
   pword: array [0 .. 1] of uint16;
   r, g, b: byte;
@@ -4909,15 +4915,15 @@ begin
   end;
   //DrawRectangle(screen, hx, hy - 68, 56, 72, 0, ColColor(255), 0);
   l := length(str1);
-  DrawShadowText(@str1[1], Sx - (20 * l) div 2, Sy, ColColor($64), ColColor($66));
+  DrawShadowText(str1, Sx - (20 * l) div 2, Sy, ColColor($64), ColColor($66));
   l := length(str2);
-  DrawShadowText(@str2[1], nx - (20 * l) div 2, ny, ColColor($64), ColColor($66));
+  DrawShadowText(str2, nx - (20 * l) div 2, ny, ColColor($64), ColColor($66));
 
   if status > 0 then
   begin
     ReadTalk(talknum, talkarray);
-    namestr := pwidechar(@Rrole[0].Name[0]);
-    talkstr := ' ' + pwidechar(@talkarray[0]);
+    namestr := putf8char(@Rrole[0].Name[0]);
+    talkstr := ' ' + putf8char(@talkarray[0]);
     talkstr := ReplaceStr(talkstr, '&&', namestr);
     tp := @talkstr[1];
     ch := 0;
@@ -4977,7 +4983,7 @@ function WoodMan(Chamber: integer): boolean;
 var
   x, y, x1, y1, i, i3, i2, sta, offset, eface1, eface2, position, roleface, xm, ym: integer;
   CanWalk, stay: boolean;
-  p: pchar;
+  p: putf8char;
   picnum: integer = 4714;
 begin
   Redraw;
@@ -5552,8 +5558,8 @@ function SpellPicture(num, chance: integer): boolean;
 var
   x, y, w, h, i, x1, y1, r, right, menu, menu1, menu2, picnum, xm, ym: integer;
   pic: pointer;
-  filename: string;
-  word1, word: widestring;
+  filename: utf8string;
+  word1, word: utf8string;
 begin
   setlength(gamearray, 1);
   setlength(gamearray[0], 25);
@@ -5610,10 +5616,10 @@ begin
     DrawRectangle((menu2 mod 5) * 80 + x, (menu2 div 5) * 80 + y + 30, 80, 80, 0, ColColor($64), 0);
   if menu > -1 then
     DrawRectangle((menu mod 5) * 80 + x, (menu div 5) * 80 + y + 30, 80, 80, 0, ColColor($255), 0);
-  word := UTF8Decode('機會') + IntToStr(chance);
-  word1 := UTF8Decode('命中') + IntToStr(right);
-  DrawShadowText(@word[1], x + 25, y + 5, ColColor(5), ColColor(7));
-  DrawShadowText(@word1[1], x + 220, y + 5, ColColor(5), ColColor(7));
+  word := '機會' + IntToStr(chance);
+  word1 := '命中' + IntToStr(right);
+  DrawShadowText(word, x + 25, y + 5, ColColor(5), ColColor(7));
+  DrawShadowText(word1, x + 220, y + 5, ColColor(5), ColColor(7));
   UpdateAllScreen;
 
   while (SDL_WaitEvent(@event) >= 0) do
@@ -5722,10 +5728,10 @@ begin
       DrawRectangle((menu2 mod 5) * 80 + x, (menu2 div 5) * 80 + y + 30, 80, 80, 0, ColColor($64), 0);
     if menu > -1 then
       DrawRectangle((menu mod 5) * 80 + x, (menu div 5) * 80 + y + 30, 80, 80, 0, ColColor($255), 0);
-    word := UTF8Decode('機會') + IntToStr(chance);
-    word1 := UTF8Decode('命中') + IntToStr(right);
-    DrawShadowText(@word[1], x + 25, y + 5, ColColor(5), ColColor(7));
-    DrawShadowText(@word1[1], x + 220, y + 5, ColColor(5), ColColor(7));
+    word := '機會' + IntToStr(chance);
+    word1 := '命中' + IntToStr(right);
+    DrawShadowText(word, x + 25, y + 5, ColColor(5), ColColor(7));
+    DrawShadowText(word1, x + 220, y + 5, ColColor(5), ColColor(7));
     UpdateAllScreen;
 
     if right = 25 then
@@ -5808,7 +5814,7 @@ procedure BookList;
 var
   x, y, w, h, i, j: integer;
   itemlist: array of smallint;
-  menuString: array of widestring;
+  menuString: array of utf8string;
 begin
   j := 0;
   x := 220;
@@ -5825,7 +5831,7 @@ begin
       if Ritem[Ritemlist[i].Number].Magic >= 0 then
       begin
         j := j + 1;
-        menuString[j - 1] := ' ' + pwidechar(@Ritem[Ritemlist[i].Number].Name[0]);
+        menuString[j - 1] := ' ' + u16toutf8(Ritem[Ritemlist[i].Number].Name);
         itemlist[j - 1] := Ritemlist[i].Number;
       end;
     end;
@@ -5854,7 +5860,7 @@ end;
 function DancerAfter90S: integer;
 var
   now, ori_time, demand_time: uint32; //demand_time must be a ms-level
-  str: widestring;
+  str: utf8string;
   i, DanceNum, DanceLong, tmp: integer; //计数器,当前的贴图
   DanceList: array [0 .. 9] of smallint;
   iskey: boolean;
@@ -5985,17 +5991,17 @@ var
   totalbuy: array [0 .. 4] of smallint;
   sell: TShop;
   buy, pbuy: TShopList;
-  Shop_Str, word: widestring;
-  menuString: array [0 .. 4] of widestring;
+  Shop_Str, word: utf8string;
+  menuString: array [0 .. 4] of utf8string;
   refresh, sure: boolean;
 
   procedure NewShop_Show(menu, select, money, lr: integer; sell: TShop; buy: TShopList);
   var
     i, totalprice, mixalphal, mixalphar: integer;
     mixcolorl, mixcolorr: uint32;
-    word: array [0 .. 2] of widestring;
-    menuEngString: array [0 .. 4] of widestring;
-    word1, word2: widestring;
+    word: array [0 .. 2] of utf8string;
+    menuEngString: array [0 .. 4] of utf8string;
+    word1, word2: utf8string;
   begin
     LoadFreshScreen(x, y);
     //畫商店菜單, 計算總價格
@@ -6012,8 +6018,8 @@ var
       mixalphar := 0;
       if i = menu then
       begin
-        DrawShadowText(@menuString[i][1], x + 3, y + 2 + 22 * i, ColColor($64), ColColor($66));
-        DrawEngShadowText(@menuEngString[i][1], x + 120, y + 2 + 22 * i, ColColor($64), ColColor($66));
+        DrawShadowText(menuString[i], x + 3, y + 2 + 22 * i, ColColor($64), ColColor($66));
+        DrawEngShadowText(menuEngString[i], x + 120, y + 2 + 22 * i, ColColor($64), ColColor($66));
         if lr < 0 then
         begin
           mixcolorl := $FFFFFFFF;
@@ -6027,8 +6033,8 @@ var
       end
       else
       begin
-        DrawShadowText(@menuString[i][1], x + 3, y + 2 + 22 * i, ColColor($5), ColColor($7));
-        DrawEngShadowText(@menuEngString[i][1], x + 120, y + 2 + 22 * i, ColColor($5), ColColor($7));
+        DrawShadowText(menuString[i], x + 3, y + 2 + 22 * i, ColColor($5), ColColor($7));
+        DrawEngShadowText(menuEngString[i], x + 120, y + 2 + 22 * i, ColColor($5), ColColor($7));
       end;
       if buy.BuyAmount[i] <= 0 then
       begin
@@ -6045,11 +6051,11 @@ var
     end;
 
     //畫現有銀兩以及花費估算
-    word1 := '現有銀兩：' + UTF8Decode(format('%5d', [money]));
-    DrawTextWithRect(@word1[1], x, y2, 160, 0, $202020, 0, 0);
+    word1 := '現有銀兩：' + format('%5d', [money]);
+    DrawTextWithRect(word1, x, y2, 160, 0, $202020, 0, 0);
     //str(totalprice, temp);
-    word2 := '花費估算：' + UTF8Decode(format('%5d', [totalprice]));
-    DrawTextWithRect(@word2[1], x, y2 + 40, 160, 0, $202020, 0, 0);
+    word2 := '花費估算：' + format('%5d', [totalprice]);
+    DrawTextWithRect(word2, x, y2 + 40, 160, 0, $202020, 0, 0);
     //畫確定選單
     word[0] := '購買';
     word[1] := '反悔';
@@ -6058,11 +6064,11 @@ var
     for i := 0 to 2 do
       if (i = select) and (menu = 5) then
       begin
-        DrawShadowText(@word[i][1], x2 + 19 + i * 60, y2 + 3, ColColor($66), ColColor($64));
+        DrawShadowText(word[i], x2 + 19 + i * 60, y2 + 3, ColColor($66), ColColor($64));
       end
       else
       begin
-        DrawShadowText(@word[i][1], x2 + 19 + i * 60, y2 + 3, 0, $202020);
+        DrawShadowText(word[i], x2 + 19 + i * 60, y2 + 3, 0, $202020);
       end;
     //SDL_UpdateRect2(screen, x, y, 421, 117);
     UpdateAllScreen;
@@ -6078,7 +6084,7 @@ begin
     buy.BuyAmount[i] := 0;
     totalbuy[i] := 0;
     buy.HoldAmount[i] := GetItemAmount(sell.Item[i]);
-    menuString[i] := pwidechar(@Ritem[sell.Item[i]].Name);
+    menuString[i] := u16toutf8(Ritem[sell.Item[i]].Name);
   end;
 
   x := CENTER_X - 190;
@@ -6093,10 +6099,10 @@ begin
   l := 22;
   DrawRectangleWithoutFrame(0, 20, CENTER_X shl 1, 120, 0, 40);
   Shop_Str := '需要買什麽？';
-  DrawShadowText(@Shop_Str[1], CENTER_X - 70, 55, ColColor($FF), ColColor($0));
+  DrawShadowText(Shop_Str, CENTER_X - 70, 55, ColColor($FF), ColColor($0));
 
   word := '品名         價格    存貨  持有     交易';
-  DrawTextWithRect(@word[1], CENTER_X - 210, 155, 420, 0, $202020);
+  DrawTextWithRect(word, CENTER_X - 210, 155, 420, 0, $202020);
   RecordFreshScreen(x, y, 421, CENTER_Y * 2 - y);
 
   refresh := True;
@@ -6294,8 +6300,8 @@ end;
 procedure ShowMap;
 var
   i, u, n, x, y, l, p, xp, yp: integer;
-  str1, str, strboat: widestring;
-  str2, str3: array of widestring;
+  str1, str, strboat: utf8string;
+  str2, str3: array of utf8string;
   scencex: array of integer;
   scencey: array of integer;
   scencenum: array of integer;
@@ -6330,7 +6336,7 @@ begin
   x0 := 121.9534;
   y0 := -194.0342;
   //if FileExists(AppPath + 'resource/map') then
-  //Map_Pic := IMG_Load(PChar(AppPath + 'resource/map'));
+  //Map_Pic := IMG_Load(putf8char(AppPath + 'resource/map'));
   if picnum >= SPicAmount then
     exit;
   if SPNGIndex[picnum].Loaded = 0 then
@@ -6351,7 +6357,7 @@ begin
     scencex[u - 1] := Rscence[i].MainEntranceX1;
     scencey[u - 1] := Rscence[i].MainEntranceY1;
     scencenum[u - 1] := i;
-    str2[u - 1] := PCharToUnicode(@Rscence[i].Name[0], 5);
+    str2[u - 1] := u16toutf8(Rscence[i].Name, 5);
     str3[u - 1] := format('%3d, %3d', [Rscence[i].MainEntranceY1, Rscence[i].MainEntranceX1]);
   end;
   str := '你的位置';
@@ -6401,14 +6407,14 @@ begin
       DrawSPic(picnum, x, y, @dest1, 0, 0, 0, 0);
       CleanTextScreen;
       //DrawSPic(picnum, dest.x,dest.y,@dest1,0,0,0,0);
-      DrawShadowText(@str2[p][1], 37 + xp, 80 + yp, ColColor(21), ColColor(25));
-      DrawEngShadowText(@str3[p][1], 37 + xp, 100 + yp, ColColor(255), ColColor(254));
-      DrawShadowText(@str[1], 37 + xp, 275 + yp, ColColor(21), ColColor(25));
+      DrawShadowText(str2[p], 37 + xp, 80 + yp, ColColor(21), ColColor(25));
+      DrawEngShadowText(str3[p], 37 + xp, 100 + yp, ColColor(255), ColColor(254));
+      DrawShadowText(str, 37 + xp, 275 + yp, ColColor(21), ColColor(25));
       str1 := format('%3d, %3d', [My, Mx]);
-      DrawEngShadowText(@str1[1], 37 + xp, 295 + yp, ColColor(255), ColColor(254));
-      DrawShadowText(@strboat[1], 37 + xp, 325 + yp, ColColor(21), ColColor(25));
+      DrawEngShadowText(str1, 37 + xp, 295 + yp, ColColor(255), ColColor(254));
+      DrawShadowText(strboat, 37 + xp, 325 + yp, ColColor(21), ColColor(25));
       str1 := format('%3d, %3d', [shipx, shipy]);
-      DrawEngShadowText(@str1[1], 37 + xp, 345 + yp, ColColor(255), ColColor(254));
+      DrawEngShadowText(str1, 37 + xp, 345 + yp, ColColor(255), ColColor(254));
     end;
     if n mod 20 = 1 then
     begin
@@ -6480,9 +6486,9 @@ end;
 function EnterNumber(MinValue, MaxValue, x, y: integer; Default: integer = 0): smallint;
 var
   Value, i, menu, sure, pvalue, pmenu, highButton: integer;
-  str: array [0 .. 13] of widestring;
+  str: array [0 .. 13] of utf8string;
   color: uint32;
-  strv, strr: widestring;
+  strv, strr: utf8string;
   //tempscr: psdl_surface;
   Button: array [0 .. 13] of TSDL_Rect;
 begin
@@ -6520,8 +6526,8 @@ begin
   Button[13].w := 35;
   Button[13].h := 53;
   //Redraw;
-  strv := UTF8Decode(format('範圍%d~%d', [MinValue, MaxValue]));
-  DrawTextWithRect(@strv[1], x, y - 35, DrawLength(strv) * 10 + 8, 0, ColColor($27));
+  strv := format('範圍%d~%d', [MinValue, MaxValue]);
+  DrawTextWithRect(strv, x, y - 35, DrawLength(strv) * 10 + 8, 0, ColColor($27));
   DrawRectangle(x, y, 180, 180, 0, ColColor(255), 50, 0);
   DrawRectangle(x + 20, y + 10, 140, 23, 0, ColColor(255), 75, 0);
   highButton := high(Button);
@@ -6592,14 +6598,14 @@ begin
     begin
       LoadFreshScreen(x, y);
       strv := format('%6d', [Value]);
-      DrawShadowText(@strv[1], x + 80, y + 10, ColColor($64), ColColor($66));
+      DrawShadowText(strv, x + 80, y + 10, ColColor($64), ColColor($66));
       if (menu >= 0) and (menu <= highButton) then
       begin
         DrawRectangle(Button[menu].x, Button[menu].y, Button[menu].w, Button[menu].h, ColColor(20 * i + random(20)), ColColor(255), 50, 0);
       end;
       for i := 0 to highButton do
       begin
-        DrawShadowText(@str[i][1], Button[i].x + 8, Button[i].y + Button[i].h div 2 - 11, ColColor(5), ColColor(7));
+        DrawShadowText(str[i], Button[i].x + 8, Button[i].y + Button[i].h div 2 - 11, ColColor(5), ColColor(7));
       end;
       UpdateAllScreen;
       pvalue := Value;
@@ -6632,18 +6638,18 @@ begin
   begin
     Redraw;
     UpdateAllScreen;
-    strv := UTF8Decode(format('依據範圍自動調整為%d！', [Result]));
-    DrawTextWithRect(@strv[1], x, y, DrawLength(strv) * 10 + 8, ColColor($64), ColColor($66));
+    strv := format('依據範圍自動調整為%d！', [Result]);
+    DrawTextWithRect(strv, x, y, DrawLength(strv) * 10 + 8, ColColor($64), ColColor($66));
     WaitAnyKey;
   end;
   CleanKeyValue;
   FreeFreshScreen;
 end;
 
-function EnterString(var str: string; x, y, w, h: integer): bool;
+function EnterString(var str: utf8string; x, y, w, h: integer): bool;
 var
   r: TSDL_Rect;
-  str2: widestring;
+  str2: utf8string;
   l: integer;
 begin
   r.x := x;
@@ -6655,9 +6661,9 @@ begin
   while True do
   begin
     loadfreshscreen;
-    str2 := utf8decode('請輸入主角之姓名：' + str);
+    str2 := '請輸入主角之姓名：' + str;
     w := drawlength(str2);
-    DrawTextWithRect(@str2[1], x, y, 260, ColColor($66), ColColor($63), 0, 1);
+    DrawTextWithRect(str2, x, y, 260, ColColor($66), ColColor($63), 0, 1);
     //SDL_UpdateRect2(screen, 0, 0, 0, 0);
     SDL_PollEvent(@event);
     CheckBasicEvent;

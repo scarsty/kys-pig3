@@ -20,15 +20,15 @@ uses
 
 type
   TScriptRegister = record
-    Name: PChar;
+    Name: putf8char;
     f: lua_CFunction;
   end;
 
   //初始化脚本配置,运行脚本
 procedure InitialScript;
 procedure DestroyScript;
-function ExecScript(filename, functionname: string): integer;
-function ExecScriptString(script, functionname: string): integer;
+function ExecScript(filename, functionname: utf8string): integer;
+function ExecScriptString(script, functionname: utf8string): integer;
 function lua_tointeger(L: Plua_state; pos: integer): Lua_integer;
 
 //具体指令,封装基本指令
@@ -474,9 +474,9 @@ begin
   //UnloadLua;
 end;
 
-function ExecScript(filename, functionname: string): integer;
+function ExecScript(filename, functionname: utf8string): integer;
 var
-  Script: string;
+  Script: utf8string;
   h, len: integer;
 begin
   script := '';
@@ -493,7 +493,7 @@ begin
   Result := 0;
 end;
 
-function ExecScriptString(script, functionname: string): integer;
+function ExecScriptString(script, functionname: utf8string): integer;
 var
   len: integer;
 begin
@@ -506,15 +506,15 @@ begin
       Script[3] := ' ';
     end;
     Script := LowerCase(Script);
-    //ConsoleLog(utf8decode(script));
+    //ConsoleLog(script);
     Result := lual_loadbuffer(Lua_script, @script[1], length(script), 'code');
     if Result = 0 then
     begin
       Result := lua_pcall(Lua_script, 0, 0, 0);
-      //lua_dofile(Lua_script,pchar(filename[1]));
+      //lua_dofile(Lua_script,putf8char(filename[1]));
       if functionname <> '' then
       begin
-        lua_getglobal(Lua_script, PChar(functionname));
+        lua_getglobal(Lua_script, putf8char(functionname));
         Result := lua_pcall(Lua_script, 0, 1, 0);
       end;
     end;
@@ -657,11 +657,11 @@ end;
 function SetItemIntro(L: Plua_state): integer; cdecl;
 var
   n, itemnum, i, len: integer;
-  str: WideString;
-  p: pwidechar;
+  str: utf8string;
+  p: putf8char;
 begin
   itemnum := lua_tointeger(L, -2);
-  str := UTF8Decode(lua_tostring(L, -1));
+  str := lua_tostring(L, -1);
   len := length(str);
   FillChar(Ritem[itemnum].Introduction[0], sizeof(@Ritem[0].Introduction), 0);
   if (len > 15) then
@@ -697,12 +697,12 @@ end;
 function Talk(L: Plua_state): integer; cdecl;
 var
   //head, dismode, n: integer;
-  //content, Name: WideString;
+  //content, Name: utf8string;
   //len, headx, heady, diagx, diagy, Width, line, w1, l1, i: integer;
-  //str: WideString;
+  //str: utf8string;
   n, i, inum, istr: integer;
   nums: array [0 .. 5] of integer = (-1, -2, -2, 0, 0, 0);
-  strs: array [0 .. 1] of WideString;
+  strs: array [0 .. 1] of utf8string;
 begin
   n := lua_gettop(L);
   inum := 0;
@@ -718,17 +718,17 @@ begin
     end;
     {if (istr<2 )and lua_isstring(L, i) then
       begin
-      strs[istr] := UTF8Decode(lua_tostring(L, i));
+      strs[istr] := lua_tostring(L, i);
       istr:=istr+1;
       end;}
   end;
   if lua_type(L, -n + 1) <> LUA_TNUMBER then
   begin
-    strs[0] := UTF8Decode(lua_tostring(L, -n + 1));
+    strs[0] := lua_tostring(L, -n + 1);
   end;
   if lua_type(L, -n + 2) <> LUA_TNUMBER then
   begin
-    strs[1] := UTF8Decode(lua_tostring(L, -n + 2));
+    strs[1] := lua_tostring(L, -n + 2);
   end;
   if nums[3] < 0 then
     nums[3] := abs(nums[3]);
@@ -794,7 +794,7 @@ begin
     if content[i] <> '*' then
     begin
     str := content[i];
-    DrawShadowText(@str[1], diagx + w1 * 10, diagy + l1 * 22, ColColor($FF), ColColor($0));
+    DrawShadowText(str, diagx + w1 * 10, diagy + l1 * 22, ColColor($FF), ColColor($0));
     if integer(str[1]) < 128 then
     w1 := w1 + 1
     else
@@ -856,20 +856,20 @@ end;
 function ShowString(L: Plua_state): integer; cdecl;
 var
   x, y, n, color1, color2: integer;
-  str: WideString;
+  str: utf8string;
 begin
   color1 := ColColor(5);
   color2 := ColColor(7);
   n := Lua_gettop(L);
   x := lua_tointeger(L, -n);
   y := lua_tointeger(L, -n + 1);
-  str := UTF8Decode(lua_tostring(L, -n + 2));
+  str := lua_tostring(L, -n + 2);
   if n >= 5 then
   begin
     color1 := lua_tointeger(L, -n + 3);
     color2 := lua_tointeger(L, -n + 4);
   end;
-  DrawShadowText(@str[1], x, y, color1, color2);
+  DrawShadowText(str, x, y, color1, color2);
   UpdateAllScreen;
   Result := 0;
 
@@ -878,7 +878,7 @@ end;
 function ShowStringWithBox(L: Plua_state): integer; cdecl;
 var
   x, y, i, n, alpha, color1, color2, incolor, framecolor: integer;
-  str: WideString;
+  str: utf8string;
 begin
   alpha := 0;
   color1 := 0;
@@ -888,7 +888,7 @@ begin
   n := Lua_gettop(L);
   x := lua_tointeger(L, -n);
   y := lua_tointeger(L, -n + 1);
-  str := UTF8Decode(lua_tostring(L, -n + 2));
+  str := lua_tostring(L, -n + 2);
   if n >= 4 then
     alpha := lua_tointeger(L, -n + 3);
   if n >= 6 then
@@ -901,7 +901,7 @@ begin
   if n >= 8 then
     framecolor := lua_tointeger(L, -n + 7);
   DrawTextFrame(x, y, DrawLength(str), alpha, framecolor, 0);
-  DrawShadowText(@str[1], x + 19, y + 3, color1, color2);
+  DrawShadowText(str, x + 19, y + 3, color1, color2);
   UpdateAllScreen;
   Result := 0;
 
@@ -910,8 +910,8 @@ end;
 function Menu(L: Plua_state): integer; cdecl;
 var
   x, y, w, n, i, len, maxwidth, Width: integer;
-  p: WideString;
-  menuString: array of WideString;
+  p: utf8string;
+  menuString: array of utf8string;
 begin
   n := lua_tointeger(L, -5);
   setlength(menuString, n);
@@ -923,7 +923,7 @@ begin
   begin
     lua_pushinteger(L, i + 1);
     lua_gettable(L, -2);
-    p := UTF8Decode(lua_tostring(L, -1));
+    p := lua_tostring(L, -1);
     if p <> '' then
     begin
       menuString[i] := p;
@@ -951,7 +951,7 @@ end;
 function AskYesOrNo(L: Plua_state): integer; cdecl;
 var
   x, y: integer;
-  menuString: array [0 .. 1] of WideString;
+  menuString: array [0 .. 1] of utf8string;
 begin
   //setlength(menustring, 2);
   menuString[0] := ('否');
@@ -1508,9 +1508,9 @@ end;
 
 function GetNameAsString(L: Plua_state): integer; cdecl;
 var
-  str: string;
+  str: utf8string;
   typenum, num: integer;
-  p1: pwidechar;
+  p1: putf8char;
 begin
   typenum := lua_tointeger(L, -2);
   num := lua_tointeger(L, -1);
@@ -1521,7 +1521,7 @@ begin
     3: p1 := @Rmagic[num].Name;
   end;
 {$IFDEF fpc}
-  str := UTF8Encode(WideString(p1));
+  str := u16toutf8(p1);
 {$ELSE}
   str := UTF8Encode(GBKToUnicode(p1));
 {$ENDIF}
@@ -1532,10 +1532,10 @@ end;
 
 function SetNameAsString(L: Plua_state): integer; cdecl;
 var
-  str: string;
-  strw: WideString;
+  str: utf8string;
+  strw: utf8string;
   typenum, num, i: integer;
-  p1: pwidechar;
+  p1: putf8char;
 begin
   typenum := lua_tointeger(L, -2);
   num := lua_tointeger(L, -1);
@@ -1545,7 +1545,7 @@ begin
     2: p1 := @Rscence[num].Name;
     3: p1 := @Rmagic[num].Name;
   end;
-  strw := UTF8Decode(lua_tostring(L, -3));;
+  strw := lua_tostring(L, -3);;
   Result := 0;
 
   for i := 0 to 4 do
@@ -1559,15 +1559,15 @@ end;
 
 function ReadTalkAsString(L: Plua_state): integer; cdecl;
 var
-  str: string;
-  strw: WideString;
+  str: utf8string;
+  strw: utf8string;
   typenum, num: integer;
-  p1: pwidechar;
+  p1: putf8char;
   a: array of byte;
 begin
   num := lua_tointeger(L, -1);
   ReadTalk(num, a);
-  strw := pwidechar(a);
+  strw := putf8char(a);
 
 {$IFDEF fpc}
   str := UTF8Encode(strw);
@@ -2040,7 +2040,7 @@ end;
 
 function SelectOneTeamMemberScript(L: Plua_state): integer; cdecl;
 begin
-  lua_pushinteger(L, SelectOneTeamMember(0, 0, UTF8Decode(lua_tostring(L, -3)), lua_tointeger(L, -2), lua_tointeger(L, -1)));
+  lua_pushinteger(L, SelectOneTeamMember(0, 0, utf8string(lua_tostring(L, -3)), lua_tointeger(L, -2), lua_tointeger(L, -1)));
   Result := 1;
 end;
 
@@ -2139,12 +2139,12 @@ end;
 function ShowTitleScript(L: Plua_state): integer; cdecl;
 var
   talknum, color, n: integer;
-  str: WideString = '';
+  str: utf8string = '';
 begin
   n := Lua_gettop(L);
   talknum := lua_tointeger(L, -n);
   if not lua_isnumber(L, -n) then
-    str := UTF8Decode(lua_tostring(L, -n));
+    str := lua_tostring(L, -n);
   color := 1;
   if n > 1 then
     color := lua_tointeger(L, -1);
@@ -2168,11 +2168,11 @@ end;
 function AddRoleProWithHintScript(L: Plua_state): integer; cdecl;
 var
   n: integer;
-  str: WideString = '';
+  str: utf8string = '';
 begin
   n := Lua_gettop(L);
   if n >= 4 then
-    str := UTF8Decode(lua_tostring(L, -n + 3));
+    str := lua_tostring(L, -n + 3);
   AddRoleProWithHint(lua_tointeger(L, -n), lua_tointeger(L, -n + 1), lua_tointeger(L, -n + 2), str);
   Result := 0;
 end;
@@ -2185,7 +2185,7 @@ end;
 
 function SetBattleName(L: Plua_state): integer; cdecl;
 begin
-  BattleNames[lua_tointeger(L, -2)] := UTF8Decode(lua_tostring(L, -1));
+  BattleNames[lua_tointeger(L, -2)] := lua_tostring(L, -1);
   Result := 0;
 end;
 
@@ -2221,7 +2221,7 @@ end;
 function SetPro(L: Plua_state; pos: puint16): integer;
 var
   i: integer;
-  str: WideString;
+  str: utf8string;
 begin
   Result := 1;
   if lua_isnumber(L, -3) then
@@ -2230,12 +2230,12 @@ begin
   end
   else if lua_isstring(L, -3) then
   begin
-    str := utf8decode(lua_tostring(L, -3));
+    str := lua_tostring(L, -3);
     writeln(str);
     Result := length(str);
     for i := 0 to Result - 1 do
     begin
-      pwidechar(pos)^ := str[i + 1];
+      putf8char(pos)^ := str[i + 1];
       Inc(pos);
     end;
   end;

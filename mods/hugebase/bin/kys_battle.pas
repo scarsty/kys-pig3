@@ -44,7 +44,7 @@ procedure ModifyRange(bnum, mnum: integer; var step, range: integer);
 procedure Attack(bnum: integer);
 procedure AttackAction(bnum, i, mnum, level: integer); overload;
 procedure AttackAction(bnum, mnum, level: integer); overload;
-procedure ShowMagicName(mnum: integer; str: WideString = '');
+procedure ShowMagicName(mnum: integer; str: utf8string = '');
 function SelectMagic(rnum: integer): integer;
 procedure SetAminationPosition(mode, step, range: integer; aimMode: integer = 0); overload;
 procedure SetAminationPosition(Bx, By, Ax, Ay, mode, step, range: integer; aimMode: integer = 0); overload;
@@ -52,9 +52,9 @@ procedure PlayMagicAmination(bnum, enum: integer; aimMode: integer = 0; mode: in
 procedure CalHurtRole(bnum, mnum, level: integer; mode: integer = 0);
 function CalHurtValue(bnum1, bnum2, mnum, level: integer; mode: integer = 0): integer;
 function CalHurtValue2(bnum1, bnum2, mnum, level: integer; mode: integer = 0): integer;
-procedure SelectColor(mode: integer; var color1, color2: uint32; var formatstr: string);
-procedure ShowHurtValue(mode: integer; team: integer = 0; fstr: string = '');
-procedure ShowStringOnBrole(str: WideString; bnum, mode: integer; up: integer = 1);
+procedure SelectColor(mode: integer; var color1, color2: uint32; var formatstr: utf8string);
+procedure ShowHurtValue(mode: integer; team: integer = 0; fstr: utf8string = '');
+procedure ShowStringOnBrole(str: utf8string; bnum, mode: integer; up: integer = 1);
 procedure CalPoiHurtLife;
 procedure ClearDeadRolePic;
 procedure Wait(bnum: integer);
@@ -189,8 +189,8 @@ uses
 function Battle(battlenum, getexp: integer; forceSingle: integer = 0): boolean;
 var
   i, j, k, SelectTeamList, x, y, num, prewhere, i1, i2, dis, mindis: integer;
-  //path: string;
-  str: WideString;
+  //path: utf8string;
+  str: utf8string;
   autoselect: boolean;
   //temp, temp2: PSDL_Surface;
   //LoadThread: PSDL_Thread;
@@ -208,8 +208,8 @@ begin
   if (battlenum <= high(BattleNames)) then
     str := BattleNames[battlenum]
   else
-    str := pwidechar(@warsta.Name[0]);
-  DrawTextWithRect(puint16(str), CENTER_X - DrawLength(str) * 5 - 24, CENTER_Y - 150, 0, ColColor($14), ColColor($16));
+    str := putf8char(@warsta.Name[0]);
+  DrawTextWithRect(str, CENTER_X - DrawLength(str) * 5 - 24, CENTER_Y - 150, 0, ColColor($14), ColColor($16));
   UpdateAllScreen;
 
   if autoselect then
@@ -303,8 +303,8 @@ begin
   if (battlenum <= high(BattleNames)) then
     str := BattleNames[battlenum]
   else
-    str := pwidechar(@warsta.Name[0]);
-  DrawTextWithRect(puint16(str), CENTER_X - DrawLength(str) * 5 - 24, CENTER_Y - 150, 0, ColColor($14), ColColor($16));
+    str := putf8char(@warsta.Name[0]);
+  DrawTextWithRect(str, CENTER_X - DrawLength(str) * 5 - 24, CENTER_Y - 150, 0, ColColor($14), ColColor($16));
   //DrawTitlePic(8, CENTER_X - 30, TitlePosition.y + 20);
   UpdateAllScreen;
 
@@ -343,10 +343,10 @@ end;
 procedure LoadBattleTiles();
 var
   i, j, k, num, headnum, actionnum, degree: integer;
-  path: string;
+  path: utf8string;
   temp: PSDL_Surface;
   timer1, timer2: uint32;
-  str: WideString;
+  str: utf8string;
   fightarray: array of integer;
 begin
   LoadingBattleTiles := True;
@@ -383,8 +383,8 @@ begin
         //num := num + FightFrame[i, j];
       end;
       LoadFreshScreen(CENTER_X - 140, CENTER_Y);
-      str := UTF8Decode('載入戰鬥人物貼圖 ') + UTF8Decode(format('%2d/%2d', [i + 1, BRoleAmount]));
-      DrawTextWithRect(@str[1], CENTER_X - 120, CENTER_Y, 0, ColColor($64), ColColor($66), 30);
+      str := '載入戰鬥人物貼圖 ' + format('%2d/%2d', [i + 1, BRoleAmount]);
+      DrawTextWithRect(str, CENTER_X - 120, CENTER_Y, 0, ColColor($64), ColColor($66), 30);
       UpdateAllScreen;
       //DrawRectangleWithoutFrame(screen, CENTER_X- 100+i*10, 30, 10, 10, $FFFFFFFF, 50);
       //SDL_UpdateRect2(screen, CENTER_X- 100+i*10, 30, 10, 10);
@@ -521,15 +521,15 @@ end;
 function SelectTeamMembers(forceSingle: integer = 0): integer;
 var
   i, menu, max, menup, xm, ym, x, y, h, forall: integer;
-  menuString: array [0 .. 8] of WideString;
-  str, str1: WideString;
+  menuString: array [0 .. 8] of utf8string;
+  str, str1: utf8string;
   //显示选择参战人物选单
   procedure ShowMultiMenu();
   var
     i: integer;
   begin
     LoadFreshScreen(x, y);
-    //Drawtextwithrect(@str[1],x + 5, y-35, 200 , colcolor($23), colcolor($21));
+    //Drawtextwithrect(str,x + 5, y-35, 200 , colcolor($23), colcolor($21));
     //DrawRectangle(x + 30, CENTER_Y - 90, 150, max * 22 + 28, 0, ColColor(255), 30);
     for i := 0 to max do
     begin
@@ -539,15 +539,15 @@ var
         DrawTextFrame(x + 14, y + h * i, 14);
       if i = menu then
       begin
-        DrawShadowText(@menuString[i][1], x + 33, y + 3 + h * i, ColColor($64), ColColor($66));
+        DrawShadowText(menuString[i], x + 33, y + 3 + h * i, ColColor($64), ColColor($66));
         if ((Result and (1 shl (i - 1))) > 0) and (i > 0) and (i < max) then
-          DrawShadowText(@str1[1], x + 133, y + 3 + h * i, ColColor($64), ColColor($66));
+          DrawShadowText(str1, x + 133, y + 3 + h * i, ColColor($64), ColColor($66));
       end
       else
       begin
-        DrawShadowText(@menuString[i][1], x + 33, y + 3 + h * i, 0, $202020);
+        DrawShadowText(menuString[i], x + 33, y + 3 + h * i, 0, $202020);
         if ((Result and (1 shl (i - 1))) > 0) and (i > 0) and (i < max) then
-          DrawShadowText(@str1[1], x + 133, y + 3 + h * i, 0, $202020);
+          DrawShadowText(str1, x + 133, y + 3 + h * i, 0, $202020);
       end;
     end;
     UpdateAllScreen;
@@ -570,14 +570,14 @@ begin
   begin
     if Teamlist[i] >= 0 then
     begin
-      menuString[i + 1] := pwidechar(@Rrole[Teamlist[i]].Name);
+      menuString[i + 1] := u16toutf8(Rrole[Teamlist[i]].Name);
       max := max + 1;
     end;
   end;
-  menuString[0] := ('   全員參戰');
+  menuString[0] := '   全員參戰';
   if forceSingle <> 0 then
-    menuString[0] := ('   限選一人');
-  menuString[max] := ('   開始戰鬥');
+    menuString[0] := '   限選一人';
+  menuString[max] := '   開始戰鬥';
   ShowMultiMenu;
   /// /SDL_EnableKeyRepeat(50, 30);
   forall := round(power(2, (max - 1)) - 1);
@@ -1048,7 +1048,7 @@ begin
                       if pnum > Rrole[Brole[bnum].rnum].DefPoi then
                       begin
                         Rrole[Brole[bnum].rnum].Poison := Rrole[Brole[bnum].rnum].Poison + pnum;
-                        ShowStringOnBrole(pwidechar(@Rmagic[neinum].Name) + UTF8Decode('·群毒'), i, 2);
+                        ShowStringOnBrole(putf8char(@Rmagic[neinum].Name) + '·群毒', i, 2);
                         //if Rrole[brole[bnum].rnum].Poison>100 then Rrole[brole[bnum].rnum].Poison:=100;
                       end;
                     end;
@@ -1063,7 +1063,7 @@ begin
               if curepoi > Rrole[Brole[i].rnum].Poison then
                 curepoi := Rrole[Brole[i].rnum].Poison;
               if curepoi > 0 then
-                ShowStringOnBrole(pwidechar(@Rmagic[neinum].Name) + UTF8Decode('·化毒'), i, 4);
+                ShowStringOnBrole(putf8char(@Rmagic[neinum].Name) + '·化毒', i, 4);
               Rrole[Brole[i].rnum].Poison := Rrole[Brole[i].rnum].Poison - curepoi;
               Rrole[Brole[i].rnum].CurrentMP := Rrole[Brole[i].rnum].CurrentMP + curepoi * neilevel;
               if Rrole[Brole[i].rnum].CurrentMP > Rrole[Brole[i].rnum].MaxMP then
@@ -1077,19 +1077,19 @@ begin
               begin
                 Brole[i].StateLevel[2] := 50;
                 Brole[i].StateRound[2] := 3;
-                ShowStringOnBrole(pwidechar(@Rmagic[neinum].Name) + UTF8Decode('·身輕'), i, 3);
+                ShowStringOnBrole(putf8char(@Rmagic[neinum].Name) + '·身輕', i, 3);
               end;
               if random(100) > 50 then
               begin
                 Brole[i].StateLevel[3] := 5;
                 Brole[i].StateRound[3] := 3;
-                ShowStringOnBrole(pwidechar(@Rmagic[neinum].Name) + UTF8Decode('·速行'), i, 3);
+                ShowStringOnBrole(putf8char(@Rmagic[neinum].Name) + '·速行', i, 3);
               end;
               if random(100) > 50 then
               begin
                 Brole[i].StateLevel[16] := 50;
                 Brole[i].StateRound[16] := 3;
-                ShowStringOnBrole(pwidechar(@Rmagic[neinum].Name) + UTF8Decode('·閃避'), i, 3);
+                ShowStringOnBrole(putf8char(@Rmagic[neinum].Name) + '·閃避', i, 3);
               end;
             end;
 
@@ -1100,13 +1100,13 @@ begin
               begin
                 Brole[i].StateLevel[0] := 10 * neilevel;
                 Brole[i].StateRound[0] := 3;
-                ShowStringOnBrole(pwidechar(@Rmagic[neinum].Name) + UTF8Decode('·威力'), i, 3);
+                ShowStringOnBrole(putf8char(@Rmagic[neinum].Name) + '·威力', i, 3);
               end;
               if random(100) > 50 then
               begin
                 Brole[i].StateLevel[1] := 10 * neilevel;
                 Brole[i].StateRound[1] := 3;
-                ShowStringOnBrole(pwidechar(@Rmagic[neinum].Name) + UTF8Decode('·剛體'), i, 3);
+                ShowStringOnBrole(putf8char(@Rmagic[neinum].Name) + '·剛體', i, 3);
               end;
               Rrole[Brole[i].rnum].Hurt := Rrole[Brole[i].rnum].Hurt - 10 * neilevel;
               if Rrole[Brole[i].rnum].Hurt < 0 then
@@ -1133,7 +1133,7 @@ begin
                       Rrole[Brole[i].rnum].currentMP := Rrole[Brole[i].rnum].currentMP + pnum;
                       if Rrole[Brole[i].rnum].currentMP > Rrole[Brole[i].rnum].maxMP then
                         Rrole[Brole[i].rnum].currentMP := Rrole[Brole[i].rnum].maxMP;
-                      ShowStringOnBrole(pwidechar(@Rmagic[neinum].Name) + UTF8Decode('·納氣'), i, 1);
+                      ShowStringOnBrole(putf8char(@Rmagic[neinum].Name) + '·納氣', i, 1);
                     end;
                   end;
                 end;
@@ -1308,9 +1308,9 @@ function BattleMenu(bnum: integer): integer;
 var
   i, p, MenuStatus, menu, max, rnum, menup, xm, ym, step, x, y, h, l: integer;
   realmenu: array [0 .. 10] of integer;
-  str: WideString;
-  word: array [0 .. 11] of WideString;
-  num: array [0 .. 9] of WideString;
+  str: utf8string;
+  word: array [0 .. 11] of utf8string;
+  num: array [0 .. 9] of utf8string;
   //显示战斗主选单
   procedure ShowBMenu(MenuStatus, menu, max: integer);
   var
@@ -1325,14 +1325,14 @@ var
       begin
         //DrawMPic(2110 + i, x + 5, y + h * p, SIMPLE);
         DrawTextFrame(x, y + h * p, 4);
-        DrawShadowText(@word[i][1], x + 19, y + h * p + 3, ColColor($64), ColColor($66));
+        DrawShadowText(word[i], x + 19, y + h * p + 3, ColColor($64), ColColor($66));
         p := p + 1;
       end
       else if (p <> menu) and ((MenuStatus and (1 shl i) > 0)) then
       begin
         //DrawMPic(2110 + i, x, y + h * p, SIMPLE, 0, 20);
         DrawTextFrame(x + 5, y + h * p, 4, 20);
-        DrawShadowText(@word[i][1], x + 24, y + h * p + 3, 0, $202020);
+        DrawShadowText(word[i], x + 24, y + h * p + 3, 0, $202020);
         p := p + 1;
       end;
     end;
@@ -1439,19 +1439,19 @@ begin
 
   Redraw;
   ShowSimpleStatus(Brole[bnum].rnum, 80, CENTER_Y * 2 - 150);
-  //str := UTF8Decode(format('回合%d', [BattleRound]));
+  //str := format('回合%d', [BattleRound]);
   //DrawTextWithRect(puint16(str), 160, 50, DrawLength(str) * 10 + 7, ColColor($21), ColColor($23), 30);
   //DrawMPic(2121, 160, 50);
-  str := UTF8Decode(format('%d', [BattleRound]));
+  str := format('%d', [BattleRound]);
   l := length(str);
   DrawTextFrame(x + 100, y, 4 + l * 2);
   for i := 1 to l do
   begin
-    DrawShadowText(puint16(num[StrToInt(str[i])]), x + 139 + i * 20, y + 3, 0, $202020);
+    DrawShadowText(num[StrToInt(str[i])], x + 139 + i * 20, y + 3, 0, $202020);
     //DrawMPic(2130 + StrToInt(str[i]), 182 + 31 * i, 50);
   end;
   str := '回合';
-  DrawShadowText(puint16(str), x + 119, y + 3, 0, $202020);
+  DrawShadowText(str, x + 119, y + 3, 0, $202020);
 
   UpdateAllScreen;
   RecordFreshScreen(x, y, 90, max * h + 40);
@@ -1640,7 +1640,7 @@ end;
 function SelectShowStatus(bnum: integer): boolean;
 var
   Axp, Ayp, rnum, step, range, AttAreaType, pAx, pAy: integer;
-  //strs: array[1..17] of widestring;
+  //strs: array[1..17] of utf8string;
 begin
   //SDL_EnableKeyRepeat(20, 100);
   Ax := Bx;
@@ -2110,13 +2110,13 @@ end;
 //选择方向
 function SelectDirector(bnum, AttAreaType, step, range: integer): boolean;
 var
-  str: WideString;
+  str: utf8string;
 begin
   Ax := Bx - 1;
   Ay := By;
   BattleSelecting := True;
   //str := '選擇攻擊方向';
-  //Drawtextwithrect(@str[1], 280, 200, 125, colcolor($21), colcolor($23));
+  //Drawtextwithrect(str, 280, 200, 125, colcolor($21), colcolor($23));
   DrawBFieldWithCursor(AttAreaType, step, range);
   UpdateAllScreen;
   Result := False;
@@ -2568,7 +2568,7 @@ end;
 procedure Attack(bnum: integer);
 var
   rnum, i, mnum, level, step, range, AttAreaType, i1, twice, temp: integer;
-  str: string;
+  str: utf8string;
 begin
   rnum := Brole[bnum].rnum;
   while True do
@@ -2755,36 +2755,36 @@ begin
       //特定武功加成
       if Rmagic[neinum].AttDistance[4] = mnum then
       begin
-        ShowStringOnBrole(pwidechar(@Rmagic[neinum].Name) + UTF8Decode('·威力'), bnum, 3);
+        ShowStringOnBrole(putf8char(@Rmagic[neinum].Name) + '·威力', bnum, 3);
       end;
 
       //资质对武功加成, 段家心法
       if Rmagic[neinum].AttDistance[7] > 0 then
       begin
-        ShowStringOnBrole(pwidechar(@Rmagic[neinum].Name) + UTF8Decode('·威力'), bnum, 3);
+        ShowStringOnBrole(putf8char(@Rmagic[neinum].Name) + '·威力', bnum, 3);
       end;
 
       //我方剩余人数加成, 神龙吟
       if Rmagic[neinum].AttDistance[9] > 0 then
       begin
-        ShowStringOnBrole(pwidechar(@Rmagic[neinum].Name) + UTF8Decode('·神威'), bnum, 3);
+        ShowStringOnBrole(putf8char(@Rmagic[neinum].Name) + '·神威', bnum, 3);
       end;
 
       //对轻功加成的加成, 玉女心经
       if Rmagic[neinum].MoveDistance[8] > 0 then
       begin
-        ShowStringOnBrole(pwidechar(@Rmagic[neinum].Name) + UTF8Decode('·輕力'), bnum, 3);
+        ShowStringOnBrole(putf8char(@Rmagic[neinum].Name) + '·輕力', bnum, 3);
       end;
 
       //对内功加成的加成
       if Rmagic[neinum].MoveDistance[6] > 0 then
       begin
-        ShowStringOnBrole(pwidechar(@Rmagic[neinum].Name) + UTF8Decode('·強内'), bnum, 3);
+        ShowStringOnBrole(putf8char(@Rmagic[neinum].Name) + '·強内', bnum, 3);
       end;
     end;
 
     if lastng > 0 then
-      ShowStringOnBrole(pwidechar(@Rmagic[lastng].Name) + UTF8Decode('·加力'), bnum, 3);
+      ShowStringOnBrole(putf8char(@Rmagic[lastng].Name) + '·加力', bnum, 3);
 
     ShowMagicName(mnum);
     PlaySoundA(Rmagic[mnum].SoundNum, 0);
@@ -2886,16 +2886,16 @@ begin
 
 end;
 
-procedure ShowMagicName(mnum: integer; str: WideString = '');
+procedure ShowMagicName(mnum: integer; str: utf8string = '');
 var
   l, mode: integer;
   color1, color2: uint32;
-  str0: string;
+  str0: utf8string;
 begin
   Redraw;
   if (str = '') and (mnum >= 0) then
   begin
-    str := pwidechar(@Rmagic[mnum].Name);
+    str := u16toutf8(Rmagic[mnum].Name);
     color1 := ColColor($14);
     color2 := ColColor($16);
   end
@@ -2906,7 +2906,7 @@ begin
   end;
 
   l := DrawLength(str);
-  DrawTextWithRect(@str[1], CENTER_X - l * 5 - 24, CENTER_Y - 150, 0, color1, color2, 10);
+  DrawTextWithRect(str, CENTER_X - l * 5 - 24, CENTER_Y - 150, 0, color1, color2, 10);
   UpdateAllScreen;
   SDL_Delay(400);
   event.key.keysym.sym := 0;
@@ -2918,8 +2918,8 @@ end;
 function SelectMagic(rnum: integer): integer;
 var
   i, p, MenuStatus, max, menu, menup, xm, ym, h: integer;
-  str: WideString;
-  menuString, menuEngString: array of WideString;
+  str: utf8string;
+  menuString, menuEngString: array of utf8string;
 
   //显示武功选单
 
@@ -2935,15 +2935,15 @@ var
       if (p = menu) and ((MenuStatus and (1 shl i) > 0)) then
       begin
         DrawTextFrame(103, 50 + h * p, 15);
-        DrawShadowText(@menuString[i][1], 122, 53 + h * p, ColColor($64), ColColor($66));
-        DrawEngShadowText(@menuEngString[i][1], 242, 53 + h * p, ColColor($64), ColColor($66));
+        DrawShadowText(menuString[i], 122, 53 + h * p, ColColor($64), ColColor($66));
+        DrawEngShadowText(menuEngString[i], 242, 53 + h * p, ColColor($64), ColColor($66));
         p := p + 1;
       end
       else if (p <> menu) and ((MenuStatus and (1 shl i) > 0)) then
       begin
         DrawTextFrame(103, 50 + h * p, 15, 20);
-        DrawShadowText(@menuString[i][1], 122, 53 + h * p, 0, $202020);
-        DrawEngShadowText(@menuEngString[i][1], 242, 53 + h * p, 0, $202020);
+        DrawShadowText(menuString[i], 122, 53 + h * p, 0, $202020);
+        DrawEngShadowText(menuEngString[i], 242, 53 + h * p, 0, $202020);
         p := p + 1;
       end;
     end;
@@ -2966,7 +2966,7 @@ begin
       if ((Rmagic[Rrole[rnum].Magic[i]].NeedItem < 0) or ((Rmagic[Rrole[rnum].Magic[i]].NeedItem >= 0) and (Rmagic[Rrole[rnum].Magic[i]].NeedItemAmount <= GetItemAmount(Rmagic[Rrole[rnum].Magic[i]].NeedItem)))) and ((Rmagic[Rrole[rnum].Magic[i]].NeedMP <= Rrole[rnum].CurrentMP)) then
       begin
         MenuStatus := MenuStatus or (1 shl i);
-        menuString[i] := pwidechar(@Rmagic[Rrole[rnum].Magic[i]].Name);
+        menuString[i] := u16toutf8(Rmagic[Rrole[rnum].Magic[i]].Name);
         menuEngString[i] := format('%3d', [Rrole[rnum].MagLevel[i] div 100 + 1]);
         max := max + 1;
       end;
@@ -2983,7 +2983,7 @@ begin
   begin
     Result := -1;
     str := '內力不足以發動任何武學！';
-    DrawTextWithRect(@str[1], 100, 50, 0, 0, $202020, 0, 0);
+    DrawTextWithRect(str, 100, 50, 0, 0, $202020, 0, 0);
     UpdateAllScreen;
     WaitAnyKey;
     exit;
@@ -3376,7 +3376,7 @@ begin
             hurt := hurt div 2;
             Rrole[Brole[i].rnum].CurrentMP := Rrole[Brole[i].rnum].CurrentMP + hurt;
             if mode = 1 then
-              ShowStringOnBrole(pwidechar(@Rmagic[neinum].Name) + UTF8Decode('·融功'), i, 1);
+              ShowStringOnBrole(putf8char(@Rmagic[neinum].Name) + '·融功', i, 1);
             if Rrole[Brole[i].rnum].CurrentMP > Rrole[Brole[i].rnum].MaxMP then
               Rrole[Brole[i].rnum].CurrentMP := Rrole[Brole[i].rnum].MaxMP;
           end;
@@ -3414,7 +3414,7 @@ begin
               begin
                 Rrole[Brole[i].rnum].PhyPower := Rrole[Brole[i].rnum].PhyPower - Rmagic[neinum].AttDistance[6] * neilevel;
                 if mode = 1 then
-                  ShowStringOnBrole(pwidechar(@Rmagic[neinum].Name) + UTF8Decode('·殺體'), i, 2);
+                  ShowStringOnBrole(putf8char(@Rmagic[neinum].Name) + '·殺體', i, 2);
                 if Rrole[Brole[i].rnum].PhyPower < 1 then
                   Rrole[Brole[i].rnum].PhyPower := 1;
               end;
@@ -3422,7 +3422,7 @@ begin
               begin
                 Rrole[Brole[i].rnum].CurrentMP := Rrole[Brole[i].rnum].CurrentMP - Rmagic[neinum].AttDistance[8] * neilevel;
                 if mode = 1 then
-                  ShowStringOnBrole(pwidechar(@Rmagic[neinum].Name) + UTF8Decode('·殺内'), i, 1);
+                  ShowStringOnBrole(putf8char(@Rmagic[neinum].Name) + '·殺内', i, 1);
                 if Rrole[Brole[i].rnum].CurrentMP < 1 then
                   Rrole[Brole[i].rnum].CurrentMP := 1;
               end;
@@ -3430,7 +3430,7 @@ begin
               begin //龙卷罡气, 重伤
                 Rrole[Brole[i].rnum].Hurt := Rrole[Brole[i].rnum].Hurt + 3 * neilevel;
                 if mode = 1 then
-                  ShowStringOnBrole(pwidechar(@Rmagic[neinum].Name) + UTF8Decode('·重傷'), i, 1);
+                  ShowStringOnBrole(putf8char(@Rmagic[neinum].Name) + '·重傷', i, 1);
                 if Rrole[Brole[i].rnum].Hurt > 100 then
                   Rrole[Brole[i].rnum].Hurt := 100;
               end;
@@ -3666,7 +3666,7 @@ begin
     begin
       def := def * (100 + Rmagic[neinum].MoveDistance[4] + (Rmagic[neinum].MoveDistance[5] - Rmagic[neinum].MoveDistance[4]) * neilevel div 10) div 100;
       if mode = 1 then
-        ShowStringOnBrole(pwidechar(@Rmagic[neinum].Name) + UTF8Decode('·剛體'), bnum2, 3);
+        ShowStringOnBrole(putf8char(@Rmagic[neinum].Name) + '·剛體', bnum2, 3);
     end;
   end;
 
@@ -3741,7 +3741,7 @@ begin
 
 end;
 
-procedure SelectColor(mode: integer; var color1, color2: uint32; var formatstr: string);
+procedure SelectColor(mode: integer; var color1, color2: uint32; var formatstr: utf8string);
 begin
   case mode of
     0, 6: //伤血
@@ -3778,12 +3778,12 @@ begin
 end;
 
 //显示数字: 0-红色负, 1-紫色负, 2-绿色正, 3-黄色正, 4-蓝色负
-procedure ShowHurtValue(mode: integer; team: integer = 0; fstr: string = '');
+procedure ShowHurtValue(mode: integer; team: integer = 0; fstr: utf8string = '');
 var
   i, i1, x, y: integer;
   color1, color2: uint32;
-  word: array of WideString;
-  str: string;
+  word: array of utf8string;
+  str: utf8string;
 begin
   SelectColor(mode, color1, color2, str);
   if fstr <> '' then
@@ -3823,7 +3823,7 @@ begin
       x := -(Brole[i].X - Bx) * 18 + (Brole[i].Y - By) * 18 + CENTER_X - 5 * length(word[i]);
       y := (Brole[i].X - Bx) * 9 + (Brole[i].Y - By) * 9 + CENTER_Y - 40;
       if word[i] <> '' then
-        DrawEngShadowText(@word[i, 1], x, y - i1 * 2, color1, color2);
+        DrawEngShadowText(word[i], x, y - i1 * 2, color1, color2);
     end;
     SDL_Delay(BATTLE_SPEED);
     UpdateAllScreen;
@@ -3835,11 +3835,11 @@ begin
   UpdateAllScreen;
 end;
 
-procedure ShowStringOnBrole(str: WideString; bnum, mode: integer; up: integer = 1);
+procedure ShowStringOnBrole(str: utf8string; bnum, mode: integer; up: integer = 1);
 var
   len, i1, i2, x, y: integer;
   color1, color2: uint32;
-  formatstr: string;
+  formatstr: utf8string;
   p: puint16;
 begin
   if EFFECT_STRING = 1 then
@@ -3857,7 +3857,7 @@ begin
     begin
       CheckBasicEvent;
       Redraw;
-      DrawShadowText(@str[1], x - 9 * len div 2 + 5, y - i2 * 2, color1, color2);
+      DrawShadowText(str, x - 9 * len div 2 + 5, y - i2 * 2, color1, color2);
       SDL_Delay(BATTLE_SPEED);
       UpdateAllScreen;
       i1 := i1 + 1;
@@ -4078,7 +4078,7 @@ end;
 procedure AddExp;
 var
   i, mnum, mlevel, i1, i2, rnum, basicvalue, amount, levels, p, x, y: integer;
-  str: WideString;
+  str: utf8string;
 begin
   levels := 0;
   amount := 0;
@@ -4094,8 +4094,8 @@ begin
 
   TransBlackScreen;
   //str:=' 戰鬥勝利';
-  //drawtextwithrect(@str[1], CENTER_X - 250, 40, 86, colcolor($21), colcolor($23));
-  //display_img(pchar(AppPath + 'resource/bw.png'), CENTER_X - 260, 15);
+  //drawtextwithrect(str, CENTER_X - 250, 40, 86, colcolor($21), colcolor($23));
+  //display_img(putf8char(AppPath + 'resource/bw.png'), CENTER_X - 260, 15);
   DrawMPic(2003, CENTER_X - 260, CENTER_Y - 240 + 15);
   for i := 0 to BRoleAmount - 1 do
   begin
@@ -4143,9 +4143,9 @@ begin
         p := 0;
         TransBlackScreen;
         WaitAnyKey;
-        //display_img(pchar(AppPath + 'resource/bw.png'), CENTER_X - 260, 15);
+        //display_img(putf8char(AppPath + 'resource/bw.png'), CENTER_X - 260, 15);
         //str:='戰鬥勝利';
-        //drawtextwithrect(@str[1], CENTER_X - 250, 40, 86, colcolor($21), colcolor($23));
+        //drawtextwithrect(str, CENTER_X - 250, 40, 86, colcolor($21), colcolor($23));
       end;
       x := CENTER_X - 270 + p mod 2 * 270;
       y := CENTER_Y - 240 + 90 + p div 2 * 110;
@@ -4153,9 +4153,9 @@ begin
       ShowSimpleStatus(rnum, x, y);
       //DrawRectangle(screen, x + 100, y+83, 145, 25, 0, colcolor(255), 25);
       //str := '得經驗';
-      //Drawshadowtext(@str[1], x + 100 - 17, y+85, colcolor($21), colcolor($23));
-      str := UTF8Decode(format('經驗+%d', [basicvalue]));
-      DrawTextWithRect(@str[1], x, y + 70, 0, ColColor($64), ColColor($66), 40, 0);
+      //Drawshadowtext(str, x + 100 - 17, y+85, colcolor($21), colcolor($23));
+      str := format('經驗+%d', [basicvalue]);
+      DrawTextWithRect(str, x, y + 70, 0, ColColor($64), ColColor($66), 40, 0);
       p := p + 1;
     end;
 
@@ -4187,7 +4187,7 @@ end;
 procedure LevelUp(bnum: integer; rnum: integer = -1);
 var
   i, add, levelA, i0, i1: integer;
-  str: WideString;
+  str: utf8string;
 begin
   if rnum < 0 then
     rnum := Brole[bnum].rnum;
@@ -4199,7 +4199,7 @@ begin
     ShowStatus(rnum, -1);
     //showsimplestatus(rnum,  CENTER_X - 300,50);
     //str := '升級';
-    //Drawtextwithrect(@str[1], 50, CENTER_Y - 150, 46, colcolor($21), colcolor($23));
+    //Drawtextwithrect(str, 50, CENTER_Y - 150, 46, colcolor($21), colcolor($23));
     //waitanykey;
   end;
   Rrole[rnum].Level := Rrole[rnum].Level + 1;
@@ -4258,7 +4258,7 @@ begin
     ShowStatus(rnum, -2);
     ShowSimpleStatus(rnum, CENTER_X - 150, CENTER_Y - 240 + 10);
     //str := '升級';
-    //Drawtextwithrect(@str[1], 50, CENTER_Y - 150, 46, colcolor($21), colcolor($23));
+    //Drawtextwithrect(str, 50, CENTER_Y - 150, 46, colcolor($21), colcolor($23));
     UpdateAllScreen;
     WaitAnyKey;
   end;
@@ -4269,7 +4269,7 @@ end;
 procedure CheckBook;
 var
   i, i1, i2, p, rnum, inum, mnum, mlevel, needexp, needitem, needitemamount, itemamount: integer;
-  str: WideString;
+  str: utf8string;
 begin
   for i := 0 to BRoleAmount - 1 do
   begin
@@ -4333,7 +4333,7 @@ begin
             //DrawRectangle(CENTER_X - 150 + 30, CENTER_Y - 240 + 170,{115, 63,} 90, 25, 0, ColColor(255), 25);
             DrawTextFrame(CENTER_X - 150, CENTER_Y - 240 + 170, 8);
             str := '製得物品';
-            DrawShadowText(@str[1], CENTER_X - 150 + 19, CENTER_Y - 240 + 173, 0, $202020);
+            DrawShadowText(str, CENTER_X - 150 + 19, CENTER_Y - 240 + 173, 0, $202020);
             instruct_2(Ritem[inum].GetItem[p], 30 + random(25));
             UpdateAllScreen;
             instruct_32(needitem, -needitemamount);
@@ -4367,7 +4367,7 @@ end;
 procedure BattleMenuItem(bnum: integer);
 var
   rnum, inum, mode: integer;
-  str: WideString;
+  str: utf8string;
 begin
   if MenuItem then
   begin
@@ -4398,7 +4398,7 @@ end;
 procedure PlayActionAmination(bnum, mode: integer);
 var
   rnum, i, beginpic, endpic, IDX, GRP, tnum, len, Ax1, Ay1, actnum, k: integer;
-  filename: string;
+  filename: utf8string;
 begin
   //暗器类用特殊的动作
   if mode = 5 then
@@ -4480,7 +4480,7 @@ procedure UsePoison(bnum: integer);
 var
   rnum, bnum1, rnum1, poi, step, addpoi, minDefPoi, i: integer;
   select: boolean;
-  str: WideString;
+  str: utf8string;
 begin
   rnum := Brole[bnum].rnum;
   poi := Rrole[rnum].UsePoi;
@@ -4525,7 +4525,7 @@ begin
       Rrole[rnum1].Poison := Rrole[rnum1].Poison + addpoi;
       Brole[bnum1].ShowNumber := addpoi;
       Brole[bnum].ExpGot := Brole[bnum].ExpGot + addpoi div 5;
-      str := UTF8Decode('使毒');
+      str := '使毒';
       ShowMagicName(2, str);
       SetAminationPosition(0, 0, 0);
       PlayActionAmination(bnum, 0);
@@ -4540,7 +4540,7 @@ procedure Medcine(bnum: integer);
 var
   rnum, bnum1, rnum1, med, step, addlife: integer;
   select: boolean;
-  str: WideString;
+  str: utf8string;
 begin
   rnum := Brole[bnum].rnum;
   med := Rrole[rnum].Medcine;
@@ -4578,7 +4578,7 @@ begin
         Rrole[rnum1].Hurt := 0;
       Brole[bnum].ExpGot := Brole[bnum].ExpGot + addlife div 10;
       Brole[bnum1].ShowNumber := addlife;
-      str := UTF8Decode('醫療');
+      str := '醫療';
       ShowMagicName(3, str);
       SetAminationPosition(0, 0, 0);
       PlayActionAmination(bnum, 0);
@@ -4594,7 +4594,7 @@ procedure MedPoison(bnum: integer);
 var
   rnum, bnum1, rnum1, medpoi, step, minuspoi: integer;
   select: boolean;
-  str: WideString;
+  str: utf8string;
 begin
   rnum := Brole[bnum].rnum;
   medpoi := Rrole[rnum].MedPoi;
@@ -4624,7 +4624,7 @@ begin
       Rrole[rnum1].Poison := Rrole[rnum1].Poison - minuspoi;
       Brole[bnum1].ShowNumber := minuspoi;
       Brole[bnum].ExpGot := Brole[bnum].ExpGot + minuspoi div 5;
-      str := UTF8Decode('解毒');
+      str := '解毒';
       ShowMagicName(4, str);
       SetAminationPosition(0, 0, 0);
       PlayActionAmination(bnum, 0);
@@ -4640,7 +4640,7 @@ procedure UseHiddenWeapon(bnum, inum: integer);
 var
   rnum, bnum1, rnum1, hidden, step, hurt, poison, i, maxhurt, eventnum: integer;
   select: boolean;
-  str: WideString;
+  str: utf8string;
 begin
   //calcanselect(bnum, 1);
   rnum := Brole[bnum].rnum;
@@ -4722,7 +4722,7 @@ begin
           //Rrole[rnum1].Hurt := min(Rrole[rnum1].Hurt + hurt div LIFE_HURT, 99);
           Rrole[rnum1].Poison := min(Rrole[rnum1].Poison + Ritem[inum].AddPoi * (100 - Rrole[rnum1].DefPoi) div 100, 99);
           SetAminationPosition(0, 0, 0);
-          str := pwidechar(@Ritem[inum].Name);
+          str := putf8char(@Ritem[inum].Name);
           ShowMagicName(inum, str);
           PlayActionAmination(bnum, 0);
           PlayMagicAmination(bnum, Ritem[inum].AmiNum);
@@ -4787,19 +4787,19 @@ begin
       if Rmagic[neinum].AttDistance[0] > 0 then
       begin
         Rrole[Brole[bnum].rnum].CurrentMP := Rrole[Brole[bnum].rnum].CurrentMP + Rrole[Brole[bnum].rnum].MaxMP * (Rmagic[neinum].AttDistance[0] + (Rmagic[neinum].AttDistance[1] - Rmagic[neinum].AttDistance[0]) * neilevel div 10) div 100;
-        ShowStringOnBrole(pwidechar(@Rmagic[neinum].Name) + UTF8Decode('·回内'), bnum, 3);
+        ShowStringOnBrole(putf8char(@Rmagic[neinum].Name) + '·回内', bnum, 3);
       end;
       Rrole[Brole[bnum].rnum].CurrentMP := min(Rrole[Brole[bnum].rnum].CurrentMP, Rrole[Brole[bnum].rnum].MaxMP);
       if Rmagic[neinum].AttDistance[2] > 0 then
       begin
         Rrole[Brole[bnum].rnum].CurrentHP := Rrole[Brole[bnum].rnum].CurrentHP + Rrole[Brole[bnum].rnum].MaxHP * (Rmagic[neinum].AttDistance[2] + (Rmagic[neinum].AttDistance[3] - Rmagic[neinum].AttDistance[2]) * neilevel div 10) div 100;
-        ShowStringOnBrole(pwidechar(@Rmagic[neinum].Name) + UTF8Decode('·回命'), bnum, 3);
+        ShowStringOnBrole(putf8char(@Rmagic[neinum].Name) + '·回命', bnum, 3);
       end;
       Rrole[Brole[bnum].rnum].CurrentHP := min(Rrole[Brole[bnum].rnum].CurrentHP, Rrole[Brole[bnum].rnum].MaxHP);
       if Rmagic[neinum].AddMP[4] > 0 then
       begin
         Rrole[Brole[bnum].rnum].PhyPower := Rrole[Brole[bnum].rnum].PhyPower + Rmagic[neinum].AddMP[4];
-        ShowStringOnBrole(pwidechar(@Rmagic[neinum].Name) + UTF8Decode('·回體'), bnum, 3);
+        ShowStringOnBrole(putf8char(@Rmagic[neinum].Name) + '·回體', bnum, 3);
       end;
       Rrole[Brole[bnum].rnum].PhyPower := min(Rrole[Brole[bnum].rnum].PhyPower, MAX_PHYSICAL_POWER);
     end;
@@ -4812,7 +4812,7 @@ end;
 procedure AutoBattle(bnum: integer);
 {var
   i, p, a, temp, rnum, inum, eneamount, aim, mnum, level, Ax1, Ay1, i1, i2, step, step1, dis0, dis: integer;
-  str: WideString;}
+  str: utf8string;}
 begin
   {rnum := Brole[bnum].rnum;
     ShowSimpleStatus(rnum, 50, CENTER_Y * 2 - 160);
@@ -5005,8 +5005,8 @@ begin
     if Rmagic[mnum].UnKnow[4] > 0 then
     begin
     //rmagic[mnum].UnKnow[4] := strtoint(InputBox('Enter name', 'ssss', '10'));
-    execscript(PChar('script\SpecialMagic' + IntToStr(Rmagic[mnum].UnKnow[4]) + '.lua'),
-    PChar('f' + IntToStr(Rmagic[mnum].UnKnow[4])));
+    execscript(putf8char('script\SpecialMagic' + IntToStr(Rmagic[mnum].UnKnow[4]) + '.lua'),
+    putf8char('f' + IntToStr(Rmagic[mnum].UnKnow[4])));
     if Rmagic[mnum].NeedMP * (level + 1) div 2 > Rrole[rnum].CurrentMP then
     begin
     level := Rrole[rnum].CurrentMP div Rmagic[mnum].NeedMP * 2;
@@ -5043,7 +5043,7 @@ end;
 function AutoUseItem(bnum, list: integer; test: integer = 0): boolean;
 var
   i, p, temp, rnum, inum: integer;
-  str: WideString;
+  str: utf8string;
 begin
   rnum := Brole[bnum].rnum;
   if Brole[bnum].Team <> 0 then
@@ -5105,7 +5105,7 @@ procedure AutoBattle2(bnum: integer);
   i, p, a, temp, rnum, inum, eneamount, aim, mnum, level, Ax1, Ay1, i1, i2, step, step1, dis0, dis: integer;
   Cmnum, Cmlevel, Cmtype, Cmdis, Cmrange, Clevel: integer;
   Movex, Movey, Mx1, My1, tempmaxhurt, maxhurt, tempminHP, twice: integer;
-  str: WideString;}
+  str: utf8string;}
 begin
   {rnum := Brole[bnum].rnum;
     ShowSimpleStatus(rnum, 50, CENTER_Y * 2 - 160);
@@ -5298,8 +5298,8 @@ begin
     Rrole[rnum].MagLevel[p] := 999;
     if Rmagic[mnum].UnKnow[4] > 0 then
     begin
-    execscript(PChar('script/SpecialMagic' + IntToStr(Rmagic[mnum].UnKnow[4]) + '.lua'),
-    PChar('f' + IntToStr(Rmagic[mnum].UnKnow[4])));
+    execscript(putf8char('script/SpecialMagic' + IntToStr(Rmagic[mnum].UnKnow[4]) + '.lua'),
+    putf8char('f' + IntToStr(Rmagic[mnum].UnKnow[4])));
     if Rmagic[mnum].NeedMP * (level + 1) div 2 > Rrole[rnum].CurrentMP then
     begin
     level := Rrole[rnum].CurrentMP div Rmagic[mnum].NeedMP * 2;
@@ -5807,9 +5807,9 @@ var
   menup, x, y, w, h, menu, i, amount, xm, ym: integer;
   a: array of smallint;
   tempmode: array of integer;
-  modestring: array [0 .. 3] of WideString;
-  namestr: array of WideString;
-  str: WideString;
+  modestring: array [0 .. 3] of utf8string;
+  namestr: array of utf8string;
+  str: utf8string;
 
   procedure ShowTeamModeMenu();
   var
@@ -5822,21 +5822,21 @@ var
       if (i = menu) then
       begin
         DrawTextFrame(x, y + h * i, 13);
-        DrawShadowText(@namestr[i][1], x + 19, y + 3 + h * i, ColColor($64), ColColor($66));
-        DrawShadowText(@modestring[Brole[a[i]].AutoMode][1], x + 109, y + 3 + h * i, ColColor($64), ColColor($66));
+        DrawShadowText(namestr[i], x + 19, y + 3 + h * i, ColColor($64), ColColor($66));
+        DrawShadowText(modestring[Brole[a[i]].AutoMode], x + 109, y + 3 + h * i, ColColor($64), ColColor($66));
       end
       else
       begin
         DrawTextFrame(x, y + h * i, 13, 20);
-        DrawShadowText(@namestr[i][1], x + 19, y + 3 + h * i, 0, $202020);
-        DrawShadowText(@modestring[Brole[a[i]].AutoMode][1], x + 109, y + 3 + h * i, 0, $202020);
+        DrawShadowText(namestr[i], x + 19, y + 3 + h * i, 0, $202020);
+        DrawShadowText(modestring[Brole[a[i]].AutoMode], x + 109, y + 3 + h * i, 0, $202020);
       end;
     end;
     DrawTextFrame(x, y + h * amount, 4);
     if menu = -2 then
-      DrawShadowText(@str[1], x + 19, y + 3 + h * amount, ColColor($64), ColColor($66))
+      DrawShadowText(str, x + 19, y + 3 + h * amount, ColColor($64), ColColor($66))
     else
-      DrawShadowText(@str[1], x + 19, y + 3 + h * amount, 0, $202020);
+      DrawShadowText(str, x + 19, y + 3 + h * amount, 0, $202020);
     //SDL_UpdateRect2(screen, x, y, w + 1, h + 1);
     UpdateAllScreen;
   end;
@@ -5856,7 +5856,7 @@ begin
       amount := amount + 1;
       setlength(namestr, amount);
       setlength(a, amount);
-      namestr[amount - 1] := pwidechar(@Rrole[Brole[i].rnum].Name[0]);
+      namestr[amount - 1] := u16toutf8(Rrole[Brole[i].rnum].Name);
       a[amount - 1] := i;
     end;
   end;
@@ -6033,7 +6033,7 @@ var
   i, p, a, temp, rnum, inum, eneamount, aim, level, Ax1, Ay1, temp1, temp2: integer;
   Cmnum, Cmlevel, Cmtype, Cmdis, Cmrange, magicid, bnum1: integer;
   Movex, Movey, Mx1, My1, twice, mainMType, tempMaxMType, minstep: integer;
-  str: WideString;
+  str: utf8string;
 begin
   rnum := Brole[bnum].rnum;
   ShowSimpleStatus(rnum, 80, CENTER_Y * 2 - 150);
@@ -6543,7 +6543,7 @@ end;
 procedure GiveUp(bnum: integer);
 var
   j: integer;
-  menuString: array [0 .. 1] of WideString;
+  menuString: array [0 .. 1] of utf8string;
 begin
   menuString[0] := '取消';
   menuString[1] := '確認';
@@ -6556,7 +6556,7 @@ end;
 
 function UseSpecialAbility(bnum, mnum, level: integer): boolean;
 var
-  Funcname: string;
+  Funcname: utf8string;
   pFunc: function(bnum, mnum, level: integer): integer of object;
 begin
   Result := False;
@@ -6591,7 +6591,7 @@ end;
 
 procedure CheckAttackAttachment(bnum, mnum, level: integer);
 var
-  Funcname: string;
+  Funcname: utf8string;
   pFunc: function(bnum, mnum, mnum2, level: integer): integer of object;
   i: integer;
   f, mnum2: smallint;
@@ -6960,7 +6960,7 @@ end;
 procedure TSpecialAbility.SA_6(bnum, mnum, level: integer);
 var
   i, aimbnum, aimrnum, rnum, itemid, itemnum, k: integer;
-  str: WideString;
+  str: utf8string;
   stealitems: array [0 .. 40] of smallint = (0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 206, 207, 208, 209, 210);
   stealitems0: array [0 .. 29] of smallint = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 171, 172);
 
@@ -7020,7 +7020,7 @@ begin
   end;
   if (random(100) < 30) then
   begin
-    str := UTF8Decode('偷天換日');
+    str := '偷天換日';
     ShowMagicName(0, str);
     FillChar(BField[4, 0, 0], 4096 * 2, 0);
     for i := 0 to BRoleAmount - 1 do
@@ -7524,8 +7524,8 @@ procedure TSpecialAbility.SA_18(bnum, mnum, level: integer);
 var
   i, res, newlife, amount, k, k1, i1, i2, rnum, hurt, rnum2, bnum2: integer;
   bnumarray: array of smallint;
-  str: WideString;
-  menuString: array of WideString;
+  str: utf8string;
+  menuString: array of utf8string;
 begin
   ShowMagicName(mnum);
   rnum := Brole[bnum].rnum;
@@ -7557,7 +7557,7 @@ begin
     begin
       if (Brole[i].Team = Brole[bnum].Team) and (Brole[i].Dead = 1) then
       begin
-        menuString[amount] := pwidechar(@Rrole[Brole[i].rnum].Name);
+        menuString[amount] := putf8char(@Rrole[Brole[i].rnum].Name);
         bnumarray[amount] := i;
         amount := amount + 1;
       end;
@@ -8295,8 +8295,8 @@ procedure TSpecialAbility.SA_31(bnum, mnum, level: integer);
 var
   i, i1, amount, res, rnum, eachamount: integer;
   mnumarray: array of smallint;
-  namemagic: WideString;
-  menuString: array of WideString;
+  namemagic: utf8string;
+  menuString: array of utf8string;
   ss: shortint;
   AI: boolean;
   forall: integer;
@@ -8330,8 +8330,8 @@ begin
           if Rrole[Brole[i].rnum].magic[i1] > 0 then
           begin
             mnumarray[amount] := Rrole[Brole[i].rnum].magic[i1];
-            namemagic := pwidechar(@Rrole[Brole[i].rnum].Name) + StringOfChar(' ', 10 - DrawLength(PChar(@Rrole[Brole[i].rnum].Name))) + pwidechar(@Rmagic[Rrole[Brole[i].rnum].magic[i1]].Name);
-            //menustring[amount] := pwidechar(@namemagic);
+            namemagic := putf8char(@Rrole[Brole[i].rnum].Name) + StringOfChar(' ', 10 - DrawLength(putf8char(@Rrole[Brole[i].rnum].Name))) + putf8char(@Rmagic[Rrole[Brole[i].rnum].magic[i1]].Name);
+            //menustring[amount] := putf8char(@namemagic);
             menuString[amount] := namemagic;
             ConsoleLog(menuString[amount]);
             amount := amount + 1;
@@ -8355,7 +8355,7 @@ begin
           if Rmagic[Rrole[rnum].magic[0]].HurtType = 2 then
           begin
             mnumarray[amount] := Rrole[rnum].magic[0];
-            namemagic := pwidechar(@Rrole[rnum].Name) + StringOfChar(' ', 10 - DrawLength(pwidechar(@Rrole[rnum].Name))) + pwidechar(@Rmagic[Rrole[rnum].magic[0]].Name);
+            namemagic := putf8char(@Rrole[rnum].Name) + StringOfChar(' ', 10 - DrawLength(putf8char(@Rrole[rnum].Name))) + putf8char(@Rmagic[Rrole[rnum].magic[0]].Name);
             menuString[amount] := namemagic;
             ConsoleLog(menuString[amount]);
             amount := amount + 1;
@@ -8428,7 +8428,7 @@ procedure TSpecialAbility.SA_33(bnum, mnum, level: integer);
 var
   i, x, y, aimbnum1, aimbnum2, tempmp, rnum, k, k1: integer;
   r: boolean;
-  str: WideString;
+  str: utf8string;
 begin
   //AI会乱用
   ShowMagicName(mnum);
@@ -8447,7 +8447,7 @@ begin
         if aimbnum2 = aimbnum1 then
         begin
           str := '不可選同一人！';
-          DrawTextWithRect(@str[1], CENTER_X - 70, CENTER_Y - 20, 145, ColColor(15), ColColor(17));
+          DrawTextWithRect(str, CENTER_X - 70, CENTER_Y - 20, 145, ColColor(15), ColColor(17));
           WaitAnyKey;
         end;
         if (aimbnum2 >= 0) and (aimbnum2 <> aimbnum1) then
@@ -8500,7 +8500,7 @@ procedure TSpecialAbility.SA_34(bnum, mnum, level: integer);
 var
   i, x, y, aimbnum1, aimbnum2, temphp, rnum, k, k1, i1, i2: integer;
   r: boolean;
-  str: WideString;
+  str: utf8string;
 begin
   //AI会乱用
   ShowMagicName(mnum);
@@ -8519,7 +8519,7 @@ begin
         if aimbnum2 = aimbnum1 then
         begin
           str := '不可選同一人！';
-          DrawTextWithRect(@str[1], CENTER_X - 70, CENTER_Y - 20, 145, ColColor(15), ColColor(17));
+          DrawTextWithRect(str, CENTER_X - 70, CENTER_Y - 20, 145, ColColor(15), ColColor(17));
           WaitAnyKey;
         end;
         if (aimbnum2 >= 0) and (aimbnum2 <> aimbnum1) then
@@ -8653,7 +8653,7 @@ end;
 //20%几率发动定身2回合
 procedure TSpecialAbility2.SA2_0(bnum, mnum, mnum2, level: integer);
 var
-  str: WideString;
+  str: utf8string;
   i, rnum, hurt: integer;
 begin
   if (Rmagic[mnum].MagicType = 3) then
@@ -8687,7 +8687,7 @@ end;
 //20%几率攻击降低直线范围内敌人防御5回合
 procedure TSpecialAbility2.SA2_1(bnum, mnum, mnum2, level: integer);
 var
-  str: WideString;
+  str: utf8string;
   i, rnum, hurt: integer;
 begin
   if (Rmagic[mnum].MagicType = 3) then
@@ -8728,7 +8728,7 @@ end;
 //30%几率被攻击敌军降低攻击五回合
 procedure TSpecialAbility2.SA2_2(bnum, mnum, mnum2, level: integer);
 var
-  str: WideString;
+  str: utf8string;
   i, rnum, hurt: integer;
 begin
   if (Rmagic[mnum].MagicType = 4) then
@@ -8763,7 +8763,7 @@ end;
 //20%几率随机降低敌方兵器值-改为控制拳理等状态值
 procedure TSpecialAbility2.SA2_3(bnum, mnum, mnum2, level: integer);
 var
-  str: WideString;
+  str: utf8string;
   i, rnum, hurt, j: integer;
 begin
   if (mnum = 56) then
@@ -8809,7 +8809,7 @@ end;
 //30%几率再使用一次降龙掌, 此次所耗内力减半, 同时恢复30%内力。
 procedure TSpecialAbility2.SA2_4(bnum, mnum, mnum2, level: integer);
 var
-  str: WideString;
+  str: utf8string;
   i, rnum, hurt: integer;
 begin
   if (mnum = 24) then
@@ -8831,7 +8831,7 @@ end;
 //20%几率再使用一次玄铁剑法, 对敌人造成减攻减防减移动力
 procedure TSpecialAbility2.SA2_5(bnum, mnum, mnum2, level: integer);
 var
-  str: WideString;
+  str: utf8string;
   i, rnum, hurt: integer;
 begin
   if (mnum = 49) then
@@ -8865,7 +8865,7 @@ end;
 //40%几率攻击无视防御
 procedure TSpecialAbility2.SA2_6(bnum, mnum, mnum2, level: integer);
 var
-  str: WideString;
+  str: utf8string;
   i, rnum, hurt: integer;
 begin
   if (mnum = 47) then
@@ -8901,7 +8901,7 @@ end;
 //30%几率攻击敌方全部
 procedure TSpecialAbility2.SA2_7(bnum, mnum, mnum2, level: integer);
 var
-  str: WideString;
+  str: utf8string;
   i, rnum, hurt: integer;
 begin
   if (mnum = 254) then
@@ -8931,7 +8931,7 @@ end;
 //40%几率发动互拼内力
 procedure TSpecialAbility2.SA2_8(bnum, mnum, mnum2, level: integer);
 var
-  str: WideString;
+  str: utf8string;
   i, bnum2, rnum, rnum2, hurt, hurtMP: integer;
 begin
   if (mnum = 332) then
@@ -8971,7 +8971,7 @@ end;
 //20%几率减少敌军10%生命, 30%几率陷入混乱状态
 procedure TSpecialAbility2.SA2_9(bnum, mnum, mnum2, level: integer);
 var
-  str: WideString;
+  str: utf8string;
   i, rnum, hurt: integer;
 begin
   if (mnum = 164) and (Rrole[Brole[bnum].rnum].Equip[0] = 31) then
@@ -9002,7 +9002,7 @@ end;
 //10火焰刀
 procedure TSpecialAbility2.SA2_10(bnum, mnum, mnum2, level: integer);
 var
-  str: WideString;
+  str: utf8string;
   i, rnum, hurt: integer;
 begin
   rnum := Brole[bnum].rnum;
@@ -9034,7 +9034,7 @@ end;
 //陆家刀法
 procedure TSpecialAbility2.SA2_11(bnum, mnum, mnum2, level: integer);
 var
-  str: WideString;
+  str: utf8string;
   i, rnum, hurt: integer;
 begin
   if (Rmagic[mnum].MagicType = 3) then
@@ -9065,7 +9065,7 @@ end;
 //30%
 procedure TSpecialAbility2.SA2_12(bnum, mnum, mnum2, level: integer);
 var
-  str: WideString;
+  str: utf8string;
   i, rnum, hurt, l: integer;
 begin
   if (Rmagic[mnum].MagicType = 1) then
@@ -9107,7 +9107,7 @@ end;
 //15%几率攻防增加三回合, 拳系特效触发概率提升
 procedure TSpecialAbility2.SA2_100(bnum, mnum, mnum2, level: integer);
 var
-  str: WideString;
+  str: utf8string;
   i, rnum, hurt: integer;
 begin
   rnum := Brole[bnum].rnum;
@@ -9141,7 +9141,7 @@ end;
 //15%几率立刻恢复体力20点, 乾坤大挪移反伤效果提升20%
 procedure TSpecialAbility2.SA2_101(bnum, mnum, mnum2, level: integer);
 var
-  str: WideString;
+  str: utf8string;
   i, rnum, hurt: integer;
 begin
   rnum := Brole[bnum].rnum;
