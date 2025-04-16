@@ -78,3 +78,9 @@ mods/promise/__history
 *.rsm
 *.tvsconfig
 mods/hugebase/bin/lib/backup/*
+mods/hugebase/pig3Launcher/.svn
+mods/hugebase/pig3Launcher/.vs
+mods/hugebase/pig3Launcher/pig3Launcher/bin
+mods/hugebase/pig3Launcher/pig3Launcher/obj
+mods/hugebase/pig3Launcher/pig3Launcher/Resources
+mods/hugebase/pig3Launcher/pig3Launcher/.vs
