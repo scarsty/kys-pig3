@@ -129,9 +129,16 @@
       <Version Value="2"/>
     </PublishOptions>
     <RunParams>
+      <local>
+        <WorkingDirectory Value="..\..\..\..\水浒\develop\bin"/>
+      </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
-        <Mode0 Name="default"/>
+        <Mode0 Name="default">
+          <local>
+            <WorkingDirectory Value="..\..\..\..\水浒\develop\bin"/>
+          </local>
+        </Mode0>
       </Modes>
     </RunParams>
     <RequiredPackages Count="1">
