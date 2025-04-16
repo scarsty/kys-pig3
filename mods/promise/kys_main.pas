@@ -287,7 +287,7 @@ procedure CloudCreateOnSide(num: integer);
 {$ELSE}
 function FileExistsUTF8(filename: pansichar): boolean; overload;
 function FileExistsUTF8(filename: ansistring): boolean; overload;
-function UTF8Decode(str: WideString): WideString;
+function str: WideString: WideString;
 {$ENDIF}
 
 
@@ -1202,8 +1202,8 @@ procedure ShowRandomAttribute(ran: boolean);
 var
   str, tip, str0: WideString;
 begin
-  str := UTF8Decode(' 資質');
-  tip := UTF8Decode(' 選定屬性後按回車，Esc返回');
+  str := ' 資質';
+  tip := ' 選定屬性後按回車，Esc返回';
   if (ran = True) then
   begin
     Rrole[0].MaxHP := 51 + random(50);
@@ -1630,8 +1630,8 @@ begin
             menu := 0;
             setlength(menustring, 2);
             setlength(menuengstring, 0);
-            menustring[0] := UTF8Decode(' 回合制');
-            menustring[1] := UTF8Decode(' 半即時');
+            menustring[0] := ' 回合制';
+            menustring[1] := ' 半即時';
             menu := commonmenu(27, 30, 90, 1, battlemode div 2);
             if menu >= 0 then
             begin
@@ -1647,8 +1647,8 @@ begin
           menu := 0;
           setlength(menustring, 2);
           setlength(menuengstring, 0);
-          menustring[0] := UTF8Decode(' 天氣特效：開');
-          menustring[1] := UTF8Decode(' 天氣特效：關');
+          menustring[0] := ' 天氣特效：開';
+          menustring[1] := ' 天氣特效：關';
           menu := commonmenu(27, 30, 180, 1, effect);
           if menu >= 0 then
           begin
@@ -1662,8 +1662,8 @@ begin
         begin
           menu := 0;
           setlength(menustring, 2);
-          menustring[0] := UTF8Decode(' 繁體字');
-          menustring[1] := UTF8Decode(' 簡體字');
+          menustring[0] := ' 繁體字';
+          menustring[1] := ' 簡體字';
           menu := commonmenu(27, 30, 90, 1, simple);
           if menu >= 0 then
           begin
@@ -1677,9 +1677,9 @@ begin
         begin
           menu := 0;
           setlength(menustring, 3);
-          menustring[0] := UTF8Decode(' 遊戲速度：快');
-          menustring[1] := UTF8Decode(' 遊戲速度：中');
-          menustring[2] := UTF8Decode(' 遊戲速度：慢');
+          menustring[0] := ' 遊戲速度：快';
+          menustring[1] := ' 遊戲速度：中';
+          menustring[2] := ' 遊戲速度：慢';
           menu := commonmenu(27, 30, 180, 2, min(gamespeed div 10, 2));
           if menu >= 0 then
           begin
@@ -2304,8 +2304,8 @@ begin
             setlength(menustring, 2);
             //showmessage('');
             setlength(menuengstring, 2);
-            menustring[0] := UTF8Decode(' 回合制');
-            menustring[1] := UTF8Decode(' 半即時');
+            menustring[0] := ' 回合制';
+            menustring[1] := ' 半即時';
             menu := commonmenu(27, 30, 90, 1, battlemode div 2);
             if menu >= 0 then
             begin
@@ -2324,9 +2324,9 @@ begin
           setlength(menustring, 2);
           //showmessage('');
           setlength(menuengstring, 2);
-          menustring[0] := UTF8Decode(' 天氣特效：開');
+          menustring[0] := ' 天氣特效：開';
           menuengstring[0] := ' ';
-          menustring[1] := UTF8Decode(' 天氣特效：關');
+          menustring[1] := ' 天氣特效：關';
           menuengstring[1] := ' ';
           menu := commonmenu(27, 30, 180, 1, effect);
           if menu >= 0 then
@@ -2346,9 +2346,9 @@ begin
           setlength(menustring, 2);
           //showmessage('');
           setlength(menuengstring, 2);
-          menustring[0] := UTF8Decode(' 繁體字');
+          menustring[0] := ' 繁體字';
           menuengstring[0] := ' ';
-          menustring[1] := UTF8Decode(' 簡體字');
+          menustring[1] := ' 簡體字';
           menuengstring[1] := ' ';
           menu := commonmenu(27, 30, 90, 1, simple);
           if menu >= 0 then
@@ -2367,11 +2367,11 @@ begin
           setlength(menustring, 3);
           //showmessage('');
           setlength(menuengstring, 3);
-          menustring[0] := UTF8Decode(' 遊戲速度：快');
+          menustring[0] := ' 遊戲速度：快';
           menuengstring[0] := ' ';
-          menustring[1] := UTF8Decode(' 遊戲速度：中');
+          menustring[1] := ' 遊戲速度：中';
           menuengstring[1] := ' ';
-          menustring[2] := UTF8Decode(' 遊戲速度：慢');
+          menustring[2] := ' 遊戲速度：慢';
           menuengstring[2] := ' ';
           menu := commonmenu(27, 30, 180, 2, min(gamespeed div 10, 2));
           if menu >= 0 then
@@ -2520,7 +2520,7 @@ var
   Scenename: WideString;
 begin
   //显示场景名
-  Scenename := UTF8Decode('  保存成功');
+  Scenename := '  保存成功';
   drawtextwithrect(@Scenename[1], 320 - 50 + 7, 100, 100 + 6, colcolor(0, 5), colcolor(0, 7));
   //waitanykey;
   //改变音乐
@@ -3192,14 +3192,14 @@ begin
     setlength(menustring, 8);
     //showmessage('');
     setlength(menuengstring, 8);
-    menustring[0] := UTF8Decode(' 狀態');
-    menustring[1] := UTF8Decode(' 物品');
-    menustring[2] := UTF8Decode(' 武學');
-    menustring[3] := UTF8Decode(' 技能');
-    menustring[4] := UTF8Decode(' 內功');
-    menustring[5] := UTF8Decode(' 離隊');
-    menustring[6] := UTF8Decode(' 系統');
-    menustring[7] := UTF8Decode(' 說明');
+    menustring[0] := ' 狀態';
+    menustring[1] := ' 物品';
+    menustring[2] := ' 武學';
+    menustring[3] := ' 技能';
+    menustring[4] := ' 內功';
+    menustring[5] := ' 離隊';
+    menustring[6] := ' 系統';
+    menustring[7] := ' 說明';
     menu := commonmenu(27, 30, 46, 7, menu);
     //ShowCommonMenu(15, 15, 75, 3, r);
     //SDL_UpdateRect2(screen, 15, 15, 76, 316);
@@ -3259,12 +3259,12 @@ var
   word: array[0..5] of WideString;
   i, max: integer;
 begin
-  word[0] := UTF8Decode(' 醫療');
-  word[1] := UTF8Decode(' 解毒');
-  word[2] := UTF8Decode(' 物品');
-  word[3] := UTF8Decode(' 狀態');
-  word[4] := UTF8Decode(' 離隊');
-  word[5] := UTF8Decode(' 系統');
+  word[0] := ' 醫療';
+  word[1] := ' 解毒';
+  word[2] := ' 物品';
+  word[3] := ' 狀態';
+  word[4] := ' 離隊';
+  word[5] := ' 系統';
   if where = 0 then
     max := 5
   else
@@ -3293,7 +3293,7 @@ var
   role1, role2, menu: integer;
   str: WideString;
 begin
-  str := UTF8Decode(' 隊員醫療能力');
+  str := ' 隊員醫療能力';
   drawtextwithrect(@str[1], 80, 30, 132, colcolor($21), colcolor($23));
   menu := SelectOneTeamMember(80, 65, '%3d', 46, 0);
   showmenu(0);
@@ -3301,7 +3301,7 @@ begin
   if menu >= 0 then
   begin
     role1 := TeamList[menu];
-    str := UTF8Decode(' 隊員目前生命');
+    str := ' 隊員目前生命';
     drawtextwithrect(@str[1], 80, 30, 132, colcolor($21), colcolor($23));
     menu := SelectOneTeamMember(80, 65, '%4d/%4d', 17, 18);
     role2 := TeamList[menu];
@@ -3320,7 +3320,7 @@ var
   role1, role2, menu: integer;
   str: WideString;
 begin
-  str := UTF8Decode(' 隊員解毒能力');
+  str := ' 隊員解毒能力';
   drawtextwithrect(@str[1], 80, 30, 132, colcolor($21), colcolor($23));
   menu := SelectOneTeamMember(80, 65, '%3d', 48, 0);
   showmenu(1);
@@ -3328,7 +3328,7 @@ begin
   if menu >= 0 then
   begin
     role1 := TeamList[menu];
-    str := UTF8Decode(' 隊員中毒程度');
+    str := ' 隊員中毒程度';
     drawtextwithrect(@str[1], 80, 30, 132, colcolor($21), colcolor($23));
     menu := SelectOneTeamMember(80, 65, '%3d', 20, 0);
     role2 := TeamList[menu];
@@ -3632,49 +3632,49 @@ var
   p2: array[0..22] of integer;
   p3: array[0..13] of integer;
 begin
-  words[0] := UTF8Decode(' 劇情物品');
-  words[1] := UTF8Decode(' 神兵寶甲');
-  words[2] := UTF8Decode(' 武功秘笈');
-  words[3] := UTF8Decode(' 靈丹妙藥');
-  words[4] := UTF8Decode(' 傷人暗器');
-  words2[0] := UTF8Decode(' 生命');
-  words2[1] := UTF8Decode(' 生命');
-  words2[2] := UTF8Decode(' 中毒');
-  words2[3] := UTF8Decode(' 體力');
-  words2[4] := UTF8Decode(' 內力');
-  words2[5] := UTF8Decode(' 內力');
-  words2[6] := UTF8Decode(' 內力');
-  words2[7] := UTF8Decode(' 攻擊');
-  words2[8] := UTF8Decode(' 輕功');
-  words2[9] := UTF8Decode(' 防禦');
-  words2[10] := UTF8Decode(' 醫療');
-  words2[11] := UTF8Decode(' 用毒');
-  words2[12] := UTF8Decode(' 解毒');
-  words2[13] := UTF8Decode(' 抗毒');
-  words2[14] := UTF8Decode(' 拳掌');
-  words2[15] := UTF8Decode(' 御劍');
-  words2[16] := UTF8Decode(' 耍刀');
-  words2[17] := UTF8Decode(' 奇門');
-  words2[18] := UTF8Decode(' 暗器');
-  words2[19] := UTF8Decode(' 武學');
-  words2[20] := UTF8Decode(' 品德');
-  words2[21] := UTF8Decode(' 左右');
-  words2[22] := UTF8Decode(' 帶毒');
+  words[0] := ' 劇情物品';
+  words[1] := ' 神兵寶甲';
+  words[2] := ' 武功秘笈';
+  words[3] := ' 靈丹妙藥';
+  words[4] := ' 傷人暗器';
+  words2[0] := ' 生命';
+  words2[1] := ' 生命';
+  words2[2] := ' 中毒';
+  words2[3] := ' 體力';
+  words2[4] := ' 內力';
+  words2[5] := ' 內力';
+  words2[6] := ' 內力';
+  words2[7] := ' 攻擊';
+  words2[8] := ' 輕功';
+  words2[9] := ' 防禦';
+  words2[10] := ' 醫療';
+  words2[11] := ' 用毒';
+  words2[12] := ' 解毒';
+  words2[13] := ' 抗毒';
+  words2[14] := ' 拳掌';
+  words2[15] := ' 御劍';
+  words2[16] := ' 耍刀';
+  words2[17] := ' 奇門';
+  words2[18] := ' 暗器';
+  words2[19] := ' 武學';
+  words2[20] := ' 品德';
+  words2[21] := ' 左右';
+  words2[22] := ' 帶毒';
 
-  words3[0] := UTF8Decode(' 內力');
-  words3[1] := UTF8Decode(' 內力');
-  words3[2] := UTF8Decode(' 攻擊');
-  words3[3] := UTF8Decode(' 輕功');
-  words3[4] := UTF8Decode(' 用毒');
-  words3[5] := UTF8Decode(' 醫療');
-  words3[6] := UTF8Decode(' 解毒');
-  words3[7] := UTF8Decode(' 拳掌');
-  words3[8] := UTF8Decode(' 御劍');
-  words3[9] := UTF8Decode(' 耍刀');
-  words3[10] := UTF8Decode(' 奇門');
-  words3[11] := UTF8Decode(' 暗器');
-  words3[12] := UTF8Decode(' 資質');
-  words3[13] := UTF8Decode(' 性別');
+  words3[0] := ' 內力';
+  words3[1] := ' 內力';
+  words3[2] := ' 攻擊';
+  words3[3] := ' 輕功';
+  words3[4] := ' 用毒';
+  words3[5] := ' 醫療';
+  words3[6] := ' 解毒';
+  words3[7] := ' 拳掌';
+  words3[8] := ' 御劍';
+  words3[9] := ' 耍刀';
+  words3[10] := ' 奇門';
+  words3[11] := ' 暗器';
+  words3[12] := ' 資質';
+  words3[13] := ' 性別';
 
   if where = 2 then
   begin
@@ -3713,18 +3713,18 @@ begin
     //如有人使用则显示
     if RItem[item].User >= 0 then
     begin
-      str := UTF8Decode(' 使用人：');
+      str := ' 使用人：';
       drawshadowtext(@str[1], 187 + 12, 315, colcolor(0, $21), colcolor(0, $23));
       drawgbkshadowtext(@rrole[RItem[item].User].Name, 277 + 12, 315 + 36 - 14, colcolor(0, $64), colcolor(0, $66));
     end;
     //如是罗盘则显示坐标
     if item = COMPASS_ID then
     begin
-      str := UTF8Decode(' 你的位置：');
+      str := ' 你的位置：';
       drawshadowtext(@str[1], 187 + 12, 315 + 36 - 14, colcolor(0, $21), colcolor(0, $23));
       str := format('%3d, %3d', [My, Mx]);
       drawengshadowtext(@str[1], 300 + 12, 315 + 36 - 14, colcolor(0, $64), colcolor(0, $66));
-      str := UTF8Decode(' 船的位置：');
+      str := ' 船的位置：';
       drawshadowtext(@str[1], 387 + 12, 315 + 36 - 14, colcolor(0, $21), colcolor(0, $23));
       str := format('%3d, %3d', [Shipx, shipy]);
       drawengshadowtext(@str[1], 500 + 12, 315 + 36 - 14, colcolor(0, $64), colcolor(0, $66));
@@ -3784,9 +3784,9 @@ begin
 
         if i = 4 then
           case ritem[item].ChangeMPType of
-            0: str := UTF8Decode(' 陽');
-            1: str := UTF8Decode(' 陰');
-            2: str := UTF8Decode(' 調和');
+            0: str := ' 陽';
+            1: str := ' 陰';
+            2: str := ' 調和';
           end
         else if ritem[item].Data[45 + i] > 0 then
           str := '+' + format('%d', [ritem[item].Data[45 + i]])
@@ -3808,18 +3808,18 @@ begin
 
         if i = 0 then
           case ritem[item].NeedMPType of
-            0: str := UTF8Decode(' 陽');
-            1: str := UTF8Decode(' 陰');
-            2: str := UTF8Decode(' 調和');
+            0: str := ' 陽';
+            1: str := ' 陰';
+            2: str := ' 調和';
           end
         else if i = 13 then
           case ritem[item].needSex of
-            0: str := UTF8Decode(' 男');
-            1: str := UTF8Decode(' 女');
-            2: str := UTF8Decode(' 自宫');
+            0: str := ' 男';
+            1: str := ' 女';
+            2: str := ' 自宫';
           end
         else if ritem[item].Data[69 + i] > 0 then
-          str := UTF8Decode(' ') + format('%d', [ritem[item].Data[69 + i]])
+          str := ' ' + format('%d', [ritem[item].Data[69 + i]])
         else str := format('%d', [ritem[item].Data[69 + i]]);
 
         drawshadowtext(@words3[i][1], 97 + i1 mod 5 * 98 + 12, ((len2 + 4) div 5 + i1 div 5) *
@@ -3833,31 +3833,31 @@ begin
     if (ritem[item].BattleEffect > 0) then
     begin
       case ritem[item].BattleEffect of
-        1: str := UTF8Decode('裝備特效：體力不減');
-        2: str := UTF8Decode('裝備特效：女性武功威力加成');
-        3: str := UTF8Decode('裝備特效：飲酒功效加倍');
-        4: str := UTF8Decode('裝備特效：隨機傷害轉移');
-        5: str := UTF8Decode('裝備特效：隨機傷害反噬');
-        6: str := UTF8Decode('裝備特效：內傷免疫');
-        7: str := UTF8Decode('裝備特效：殺傷體力');
-        8: str := UTF8Decode('裝備特效：增加閃躲幾率');
-        9: str := UTF8Decode('裝備特效：攻擊力隨等级循环增减');
-        10: str := UTF8Decode('裝備特效：內力消耗減少');
-        11: str := UTF8Decode('裝備特效：每回合恢復生命');
-        12: str := UTF8Decode('裝備特效：負面狀態免疫');
-        13: str := UTF8Decode('裝備特效：全部武功威力加成');
-        14: str := UTF8Decode('裝備特效：隨機二次攻擊');
-        15: str := UTF8Decode('裝備特效：拳掌武功威力加成');
-        16: str := UTF8Decode('裝備特效：劍術武功威力加成');
-        17: str := UTF8Decode('裝備特效：刀法武功威力加成');
-        18: str := UTF8Decode('裝備特效：奇門武功威力加成');
-        19: str := UTF8Decode('裝備特效：增加內傷幾率');
-        20: str := UTF8Decode('裝備特效：增加封穴幾率');
-        21: str := UTF8Decode('裝備特效：攻擊微量吸血');
-        22: str := UTF8Decode('裝備特效：攻擊距離增加');
-        23: str := UTF8Decode('裝備特效：每回合恢復內力');
-        24: str := UTF8Decode('裝備特效：使用暗器距離增加');
-        25: str := UTF8Decode('裝備特效：附加殺傷吸收內力');
+        1: str := '裝備特效：體力不減';
+        2: str := '裝備特效：女性武功威力加成';
+        3: str := '裝備特效：飲酒功效加倍';
+        4: str := '裝備特效：隨機傷害轉移';
+        5: str := '裝備特效：隨機傷害反噬';
+        6: str := '裝備特效：內傷免疫';
+        7: str := '裝備特效：殺傷體力';
+        8: str := '裝備特效：增加閃躲幾率';
+        9: str := '裝備特效：攻擊力隨等级循环增减';
+        10: str := '裝備特效：內力消耗減少';
+        11: str := '裝備特效：每回合恢復生命';
+        12: str := '裝備特效：負面狀態免疫';
+        13: str := '裝備特效：全部武功威力加成';
+        14: str := '裝備特效：隨機二次攻擊';
+        15: str := '裝備特效：拳掌武功威力加成';
+        16: str := '裝備特效：劍術武功威力加成';
+        17: str := '裝備特效：刀法武功威力加成';
+        18: str := '裝備特效：奇門武功威力加成';
+        19: str := '裝備特效：增加內傷幾率';
+        20: str := '裝備特效：增加封穴幾率';
+        21: str := '裝備特效：攻擊微量吸血';
+        22: str := '裝備特效：攻擊距離增加';
+        23: str := '裝備特效：每回合恢復內力';
+        24: str := '裝備特效：使用暗器距離增加';
+        25: str := '裝備特效：附加殺傷吸收內力';
       end;
       drawshadowtext(@str[1], 97 + 12, ((len2 + 4) div 5 + (i1 + 4) div 5) * 20 + 355,
         colcolor(0, $5), colcolor(0, $7));
@@ -3978,7 +3978,7 @@ begin
           end
           else
           begin
-            str := UTF8Decode('　　　　　此人不適合裝備此物品');
+            str := '　　　　　此人不適合裝備此物品';
             drawshadowtext(@str[1], 162, 391, colcolor(0, 5), colcolor(0, 7));
             SDL_UpdateRect2(screen, 140, 391, 500, 25);
             waitanykey;
@@ -4009,7 +4009,7 @@ begin
           end
           else
           begin
-            str := UTF8Decode('　　　　　此人不適合修煉此秘笈');
+            str := '　　　　　此人不適合修煉此秘笈';
             drawshadowtext(@str[1], 162, 391, colcolor(0, 5), colcolor(0, 7));
             SDL_UpdateRect2(screen, 140, 391, 500, 25);
             waitanykey;
@@ -4122,7 +4122,7 @@ var
   str: WideString;
   menu: integer;
 begin
-  str := UTF8Decode(' 查看隊員狀態');
+  str := ' 查看隊員狀態';
   drawtextwithrect(@str[1], 80, 30, 132, colcolor($21), colcolor($23));
   menu := SelectOneTeamMember(80, 65, '%3d', 15, 0);
   if menu >= 0 then
@@ -4146,28 +4146,28 @@ var
   color1, color2: uint32;
   Name: WideString;
 begin
-  strs[0] := UTF8Decode(' 等級');
-  strs[1] := UTF8Decode(' 生命');
-  strs[2] := UTF8Decode(' 內力');
-  strs[3] := UTF8Decode(' 體力');
-  strs[4] := UTF8Decode(' 經驗');
-  strs[5] := UTF8Decode(' 升級');
-  strs[6] := UTF8Decode(' 攻擊');
-  strs[7] := UTF8Decode(' 防禦');
-  strs[8] := UTF8Decode(' 輕功');
-  strs[9] := UTF8Decode(' 醫療能力');
-  strs[10] := UTF8Decode(' 用毒能力');
-  strs[11] := UTF8Decode(' 解毒能力');
-  strs[12] := UTF8Decode(' 拳掌功夫');
-  strs[13] := UTF8Decode(' 御劍能力');
-  strs[14] := UTF8Decode(' 耍刀技巧');
-  strs[15] := UTF8Decode(' 奇門兵器');
-  strs[16] := UTF8Decode(' 暗器技巧');
-  strs[17] := UTF8Decode(' 裝備物品');
-  strs[18] := UTF8Decode(' 修煉物品');
-  strs[19] := UTF8Decode(' 所會武功');
-  strs[20] := UTF8Decode(' 受傷');
-  strs[21] := UTF8Decode(' 中毒');
+  strs[0] := ' 等級';
+  strs[1] := ' 生命';
+  strs[2] := ' 內力';
+  strs[3] := ' 體力';
+  strs[4] := ' 經驗';
+  strs[5] := ' 升級';
+  strs[6] := ' 攻擊';
+  strs[7] := ' 防禦';
+  strs[8] := ' 輕功';
+  strs[9] := ' 醫療能力';
+  strs[10] := ' 用毒能力';
+  strs[11] := ' 解毒能力';
+  strs[12] := ' 拳掌功夫';
+  strs[13] := ' 御劍能力';
+  strs[14] := ' 耍刀技巧';
+  strs[15] := ' 奇門兵器';
+  strs[16] := ' 暗器技巧';
+  strs[17] := ' 裝備物品';
+  strs[18] := ' 修煉物品';
+  strs[19] := ' 所會武功';
+  strs[20] := ' 受傷';
+  strs[21] := ' 中毒';
   p[0] := 43;
   p[1] := 45;
   p[2] := 44;
@@ -4388,7 +4388,7 @@ var
   str: widestring;
   i, menu: integer;
 begin
-  str := UTF8Decode(' 要求誰離隊？');
+  str := ' 要求誰離隊？';
   drawtextwithrect(@str[1], 80, 30, 132, colcolor($21), colcolor($23));
   menu := SelectOneTeamMember(80, 65, '%3d', 15, 0);
   if menu >= 0 then
@@ -4524,12 +4524,12 @@ var
   word: array[0..3] of WideString;
   i: integer;
 begin
-  word[0] := UTF8Decode(' 讀取');
-  word[1] := UTF8Decode(' 存檔');
-  word[2] := UTF8Decode(' 全屏');
-  word[3] := UTF8Decode(' 離開');
+  word[0] := ' 讀取';
+  word[1] := ' 存檔';
+  word[2] := ' 全屏';
+  word[3] := ' 離開';
   if fullscreen = 1 then
-    word[2] := UTF8Decode(' 窗口');
+    word[2] := ' 窗口';
   ReDraw;
   DrawRectangle(80, 30, 46, 92, 0, colcolor(255), 30);
   for i := 0 to 3 do
@@ -4555,11 +4555,11 @@ begin
   setlength(Menustring, 0);
   setlength(menustring, 5);
   setlength(Menuengstring, 0);
-  menustring[0] := UTF8Decode(' 進度一');
-  menustring[1] := UTF8Decode(' 進度二');
-  menustring[2] := UTF8Decode(' 進度三');
-  menustring[3] := UTF8Decode(' 進度四');
-  menustring[4] := UTF8Decode(' 進度五');
+  menustring[0] := ' 進度一';
+  menustring[1] := ' 進度二';
+  menustring[2] := ' 進度三';
+  menustring[3] := ' 進度四';
+  menustring[4] := ' 進度五';
   menu := commonmenu(133, 30, 67, 4);
   if menu >= 0 then
   begin
@@ -4586,12 +4586,12 @@ begin
   setlength(Menustring, 0);
   setlength(menustring, 6);
   setlength(Menuengstring, 0);
-  menustring[0] := UTF8Decode(' 載入進度一');
-  menustring[1] := UTF8Decode(' 載入進度二');
-  menustring[2] := UTF8Decode(' 載入進度三');
-  menustring[3] := UTF8Decode(' 載入進度四');
-  menustring[4] := UTF8Decode(' 載入進度五');
-  menustring[5] := UTF8Decode(' 載入自動檔');
+  menustring[0] := ' 載入進度一';
+  menustring[1] := ' 載入進度二';
+  menustring[2] := ' 載入進度三';
+  menustring[3] := ' 載入進度四';
+  menustring[4] := ' 載入進度五';
+  menustring[5] := ' 載入自動檔';
   menu := commonmenu(265, 280, 107, 5);
   Result := False;
   if menu >= 0 then
@@ -4610,11 +4610,11 @@ var
 begin
   setlength(Menustring, 0);
   setlength(menustring, 5);
-  menustring[0] := UTF8Decode(' 進度一');
-  menustring[1] := UTF8Decode(' 進度二');
-  menustring[2] := UTF8Decode(' 進度三');
-  menustring[3] := UTF8Decode(' 進度四');
-  menustring[4] := UTF8Decode(' 進度五');
+  menustring[0] := ' 進度一';
+  menustring[1] := ' 進度二';
+  menustring[2] := ' 進度三';
+  menustring[3] := ' 進度四';
+  menustring[4] := ' 進度五';
   menu := commonmenu(133, 30, 67, 4);
   if menu >= 0 then
     SaveR(menu + 1);
@@ -4628,8 +4628,8 @@ var
 begin
   setlength(Menustring, 0);
   setlength(menustring, 2);
-  menustring[0] := UTF8Decode(' 取消');
-  menustring[1] := UTF8Decode(' 確定');
+  menustring[0] := ' 取消';
+  menustring[1] := ' 確定';
   menu := commonmenu(133, 30, 45, 1);
   if menu = 1 then
   begin
@@ -4689,30 +4689,30 @@ var
   str: WideString;
 begin
 
-  word[0] := UTF8Decode(' 增加生命');
-  word[1] := UTF8Decode(' 增加生命最大值');
-  word[2] := UTF8Decode(' 中毒程度');
-  word[3] := UTF8Decode(' 增加體力');
-  word[4] := UTF8Decode(' 內力門路改变為');
-  word[5] := UTF8Decode(' 增加內力');
-  word[6] := UTF8Decode(' 增加內力最大值');
-  word[7] := UTF8Decode(' 增加攻擊力');
-  word[8] := UTF8Decode(' 增加輕功');
-  word[9] := UTF8Decode(' 增加防禦力');
-  word[10] := UTF8Decode(' 增加醫療能力');
-  word[11] := UTF8Decode(' 增加用毒能力');
-  word[12] := UTF8Decode(' 增加解毒能力');
-  word[13] := UTF8Decode(' 增加抗毒能力');
-  word[14] := UTF8Decode(' 增加拳掌能力');
-  word[15] := UTF8Decode(' 增加御劍能力');
-  word[16] := UTF8Decode(' 增加耍刀能力');
-  word[17] := UTF8Decode(' 增加奇門兵器');
-  word[18] := UTF8Decode(' 增加暗器技巧');
-  word[19] := UTF8Decode(' 增加武學常識');
-  word[20] := UTF8Decode(' 增加品德指數');
-  word[21] := UTF8Decode(' 習得左右互搏');
-  word[22] := UTF8Decode(' 增加攻擊帶毒');
-  word[23] := UTF8Decode(' 受傷程度');
+  word[0] := ' 增加生命';
+  word[1] := ' 增加生命最大值';
+  word[2] := ' 中毒程度';
+  word[3] := ' 增加體力';
+  word[4] := ' 內力門路改变為';
+  word[5] := ' 增加內力';
+  word[6] := ' 增加內力最大值';
+  word[7] := ' 增加攻擊力';
+  word[8] := ' 增加輕功';
+  word[9] := ' 增加防禦力';
+  word[10] := ' 增加醫療能力';
+  word[11] := ' 增加用毒能力';
+  word[12] := ' 增加解毒能力';
+  word[13] := ' 增加抗毒能力';
+  word[14] := ' 增加拳掌能力';
+  word[15] := ' 增加御劍能力';
+  word[16] := ' 增加耍刀能力';
+  word[17] := ' 增加奇門兵器';
+  word[18] := ' 增加暗器技巧';
+  word[19] := ' 增加武學常識';
+  word[20] := ' 增加品德指數';
+  word[21] := ' 習得左右互搏';
+  word[22] := ' 增加攻擊帶毒';
+  word[23] := ' 受傷程度';
   rolelist[0] := 17;
   rolelist[1] := 18;
   rolelist[2] := 20;
@@ -4793,9 +4793,9 @@ begin
   if (where = 2) or (Ritem[inum].ItemType = 3) then
   begin
     DrawRectangle(100 + (1 - (where div 2)) * 180, 70, 200, 25, 0, colcolor(255), 55);
-    str := UTF8Decode(' 服用');
+    str := ' 服用';
     if Ritem[inum].ItemType = 2 then
-      str := UTF8Decode(' 練成');
+      str := ' 練成';
     Drawshadowtext(@str[1], 83 + (1 - (where div 2)) * 180, 72, colcolor($21), colcolor($23));
     Drawgbkshadowtext(@Ritem[inum].Name, 143 + (1 - (where div 2)) * 180, 72, colcolor($64), colcolor($66));
     //如果增加的项超过11个, 分两列显示
@@ -4810,7 +4810,7 @@ begin
       Drawrectangle(100 + (1 - (where div 2)) * 180, 100, 400, 22 * l + 25, 0, colcolor($FF), 55);
     end;
     drawgbkshadowtext(@rrole[rnum].Data[4], 83 + (1 - (where div 2)) * 180, 102, colcolor($21), colcolor($23));
-    str := UTF8Decode(' 未增加屬性');
+    str := ' 未增加屬性';
     if p = 0 then
       drawshadowtext(@str[1], 163 + (1 - (where div 2)) * 180, 102, colcolor(5), colcolor(7));
     p := 0;
@@ -4845,9 +4845,9 @@ begin
     if (i = 4) and (addvalue[i] >= 0) and (rrole[rnum].Data[40] <> 2) then
     begin
       if (rrole[rnum].Data[rolelist[i]] <> 2) then rrole[rnum].Data[rolelist[i]] := addvalue[i];
-      if addvalue[i] = 0 then str := word[i] + UTF8Decode(' 陽性')
-      else if addvalue[i] = 1 then str := word[i] + UTF8Decode(' 陰性')
-      else str := word[i] + UTF8Decode(' 調和');
+      if addvalue[i] = 0 then str := word[i] + ' 陽性'
+      else if addvalue[i] = 1 then str := word[i] + ' 陰性'
+      else str := word[i] + ' 調和';
       drawshadowtext(@str[1], 83 + x + (1 - (where div 2)) * 180, 124 + y + p * 22, colcolor(5), colcolor(7));
       p := p + 1;
     end;
@@ -5534,35 +5534,35 @@ begin
   y := 180;
   w := 50;
   //writeln(p);
-  words[1, 0] := UTF8Decode(' 修武： 30％幾率在戰鬥後把對手武功整理出秘笈。');
-  words[1, 1] := UTF8Decode(' 伴讀：') + gbktounicode(@rrole[0].Name[0]) + UTF8Decode('戰鬥經驗增加。');
-  words[1, 2] := UTF8Decode(' 通武： 60％幾率在戰鬥後把對手武功整理出秘笈。');
-  words[1, 3] := UTF8Decode(' 鑽研： 我方全員戰鬥經驗增加。');
-  words[1, 4] := UTF8Decode(' 精武： 100％幾率把戰鬥後把對手武功整理出秘笈。');
+  words[1, 0] := ' 修武： 30％幾率在戰鬥後把對手武功整理出秘笈。';
+  words[1, 1] := ' 伴讀：' + gbktounicode(@rrole[0].Name[0]) + '戰鬥經驗增加。';
+  words[1, 2] := ' 通武： 60％幾率在戰鬥後把對手武功整理出秘笈。';
+  words[1, 3] := ' 鑽研： 我方全員戰鬥經驗增加。';
+  words[1, 4] := ' 精武： 100％幾率把戰鬥後把對手武功整理出秘笈。';
 
-  words[2, 0] := UTF8Decode(' 斂財： 戰鬥後增加銀兩收入。');
-  words[2, 1] := UTF8Decode(' 話術： 從居民口中打探劇情線索。');
-  words[2, 2] := UTF8Decode(' 神偷： 戰鬥後偷得對手隨身物品，裝備。');
-  words[2, 3] := UTF8Decode(' 劃價： 城市交易打折扣。');
-  words[2, 4] := UTF8Decode(' 通靈： 商店能購買隱藏寶物。');
+  words[2, 0] := ' 斂財： 戰鬥後增加銀兩收入。';
+  words[2, 1] := ' 話術： 從居民口中打探劇情線索。';
+  words[2, 2] := ' 神偷： 戰鬥後偷得對手隨身物品，裝備。';
+  words[2, 3] := ' 劃價： 城市交易打折扣。';
+  words[2, 4] := ' 通靈： 商店能購買隱藏寶物。';
 
-  words[3, 0] := UTF8Decode(' 收集： 收集藥材與普通食材。');
-  words[3, 1] := UTF8Decode(' 釀酒： 在酒窖耗費金錢與普通食材釀制各種酒。');
-  words[3, 2] := UTF8Decode(' 食神： 收集珍贵材料。');
-  words[3, 3] := UTF8Decode(' 煎藥： 在藥爐耗費金錢與藥材製造回復體內，解毒之*丹藥。');
-  words[3, 4] := UTF8Decode(' 神丹： 在藥爐耗費金錢，特殊藥材煉製改變體質之丹*藥，可以隨時改變自身體質練功。');
+  words[3, 0] := ' 收集： 收集藥材與普通食材。';
+  words[3, 1] := ' 釀酒： 在酒窖耗費金錢與普通食材釀制各種酒。';
+  words[3, 2] := ' 食神： 收集珍贵材料。';
+  words[3, 3] := ' 煎藥： 在藥爐耗費金錢與藥材製造回復體內，解毒之*丹藥。';
+  words[3, 4] := ' 神丹： 在藥爐耗費金錢，特殊藥材煉製改變體質之丹*藥，可以隨時改變自身體質練功。';
 
-  words[4, 0] := UTF8Decode(' 搜刮： 收集硝石和普通礦石。');
-  words[4, 1] := UTF8Decode(' 淬毒： 在煉鐵爐耗費金錢、普通礦石、藥材製造帶毒*暗器。');
-  words[4, 2] := UTF8Decode(' 機關： 機關難度降低。');
-  words[4, 3] := UTF8Decode(' 鑄師： 在煉鐵爐將防具升級為寶甲。');
-  words[4, 4] := UTF8Decode(' 神兵： 在煉鐵爐將兵器升級為神兵。');
+  words[4, 0] := ' 搜刮： 收集硝石和普通礦石。';
+  words[4, 1] := ' 淬毒： 在煉鐵爐耗費金錢、普通礦石、藥材製造帶毒*暗器。';
+  words[4, 2] := ' 機關： 機關難度降低。';
+  words[4, 3] := ' 鑄師： 在煉鐵爐將防具升級為寶甲。';
+  words[4, 4] := ' 神兵： 在煉鐵爐將兵器升級為神兵。';
 
-  words[5, 0] := UTF8Decode(' 刺探： 戰鬥中可觀看敵人完整狀態。');
-  words[5, 1] := UTF8Decode(' 鼓舞：') + gbktounicode(@rrole[0].Name[0]) + UTF8Decode('戰鬥中首先行動。');
-  words[5, 2] := UTF8Decode(' 博愛： 醫療解毒可作用到附近三格内隊友。');
-  words[5, 3] := UTF8Decode(' 激勵： 戰鬥中我方成員首先移動。');
-  words[5, 4] := UTF8Decode(' 光環： 功體特效可作用到附近三格内隊友。');
+  words[5, 0] := ' 刺探： 戰鬥中可觀看敵人完整狀態。';
+  words[5, 1] := ' 鼓舞：' + gbktounicode(@rrole[0].Name[0]) + '戰鬥中首先行動。';
+  words[5, 2] := ' 博愛： 醫療解毒可作用到附近三格内隊友。';
+  words[5, 3] := ' 激勵： 戰鬥中我方成員首先移動。';
+  words[5, 4] := ' 光環： 功體特效可作用到附近三格内隊友。';
 
   display_imgFromSurface(SKILL_PIC, 120, 0, 120, 0, 520, 440);
   // DrawRectangle(40, 60, 560, 315, 0, colcolor(255), 40);
@@ -5571,18 +5571,18 @@ begin
   if Rrole[r].Magic[p] > 0 then
   begin
     Rrole[r].Magic[p] := 1;
-    str := UTF8Decode(' 已習得');
+    str := ' 已習得';
     col1 := colcolor(255);
     col2 := colcolor(255);
   end
   else
   begin
-    str := UTF8Decode(' 未習得');
+    str := ' 未習得';
     col1 := $808080;
     col2 := $808080;
   end;
   DrawShadowText(@str[1], 90 + 40, 320 - 60, col1, col2);
-  str := UTF8Decode(' 剩餘技能點數：');
+  str := ' 剩餘技能點數：';
   rrole[0].AddSkillPoint := min(rrole[0].AddSkillPoint, 10);
   DrawShadowText(@str[1], 180 + 40, 130 - 60, colcolor(0, 5), colcolor(0, 7));
   str := format('%3d', [rrole[0].AddSkillPoint + rrole[0].level - rrole[1].Magic[0] -
@@ -5608,7 +5608,7 @@ begin
   drawframe(p * w + x + 40, y - 60, 41, colcolor(255));
   DrawShadowText(@words[r, p, 1], 90 + 20, 230 - 60, colcolor(0, 255), colcolor(0, 255));
 
-  str := UTF8Decode(' 所需技能點數：');
+  str := ' 所需技能點數：';
 
   DrawShadowText(@str[1], 90 + 20, 290 - 60, colcolor(0, 5), colcolor(0, 7));
 
@@ -5644,8 +5644,8 @@ begin
   begin
     setlength(Menustring, 0);
     setlength(Menustring, 2);
-    menustring[0] := UTF8Decode(' 學習');
-    menustring[1] := UTF8Decode(' 取消');
+    menustring[0] := ' 學習';
+    menustring[1] := ' 取消';
 
 
     if ((s = 0) or (rrole[r].Magic[s - 1] > 0)) and
@@ -5832,19 +5832,19 @@ var
   str: WideString;
   menu: integer;
 begin
-  str := UTF8Decode(' 選擇難度');
+  str := ' 選擇難度';
   redraw;
   drawtextwithrect(@str[1], 275, 270, 90, colcolor($21), colcolor($23));
   setlength(Menustring, 0);
   setlength(menustring, 6);
   //showmessage('');
   setlength(menuengstring, 0);
-  menustring[0] := UTF8Decode('   極易');
-  menustring[1] := UTF8Decode('   容易');
-  menustring[2] := UTF8Decode('   中易');
-  menustring[3] := UTF8Decode('   中難');
-  menustring[4] := UTF8Decode('   困難');
-  menustring[5] := UTF8Decode('   極難');
+  menustring[0] := '   極易';
+  menustring[1] := '   容易';
+  menustring[2] := '   中易';
+  menustring[3] := '   中難';
+  menustring[4] := '   困難';
+  menustring[5] := '   極難';
   menu := commonmenu(275, 300, 90, min(gametime, 5));
   if menu >= 0 then
   begin
@@ -6120,7 +6120,7 @@ begin
   Result := FileExists(filename);
 end;
 
-function UTF8Decode(str: WideString): WideString;
+function str: WideString: WideString;
 begin
   Result := str;
 end;

@@ -240,8 +240,8 @@ begin
   RestoreRoleStatus;
 
   if (bstatus = 1) then
-    word := UTF8Decode(' 戰鬥勝利')
-  else word := UTF8Decode(' 戰鬥失敗');
+    word := ' 戰鬥勝利'
+  else word := ' 戰鬥失敗';
   drawtextwithrect(@word[1], centER_x - 20, 55, 90, colcolor(0, 5), colcolor(0, 7));
   waitanykey;
   redraw;
@@ -417,7 +417,7 @@ begin
   menu := 0;
   setlength(Menustring, 0);
   setlength(menustring, 8);
-  menustring[0] := UTF8Decode('    全員出戰');
+  menustring[0] := '    全員出戰';
   for i := 0 to 5 do
   begin
     if Teamlist[i] >= 0 then
@@ -426,7 +426,7 @@ begin
       max := max + 1;
     end;
   end;
-  menustring[max] := UTF8Decode('    開始戰鬥');
+  menustring[max] := '    開始戰鬥';
   ShowMultiMenu(max, 0, 0);
   //SDL_EnableKeyRepeat(10, 100);
   while (SDL_WaitEvent(@event) >= 0) do
@@ -526,8 +526,8 @@ begin
   y := 100;
   ReDraw;
 
-  str := UTF8Decode(' 選擇參與戰鬥之人物');
-  str1 := UTF8Decode(' 參戰');
+  str := ' 選擇參與戰鬥之人物';
+  str1 := ' 參戰';
   //Drawtextwithrect(@str[1],x,y-35,200,colcolor($23),colcolor($21));
   DrawRectangle(x + 30, y, 150, max * 22 + 28, 0, colcolor(0, 255), 30);
   for i := 0 to max do
@@ -1223,7 +1223,7 @@ begin
   DrawRectangle(10, 50, 80, 28, 0, colcolor(0, 255), 30);
   str := '第' + IntToStr(brole[bnum].Round) + '回';
   //word := GBKtoUnicode(@str[1]);
-  word := UTF8Decode(' ' + str);
+  word := ' ' + str;
   DrawShadowText(@word[1], 10 - 17, 50 + 2, colcolor(0, 5), colcolor(0, 7));
   ShowSimpleStatus(brole[bnum].rnum, 30, 330);
   showprogress;
@@ -1325,18 +1325,18 @@ var
   i, p: integer;
   word: array[0..11] of WideString;
 begin
-  word[0] := UTF8Decode(' 移動');
-  word[1] := UTF8Decode(' 武學');
-  word[2] := UTF8Decode(' 用毒');
-  word[3] := UTF8Decode(' 解毒');
-  word[4] := UTF8Decode(' 醫療');
-  word[5] := UTF8Decode(' 解穴');
-  word[6] := UTF8Decode(' 聚氣');
-  word[7] := UTF8Decode(' 物品');
-  word[8] := UTF8Decode(' 等待');
-  word[9] := UTF8Decode(' 狀態');
-  word[10] := UTF8Decode(' 休息');
-  word[11] := UTF8Decode(' 自動');
+  word[0] := ' 移動';
+  word[1] := ' 武學';
+  word[2] := ' 用毒';
+  word[3] := ' 解毒';
+  word[4] := ' 醫療';
+  word[5] := ' 解穴';
+  word[6] := ' 聚氣';
+  word[7] := ' 物品';
+  word[8] := ' 等待';
+  word[9] := ' 狀態';
+  word[10] := ' 休息';
+  word[11] := ' 自動';
 
   redraw;
 
@@ -1363,18 +1363,18 @@ var
   i, p: integer;
   word: array[0..11] of WideString;
 begin
-  word[0] := UTF8Decode(' 移動');
-  word[1] := UTF8Decode(' 武學');
-  word[2] := UTF8Decode(' 用毒');
-  word[3] := UTF8Decode(' 解毒');
-  word[4] := UTF8Decode(' 醫療');
-  word[5] := UTF8Decode(' 解穴');
-  word[6] := UTF8Decode(' 聚氣');
-  word[7] := UTF8Decode(' 物品');
-  word[8] := UTF8Decode(' 等待');
-  word[9] := UTF8Decode(' 狀態');
-  word[10] := UTF8Decode(' 休息');
-  word[11] := UTF8Decode(' 自動');
+  word[0] := ' 移動';
+  word[1] := ' 武學';
+  word[2] := ' 用毒';
+  word[3] := ' 解毒';
+  word[4] := ' 醫療';
+  word[5] := ' 解穴';
+  word[6] := ' 聚氣';
+  word[7] := ' 物品';
+  word[8] := ' 等待';
+  word[9] := ' 狀態';
+  word[10] := ' 休息';
+  word[11] := ' 自動';
 
   redraw;
 
@@ -2008,7 +2008,7 @@ var
 begin
   Ax := Bx - 1;
   Ay := By;
-  //str := UTF8Decode(' 選擇攻擊方向');
+  //str := ' 選擇攻擊方向';
   //Drawtextwithrect(@str[1], 280, 200, 125, colcolor($23), colcolor($21));
   DrawBFieldWithCursor(AttAreaType, step, range);
   SDL_UpdateRect2(screen, 0, 0, screen.w, screen.h);
@@ -2465,9 +2465,9 @@ begin
   begin
     setlength(Menustring, 0);
     setlength(menustring, 3);
-    menustring[0] := UTF8Decode('  是');
-    menustring[1] := UTF8Decode('  否');
-    menustring[2] := UTF8Decode(' 是否設置功體為') + gbktoUnicode(@Rmagic[mnum].Name[0]) + UTF8Decode('？');
+    menustring[0] := '  是';
+    menustring[1] := '  否';
+    menustring[2] := ' 是否設置功體為' + gbktoUnicode(@Rmagic[mnum].Name[0]) + '？';
     drawtextwithrect(@menustring[2][1], CENTER_X - length(menustring[2]) * 10 + 120,
       CENTER_Y - 85, length(menustring[2]) * 20 - 10, colcolor(0, 5), colcolor(0, 7));
     if commonmenu2(CENTER_X + 45, CENTER_Y - 50, 98) = 0 then
@@ -2609,7 +2609,7 @@ begin
         DrawRectangle(220, 70 - 30, 200, 25, 0, colcolor(255), 25);
         str := (' 升為' + IntToStr(Rrole[rnum].MagLevel[i] div 100 + 1) + '級');
         //str1 := GBKtoUnicode(@str[1]);
-        str1 := UTF8Decode(str);
+        str1 := str;
         Drawshadowtext(@str1[1], 303, 72 - 30, colcolor($21), colcolor($23));
         Drawgbkshadowtext(@Rmagic[Rrole[rnum].Magic[i]].Name, 203, 72 - 30, colcolor($64), colcolor($66));
         SDL_UpdateRect2(screen, 0, 0, screen.w, screen.h);
@@ -2714,8 +2714,8 @@ begin
             setlength(menustring, i + 1);
             setlength(menuengstring, i + 1);
             menustatus := menustatus or (1 shl i);
-            menustring[i] := UTF8Decode(' ');
-            menuengstring[i] := UTF8Decode(' ');
+            menustring[i] := ' ';
+            menuengstring[i] := ' ';
             menustring[i] := gbktoUnicode(@Rmagic[Rrole[Brole[bnum].rnum].Magic[i]].Name[0]);
             menuengstring[i] := format('%3d', [Rrole[Brole[bnum].rnum].MagLevel[i] div 100 + 1]);
             max := max + 1;
@@ -2727,8 +2727,8 @@ begin
         setlength(menustring, i + 1);
         setlength(menuengstring, i + 1);
         menustatus := menustatus or (1 shl i);
-        menustring[i] := UTF8Decode(' ');
-        menuengstring[i] := UTF8Decode(' ');
+        menustring[i] := ' ';
+        menuengstring[i] := ' ';
         menustring[i] := gbktoUnicode(@Rmagic[Rrole[Brole[bnum].rnum].Magic[i]].Name[0]);
         menuengstring[i] := format('%3d', [Rrole[Brole[bnum].rnum].MagLevel[i] div 100 + 1]);
         max := max + 1;
@@ -3273,7 +3273,7 @@ var
   str: WideString;
   temp: array of integer;
 begin
-  str := UTF8Decode(' 轉移');
+  str := ' 轉移';
   Result := bnum;
   setlength(temp, 0);
   n := 0;
@@ -3311,7 +3311,7 @@ var
   i1, i2, x, y, i, realhurt: integer;
   str: WideString;
 begin
-  str := UTF8Decode(' 反噬');
+  str := ' 反噬';
   Result := bnum;
   if (Random(100) < 30 + Rrole[Brole[bnum].rnum].Aptitude div 5) then
   begin
@@ -3609,50 +3609,50 @@ begin
   begin
     Brole[bnum].ShowNumber := Rrole[Brole[bnum].rnum].Hurt;
     //p := true;
-    showhurtvalue(UTF8Decode('內傷'), colcolor(0, $10), colcolor(0, $14));
+    showhurtvalue('內傷', colcolor(0, $10), colcolor(0, $14));
   end;
   if (Brole[bnum].frozen > 100) and (Brole[bnum].Dead = 0) then
   begin
     Brole[bnum].ShowNumber := Brole[bnum].frozen;
     //p := true;
-    showhurtvalue(UTF8Decode('封穴'), colcolor(0, $64), colcolor(0, $66));
+    showhurtvalue('封穴', colcolor(0, $64), colcolor(0, $66));
   end;
   if (Brole[bnum].AddAtt > 0) and (Brole[bnum].Dead = 0) then
   begin
     Brole[bnum].ShowNumber := Brole[bnum].frozen;
     //p := true;
-    showhurtvalue(UTF8Decode('金剛'), colcolor(0, $5), colcolor(0, $7));
+    showhurtvalue('金剛', colcolor(0, $5), colcolor(0, $7));
   end;
   if (Brole[bnum].AddSpd > 0) and (Brole[bnum].Dead = 0) then
   begin
     Brole[bnum].ShowNumber := Brole[bnum].frozen;
     //p := true;
-    showhurtvalue(UTF8Decode('飛仙'), colcolor(0, $5), colcolor(0, $7));
+    showhurtvalue('飛仙', colcolor(0, $5), colcolor(0, $7));
   end;
   if (Brole[bnum].AddDef > 0) and (Brole[bnum].Dead = 0) then
   begin
     Brole[bnum].ShowNumber := Brole[bnum].frozen;
     //p := true;
-    showhurtvalue(UTF8Decode('忘憂'), colcolor(0, $5), colcolor(0, $7));
+    showhurtvalue('忘憂', colcolor(0, $5), colcolor(0, $7));
   end;
   if (Brole[bnum].AddStep > 0) and (Brole[bnum].Dead = 0) then
   begin
     Brole[bnum].ShowNumber := Brole[bnum].frozen;
     //p := true;
-    showhurtvalue(UTF8Decode('神行'), colcolor(0, $5), colcolor(0, $7));
+    showhurtvalue('神行', colcolor(0, $5), colcolor(0, $7));
   end;
 
   if (Brole[bnum].PerfectDodge > 0) and (Brole[bnum].Dead = 0) then
   begin
     Brole[bnum].ShowNumber := Brole[bnum].frozen;
     //p := true;
-    showhurtvalue(UTF8Decode('迷蹤'), colcolor(0, $5), colcolor(0, $7));
+    showhurtvalue('迷蹤', colcolor(0, $5), colcolor(0, $7));
   end
   else if (Brole[bnum].AddDodge > 0) and (Brole[bnum].Dead = 0) then
   begin
     Brole[bnum].ShowNumber := Brole[bnum].frozen;
     //p := true;
-    showhurtvalue(UTF8Decode('閃身'), colcolor(0, $5), colcolor(0, $7));
+    showhurtvalue('閃身', colcolor(0, $5), colcolor(0, $7));
   end;
 end;
 
@@ -3692,7 +3692,7 @@ var
   color1, color2: uint32;
   nt, nt2: longint;
 begin
-  strs := UTF8Decode(' 等級');
+  strs := ' 等級';
   y := y - 20;
   DrawRectangle(x, y, 300, 115, 0, colcolor(255), 30);
   drawpngpic(battlepic, x, y, 0);
@@ -3916,7 +3916,7 @@ begin
         Rrole[rnum].ExpForBook := Rrole[rnum].ExpForBook + additem;
         //    Rrole[rnum].ExpForItem := Rrole[rnum].ExpForItem + basicvalue div 5 * 3;
         DrawRectangle(100, 235, 145, 25, 0, colcolor(255), 25);
-        str := UTF8Decode(' 得經驗');
+        str := ' 得經驗';
         Drawshadowtext(@str[1], 83, 237, colcolor($21), colcolor($23));
         str := format('%5d', [Brole[i].ExpGot + add]);
         Drawengshadowtext(@str[1], 188, 237, colcolor($64), colcolor($66));
@@ -4063,7 +4063,7 @@ begin
             DrawRectangle(100, 70 - 30, 200, 25, 0, colcolor(255), 25);
 
             Drawshadowtext(@str[1], 240, 72 - 30, colcolor($64), colcolor($66));
-            str := UTF8Decode(' 升為   級');
+            str := ' 升為   級';
             Drawshadowtext(@str[1], 183, 72 - 30, colcolor($21), colcolor($23));
             Drawgbkshadowtext(@Rmagic[mnum].Name, 83, 72 - 30, colcolor($64), colcolor($66));
             SDL_UpdateRect2(screen, 0, 0, screen.w, screen.h);
@@ -5064,7 +5064,7 @@ begin
                 end;
             redraw;
             DrawRectangle(220, 70 - 30, 200, 25, 0, colcolor(255), 25);
-            words := UTF8Decode(' 升為' + IntToStr(Rrole[rnum].MagLevel[p] div 100 + 1) + '級');
+            words := ' 升為' + IntToStr(Rrole[rnum].MagLevel[p] div 100 + 1) + '級';
             str1 := GBKtoUnicode(@words[1]);
             Drawshadowtext(@str1[1], 303, 72 - 30, colcolor($21), colcolor($23));
             Drawgbkshadowtext(@Rmagic[Rrole[rnum].Magic[p]].Name, 203, 72 - 30, colcolor($64), colcolor($66));
@@ -6291,7 +6291,7 @@ begin
     n := random(100);
     if n < 60 then
     begin
-      word1 := UTF8Decode(' 林廚子收集藥材成功');
+      word1 := ' 林廚子收集藥材成功';
       drawtextwithrect(@word1[1], centER_x - 70, 55, 190, colcolor(0, 5), colcolor(0, 7));
       waitanykey;
       instruct_2(291, 5);
@@ -6300,7 +6300,7 @@ begin
     n := random(100);
     if n < 60 then
     begin
-      word1 := UTF8Decode(' 林廚子收集食材成功');
+      word1 := ' 林廚子收集食材成功';
       drawtextwithrect(@word1[1], centER_x - 70, 55, 190, colcolor(0, 5), colcolor(0, 7));
       waitanykey;
       instruct_2(269, 5);
@@ -6312,7 +6312,7 @@ begin
     n := random(100);
     if n < 30 then
     begin
-      word1 := UTF8Decode(' 林廚子收集材料成功');
+      word1 := ' 林廚子收集材料成功';
       drawtextwithrect(@word1[1], centER_x - 70, 55, 190, colcolor(0, 5), colcolor(0, 7));
       waitanykey;
       n := random(18);
@@ -6326,7 +6326,7 @@ begin
     n := random(100);
     if n < 60 then
     begin
-      word1 := UTF8Decode(' 孔八拉搜刮礦石成功');
+      word1 := ' 孔八拉搜刮礦石成功';
       drawtextwithrect(@word1[1], centER_x - 70, 55, 190, colcolor(0, 5), colcolor(0, 7));
       waitanykey;
       instruct_2(267, 5);
@@ -6335,7 +6335,7 @@ begin
     n := random(100);
     if n < 60 then
     begin
-      word1 := UTF8Decode(' 孔八拉搜刮硝石成功');
+      word1 := ' 孔八拉搜刮硝石成功';
       drawtextwithrect(@word1[1], centER_x - 70, 55, 190, colcolor(0, 5), colcolor(0, 7));
       waitanykey;
       instruct_2(268, 5);
@@ -6347,7 +6347,7 @@ begin
     if GetPetSkill(1, 4) then kf := 100
     else if GetPetSkill(1, 2) then kf := 60
     else if GetPetSkill(1, 0) then kf := 30;
-    word1 := UTF8Decode(' 阿賢記錄武功成功');
+    word1 := ' 阿賢記錄武功成功';
     for i := 0 to length(warsta.GetKongfu) - 1 do
     begin
       if (warsta.GetKongfu[i] > -1) then
@@ -6366,7 +6366,7 @@ begin
   if GetPetSkill(2, 2) then
   begin
     kf := 50;
-    word1 := UTF8Decode(' 阿醜偷竊物品成功');
+    word1 := ' 阿醜偷竊物品成功';
     for i := 0 to length(warsta.GetItems) - 1 do
     begin
       if (warsta.GetItems[i] > -1) then
@@ -6384,7 +6384,7 @@ begin
   end;
   if GetPetSkill(2, 0) then
   begin
-    word1 := UTF8Decode(' 阿醜偷竊金錢成功');
+    word1 := ' 阿醜偷竊金錢成功';
     n := warsta.GetMoney div 2 + random(warsta.GetMoney div 2);
     if n > 0 then
     begin
@@ -6408,9 +6408,9 @@ begin
   setlength(menustring, 3);
   setlength(menuengstring, 0);
   //SDL_EnableKeyRepeat(20, 100);
-  menustring[0] := UTF8Decode(' 瘋子型');
-  menustring[1] := UTF8Decode(' 傻子型');
-  menustring[2] := UTF8Decode(' 呆子型');
+  menustring[0] := ' 瘋子型';
+  menustring[1] := ' 傻子型';
+  menustring[2] := ' 呆子型';
 
   redraw;
 
@@ -6657,11 +6657,11 @@ begin
   x := 154;
   y := 100;
   w := 190;
-  modestring[0] := UTF8Decode(' 瘋子型');
-  modestring[1] := UTF8Decode(' 傻子型');
-  modestring[2] := UTF8Decode(' 呆子型');
-  modestring[-1] := UTF8Decode(' 手动');
-  str := UTF8Decode('  确定');
+  modestring[0] := ' 瘋子型';
+  modestring[1] := ' 傻子型';
+  modestring[2] := ' 呆子型';
+  modestring[-1] := ' 手动';
+  str := '  确定';
   for i := 0 to length(brole) - 1 do
   begin
     if (Brole[i].Team = 0) and (brole[i].rnum >= 0) and (Brole[i].Dead = 0) then
@@ -6669,7 +6669,7 @@ begin
       amount := amount + 1;
       setlength(namestr, amount);
       setlength(a, amount);
-      namestr[amount - 1] := UTF8Decode(' ') + gbktounicode(@rrole[brole[i].rnum].Name[0]);
+      namestr[amount - 1] := ' ' + gbktounicode(@rrole[brole[i].rnum].Name[0]);
       a[amount - 1] := Brole[i].Auto;
     end;
   end;
@@ -6710,8 +6710,8 @@ var
 begin
   setlength(Menustring, 0);
   setlength(menustring, 2);
-  menustring[1] := UTF8Decode(' 單人');
-  menustring[0] := UTF8Decode(' 全體');
+  menustring[1] := ' 單人';
+  menustring[0] := ' 全體';
   menu := commonmenu2(157, 100, 98);
   //SDL_EnableKeyRepeat(20, 100);
   if menu = -1 then

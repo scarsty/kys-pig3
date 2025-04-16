@@ -574,11 +574,11 @@ begin
 
     showbow(bowpic[readystate], round(event.button.x / (resolutionx / screen.w)),
       round(event.button.y / (resolutiony / screen.h)), degree);
-    word := UTF8Decode('得分：');
+    word := '得分：';
     drawshadowtext(@word[1], 500, 415, colcolor(0, 255), colcolor(0, 111));
-    word := UTF8Decode('機會：');
+    word := '機會：';
     drawshadowtext(@word[1], 500, 393, colcolor(0, 255), colcolor(0, 111));
-    word := UTF8Decode('目標：');
+    word := '目標：';
     drawshadowtext(@word[1], 500, 371, colcolor(0, 255), colcolor(0, 111));
     word := IntToStr(goal);
     drawshadowtext(@word[1], 570, 415, colcolor(0, 255), colcolor(0, 111));
@@ -732,8 +732,8 @@ begin
   //draw person
   DrawRectangle(AcupunctureList[2], AcupunctureList[3], abs(AcupunctureList[4] - AcupunctureList[2]),
     abs(AcupunctureList[5] - AcupunctureList[3]), 0, colcolor(255), 25);
-  word := UTF8Decode(' 遊戲規則：**將亮起的穴位按順序點亮**有三次機會');
-  if GetPetSkill(4, 2) then word := UTF8Decode(' 遊戲規則：**將亮起的穴位按順序點亮**有五次機會');
+  word := ' 遊戲規則：**將亮起的穴位按順序點亮**有三次機會';
+  if GetPetSkill(4, 2) then word := ' 遊戲規則：**將亮起的穴位按順序點亮**有五次機會';
   DrawRectangle((AcupunctureList[2] + AcupunctureList[4]) div 2 - 115,
     220 - 60, 250, 115, 0, colcolor(255), 25);
   drawshadowtext(@word[1], (AcupunctureList[2] + AcupunctureList[4]) div 2 - 120,
@@ -754,7 +754,7 @@ begin
     drawpngpic(gamepic, 40, 400, 20, 20, AcupunctureList[2 * i] - 10, AcupunctureList[2 * i + 1] - 10, 0);
   end;
   SDL_UpdateRect2(screen, 0, 0, screen.w, screen.h);
-  word := UTF8Decode(' 準備開始');
+  word := ' 準備開始';
   DrawRectangle((AcupunctureList[2] + AcupunctureList[4]) div 2 - 45,
     220 - 15, 90, 30, 0, colcolor(255), 25);
   drawshadowtext(@word[1], (AcupunctureList[2] + AcupunctureList[4]) div 2 - 60,
@@ -900,7 +900,7 @@ begin
       if s <> 0 then
       begin
         sdl_delay(200);
-        word := UTF8Decode(' 挑戰成功');
+        word := ' 挑戰成功';
         DrawRectangle((AcupunctureList[2] + AcupunctureList[4]) div 2 - 45,
           220 - 15, 90, 30, 0, colcolor(255), 25);
         drawshadowtext(@word[1], (AcupunctureList[2] + AcupunctureList[4]) div 2 - 60,
@@ -914,7 +914,7 @@ begin
         exit;
       end;
       sdl_delay(200);
-      word := UTF8Decode(' 挑戰失敗');
+      word := ' 挑戰失敗';
       DrawRectangle((AcupunctureList[2] + AcupunctureList[4]) div 2 - 45,
         220 - 15, 90, 30, 0, colcolor(255), 25);
       drawshadowtext(@word[1], (AcupunctureList[2] + AcupunctureList[4]) div 2 - 60,
@@ -1274,7 +1274,7 @@ begin
   end;
   drawrectangle(wx + (menu mod c) * 40 + 11, wy + (menu div c) * 40 - 9, 39, 39, 0, colcolor(0, 255), 0);
 
-  str := UTF8Decode('機會：');
+  str := '機會：';
   drawShadowText(puint16(str), wx + 10, y + 25, colcolor(0, 5), colcolor(0, 7));
   str := IntToStr(chance);
   drawShadowText(puint16(str), wx + 80, y + 25, colcolor(0, 5), colcolor(0, 7));
@@ -1508,8 +1508,8 @@ begin
     drawrectangle((menu2 mod 5) * 80 + x, (menu2 div 5) * 80 + y + 30, 80, 80, 0, colcolor($64), 0);
   if menu > -1 then
     drawrectangle((menu mod 5) * 80 + x, (menu div 5) * 80 + y + 30, 80, 80, 0, colcolor($255), 0);
-  word := UTF8Decode('機會');
-  word1 := UTF8Decode('命中');
+  word := '機會';
+  word1 := '命中';
   drawshadowtext(@word[1], x + 5, y + 5, colcolor(5), colcolor(7));
   drawshadowtext(@word1[1], x + 200, y + 5, colcolor(5), colcolor(7));
   word := IntToStr(chance);
@@ -1663,8 +1663,8 @@ begin
       drawrectangle((menu2 mod 5) * 80 + x, (menu2 div 5) * 80 + y + 30, 80, 80, 0, colcolor($64), 0);
     if menu > -1 then
       drawrectangle((menu mod 5) * 80 + x, (menu div 5) * 80 + y + 30, 80, 80, 0, colcolor($255), 0);
-    word := UTF8Decode('機會');
-    word1 := UTF8Decode('命中');
+    word := '機會';
+    word1 := '命中';
     drawshadowtext(@word[1], x + 5, y + 5, colcolor(5), colcolor(7));
     drawshadowtext(@word1[1], x + 200, y + 5, colcolor(5), colcolor(7));
     word := IntToStr(chance);

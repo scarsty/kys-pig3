@@ -1594,7 +1594,7 @@ var
   len: integer;
 begin
   {$IFDEF fpc}
-  Result := UTF8Decode(CP950ToUTF8(str));
+  Result := CP950ToUTF8(str);
   {$ELSE}
   len := MultiByteToWideChar(950, 0, pansichar(str), -1, nil, 0);
   setlength(Result, len - 1);
@@ -1612,7 +1612,7 @@ begin
   //word := Simplified2Traditional(str);
   // len := MultiByteToWideChar(936, 0, pansichar(word), -1, nil, 0);
   {$IFDEF fpc}
-  Result := UTF8Decode(CP936ToUTF8(str));
+  Result := CP936ToUTF8(str);
   {$ELSE}
   len := MultiByteToWideChar(936, 0, pansichar(str), -1, nil, 0);
   setlength(Result, len - 1);
@@ -1780,7 +1780,7 @@ var
   words: widestring;
 begin
   {$IFDEF fpc}
-  words := UTF8Decode(CP950ToUTF8(str));
+  words := CP950ToUTF8(str);
   {$ELSE}
   len := MultiByteToWideChar(950, 0, pansichar(str), -1, nil, 0);
   setlength(words, len - 1);
@@ -1799,7 +1799,7 @@ var
   words: widestring;
 begin
   {$IFDEF fpc}
-  words := UTF8Decode(CP950ToUTF8(word));
+  words := CP950ToUTF8(word);
   {$ELSE}
   len := MultiByteToWideChar(950, 0, pansichar(word), -1, nil, 0);
   setlength(words, len - 1);
@@ -2902,29 +2902,29 @@ var
   str: widestring;
 begin
   max := length(menustring);
-  strs[0] := UTF8Decode('  生命');
-  strs[1] := UTF8Decode(' 內力');
-  strs[2] := UTF8Decode(' 體力');
-  strs[3] := UTF8Decode(' 等級');
-  strs[4] := UTF8Decode(' 經驗');
-  strs[5] := UTF8Decode(' 升級');
-  strs[6] := UTF8Decode(' 攻擊');
-  strs[7] := UTF8Decode(' 防禦');
-  strs[8] := UTF8Decode(' 輕功');
-  strs[9] := UTF8Decode(' 醫療能力');
-  strs[10] := UTF8Decode(' 用毒能力');
-  strs[11] := UTF8Decode(' 解毒能力');
-  strs[12] := UTF8Decode(' 拳掌功夫');
-  strs[13] := UTF8Decode(' 御劍能力');
-  strs[14] := UTF8Decode(' 耍刀技巧');
-  strs[15] := UTF8Decode(' 奇門兵器');
-  strs[16] := UTF8Decode(' 暗器技巧');
-  strs[17] := UTF8Decode(' 裝備物品');
-  strs[18] := UTF8Decode(' 修煉物品');
-  strs[19] := UTF8Decode(' 所會武功');
-  strs[20] := UTF8Decode(' 内傷');
-  strs[21] := UTF8Decode(' 中毒');
-  strs[22] := UTF8Decode(' 资质');
+  strs[0] := '  生命';
+  strs[1] := ' 內力';
+  strs[2] := ' 體力';
+  strs[3] := ' 等級';
+  strs[4] := ' 經驗';
+  strs[5] := ' 升級';
+  strs[6] := ' 攻擊';
+  strs[7] := ' 防禦';
+  strs[8] := ' 輕功';
+  strs[9] := ' 醫療能力';
+  strs[10] := ' 用毒能力';
+  strs[11] := ' 解毒能力';
+  strs[12] := ' 拳掌功夫';
+  strs[13] := ' 御劍能力';
+  strs[14] := ' 耍刀技巧';
+  strs[15] := ' 奇門兵器';
+  strs[16] := ' 暗器技巧';
+  strs[17] := ' 裝備物品';
+  strs[18] := ' 修煉物品';
+  strs[19] := ' 所會武功';
+  strs[20] := ' 内傷';
+  strs[21] := ' 中毒';
+  strs[22] := ' 资质';
   x := 90;
   y := 0;
   display_imgFromSurface(STATE_PIC.pic, 0, 0);
@@ -3033,12 +3033,12 @@ begin
   drawengshadowtext(@str[1], x + 135, y + 136, colcolor($5), colcolor($7));
 
   if Rrole[rnum].Level = Max_Level then
-    str := UTF8Decode('    =')
+    str := '    ='
   else
     str := format('%5d', [uint16(Leveluplist[Rrole[rnum].Level - 1])]);
   drawengshadowtext(@str[1], x + 135, y + 157, colcolor($5), colcolor($7));
 
-  str := UTF8Decode(' 武器');
+  str := ' 武器';
   drawshadowtext(@str[1], x + 200 - 10, y + 115 + 21 * 9, colcolor($5), colcolor($7));
   if (Rrole[rnum].Equip[0] <> -1) then
   begin
@@ -3046,10 +3046,10 @@ begin
     DrawItemPic(Rrole[rnum].Equip[0], 411, 144);
   end
   else
-    str := UTF8Decode(' 無');
+    str := ' 無';
   drawshadowtext(@str[1], x + 240, y + 115 + 21 * 9, colcolor($63), colcolor($66));
 
-  str := UTF8Decode(' 身披');
+  str := ' 身披';
   drawshadowtext(@str[1], x + 200 - 10, y + 115 + 21 * 10, colcolor($5), colcolor($7));
   if (Rrole[rnum].Equip[1] <> -1) then
   begin
@@ -3057,10 +3057,10 @@ begin
     DrawItemPic(Rrole[rnum].Equip[1], 523, 144);
   end
   else
-    str := UTF8Decode(' 無');
+    str := ' 無';
   drawshadowtext(@str[1], x + 240, y + 115 + 21 * 10, colcolor($63), colcolor($66));
 
-  str := UTF8Decode(' 頭戴');
+  str := ' 頭戴';
   drawshadowtext(@str[1], x + 200 - 10, y + 115 + 21 * 11, colcolor($5), colcolor($7));
   if (Rrole[rnum].Equip[2] <> -1) then
   begin
@@ -3068,10 +3068,10 @@ begin
     DrawItemPic(Rrole[rnum].Equip[2], 466, 42);
   end
   else
-    str := UTF8Decode(' 無');
+    str := ' 無';
   drawshadowtext(@str[1], x + 240, y + 115 + 21 * 11, colcolor($63), colcolor($66));
 
-  str := UTF8Decode(' 腳踩');
+  str := ' 腳踩';
   drawshadowtext(@str[1], x + 200 - 10, y + 115 + 21 * 12, colcolor($5), colcolor($7));
   if (Rrole[rnum].Equip[3] <> -1) then
   begin
@@ -3079,7 +3079,7 @@ begin
     DrawItemPic(Rrole[rnum].Equip[3], 466, 318);
   end
   else
-    str := UTF8Decode(' 無');
+    str := ' 無';
   drawshadowtext(@str[1], x + 240, y + 115 + 21 * 12, colcolor($63), colcolor($66));
 
  { str := Simplified2Traditional('配饰');
@@ -3213,8 +3213,8 @@ var
   str1, str, str2, str3: widestring;
 begin
   max := length(menustring);
-  strs[0] := UTF8Decode(' 修煉物品');
-  strs[1] := UTF8Decode(' 功體經驗');
+  strs[0] := ' 修煉物品';
+  strs[1] := ' 功體經驗';
   x := 90;
   y := 0;
   display_imgFromSurface(MAGIC_PIC.pic, 0, 0);
@@ -3279,7 +3279,7 @@ begin
     DrawItemPic(RRole[rnum].PracticeBook, 136, 208);
   end
   else
-    str := UTF8Decode(' 無');
+    str := ' 無';
   str3 := IntToStr(RRole[rnum].GongtiExam);
   drawshadowtext(@strs[1, 1], x + 25, y + 184, colcolor($21), colcolor($23));
   drawshadowtext(@strs[0, 1], x + 110, y + 216, colcolor($21), colcolor($23));
@@ -3296,9 +3296,9 @@ var
   i, color1, color2: integer;
   str: widestring;
 begin
-  strs[0] := UTF8Decode(' 生命');
-  strs[1] := UTF8Decode(' 內力');
-  strs[2] := UTF8Decode(' 體力');
+  strs[0] := ' 生命';
+  strs[1] := ' 內力';
+  strs[2] := ' 體力';
 
   for i := 0 to 2 do
     drawshadowtext(@strs[i, 1], x, y + 21 * (i + 1), colcolor($21), colcolor($23));
@@ -3673,46 +3673,46 @@ begin
   y := 0;
   display_imgFromSurface(MAGIC_PIC.pic, x + 247, y + 32, x + 247, y + 32, 276, 408 - y);
   display_imgFromSurface(MAGIC_PIC.pic, x + 30, y + 300, x + 30, y + 300, 300, 140);
-  skillstr[0] := UTF8Decode(' 醫療');
-  skillstr[1] := UTF8Decode(' 解毒');
-  skillstr[2] := UTF8Decode(' 用毒');
-  skillstr[3] := UTF8Decode(' 抗毒');
-  skillstr[4] := UTF8Decode(' 毒攻');
-  skillstr[5] := UTF8Decode(' ');
+  skillstr[0] := ' 醫療';
+  skillstr[1] := ' 解毒';
+  skillstr[2] := ' 用毒';
+  skillstr[3] := ' 抗毒';
+  skillstr[4] := ' 毒攻';
+  skillstr[5] := ' ';
   setlength(gongti, 16);
-  knowmagic := UTF8Decode(' ————所會武功————');
-  skill := UTF8Decode(' ————特殊技能————');
+  knowmagic := ' ————所會武功————';
+  skill := ' ————特殊技能————';
   drawshadowtext(@skill[1], x + 247, y + 36, colcolor(0, $21), colcolor(0, $23));
 
   drawshadowtext(@knowmagic[1], x + 247, y + 102, colcolor(0, $21), colcolor(0, $23));
 
   if (num < 0) then
   begin
-    str := UTF8Decode(' ');
+    str := ' ';
   end
   else if (num = 0) then
   begin
-    str := UTF8Decode(' 給本方隊友治療，增*加其生命值，并減少*其受傷值。*耗費體力3');
+    str := ' 給本方隊友治療，增*加其生命值，并減少*其受傷值。*耗費體力3';
   end
   else if (num = 1) then
   begin
-    str := UTF8Decode(' 給本方隊友解毒，減*中毒值，但對中毒太*深者無法解毒。*耗費體力3');
+    str := ' 給本方隊友解毒，減*中毒值，但對中毒太*深者無法解毒。*耗費體力3';
   end
   else if (num = 2) then
   begin
-    str := UTF8Decode(' 用毒使對方中毒，每*回合生命減少，並且*降低對方醫療效果。*耗費體力3');
+    str := ' 用毒使對方中毒，每*回合生命減少，並且*降低對方醫療效果。*耗費體力3';
   end
   else if (num = 3) then
   begin
-    str := UTF8Decode(' 抗擊用毒的能力。');
+    str := ' 抗擊用毒的能力。';
   end
   else if (num = 4) then
   begin
-    str := UTF8Decode(' 武學攻擊中帶有的毒*素傷害。');
+    str := ' 武學攻擊中帶有的毒*素傷害。';
   end
   else if (num = 5) then
   begin
-    str := UTF8Decode(' ');
+    str := ' ';
   end
   else if (num > 5) then
   begin
@@ -3735,7 +3735,7 @@ begin
       str := gbktoUnicode(@magstr);
     end
     else
-      str := UTF8Decode(' ');
+      str := ' ';
   end;
 
   if (GetRoleMedcine(rnum, True) >= 20) then
@@ -3787,8 +3787,8 @@ begin
   lv[5] := 0;
   for i := 0 to 15 do
   begin
-    gongti[i][0] := UTF8Decode(' ');
-    gongti[i][1] := UTF8Decode(' ');
+    gongti[i][0] := ' ';
+    gongti[i][1] := ' ';
   end;
   for i := 0 to 9 do
   begin
@@ -3797,7 +3797,7 @@ begin
       magicstr[i] := gbkToUnicode(@RMagic[RRole[rnum].Magic[i]].Name);
     end
     else
-      magicstr[i] := UTF8Decode(' ');
+      magicstr[i] := ' ';
     if (RRole[rnum].Magic[i] = RRole[rnum].Gongti) then
     begin
       drawshadowtext(@magicstr[i][1], x + 248 + 118 * (i mod 2), y + (i div 2) * 22 + 124,
@@ -3816,9 +3816,9 @@ begin
       if rmagic[RRole[rnum].Magic[num - 6]].MagicType = 5 then
       begin
         case getGongtiLevel(rnum, RRole[rnum].Magic[num - 6]) of
-          0: lvstr := UTF8Decode(' 熟練');
-          1: lvstr := UTF8Decode(' 精純');
-          2: lvstr := UTF8Decode(' 化境');
+          0: lvstr := ' 熟練';
+          1: lvstr := ' 精純';
+          2: lvstr := ' 化境';
         end;
       end
       else
@@ -3828,13 +3828,13 @@ begin
       if Rmagic[RRole[rnum].Magic[num - 6]].MagicType <> 5 then
       begin
         i1 := RRole[rnum].Maglevel[num - 6] div 100 + 1;
-        str := UTF8Decode('***內力');
+        str := '***內力';
         drawshadowtext(@str[1], x + 35, y + 285 + 40, colcolor(0, $63), colcolor(0, $66));
         str := '***' + IntToStr((Rmagic[RRole[rnum].Magic[num - 6]].NeedMp) * i1);
         drawshadowtext(@str[1], x + 50 + 35, y + 285 + 40, colcolor(0, $63), colcolor(0, $66));
         if battlemode > 0 then
         begin
-          str := UTF8Decode('***行動力');
+          str := '***行動力';
           drawshadowtext(@str[1], x + 35 + 90, y + 285 + 40, colcolor(0, $63), colcolor(0, $66));
           str := '***' + IntToStr(((Rmagic[RRole[rnum].Magic[num - 6]].NeedProgress * i1) * 10 + 99) div 100 + 1);
           drawshadowtext(@str[1], x + 35 + 90 + 70, y + 285 + 40, colcolor(0, $63), colcolor(0, $66));
@@ -3848,31 +3848,31 @@ begin
       i1 := 0;
       if rmagic[RRole[rnum].Magic[num - 6]].AddHp[l] <> 0 then
       begin
-        gongti[i1][0] := UTF8Decode(' 生命 ');
+        gongti[i1][0] := ' 生命 ';
         gongti[i1][1] := IntToStr(rmagic[RRole[rnum].Magic[num - 6]].AddHp[l]);
         Inc(i1);
       end;
       if rmagic[RRole[rnum].Magic[num - 6]].AddMp[l] <> 0 then
       begin
-        gongti[i1][0] := UTF8Decode(' 內力 ');
+        gongti[i1][0] := ' 內力 ';
         gongti[i1][1] := IntToStr(rmagic[RRole[rnum].Magic[num - 6]].AddMp[l]);
         Inc(i1);
       end;
       if rmagic[RRole[rnum].Magic[num - 6]].AddAtt[l] <> 0 then
       begin
-        gongti[i1][0] := UTF8Decode(' 攻擊 ');
+        gongti[i1][0] := ' 攻擊 ';
         gongti[i1][1] := IntToStr(rmagic[RRole[rnum].Magic[num - 6]].AddAtt[l]);
         Inc(i1);
       end;
       if rmagic[RRole[rnum].Magic[num - 6]].AddDef[l] <> 0 then
       begin
-        gongti[i1][0] := UTF8Decode(' 防禦 ');
+        gongti[i1][0] := ' 防禦 ';
         gongti[i1][1] := IntToStr(rmagic[RRole[rnum].Magic[num - 6]].AddDef[l]);
         Inc(i1);
       end;
       if rmagic[RRole[rnum].Magic[num - 6]].AddSpd[l] <> 0 then
       begin
-        gongti[i1][0] := UTF8Decode(' 輕功 ');
+        gongti[i1][0] := ' 輕功 ';
         gongti[i1][1] := IntToStr(rmagic[RRole[rnum].Magic[num - 6]].AddSpd[l]);
         Inc(i1);
       end;
@@ -3880,55 +3880,55 @@ begin
       begin
         if rmagic[RRole[rnum].Magic[num - 6]].AddMedcine <> 0 then
         begin
-          gongti[i1][0] := UTF8Decode(' 醫療 ');
+          gongti[i1][0] := ' 醫療 ';
           gongti[i1][1] := IntToStr(rmagic[RRole[rnum].Magic[num - 6]].AddMedcine);
           Inc(i1);
         end;
         if rmagic[RRole[rnum].Magic[num - 6]].AddUsePoi <> 0 then
         begin
-          gongti[i1][0] := UTF8Decode(' 用毒 ');
+          gongti[i1][0] := ' 用毒 ';
           gongti[i1][1] := IntToStr(rmagic[RRole[rnum].Magic[num - 6]].AddUsePoi);
           Inc(i1);
         end;
         if rmagic[RRole[rnum].Magic[num - 6]].AddMedPoi <> 0 then
         begin
-          gongti[i1][0] := UTF8Decode(' 解毒 ');
+          gongti[i1][0] := ' 解毒 ';
           gongti[i1][1] := IntToStr(rmagic[RRole[rnum].Magic[num - 6]].AddMedPoi);
           Inc(i1);
         end;
         if rmagic[RRole[rnum].Magic[num - 6]].AddDefPoi <> 0 then
         begin
-          gongti[i1][0] := UTF8Decode(' 抗毒 ');
+          gongti[i1][0] := ' 抗毒 ';
           gongti[i1][1] := IntToStr(rmagic[RRole[rnum].Magic[num - 6]].AddDefPoi);
           Inc(i1);
         end;
         if rmagic[RRole[rnum].Magic[num - 6]].AddFist <> 0 then
         begin
-          gongti[i1][0] := UTF8Decode(' 拳掌 ');
+          gongti[i1][0] := ' 拳掌 ';
           gongti[i1][1] := IntToStr(rmagic[RRole[rnum].Magic[num - 6]].AddFist);
           Inc(i1);
         end;
         if rmagic[RRole[rnum].Magic[num - 6]].AddSword <> 0 then
         begin
-          gongti[i1][0] := UTF8Decode(' 禦劍 ');
+          gongti[i1][0] := ' 禦劍 ';
           gongti[i1][1] := IntToStr(rmagic[RRole[rnum].Magic[num - 6]].AddSword);
           Inc(i1);
         end;
         if rmagic[RRole[rnum].Magic[num - 6]].AddKnife <> 0 then
         begin
-          gongti[i1][0] := UTF8Decode(' 耍刀 ');
+          gongti[i1][0] := ' 耍刀 ';
           gongti[i1][1] := IntToStr(rmagic[RRole[rnum].Magic[num - 6]].AddKnife);
           Inc(i1);
         end;
         if rmagic[RRole[rnum].Magic[num - 6]].AddUnusual <> 0 then
         begin
-          gongti[i1][0] := UTF8Decode(' 奇門 ');
+          gongti[i1][0] := ' 奇門 ';
           gongti[i1][1] := IntToStr(rmagic[RRole[rnum].Magic[num - 6]].AddUnusual);
           Inc(i1);
         end;
         if rmagic[RRole[rnum].Magic[num - 6]].AddHidWeapon <> 0 then
         begin
-          gongti[i1][0] := UTF8Decode(' 暗器 ');
+          gongti[i1][0] := ' 暗器 ';
           gongti[i1][1] := IntToStr(rmagic[RRole[rnum].Magic[num - 6]].AddHidWeapon);
           Inc(i1);
         end;
@@ -3942,31 +3942,31 @@ begin
       if (rmagic[RRole[rnum].Magic[num - 6]].BattleState > 0) and (l = rmagic[RRole[rnum].Magic[num - 6]].MaxLevel) then
       begin
         case rmagic[RRole[rnum].Magic[num - 6]].BattleState of
-          1: str := UTF8Decode(' 體力不減');
-          2: str := UTF8Decode(' 女性武功威力加成');
-          3: str := UTF8Decode(' 飲酒功效加倍');
-          4: str := UTF8Decode(' 隨機傷害轉移');
-          5: str := UTF8Decode(' 隨機傷害反噬');
-          6: str := UTF8Decode(' 內傷免疫');
-          7: str := UTF8Decode(' 殺傷體力');
-          8: str := UTF8Decode(' 增加閃躲幾率');
-          9: str := UTF8Decode(' 攻擊力隨等级循环增减');
-          10: str := UTF8Decode(' 內力消耗減少');
-          11: str := UTF8Decode(' 每回合恢復生命');
-          12: str := UTF8Decode(' 負面狀態免疫');
-          13: str := UTF8Decode(' 全部武功威力加成');
-          14: str := UTF8Decode(' 隨機二次攻擊');
-          15: str := UTF8Decode(' 拳掌武功威力加成');
-          16: str := UTF8Decode(' 劍術武功威力加成');
-          17: str := UTF8Decode(' 刀法武功威力加成');
-          18: str := UTF8Decode(' 奇門武功威力加成');
-          19: str := UTF8Decode(' 增加內傷幾率');
-          20: str := UTF8Decode(' 增加封穴幾率');
-          21: str := UTF8Decode(' 攻擊微量吸血');
-          22: str := UTF8Decode(' 攻擊距離增加');
-          23: str := UTF8Decode(' 每回合恢復內力');
-          24: str := UTF8Decode(' 使用暗器距離增加');
-          25: str := UTF8Decode(' 附加殺傷吸收內力');
+          1: str := ' 體力不減';
+          2: str := ' 女性武功威力加成';
+          3: str := ' 飲酒功效加倍';
+          4: str := ' 隨機傷害轉移';
+          5: str := ' 隨機傷害反噬';
+          6: str := ' 內傷免疫';
+          7: str := ' 殺傷體力';
+          8: str := ' 增加閃躲幾率';
+          9: str := ' 攻擊力隨等级循环增减';
+          10: str := ' 內力消耗減少';
+          11: str := ' 每回合恢復生命';
+          12: str := ' 負面狀態免疫';
+          13: str := ' 全部武功威力加成';
+          14: str := ' 隨機二次攻擊';
+          15: str := ' 拳掌武功威力加成';
+          16: str := ' 劍術武功威力加成';
+          17: str := ' 刀法武功威力加成';
+          18: str := ' 奇門武功威力加成';
+          19: str := ' 增加內傷幾率';
+          20: str := ' 增加封穴幾率';
+          21: str := ' 攻擊微量吸血';
+          22: str := ' 攻擊距離增加';
+          23: str := ' 每回合恢復內力';
+          24: str := ' 使用暗器距離增加';
+          25: str := ' 附加殺傷吸收內力';
         end;
 
         drawshadowtext(@str[1], x + 248, y + ((i1 + 1) div 2) * 22 + 260, colcolor(0, $64), colcolor(0, $66));
@@ -3977,14 +3977,14 @@ begin
       i1 := 0;
       if rmagic[RRole[rnum].Magic[num - 6]].AddHpScale <> 0 then
       begin
-        gongti[i1][0] := UTF8Decode(' 嗜血 ');
+        gongti[i1][0] := ' 嗜血 ';
         gongti[i1][1] := IntToStr(rmagic[RRole[rnum].Magic[num - 6]].AddHpScale) + #$25;
         //   gongti[i1][1] := GBKtoUnicode(@gongti[i1][1][1]);
         Inc(i1);
       end;
       if rmagic[RRole[rnum].Magic[num - 6]].AddMpScale <> 0 then
       begin
-        gongti[i1][0] := UTF8Decode(' 吸星 ');
+        gongti[i1][0] := ' 吸星 ';
         gongti[i1][1] := IntToStr(rmagic[RRole[rnum].Magic[num - 6]].AddMpScale) + #$25;
         //   gongti[i1][1] := GBKtoUnicode(@gongti[i1][1][1]);
         Inc(i1);
@@ -3993,7 +3993,7 @@ begin
       i := rmagic[RRole[rnum].Magic[num - 6]].MinPeg + ((RRole[rnum].Maglevel[num - 6] div 100) * (rmagic[RRole[rnum].Magic[num - 6]].MaxPeg - rmagic[RRole[rnum].Magic[num - 6]].MinPeg)) div 9;
       if i <> 0 then
       begin
-        gongti[i1][0] := UTF8Decode(' 封穴 ');
+        gongti[i1][0] := ' 封穴 ';
         gongti[i1][1] := IntToStr(i) + #$25;
         //  gongti[i1][1] := GBKtoUnicode(@gongti[i1][1][1]);
         Inc(i1);
@@ -4001,7 +4001,7 @@ begin
       i := rmagic[RRole[rnum].Magic[num - 6]].MinInjury + ((RRole[rnum].Maglevel[num - 6] div 100) * (rmagic[RRole[rnum].Magic[num - 6]].MaxInjury - rmagic[RRole[rnum].Magic[num - 6]].MinInjury)) div 9;
       if i <> 0 then
       begin
-        gongti[i1][0] := UTF8Decode(' 內傷 ');
+        gongti[i1][0] := ' 內傷 ';
         gongti[i1][1] := IntToStr(i) + #$25;
         //     gongti[i1][1] := GBKtoUnicode(@gongti[i1][1][1]);
         Inc(i1);
@@ -4009,7 +4009,7 @@ begin
       i := rmagic[RRole[rnum].Magic[num - 6]].Poision * (1 + RRole[rnum].Maglevel[num - 6] div 100);
       if i <> 0 then
       begin
-        gongti[i1][0] := UTF8Decode(' 帶毒 ');
+        gongti[i1][0] := ' 帶毒 ';
         gongti[i1][1] := IntToStr(i);
         //     gongti[i1][1] := GBKtoUnicode(@gongti[i1][1][1]);
         Inc(i1);
@@ -4072,7 +4072,7 @@ begin
       break;
   end;
   display_imgFromSurface(MAGIC_PIC.pic, 334, 32, 334, 32, 476 + len * 11, 408);
-  str := UTF8Decode(' ————選擇隊友————');
+  str := ' ————選擇隊友————';
   drawshadowtext(@str[1], 337, 36, colcolor($21), colcolor($23));
   ;
   //drawtextwithrect(@str[1], 80, 30, 132, colcolor($23), colcolor($21));
@@ -4221,7 +4221,7 @@ begin
       break;
   end;
   display_imgFromSurface(MAGIC_PIC, 334, 32, 334, 32, 476 + len * 11, 408);
-  str := UTF8Decode(' ————選擇隊友————');
+  str := ' ————選擇隊友————';
   drawshadowtext(@str[1], 337, 36, colcolor($21), colcolor($23));
   ;
   //drawtextwithrect(@str[1], 80, 30, 132, colcolor($23), colcolor($21));
@@ -4668,10 +4668,10 @@ var
 begin
   display_imgFromSurface(SYSTEM_PIC, 0, 0);
 
-  word[0] := UTF8Decode(' ——————————讀取進度——————————');
-  word[1] := UTF8Decode(' ——————————保存進度——————————');
-  word[2] := UTF8Decode(' ——————————音樂音量——————————');
-  word[3] := UTF8Decode(' ——————————退出離開——————————');
+  word[0] := ' ——————————讀取進度——————————';
+  word[1] := ' ——————————保存進度——————————';
+  word[2] := ' ——————————音樂音量——————————';
+  word[3] := ' ——————————退出離開——————————';
 
   for i := 0 to 3 do
     if i = menu then
@@ -4715,11 +4715,11 @@ var
 begin
   //SDL_EnableKeyRepeat(30, (30 * GameSpeed) div 10);
   Result := False;
-  word[0] := UTF8Decode(' 進度一');
-  word[1] := UTF8Decode(' 進度二');
-  word[2] := UTF8Decode(' 進度三');
-  word[3] := UTF8Decode(' 進度四');
-  word[4] := UTF8Decode(' 進度五');
+  word[0] := ' 進度一';
+  word[1] := ' 進度二';
+  word[2] := ' 進度三';
+  word[3] := ' 進度四';
+  word[4] := ' 進度五';
   menu := 0;
   NewShowSelect(1, menu, word, 97);
   while (SDL_WaitEvent(@event) >= 0) do
@@ -4813,12 +4813,12 @@ var
 begin
   //SDL_EnableKeyRepeat(10, 100);
   Result := False;
-  word[0] := UTF8Decode(' 進度一');
-  word[1] := UTF8Decode(' 進度二');
-  word[2] := UTF8Decode(' 進度三');
-  word[3] := UTF8Decode(' 進度四');
-  word[4] := UTF8Decode(' 進度五');
-  word[5] := UTF8Decode(' 自動檔');
+  word[0] := ' 進度一';
+  word[1] := ' 進度二';
+  word[2] := ' 進度三';
+  word[3] := ' 進度四';
+  word[4] := ' 進度五';
+  word[5] := ' 自動檔';
   menu := 0;
   NewShowSelect(0, menu, word, 81);
   while (SDL_WaitEvent(@event) >= 0) do
@@ -4927,15 +4927,15 @@ var
 begin
 
   w := 56;
-  word[0] := UTF8Decode(' 零');
-  word[1] := UTF8Decode(' 一');
-  word[2] := UTF8Decode(' 二');
-  word[3] := UTF8Decode(' 三');
-  word[4] := UTF8Decode(' 四');
-  word[5] := UTF8Decode(' 五');
-  word[6] := UTF8Decode(' 六');
-  word[7] := UTF8Decode(' 七');
-  word[8] := UTF8Decode(' 八');
+  word[0] := ' 零';
+  word[1] := ' 一';
+  word[2] := ' 二';
+  word[3] := ' 三';
+  word[4] := ' 四';
+  word[5] := ' 五';
+  word[6] := ' 六';
+  word[7] := ' 七';
+  word[8] := ' 八';
   //SDL_EnableKeyRepeat(10, 100);
   menu := MusicVolume div 16;
   NewShowSelect(2, menu, word, w);
@@ -5030,8 +5030,8 @@ var
   word: array[0..1] of widestring;
 begin
   w := 56;
-  word[0] := UTF8Decode(' 取消');
-  word[1] := UTF8Decode(' 退出');
+  word[0] := ' 取消';
+  word[1] := ' 退出';
   menu := -1;
   //SDL_EnableKeyRepeat(10, 100);
   NewShowSelect(3, menu, word, w);
@@ -5158,8 +5158,8 @@ begin
     str3[u - 1] := format('%3d, %3d', [RScene[i].MainEntranceY1, RScene[i].MainEntranceX1]);
 
   end;
-  str := UTF8Decode(' 你的位置');
-  strboat := UTF8Decode(' 船的位置');
+  str := ' 你的位置';
+  strboat := ' 船的位置';
   while SDL_PollEvent(@event) >= 0 do
   begin
     if (n mod 10 = 0) then
@@ -6147,10 +6147,10 @@ begin
   y1 := 35;
   y2 := 35;
   display_imgFromSurface(TEAMMATE_PIC, 0, 0);
-  str := UTF8Decode(' 隊中人員');
+  str := ' 隊中人員';
   drawrectangle(x1 + 15, y1 - 5, 220, 160, 0, $FFFFFFFF, 40);
   drawShadowtext(@str[1], x1, y1, colcolor(255), colcolor(111));
-  str := UTF8Decode(' 預備人員');
+  str := ' 預備人員';
   drawrectangle(x2 + 15, y2 - 5, 240, 376, 0, $FFFFFFFF, 40);
   drawShadowtext(@str[1], x2, y2, colcolor(255), colcolor(111));
   drawrectangle(x1 + 15, y1 - 5 + 165, 220, 104, 0, $FFFFFFFF, 40);
@@ -6164,7 +6164,7 @@ begin
 
       str2 := format('%2d', [Rrole[teamlist[i]].Level]);
       drawShadowtext(@str2[1], x1 + 175, i * 25 + y1, colcolor(0, $5), colcolor(0, $7));
-      str2 := UTF8Decode(' 等級  ');
+      str2 := ' 等級  ';
       drawShadowtext(@str2[1], x1 + 105, i * 25 + y1, colcolor(0, $5), colcolor(0, $7));
     end;
     if (position in [0, 2]) and (teamlist[TeamListNum] >= 0) and (i = teamlistnum) then
@@ -6173,7 +6173,7 @@ begin
       UpdateHpMp(teamlist[i], x1 + 5, y1 + 170);
       str2 := format('%2d', [Rrole[teamlist[i]].Level]);
       drawShadowtext(@str2[1], x1 + 175, y1 + 170 - 5, colcolor(0, $5), colcolor(0, $7));
-      str2 := UTF8Decode(' 等級  ');
+      str2 := ' 等級  ';
       drawShadowtext(@str2[1], x1 + 105, y1 + 170 - 5, colcolor(0, $5), colcolor(0, $7));
     end;
   end;
@@ -6188,7 +6188,7 @@ begin
       UpdateHpMp(rlist^, x1 + 5, y1 + 170 + 110);
       str2 := format('%2d', [Rrole[rlist^].Level]);
       drawShadowtext(@str2[1], x1 + 105 + 70, y1 + 170 - 5 + 110, colcolor(0, $5), colcolor(0, $7));
-      str2 := UTF8Decode(' 等級  ');
+      str2 := ' 等級  ';
       drawShadowtext(@str2[1], x1 + 105, y1 + 170 - 5 + 110, colcolor(0, $5), colcolor(0, $7));
     end;
     Inc(rlist);
@@ -6213,12 +6213,12 @@ begin
 
   setlength(menustring, 6);
   setlength(menuengstring, 0);
-  menustring[0] := UTF8Decode(' 全部物品');
-  menustring[1] := UTF8Decode(' 劇情物品');
-  menustring[2] := UTF8Decode(' 神兵寶甲');
-  menustring[3] := UTF8Decode(' 武功秘笈');
-  menustring[4] := UTF8Decode(' 靈丹妙藥');
-  menustring[5] := UTF8Decode(' 傷人暗器');
+  menustring[0] := ' 全部物品';
+  menustring[1] := ' 劇情物品';
+  menustring[2] := ' 神兵寶甲';
+  menustring[3] := ' 武功秘笈';
+  menustring[4] := ' 靈丹妙藥';
+  menustring[5] := ' 傷人暗器';
   showNewItemMenu(menu);
   SDL_UpdateRect2(screen, 0, 0, screen.w, screen.h);
   while SDL_WaitEvent(@event) >= 0 do
@@ -6489,7 +6489,7 @@ var
 begin
   display_imgFromSurface(MENUITEM_PIC, 110, 0, 110, 0, 530, 440);
   drawrectangle(110 + 12, 16, 499, 405, 0, colcolor(255), 40);
-  title := UTF8Decode('　　——————請選擇使用者——————');
+  title := '　　——————請選擇使用者——————';
   drawshadowtext(@title[1], 142, 21, colcolor(0, 5), colcolor(0, 7));
   for i := 0 to 3 do
     equip[i] := -1;
@@ -6501,17 +6501,17 @@ begin
         colcolor(0, $64), colcolor(0, $66));
       drawheadpic(p^, x - 75, y + 290);
       UpdateHpMp(p^, x - 30, y + 212);
-      med := UTF8Decode(' 醫療 ');
-      medpoi := UTF8Decode(' 解毒 ');
-      usepoi := UTF8Decode(' 用毒 ');
-      fist := UTF8Decode(' 拳掌 ');
-      sword := UTF8Decode(' 劍術 ');
-      knife := UTF8Decode(' 刀法 ');
-      Unusual := UTF8Decode(' 奇門 ');
-      Hidden := UTF8Decode(' 暗器 ');
-      attack := UTF8Decode(' 攻擊 ');
-      defend := UTF8Decode(' 防禦 ');
-      speed := UTF8Decode(' 輕功 ');
+      med := ' 醫療 ';
+      medpoi := ' 解毒 ';
+      usepoi := ' 用毒 ';
+      fist := ' 拳掌 ';
+      sword := ' 劍術 ';
+      knife := ' 刀法 ';
+      Unusual := ' 奇門 ';
+      Hidden := ' 暗器 ';
+      attack := ' 攻擊 ';
+      defend := ' 防禦 ';
+      speed := ' 輕功 ';
 
       med1 := format('%3d', [GetRoleMedcine(p^, True)]);
       medpoi1 := format('%3d', [GetRoleMedpoi(p^, True)]);
@@ -6521,9 +6521,9 @@ begin
       knife1 := format('%3d', [GetRoleknife(p^, True)]);
       Unusual1 := format('%3d', [GetRoleUnusual(p^, True)]);
       Hidden1 := format('%3d', [GetRoleHidWeapon(p^, True)]);
-      attack1 := UTF8Decode(' ');
-      defend1 := UTF8Decode(' ');
-      speed1 := UTF8Decode(' ');
+      attack1 := ' ';
+      defend1 := ' ';
+      speed1 := ' ';
       if ritem[inum].ItemType = 1 then
       begin
         med1 := format('%3d', [GetRoleMedcine(p^, True)]);
@@ -6708,31 +6708,31 @@ begin
           1:
           begin
             //str := GBKtoUnicode('套裝獎勵：攻擊距離加1');
-            str := UTF8Decode('套裝獎勵：攻擊距離加1');
+            str := '套裝獎勵：攻擊距離加1';
             drawshadowtext(@str[1], x - 85 - 10, y + 344, colcolor(0, 5), colcolor(0, 7));
           end;
           2:
           begin
             //str := GBKtoUnicode('套裝獎勵：資質上升至100 ');
-            str := UTF8Decode('套裝獎勵：資質上升至100 ');
+            str := '套裝獎勵：資質上升至100 ';
             drawshadowtext(@str[1], x - 85 - 10, y + 344, colcolor(0, 5), colcolor(0, 7));
           end;
           3:
           begin
             //str := GBKtoUnicode('套裝獎勵：攻擊100%內傷');
-            str := UTF8Decode('套裝獎勵：攻擊100%內傷');
+            str := '套裝獎勵：攻擊100%內傷';
             drawshadowtext(@str[1], x - 85 - 10, y + 344, colcolor(0, 5), colcolor(0, 7));
           end;
           4:
           begin
             //str := GBKtoUnicode('套裝獎勵：負面狀態免疫');
-            str := UTF8Decode('套裝獎勵：負面狀態免疫');
+            str := '套裝獎勵：負面狀態免疫';
             drawshadowtext(@str[1], x - 85 - 10, y + 344, colcolor(0, 5), colcolor(0, 7));
           end;
           5:
           begin
             //str := GBKtoUnicode('套裝獎勵：攻擊加50，防禦減25，輕功加30');
-            str := UTF8Decode('套裝獎勵：攻擊加50，防禦減25，輕功加30');
+            str := '套裝獎勵：攻擊加50，防禦減25，輕功加30';
             drawshadowtext(@str[1], x - 85 - 10, y + 344, colcolor(0, 5), colcolor(0, 7));
           end;
         end;
