@@ -18,8 +18,10 @@ uses
   SDL2,
   SDL2_TTF,
   SDL2_image,
+  SDL2_gfx,
   kys_engine,
   kys_main;
+
 function Acupuncture(n: integer): boolean;
 function ShotEagle(aim, chance: integer): boolean;
 function Poetry(talknum, chance, c, Count: integer): boolean;
@@ -316,7 +318,7 @@ begin
   angle := Math.degtorad(abs(degree) - 45);
   x1 := r * cos(abs(angle));
 
-  //newarrowpic := sdl_gfx.rotozoomSurface(arrowpic, degree, 1, 1);
+  newarrowpic := rotozoomSurface(arrowpic, degree, 1, 1);
   dstrect.x := round((screen.w div 2) - abs(x1) - step * sin(degtorad(degree)));
   dstrect.y := round(screen.h - abs(x1) - step * cos(degtorad(degree)));
   dstrect.w := newarrowpic.w;
@@ -345,13 +347,13 @@ begin
   angle := Math.degtorad(abs(degree) - 45);
   x1 := r * cos(abs(angle));
 
-  //newbowpic := sdl_gfx.rotozoomSurface(bowpic, degree, 1, 1);
+  newbowpic := rotozoomSurface(bowpic, degree, 1, 1);
   dstrect.x := round((screen.w div 2) - abs(x1));
   dstrect.y := round(screen.h - abs(x1));
   dstrect.w := newbowpic.w;
   dstrect.h := newbowpic.h;
   SDL_SetColorKey(newbowpic, 1, 0);
-  // if bowstate=1 then SDL_BlitSurface(bg, @dstrect, screen, @dstrect);
+  //if bowstate=1 then SDL_BlitSurface(bg, @dstrect, screen, @dstrect);
   SDL_BlitSurface(newbowpic, nil, screen, @dstrect);
   sdl_freesurface(newbowpic);
   Result := degree;
@@ -1477,9 +1479,8 @@ begin
       sdl_freesurface(temp);
     end;
   end;
-  littlegamepic := gamepic.pic;
-  //littlegamepic := rotozoomsurfacexy(gamepic.pic, 0, 0.3, 0.3, 0);
-  //sdl_freesurface(gamepic.pic);
+  littlegamepic := rotozoomsurfacexy(gamepic.pic, 0, 0.3, 0.3, 0);
+  sdl_freesurface(gamepic.pic);
 
   redraw;
   drawrectangle(x - 5, y - 5, w, h, 0, colcolor(255), 100);
@@ -1697,7 +1698,7 @@ begin
       sdl_freesurface(pic[j][i]);
     end;
   end;
-  //sdl_freesurface(littlegamepic);
+  sdl_freesurface(littlegamepic);
 end;
 
 end.

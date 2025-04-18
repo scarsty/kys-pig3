@@ -19,7 +19,7 @@ uses
   //SDL_mixer,
   iniFiles,
   SDL2_image,
-  //SDL2_gfx,
+  SDL2_gfx,
   kys_battle,
   kys_main,
   bass,
@@ -5776,10 +5776,9 @@ begin
   dest.y := y;
   dest.w := w;
   dest.h := h;
-  //temp := rotozoomSurfaceXY(scr, angle, a, b, 0);
-  temp := scr;
+  temp := rotozoomSurfaceXY(scr, angle, a, b, 0);
   SDL_BlitSurface(temp, nil, screen, @dest);
-  //sdl_freesurface(temp);
+  sdl_freesurface(temp);
 end;
 
 function GetZoomPic(scr: Psdl_surface; angle: double; x, y, w, h: integer): Psdl_surface;
@@ -5793,8 +5792,7 @@ begin
   dest.y := y;
   dest.w := w;
   dest.h := h;
-  //Result := rotozoomSurfaceXY(scr, angle, a, b, 0);
-  Result := scr;
+  Result := rotozoomSurfaceXY(scr, angle, a, b, 0);
 end;
 
 procedure PlayBeginningMovie(beginnum, endnum: integer);
