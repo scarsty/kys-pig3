@@ -7,7 +7,8 @@ uses
   SDL2_ttf,
   bass,
   lua52,
-  Classes;
+  Classes,
+  Generics.Collections;
 
 type
 
@@ -551,9 +552,7 @@ var
   SimpleStatusTex: array [0 .. 5] of PSDL_Texture; //全队简明状态的表面
   SimpleTextTex: array [0 .. 5] of PSDL_Texture; //全队简明状态文字的表面
 
-  CharTex: array [$0 .. $FFFFFF] of PSDL_Texture; //字符的纹理
-  CharSur: array [$0 .. $FFFFFF] of PSDL_Surface; //字符的表面
-  CharSize: array [$0 .. $FFFFFF] of byte;
+  CharTex: TDictionary<integer, Pointer>; //字符的纹理
   WoodPic: Pointer; //木人游戏的纹理
 
   PRESENT_SYNC: integer = 1; //屏幕刷新同步

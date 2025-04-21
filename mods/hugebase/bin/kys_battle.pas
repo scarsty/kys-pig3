@@ -106,7 +106,7 @@ procedure GiveMeLife(bnum, mnum, level, Si: integer);
 procedure ambush(bnum, mnum, level, Si: integer);
 
 type
-{$M+}
+  {$M+}
   //主动类特技
   TSpecialAbility = class
   published
@@ -150,8 +150,8 @@ type
     procedure SA_37(bnum, mnum, level: integer);
   end;
 
-{$M-}
-{$M+}
+  {$M-}
+  {$M+}
 
   //被动类特技
   TSpecialAbility2 = class
@@ -173,7 +173,7 @@ type
     procedure SA2_101(bnum, mnum, mnum2, level: integer);
   end;
 
-{$M-}
+  {$M-}
 
 implementation
 
@@ -523,7 +523,7 @@ var
   i, menu, max, menup, xm, ym, x, y, h, forall: integer;
   menuString: array [0 .. 8] of utf8string;
   str, str1: utf8string;
-  //显示选择参战人物选单
+//显示选择参战人物选单
   procedure ShowMultiMenu();
   var
     i: integer;
@@ -635,38 +635,38 @@ begin
         end;
       end;
       SDL_MOUSEBUTTONUP:
-      if MouseInRegion(x, y, 150, (max + 1) * h) then
-      begin
-        if (event.button.button = SDL_BUTTON_LEFT) and (menu <> max) then
+        if MouseInRegion(x, y, 150, (max + 1) * h) then
         begin
-          //选中人物则反转对应bit
-          if forceSingle = 0 then
+          if (event.button.button = SDL_BUTTON_LEFT) and (menu <> max) then
           begin
-            if menu > 0 then
+            //选中人物则反转对应bit
+            if forceSingle = 0 then
             begin
-              Result := Result xor (1 shl (menu - 1));
+              if menu > 0 then
+              begin
+                Result := Result xor (1 shl (menu - 1));
+              end
+              else
+              begin
+                if Result < forall then
+                  Result := forall
+                else
+                  Result := 0;
+              end;
             end
             else
             begin
-              if Result < forall then
-                Result := forall
-              else
-                Result := 0;
+              if menu > 0 then
+                Result := 1 shl (menu - 1);
             end;
-          end
-          else
-          begin
-            if menu > 0 then
-              Result := 1 shl (menu - 1);
+            ShowMultiMenu;
           end;
-          ShowMultiMenu;
+          if (event.button.button = SDL_BUTTON_LEFT) and (menu = max) then
+          begin
+            if Result <> 0 then
+              break;
+          end;
         end;
-        if (event.button.button = SDL_BUTTON_LEFT) and (menu = max) then
-        begin
-          if Result <> 0 then
-            break;
-        end;
-      end;
       SDL_MOUSEMOTION:
       begin
         if MouseInRegion(x, y, 150, (max + 1) * h, xm, ym) then
@@ -835,15 +835,15 @@ begin
           //7战神
           else if si = 7 then
             Brole[i].StateRound[7] := Brole[i].StateRound[7] + 1
-            //5回血,6回内,20回体
+          //5回血,6回内,20回体
           else if (si = 5) or (si = 6) or (si = 20) then
           begin
             Brole[i].StateLevel[si] := Brole[i].StateLevel[7] div 2;
             Brole[i].StateRound[si] := 3;
           end
           else
-          //3移动,16奇门,17博采,18聆音,19青翼,8风雷,9孤注,10倾国,12剑芒,13连击
-          //这里博采的概率是1%, 有可能是设置错误
+            //3移动,16奇门,17博采,18聆音,19青翼,8风雷,9孤注,10倾国,12剑芒,13连击
+            //这里博采的概率是1%, 有可能是设置错误
           begin
             Brole[i].StateLevel[si] := 1;
             Brole[i].StateRound[si] := 3;
@@ -1311,7 +1311,7 @@ var
   str: utf8string;
   word: array [0 .. 11] of utf8string;
   num: array [0 .. 9] of utf8string;
-  //显示战斗主选单
+//显示战斗主选单
   procedure ShowBMenu(MenuStatus, menu, max: integer);
   var
     i, p: integer;
@@ -2390,7 +2390,7 @@ begin
             end;
           end;
         end;
-        //非移动的情况, 攻击、医疗等
+          //非移动的情况, 攻击、医疗等
         else
         begin
           for i := 1 to 4 do
@@ -2723,7 +2723,8 @@ begin
   //出手一次, 获得1到10的经验值
   case MODVersion of
     13: Brole[bnum].ExpGot := Brole[bnum].ExpGot + 1 + random(10);
-    else Brole[bnum].ExpGot := Brole[bnum].ExpGot + 40 + random(10);
+    else
+      Brole[bnum].ExpGot := Brole[bnum].ExpGot + 40 + random(10);
   end;
 
   //武功的攻击超过1000且人物的攻击超过600, 则使用震动效果
@@ -3088,122 +3089,122 @@ begin
   bnum := BField[2, Bx, By];
   case aimMode of
     2, 3, 6:
-    if bnum >= 0 then
-      for i := 0 to BRoleAmount - 1 do
-      begin
-        if (Brole[i].Dead = 0) and (((aimMode = 2) and (Brole[bnum].Team <> Brole[i].Team)) or ((aimMode = 3) and (Brole[bnum].Team = Brole[i].Team)) or (aimMode = 6)) then
-          BField[4, Brole[i].X, Brole[i].Y] := 1 + random(6);
-      end;
+      if bnum >= 0 then
+        for i := 0 to BRoleAmount - 1 do
+        begin
+          if (Brole[i].Dead = 0) and (((aimMode = 2) and (Brole[bnum].Team <> Brole[i].Team)) or ((aimMode = 3) and (Brole[bnum].Team = Brole[i].Team)) or (aimMode = 6)) then
+            BField[4, Brole[i].X, Brole[i].Y] := 1 + random(6);
+        end;
     4: BField[4, Bx, By] := 1;
     0, 1, 5:
-    case mode of
-      0, 6: //目标系点型、目标系十型、目标系菱型、原地系菱型、远程
-      begin
-        dis := range;
-        for i1 := max(Ax - dis, 0) to min(Ax + dis, 63) do
+      case mode of
+        0, 6: //目标系点型、目标系十型、目标系菱型、原地系菱型、远程
         begin
-          dis0 := abs(i1 - Ax);
-          for i2 := max(Ay - dis + dis0, 0) to min(Ay + dis - dis0, 63) do
+          dis := range;
+          for i1 := max(Ax - dis, 0) to min(Ax + dis, 63) do
           begin
-            BField[4, i1, i2] := (abs(i1 - Bx) + abs(i2 - By)) * 2 + 1;
-          end;
-        end;
-        //if (abs(i1 - Ax) + abs(i2 - Ay)) <= range then
-        //Bfield[4, i1, i2] := 1;
-      end;
-      3: //目标系方型、原地系方型
-      begin
-        for i1 := max(Ax - range, 0) to min(Ax + range, 63) do
-          for i2 := max(Ay - range, 0) to min(Ay + range, 63) do
-          begin
-            if MODVersion = 81 then
-              BField[4, i1, i2] := 1
-            else
-              BField[4, i1, i2] := abs(i1 - Bx) + abs(i2 - By) * 2 + random(24) + 1;
-          end;
-      end;
-      1: //方向系线型
-      begin
-        i := 1;
-        i1 := sign(Ax - Bx);
-        i2 := sign(Ay - By);
-        if i1 > 0 then
-          step := min(63 - Bx, step);
-        if i2 > 0 then
-          step := min(63 - By, step);
-        if i1 < 0 then
-          step := min(Bx, step);
-        if i2 < 0 then
-          step := min(By, step);
-        if (i1 = 0) and (i2 = 0) then
-          step := 0;
-        while i <= step do
-        begin
-          BField[4, Bx + i1 * i, By + i2 * i] := i * 2 + 1;
-          i := i + 1;
-        end;
-      end;
-      2: //原地系十型、原地系叉型、原地系米型
-      begin
-        for i1 := max(Bx - step, 0) to min(Bx + step, 63) do
-          BField[4, i1, By] := abs(i1 - Bx) * 4;
-        for i2 := max(By - step, 0) to min(By + step, 63) do
-          BField[4, Bx, i2] := abs(i2 - By) * 4;
-        for i := 1 to range do
-        begin
-          i1 := -i;
-          while i1 <= i do
-          begin
-            i2 := -i;
-            while i2 <= i do
+            dis0 := abs(i1 - Ax);
+            for i2 := max(Ay - dis + dis0, 0) to min(Ay + dis - dis0, 63) do
             begin
-              if (Bx + i1 in [0 .. 63]) and (By + i2 in [0 .. 63]) then
-                BField[4, Bx + i1, By + i2] := 2 * i * 2 + 1;
-              i2 := i2 + 2 * i;
+              BField[4, i1, i2] := (abs(i1 - Bx) + abs(i2 - By)) * 2 + 1;
             end;
-            i1 := i1 + 2 * i;
           end;
+          //if (abs(i1 - Ax) + abs(i2 - Ay)) <= range then
+          //Bfield[4, i1, i2] := 1;
         end;
-      end;
-      4: //方向系菱型
-      begin
-        step1 := (step + 1) div 2;
-        Ax1 := Bx + sign(Ax - Bx) * step1;
-        Ay1 := By + sign(Ay - By) * step1;
-        dis := step div 2;
-        for i1 := max(Ax1 - dis, 0) to min(Ax1 + dis, 63) do
+        3: //目标系方型、原地系方型
         begin
-          dis0 := abs(i1 - Ax1);
-          for i2 := max(Ay1 - dis + dis0, 0) to min(Ay1 + dis - dis0, 63) do
-          begin
-            if abs(i1 - Bx) <> abs(i2 - By) then
-              BField[4, i1, i2] := abs(i1 - Bx) + abs(i2 - By) * 2 + 1;
-          end;
+          for i1 := max(Ax - range, 0) to min(Ax + range, 63) do
+            for i2 := max(Ay - range, 0) to min(Ay + range, 63) do
+            begin
+              if MODVersion = 81 then
+                BField[4, i1, i2] := 1
+              else
+                BField[4, i1, i2] := abs(i1 - Bx) + abs(i2 - By) * 2 + random(24) + 1;
+            end;
         end;
-        //Bfield[4, Bx, By] := 0;
-      end;
-      5: //方向系角型
-      begin
-        Ax1 := Bx + sign(Ax - Bx) * step;
-        Ay1 := By + sign(Ay - By) * step;
-        dis := step;
-        for i1 := max(Ax1 - dis, 0) to min(Ax1 + dis, 63) do
+        1: //方向系线型
         begin
-          dis0 := abs(i1 - Ax1);
-          for i2 := max(Ay1 - dis + dis0, 0) to min(Ay1 + dis - dis0, 63) do
+          i := 1;
+          i1 := sign(Ax - Bx);
+          i2 := sign(Ay - By);
+          if i1 > 0 then
+            step := min(63 - Bx, step);
+          if i2 > 0 then
+            step := min(63 - By, step);
+          if i1 < 0 then
+            step := min(Bx, step);
+          if i2 < 0 then
+            step := min(By, step);
+          if (i1 = 0) and (i2 = 0) then
+            step := 0;
+          while i <= step do
           begin
-            if (i1 in [0 .. 63]) and (i2 in [0 .. 63]) and (abs(i1 - Bx) <= step) and (abs(i2 - By) <= step) then
-              BField[4, i1, i2] := abs(i1 - Bx) + abs(i2 - By) * 2 + 1;
+            BField[4, Bx + i1 * i, By + i2 * i] := i * 2 + 1;
+            i := i + 1;
           end;
         end;
-        //Bfield[4, Bx, By] := 0;
+        2: //原地系十型、原地系叉型、原地系米型
+        begin
+          for i1 := max(Bx - step, 0) to min(Bx + step, 63) do
+            BField[4, i1, By] := abs(i1 - Bx) * 4;
+          for i2 := max(By - step, 0) to min(By + step, 63) do
+            BField[4, Bx, i2] := abs(i2 - By) * 4;
+          for i := 1 to range do
+          begin
+            i1 := -i;
+            while i1 <= i do
+            begin
+              i2 := -i;
+              while i2 <= i do
+              begin
+                if (Bx + i1 in [0 .. 63]) and (By + i2 in [0 .. 63]) then
+                  BField[4, Bx + i1, By + i2] := 2 * i * 2 + 1;
+                i2 := i2 + 2 * i;
+              end;
+              i1 := i1 + 2 * i;
+            end;
+          end;
+        end;
+        4: //方向系菱型
+        begin
+          step1 := (step + 1) div 2;
+          Ax1 := Bx + sign(Ax - Bx) * step1;
+          Ay1 := By + sign(Ay - By) * step1;
+          dis := step div 2;
+          for i1 := max(Ax1 - dis, 0) to min(Ax1 + dis, 63) do
+          begin
+            dis0 := abs(i1 - Ax1);
+            for i2 := max(Ay1 - dis + dis0, 0) to min(Ay1 + dis - dis0, 63) do
+            begin
+              if abs(i1 - Bx) <> abs(i2 - By) then
+                BField[4, i1, i2] := abs(i1 - Bx) + abs(i2 - By) * 2 + 1;
+            end;
+          end;
+          //Bfield[4, Bx, By] := 0;
+        end;
+        5: //方向系角型
+        begin
+          Ax1 := Bx + sign(Ax - Bx) * step;
+          Ay1 := By + sign(Ay - By) * step;
+          dis := step;
+          for i1 := max(Ax1 - dis, 0) to min(Ax1 + dis, 63) do
+          begin
+            dis0 := abs(i1 - Ax1);
+            for i2 := max(Ay1 - dis + dis0, 0) to min(Ay1 + dis - dis0, 63) do
+            begin
+              if (i1 in [0 .. 63]) and (i2 in [0 .. 63]) and (abs(i1 - Bx) <= step) and (abs(i2 - By) <= step) then
+                BField[4, i1, i2] := abs(i1 - Bx) + abs(i2 - By) * 2 + 1;
+            end;
+          end;
+          //Bfield[4, Bx, By] := 0;
+        end;
+        7: //啥东西？
+        begin
+          if ((Ax = Bx) and (i2 = Ay) and (abs(i1 - Ax) <= step)) or ((Ay = By) and (i1 = Ax) and (abs(i2 - Ay) <= step)) then
+            BField[4, i1, i2] := 1;
+        end;
       end;
-      7: //啥东西？
-      begin
-        if ((Ax = Bx) and (i2 = Ay) and (abs(i1 - Ax) <= step)) or ((Ay = By) and (i1 = Ax) and (abs(i2 - Ay) <= step)) then
-          BField[4, i1, i2] := 1;
-      end;
-    end;
   end;
 
   {if play = 1 then
@@ -3452,7 +3453,8 @@ begin
           Rrole[Brole[i].rnum].CurrentHP := 0;
           case MODVersion of
             13: Brole[bnum].ExpGot := Brole[bnum].ExpGot + 30 + random(20);
-            else Brole[bnum].ExpGot := Brole[bnum].ExpGot + 300 + random(20) * 10;
+            else
+              Brole[bnum].ExpGot := Brole[bnum].ExpGot + 300 + random(20) * 10;
           end;
         end;
       end;
@@ -4105,15 +4107,16 @@ begin
       basicvalue := warsta.ExpGot div amount
     else
       basicvalue := 0;
-
+    //if MODVersion = 0 then
+    //begin
+    //  basicvalue := basicvalue * 10;
+    //end;
     {//太岳四侠练功, 20级以上不得经验
       if (Rrole[rnum].Level >= 20) and (warsta.Warnum = 31) then
       basicvalue := 0;
       //桃谷六仙练功, 40级以上不得经验
       if (Rrole[rnum].Level >= 40) and (warsta.Warnum = 160) then
       basicvalue := 0;}
-
-    //basicvalue :=  0;
     if (Brole[i].Team = 0) and (Brole[i].Dead = 0) then
     begin
       //if rrole[Brole[i].rnum].Level < warsta.exp then
@@ -5522,11 +5525,11 @@ begin
           case mode of
             0: check := True;
             1:
-            if (Rrole[rnum].CurrentHP < Rrole[rnum].MaxHP * 2 div 3) then
-              check := True;
+              if (Rrole[rnum].CurrentHP < Rrole[rnum].MaxHP * 2 div 3) then
+                check := True;
             2:
-            if (Rrole[rnum].Poison > 33) then
-              check := True;
+              if (Rrole[rnum].Poison > 33) then
+                check := True;
           end;
           if check then
           begin
@@ -5601,18 +5604,19 @@ function ProbabilityByValue(cur, m, mode: integer; var n: integer): boolean;
 begin
   case sign(cur - m) * sign(mode) of
     1:
-    //找到更小的, 直接设置为选中
+      //找到更小的, 直接设置为选中
     begin
       n := 1;
       Result := True;
     end;
     0:
-    //找到相同的, 选中几率与当前找到几个点有关
+      //找到相同的, 选中几率与当前找到几个点有关
     begin
       n := n + 1;
       Result := random(n) = 0;
     end;
-    else Result := False;
+    else
+      Result := False;
   end;
 end;
 
@@ -6323,9 +6327,9 @@ begin
                 movetype := 1; //1  靠近敌人
             end;
           end;
-          //乾坤大挪移,飞天神行,战神无双,倾国倾城,博采众家,爱恨情仇,鸳鸯双刀,柔情似水
-          //庖丁解牛,孤注一掷,掌遏风雷,佛问魔心,丐世豪侠
-          //温情脉脉,精灵古怪,深情款款,剑芒,伺机而动,毒箭穿心,古灵精怪
+            //乾坤大挪移,飞天神行,战神无双,倾国倾城,博采众家,爱恨情仇,鸳鸯双刀,柔情似水
+            //庖丁解牛,孤注一掷,掌遏风雷,佛问魔心,丐世豪侠
+            //温情脉脉,精灵古怪,深情款款,剑芒,伺机而动,毒箭穿心,古灵精怪
           {144, 131, 135, 134, 262, 140, 146, 142,
             261, 259, 257, 286, 258,
             284, 282, 283, 260, 287, 274, 141:}
@@ -6649,15 +6653,16 @@ begin
     case HurtType of
       0, 1, 6: Result := Brole[bnum].Team <> Brole[aimbnum].Team;
       2: //0-范围内敌方, 1-范围内我方, 2-敌方全部, 3-我方全部, 4-自身, 5-范围内全部, 6-全部, 7-不高亮
-      case aimMode of
-        0, 2: Result := Brole[bnum].Team <> Brole[aimbnum].Team;
-        1, 3: Result := Brole[bnum].Team = Brole[aimbnum].Team;
-        4: Result := bnum = aimbnum;
-        5, 6: Result := True;
-        7: Result := False;
-      end;
+        case aimMode of
+          0, 2: Result := Brole[bnum].Team <> Brole[aimbnum].Team;
+          1, 3: Result := Brole[bnum].Team = Brole[aimbnum].Team;
+          4: Result := bnum = aimbnum;
+          5, 6: Result := True;
+          7: Result := False;
+        end;
       3: Result := False;
-      else Result := False;
+      else
+        Result := False;
     end;
 end;
 
@@ -6680,14 +6685,14 @@ begin
         hurt := 0;
         case Rmagic[mnum].AddMP[0] of
           0:
-          if Brole[bnum].Team <> Brole[i].Team then
-            hurt := 1;
+            if Brole[bnum].Team <> Brole[i].Team then
+              hurt := 1;
           1:
-          if Brole[bnum].Team = Brole[i].Team then
-            hurt := 1;
+            if Brole[bnum].Team = Brole[i].Team then
+              hurt := 1;
           4:
-          if bnum = i then
-            hurt := 1;
+            if bnum = i then
+              hurt := 1;
         end;
         if hurt = 1 then
         begin
@@ -6706,25 +6711,25 @@ begin
               Brole[i].StateRound[Rmagic[mnum].AddMP[s]] := Rmagic[mnum].HurtMP[level - 1];
             end
             else
-              //定身状态
-              if (Rmagic[mnum].AddMP[s] = 26) then
+            //定身状态
+            if (Rmagic[mnum].AddMP[s] = 26) then
+            begin
+              if (random(100) < j) {and (Brole[i].StateLevel[14] = 0)} then
               begin
-                if (random(100) < j) {and (Brole[i].StateLevel[14] = 0)} then
-                begin
-                  Brole[i].StateLevel[Rmagic[mnum].AddMP[s]] := -1;
-                  Brole[i].StateRound[Rmagic[mnum].AddMP[s]] := Rmagic[mnum].HurtMP[level - 1];
-                end;
-              end
-              else
-              begin
-                //当前特技的水平定义为目前能够达到的最大值(负值为最小值)
-                //如果二者异号, 强制为特技达到的水平, 即正面能覆盖负面, 或反之
-                //其他情况, 包括有一个为0, 如果等级和回合能达到更大则覆盖, 即正面或负面效果只能保留最大
-                r := Rmagic[mnum].HurtMP[level - 1];
-                if bnum = i then
-                  r := r + 1; //当对象为自身的时候, 回合数加1, 因为人物行动之后会立刻扣掉一回合
-                ModifyState(i, Rmagic[mnum].AddMP[s], j, r);
+                Brole[i].StateLevel[Rmagic[mnum].AddMP[s]] := -1;
+                Brole[i].StateRound[Rmagic[mnum].AddMP[s]] := Rmagic[mnum].HurtMP[level - 1];
               end;
+            end
+            else
+            begin
+              //当前特技的水平定义为目前能够达到的最大值(负值为最小值)
+              //如果二者异号, 强制为特技达到的水平, 即正面能覆盖负面, 或反之
+              //其他情况, 包括有一个为0, 如果等级和回合能达到更大则覆盖, 即正面或负面效果只能保留最大
+              r := Rmagic[mnum].HurtMP[level - 1];
+              if bnum = i then
+                r := r + 1; //当对象为自身的时候, 回合数加1, 因为人物行动之后会立刻扣掉一回合
+              ModifyState(i, Rmagic[mnum].AddMP[s], j, r);
+            end;
             s := s + 1;
           end;
         end;
@@ -7251,7 +7256,7 @@ begin
   begin
     curx := curx + incx;
     cury := cury + incy;
-    if BField[2, curx, cury] >= 0 then
+    if (curx >= 0) and (cury >= 0) and (BField[2, curx, cury] >= 0) then
     begin
       aimbnum := BField[2, curx, cury];
       aimx := curx;
@@ -7345,7 +7350,7 @@ begin
     if (Brole[bnum].Auto = 0) and (Brole[bnum].Team = 0) then
     begin
       while (BField[2, Ax, Ay] <> -1) or (BField[1, Ax, Ay] <> 0) do
-        while not SelectRange(bnum, 0, Rmagic[mnum].MoveDistance[level - 1], 0) do;
+        while not SelectRange(bnum, 0, Rmagic[mnum].MoveDistance[level - 1], 0) do ;
     end
     else
     begin
@@ -7557,7 +7562,7 @@ begin
     begin
       if (Brole[i].Team = Brole[bnum].Team) and (Brole[i].Dead = 1) then
       begin
-        menuString[amount] := putf8char(@Rrole[Brole[i].rnum].Name);
+        menuString[amount] := u16toutf8(Rrole[Brole[i].rnum].Name);
         bnumarray[amount] := i;
         amount := amount + 1;
       end;
@@ -8254,7 +8259,7 @@ begin
       if (Brole[bnum].Auto = 0) and (Brole[bnum].Team = 0) then
       begin
         while BField[2, Ax, Ay] <> -1 do
-          while not SelectRange(bnum, 0, Rmagic[mnum].MoveDistance[level - 1], 0) do;
+          while not SelectRange(bnum, 0, Rmagic[mnum].MoveDistance[level - 1], 0) do ;
       end
       else
       begin
@@ -8290,7 +8295,7 @@ begin
 end;
 
 //31森罗万象, 学会场上某队友的特技, 10级为从全部队友中选择
-//在原版中运行时, 设定为
+//在原版中运行时, 设定为模仿队友的武功
 procedure TSpecialAbility.SA_31(bnum, mnum, level: integer);
 var
   i, i1, amount, res, rnum, eachamount: integer;
@@ -8323,14 +8328,15 @@ begin
       begin
         case MODVersion of
           13: eachamount := 1;
-          else eachamount := 10
+          else
+            eachamount := 10
         end;
         for i1 := 0 to eachamount - 1 do
         begin
           if Rrole[Brole[i].rnum].magic[i1] > 0 then
           begin
             mnumarray[amount] := Rrole[Brole[i].rnum].magic[i1];
-            namemagic := putf8char(@Rrole[Brole[i].rnum].Name) + StringOfChar(' ', 10 - DrawLength(putf8char(@Rrole[Brole[i].rnum].Name))) + putf8char(@Rmagic[Rrole[Brole[i].rnum].magic[i1]].Name);
+            namemagic := u16toutf8(Rrole[Brole[i].rnum].Name) + StringOfChar(' ', 10 - DrawLength(u16toutf8(Rrole[Brole[i].rnum].Name))) + u16toutf8(Rmagic[Rrole[Brole[i].rnum].magic[i1]].Name);
             //menustring[amount] := putf8char(@namemagic);
             menuString[amount] := namemagic;
             ConsoleLog(menuString[amount]);
@@ -8355,7 +8361,7 @@ begin
           if Rmagic[Rrole[rnum].magic[0]].HurtType = 2 then
           begin
             mnumarray[amount] := Rrole[rnum].magic[0];
-            namemagic := putf8char(@Rrole[rnum].Name) + StringOfChar(' ', 10 - DrawLength(putf8char(@Rrole[rnum].Name))) + putf8char(@Rmagic[Rrole[rnum].magic[0]].Name);
+            namemagic := u16toutf8(Rrole[rnum].Name) + StringOfChar(' ', 10 - DrawLength(u16toutf8(Rrole[rnum].Name))) + u16toutf8(Rmagic[Rrole[rnum].magic[0]].Name);
             menuString[amount] := namemagic;
             ConsoleLog(menuString[amount]);
             amount := amount + 1;
@@ -8923,7 +8929,7 @@ begin
     //Rrole[Brole[bnum].rnum].CurrentHP := min(Rrole[Brole[bnum].rnum].CurrentHP + );
     PlayActionAmination(bnum, Rmagic[mnum].MagicType); //动作效果
     PlayMagicAmination(bnum, Rmagic[mnum2].AmiNum);
-    ShowHurtValue(Rmagic[mnum].HurtType); //显示数字
+    ShowHurtValue(Rmagic[mnum2].HurtType); //显示数字
   end;
 end;
 

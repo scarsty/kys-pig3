@@ -64,7 +64,7 @@ function instruct_42(jump1, jump2: integer): integer;
 function instruct_43(inum, jump1, jump2: integer): integer;
 procedure instruct_44(enum1, beginpic1, endpic1, enum2, beginpic2, endpic2: integer);
 procedure instruct_44e(enum1, beginpic1, endpic1, enum2, beginpic2, enum3, beginpic3: integer);
-procedure Show3HintString(str1, str2, str3: putf8char);
+procedure Show3HintString(str1, str2, str3: utf8string);
 procedure AddRoleProWithHint(rnum, datalist, num: integer; word: utf8string = '');
 procedure instruct_45(rnum, speed: integer);
 procedure instruct_46(rnum, mp: integer);
@@ -203,7 +203,7 @@ begin
 
   //DrawRectangle(x - 85, y, 170, 76, 0, ColColor(255), 30);
   word := format('%d', [amount]);
-  l1 := DrawLength(putf8char(@Ritem[inum].Name));
+  l1 := DrawLength(u16toutf8(Ritem[inum].Name));
   l2 := DrawLength(word);
   DrawTextFrame(CENTER_X - (6 + l1 + l2) * 5 - 20, y, 6 + l1 + l2);
   x := CENTER_X - (6 + l1 + l2) * 5 + 1;
@@ -312,8 +312,7 @@ var
   i, i1, i2, curPic, preEventPic: integer;
   ModifyS: boolean;
 begin
-  if CurEvent < 0 then
-    exit;
+  if CurEvent > 0 then
   curPic := DData[CurScence, CurEvent, 5];
   if list[0] = -2 then
     list[0] := CurScence;
@@ -343,7 +342,7 @@ begin
   Sdata[list[0], 3, Ddata[list[0], list[1], 10], Ddata[list[0], list[1], 9]] := list[1];
   //if list[0] = CurScence then
   //UpdateScence(list[12], list[11]);
-  if DData[CurScence, CurEvent, 5] <> curPic then
+  if  (CurEvent > 0)and(DData[CurScence, CurEvent, 5] <> curPic) then
   begin
     if (PNG_TILE > 0) then
     begin
@@ -736,7 +735,7 @@ procedure instruct_27(enum, beginpic, endpic: integer);
 var
   i, xpoint, ypoint: integer;
 begin
-  if (DData[CurScence, enum, 10] = Sx) and (DData[CurScence, enum, 9] = Sy) then
+  if (enum>=0) and (DData[CurScence, enum, 10] = Sx) and (DData[CurScence, enum, 9] = Sy) then
     enum := -1;
   if enum = -1 then
   begin
@@ -963,7 +962,7 @@ begin
   if dismode = 0 then
   begin
     word := '學會';
-    Show3HintString(@Rrole[rnum].Name, @word[1], @Rmagic[mnum].Name);
+    Show3HintString(u16toutf8(Rrole[rnum].Name), word, u16toutf8(Rmagic[mnum].Name));
   end;
 end;
 
@@ -983,7 +982,7 @@ begin
   if iq > 0 then
   begin
     word := '資質增加';
-    Show3HintString(@Rrole[rnum].Name, @word[1], putf8char(format('%3d', [iq])));
+    Show3HintString(u16toutf8(Rrole[rnum].Name), word, format('%3d', [iq]));
   end;
 end;
 
@@ -1158,7 +1157,7 @@ begin
   //SData[CurScence, 3, DData[CurScence, [enum,10],DData[CurScence, [enum,9]]:=-1;
 end;
 
-procedure Show3HintString(str1, str2, str3: putf8char);
+procedure Show3HintString(str1, str2, str3: utf8string);
 var
   l, l1, l2, l3, x: integer;
 begin
@@ -1185,7 +1184,7 @@ begin
   Rrole[rnum].Data[datalist] := Rrole[rnum].Data[datalist] + num;
   if word <> '' then
   begin
-    Show3HintString((@Rrole[rnum].Name), @word[1], putf8char(format('%d', [num])));
+    Show3HintString(u16toutf8(Rrole[rnum].Name), word, format('%d', [num]));
   end;
 end;
 
@@ -2811,7 +2810,7 @@ begin
     else if (namenum = -1) or (namenum = 0) then
       NameStr := '';
     if {(MODVersion in [0, 31]) and} (namenum = 0) then
-      NameStr := putf8char(@Rrole[0].Name);
+      NameStr := u16toutf8(@Rrole[0].Name);
   end
   else
     NameStr := disname;

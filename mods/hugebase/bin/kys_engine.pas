@@ -685,10 +685,9 @@ begin
 end; {Traditional2Simplified}
 
 //生成或查找已知纹理, 返回其指针, 是否销毁由调用者决定
-//返回值为建议是否销毁是否已经保存
-function CreateFontTile(num: integer; usesur: integer; var p: pointer; var w, h: integer): boolean;
+function CreateFontTile(num: integer; usesur: integer; var w, h: integer): pointer;
 var
-  size0, size: integer;
+  size0, size, key: integer;
   pfont: PTTF_Font;
   needcreate: boolean;
   whitecolor: uint32 = $FFFFFFFF;
@@ -696,9 +695,8 @@ var
   src, dst: TSDL_Rect;
   sur, tempsur: PSDL_Surface;
   tex, temptex: PSDL_Texture;
-  pt:putf8char;
+  pt: putf8char;
 begin
-  Result := False;
   //是否可能是已有纹理
   if num >= 128 then
   begin
@@ -711,7 +709,7 @@ begin
     word[1] := num;
     word[2] := num shr 8;
     word[3] := num shr 16;
-    pt:=@word[1];
+    pt := @word[1];
   end
   else
   begin
@@ -722,26 +720,28 @@ begin
     src.y := 0;
     word[0] := num;
     word[1] := 0;
-    pt:=@word[0];
+    pt := @word[0];
   end;
 
+  key := (size shl 24) or num;
   //可以直接查找的情况, 其他情况需要创建
-  if (size = size0) and (CharSize[num] = size0) then
+  if CharTex.ContainsKey(key) then
   begin
     case usesur of
       0:
       begin
-        p := CharTex[num];
-        SDL_QueryTexture(CharTex[num], nil, nil, @w, @h);
+        tex := CharTex[key];
+        Result := tex;
+        SDL_QueryTexture(tex, nil, nil, @w, @h);
       end;
       else
       begin
-        p := CharSur[num];
-        w := CharSur[num].w;
-        h := CharSur[num].h;
+        sur := CharTex[key];
+        Result := sur;
+        w := sur.w;
+        h := sur.h;
       end;
     end;
-    Result := True;
   end
   else
   begin
@@ -765,42 +765,24 @@ begin
     sur := SDL_CreateRGBSurface(0, dst.w, dst.h, 32, RMASK, GMASK, BMASK, AMASK);
     SDL_SetSurfaceBlendMode(tempsur, SDL_BLENDMODE_NONE);
     SDL_BlitSurface(tempsur, @src, sur, @dst);
-    try
+    {try
       SDL_FreeSurface(tempsur);
     except
       ConsoleLog('Free font surface %s %d failed', [widechar(num), size0]);
-    end;
-
+    end;}
+    ConsoleLog(format('%s(%d)', [pt, CharTex.Count]), False);
     if usesur = 0 then
     begin
       tex := SDL_CreateTextureFromSurface(render, sur);
       SDL_FreeSurface(sur);
-      p := Tex;
-      //检查是否需要保存
-      if size = size0 then
-      begin
-        ConsoleLog(pt, False);
-        if CharSize[num] > 0 then
-          SDL_DestroyTexture(CharTex[num]);
-        CharTex[num] := tex;
-        CharSize[num] := size0;
-        Result := True;
-      end;
+      Result := Tex;
+      CharTex.add(key, tex);
     end
     else
     begin
-      p := pointer(Sur);
-      if size = size0 then
-      begin
-        ConsoleLog(pt, False);
-        if CharSize[num] > 0 then
-          SDL_FreeSurface(CharSur[num]);
-        CharSur[num] := sur;
-        CharSize[num] := size0;
-        Result := True;
-      end;
+      Result := pointer(sur);
+      CharTex.add(key, sur);
     end;
-
   end;
 end;
 
@@ -848,7 +830,7 @@ begin
   if nBytes > 0 then
     Exit(False);
   if bAllAscii then
-    Exit(true);
+    Exit(True);
   Result := True;
 end;
 
@@ -914,7 +896,7 @@ begin
       k := byte(word[i]) + byte(word[i + 1]) * 256 + byte(word[i + 2]) * 65536;
       i := i + 3;
     end;
-    saved := CreateFontTile(k, SW_SURFACE, p, w, h);
+    p := CreateFontTile(k, SW_SURFACE, w, h);
     dest.w := w;
     dest.h := h;
     case SW_SURFACE of
@@ -929,8 +911,6 @@ begin
           SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
         end;
         SDL_RenderCopy(render, tex, nil, @dest);
-        if not saved then
-          SDL_DestroyTexture(tex);
       end;
       else
       begin
@@ -2635,14 +2615,14 @@ procedure DestroyFontTextures();
 var
   i: integer;
 begin
-  for i := 0 to high(CharTex) do
+  {for i := 0 to high(CharTex) do
   begin
     if CharTex[i] <> nil then
     begin
       SDL_DestroyTexture(CharTex[i]);
       CharTex[i] := nil;
     end;
-  end;
+  end;}
 end;
 
 procedure DrawPNGTile(render: PSDL_Renderer; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer); overload;

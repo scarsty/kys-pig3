@@ -47,6 +47,7 @@ uses
   unzip,
   ziputils,
   fileinfo,
+  Generics.Collections,
   {$IFDEF windows}
   potdll,
   {$ENDIF}
@@ -1145,6 +1146,7 @@ begin
     pEvent := ReadFileToBuffer(nil, AppPath + 'script/event.imz', -1, 1);
   end;
 
+  CharTex := TDictionary<integer, Pointer>.Create;
 end;
 
 //初始化主角属性
@@ -4248,7 +4250,7 @@ var
       amount := RItemlist[listnum].Amount;
       str := format('%8d', [amount]);
       DrawShadowText(str, 510 + xp, 3 + yp, ColColor($64), ColColor($66));
-      len := DrawLength(putf8char(@Ritem[item].Name));
+      len := DrawLength(u16toutf8(Ritem[item].Name));
       DrawU16ShadowText(@Ritem[item].Name, 290 - len * 5 + xp, 3 + yp, 0, $202020);
       //drawshadowtext(@words[Ritem[item].ItemType, 1], 252, 115 + row * 50, colcolor($21), colcolor($23));
 
@@ -4267,14 +4269,14 @@ var
       end
       else
       begin
-        len := length(putf8char(@Ritem[item].Introduction));
+        len := drawlength(u16toutf8(Ritem[item].Introduction));
         DrawU16ShadowText(@Ritem[item].Introduction, 8 + xp, 47 + dt + yp, 0, $202020);
         //如有人使用则显示
         if Ritem[item].User >= 0 then
         begin
           str := '使用';
-          DrawShadowText(str, 18 + length(putf8char(@Rrole[Ritem[item].User].Name)) * 10 + len * 20 + xp, 47 + dt + yp, ColColor($64), ColColor($66));
-          DrawU16ShadowText(@Rrole[Ritem[item].User].Name, 18 + len * 20 + xp, 48 + dt + yp, ColColor($64), ColColor($66));
+          DrawShadowText(str, 18 + drawlength(u16toutf8(Rrole[Ritem[item].User].Name)) * 10 + len * 10 + xp, 47 + dt + yp, ColColor($64), ColColor($66));
+          DrawU16ShadowText(@Rrole[Ritem[item].User].Name, 18 + len * 10 + xp, 47 + dt + yp, ColColor($64), ColColor($66));
         end;
       end;
     end;
@@ -5048,7 +5050,7 @@ begin
           TransBlackScreen;
           UpdateAllScreen;
           str := '誰要裝備';
-          str1 := putf8char(@Ritem[inum].Name);
+          str1 := u16toutf8(Ritem[inum].Name);
           off := DrawTextFrame(CENTER_X - 275, CENTER_Y - 193, 8 + DrawLength(str1));
           //DrawTextWithRect(str, CENTER_X - 275, CENTER_Y - 193, length(str1) * 22 + 80, 0, $202020);
           DrawShadowText(str, CENTER_X - 275 + off, CENTER_Y - 193 + 3, {160, 32,} 0, $202020);
@@ -5112,7 +5114,7 @@ begin
           TransBlackScreen;
           UpdateAllScreen;
           str := '誰要修煉';
-          str1 := putf8char(@Ritem[inum].Name);
+          str1 := u16toutf8(Ritem[inum].Name);
           //DrawTextWithRect(str, CENTER_X - 275, CENTER_Y - 193, length(str1) * 22 + 80, 0, $202020);
           off := DrawTextFrame(CENTER_X - 275, CENTER_Y - 193, 8 + DrawLength(str1));
           //DrawTextWithRect(str, CENTER_X - 275, CENTER_Y - 193, length(str1) * 22 + 80, 0, $202020);
@@ -5171,7 +5173,7 @@ begin
         if teammate = -1 then
         begin
           str := '誰要服用';
-          str1 := putf8char(@Ritem[inum].Name);
+          str1 := u16toutf8(Ritem[inum].Name);
           DrawTextWithRect(str, CENTER_X - 275, CENTER_Y - 193, DrawLength(str1) * 10 + 80, 0, $202020);
           DrawShadowText(str1, CENTER_X - 275 + 99, CENTER_Y - 193 + 2, {160, 32,} ColColor($64), ColColor($66));
           UpdateAllScreen;
@@ -7763,7 +7765,7 @@ begin
   yp := CENTER_Y - 240 + 70;
 
   //DrawRectangle(30 + xp, 100 + yp, 200, 25, 0, ColColor(255), 25);
-  DrawTextFrame(14 + xp, 99 + yp, 4 + DrawLength(putf8char(@Ritem[inum].Name)));
+  DrawTextFrame(14 + xp, 99 + yp, 4 + DrawLength(u16toutf8(Ritem[inum].Name)));
   str := '服用';
   if Ritem[inum].ItemType = 2 then
     str := '練成';
