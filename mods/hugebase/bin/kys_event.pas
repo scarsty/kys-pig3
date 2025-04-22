@@ -2616,7 +2616,7 @@ end;
 function ReplaceStr(const S, Srch, Replace: widestring): widestring;
 var
   i: integer;
-  Source: utf8string;
+  Source: widestring;
 begin
   Source := S;
   Result := '';
@@ -2826,7 +2826,7 @@ begin
   setlength(Name, 10);
   Move(Rrole[0].Name[0], Name[0], 10);
   //FullNameStr := CP950ToUTF8(putf8char(@Name[0]));
-  FullNameStr := pwidechar(@Name[1]);
+  FullNameStr := pwidechar(@Name[0]);
 
   {$IFDEF fpc}
   //FullNameUTF8Str := UTF8Encode(FullNameStr);
