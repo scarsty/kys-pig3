@@ -4063,7 +4063,6 @@ begin
   end;
 
   //恢复0号人物的森罗万象
-
   for i := 0 to high(Rmagic) do
   begin
     if Rmagic[i].ScriptNum = 31 then
@@ -5691,7 +5690,7 @@ end;
 
 procedure RoundOver; overload;
 var
-  i1, i2: integer;
+  i1, i2, i: integer;
   removeStone: boolean;
 begin
   BattleRound := BattleRound + 1;
@@ -5757,6 +5756,18 @@ begin
     end;
     end;
     end;}
+  if GetItemAmount(COMPASS_ID) > 2 then
+  begin
+    //恢复0号人物的森罗万象
+    for i := 0 to high(Rmagic) do
+    begin
+      if Rmagic[i].ScriptNum = 31 then
+      begin
+        Rrole[0].Magic[0] := i;
+        break;
+      end;
+    end;
+  end;
 end;
 
 procedure RoundOver(bnum: integer); overload;
@@ -6035,7 +6046,7 @@ end;
 procedure AutoBattle3(bnum: integer);
 var
   i, p, a, temp, rnum, inum, eneamount, aim, level, Ax1, Ay1, temp1, temp2: integer;
-  Cmnum, Cmlevel, Cmtype, Cmdis, Cmrange, magicid, bnum1: integer;
+  Cmnum, Cmlevel, Cmtype, Cmdis, Cmrange, magicid, bnum1, mnum0: integer;
   Movex, Movey, Mx1, My1, twice, mainMType, tempMaxMType, minstep: integer;
   str: utf8string;
 begin
@@ -6125,7 +6136,11 @@ begin
     if AI_USE_SPECIAL <> 0 then
     begin
       //尝试使用特技
+      mnum0 := Rrole[rnum].Magic[0];
       if (Brole[bnum].Acted <> 1) and (Rrole[rnum].PhyPower >= 10) and (Rrole[rnum].Poison < 100) then
+        SpecialAttack(bnum);
+      //再次尝试，用于高周目的森罗万象不占用行动
+      if (Rrole[rnum].Magic[0] <> mnum0) and (Brole[bnum].Acted <> 1) and (Rrole[rnum].PhyPower >= 10) and (Rrole[rnum].Poison < 100) then
         SpecialAttack(bnum);
       //自身医疗大于70, 寻找生命最低的队友进行医疗
       //When Medcine is more than 70, and physical power is more than 70, 50% probability to cure one teammate.
@@ -8376,18 +8391,25 @@ begin
     if AI then
       res := random(amount)
     else
-      while res < 0 do
-      begin
-        //LoadFreshScreen;
-        res := CommonScrollMenu(CENTER_X - 60 - length(menuString[0]) * 5, 130, 105 + length(menuString[0]) * 10, amount - 1, 12, menuString);
-      end;
+      //while res < 0 do
+    begin
+      //LoadFreshScreen;
+      res := CommonScrollMenu(CENTER_X - 60 - length(menuString[0]) * 5, 130, 105 + length(menuString[0]) * 10, amount - 1, 12, menuString);
+    end;
   end;
   //FreeFreshScreen;
+  if res < 0 then
+  begin
+    Brole[bnum].Acted := 0;
+    exit;
+  end;
   Rrole[Brole[bnum].rnum].Magic[0] := mnumarray[res];
   PlayMagicAmination(bnum, Rmagic[mnumarray[res]].AmiNum, Rmagic[mnumarray[res]].AddMP[0]);
   if AI then
     ShowMagicName(Rrole[Brole[bnum].rnum].Magic[0]);
   Brole[bnum].Acted := 1;
+  if forall > 2 then
+    Brole[bnum].Acted := 0;
 end;
 
 //32众生平等

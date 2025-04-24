@@ -414,6 +414,7 @@ var
   //游戏开场时的设置
   TitlePosition: TPosition;
   OpenPicPosition: TPosition;
+  OpenPic: integer = 0;
 
   //游戏内部运行时使用的数据
   MStep, Still: integer;

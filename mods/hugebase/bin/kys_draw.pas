@@ -3,11 +3,11 @@
 interface
 
 uses
-{$IFDEF fpc}
-{$ENDIF}
-{$IFDEF mswindows}
+  {$IFDEF fpc}
+  {$ENDIF}
+  {$IFDEF mswindows}
   Windows,
-{$ENDIF}
+  {$ENDIF}
   SysUtils,
   SDL2,
   Math,
@@ -343,12 +343,13 @@ begin
     3:
     begin
       CleanTextScreen;
-      DrawTPic(0, OpenPicPosition.x, OpenPicPosition.y);
-      OpenPicPosition.x:=OpenPicPosition.x-1;
-      if OpenPicPosition.x < - titlePNGIndex[0].w + center_x*2 then
+      DrawTPic(openpic, OpenPicPosition.x, OpenPicPosition.y);
+      OpenPicPosition.x := OpenPicPosition.x - 1;
+      if OpenPicPosition.x < -titlePNGIndex[openpic].w + center_x * 2 then
       begin
-        OpenPicPosition.x:=0;
-        OpenPicPosition.y:=-random(titlePNGIndex[0].h-center_y*2);
+        openpic := 31 + random(6);
+        OpenPicPosition.x := 0;
+        OpenPicPosition.y := -random(titlePNGIndex[openpic].h - center_y * 2);
       end;
       DrawTPic(12, CENTER_X - 384 + 112, CENTER_Y - 240 + 15);
       DrawTPic(10, CENTER_X - 384 + 110, CENTER_Y - 240 + 5);
@@ -358,12 +359,13 @@ begin
     4: //处于标题动画中
     begin
       CleanTextScreen;
-      DrawTPic(0, OpenPicPosition.x, OpenPicPosition.y);
+      DrawTPic(openpic, OpenPicPosition.x, OpenPicPosition.y);
       //OpenPicPosition.x:=OpenPicPosition.x-1;
-      if (OpenPicPosition.x < - titlePNGIndex[0].w + center_x*2)or(OpenPicPosition.x=0) then
+      if (OpenPicPosition.x < -titlePNGIndex[openpic].w + center_x * 2) or (OpenPicPosition.x = 0) then
       begin
-        OpenPicPosition.x:=-random(titlePNGIndex[0].w-center_x*2);
-        OpenPicPosition.y:=-random(titlePNGIndex[0].h-center_y*2);
+        openpic := 31 + random(6);
+        OpenPicPosition.x := -random(titlePNGIndex[openpic].w - center_x * 2);
+        OpenPicPosition.y := -random(titlePNGIndex[openpic].h - center_y * 2);
       end;
       DrawShadowText(versionstr, 5, CENTER_Y * 2 - 30, ColColor($64), ColColor($66));
     end;

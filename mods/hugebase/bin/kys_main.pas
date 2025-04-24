@@ -7329,6 +7329,7 @@ var
   tempRitemlist: array of TItemList;
   tempRrole: array [-1 .. 1000] of TRole;
   mode, itemtype, rnum: integer;
+  round: integer;
 begin
   Result := False;
   mode := 0;
@@ -7343,6 +7344,9 @@ begin
     //可以继承的条件
     mode := s div 36;
   end;
+  round := GetItemAmount(COMPASS_ID);
+  if round >= 2 then
+    mode := 3;
   Result := mode > 0;
 
   if Result then
@@ -7415,7 +7419,7 @@ begin
     //保留秘籍, 正式进入二周目
     if mode >= 3 then
     begin
-      instruct_32(COMPASS_ID, 1); //周目数即罗盘数
+      instruct_32(COMPASS_ID, round);   //周目数即罗盘数
       for i := 0 to MAX_ITEM_AMOUNT - 1 do
       begin
         if tempRItemList[i].Number < 0 then
@@ -8395,6 +8399,7 @@ begin
   words.Add('流木匆匆');
   words.Add('无酒肆屋');
   words.Add('项羽');
+  words.Add('惩戒');
   words.Add('');
 
   words.Add('場景');
