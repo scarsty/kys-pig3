@@ -1584,6 +1584,7 @@ var
   word: utf8string;
   wordutf8, word1utf8: utf8string;
   menuString, menuEngString: array of utf8string;
+  wordwide:widestring;
 begin
   Result := 0;
   //writeln('Expanded 50, the code is ', code);
@@ -1681,11 +1682,12 @@ begin
       e4 := e_GetValue(0, e1, e4);
       pw := @x50[e2];
       pw1 := @x50[e3];
-      word := format(putf8char(pw1), [e4]);
+      word := format(u16toutf8(putf8char(pw1)), [e4]);
+      wordwide:=utf8decode(word);
       //showmessage(putf8char(pw1)+word);
-      for i := 0 to length(word) - 1 do
+      for i := 0 to length(wordwide) - 1 do
       begin
-        pw^ := uint16(word[i + 1]);
+        pw^ := uint16(wordwide[i + 1]);
         Inc(pw);
       end;
       pw^ := 0;
