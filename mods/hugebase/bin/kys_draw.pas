@@ -1407,22 +1407,30 @@ const
   l: integer = 19;
   m: integer = 20;
   r: integer = 21;
+  yp: integer = -0;
 begin
-  DrawTPic(l, x, y, nil, 0, alpha, mixColor, mixAlpha);
-  for i := 0 to len div 2 - 1 do
-  begin
-    DrawTPic(m, x + 19 + i * 20, y, nil, 0, alpha, mixColor, mixAlpha);
-  end;
-  if len mod 2 = 1 then
-  begin
-    rect.x := 0;
-    rect.y := 0;
-    rect.h := TitlePNGIndex[20].h;
-    rect.w := 10;
-    DrawTPic(m, x + 19 + (len - 1) * 10, y, @rect, 0, alpha, mixColor, mixAlpha);
-  end;
-  DrawTPic(r, x + 19 + len * 10, y, nil, 0, alpha, mixColor, mixAlpha);
+  //SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, '0');
+  DrawTPic(l, x - 1, y + yp, nil, 0, alpha, mixColor, mixAlpha);
+  //for i := 0 to len div 2 - 1 do
+  //begin
+    //DrawTPic(m, x + 19 + i * 20, y+yp, nil, 0, alpha, mixColor, mixAlpha);
+  //end;
+  rect.x := 0;
+  rect.y := 0;
+  rect.h := TitlePNGIndex[20].h;
+  rect.w := 10 * len;
+  DrawTPic(m, x + 19, y + yp, @rect, 0, alpha, mixColor, mixAlpha);
+  //if len mod 2 = 1 then
+  //begin
+  //  rect.x := 0;
+  //  rect.y := 0;
+  //  rect.h := TitlePNGIndex[20].h;
+  //  rect.w := 10;
+    //DrawTPic(m, x + 19 + (len - 1) * 10, y+yp, @rect, 0, alpha, mixColor, mixAlpha);
+  //end;
+  DrawTPic(r, x + 19 + len * 10, y + yp, nil, 0, alpha, mixColor, mixAlpha);
   Result := 19;
+  //SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, putf8char(IntToStr(SMOOTH)));
 end;
 
 //显示带边框的文字, 仅用于unicode, 需自定义宽度
