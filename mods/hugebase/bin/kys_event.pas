@@ -313,7 +313,7 @@ var
   ModifyS: boolean;
 begin
   if CurEvent > 0 then
-  curPic := DData[CurScence, CurEvent, 5];
+    curPic := DData[CurScence, CurEvent, 5];
   if list[0] = -2 then
     list[0] := CurScence;
   if list[1] = -2 then
@@ -342,7 +342,7 @@ begin
   Sdata[list[0], 3, Ddata[list[0], list[1], 10], Ddata[list[0], list[1], 9]] := list[1];
   //if list[0] = CurScence then
   //UpdateScence(list[12], list[11]);
-  if  (CurEvent > 0)and(DData[CurScence, CurEvent, 5] <> curPic) then
+  if (CurEvent > 0) and (DData[CurScence, CurEvent, 5] <> curPic) then
   begin
     if (PNG_TILE > 0) then
     begin
@@ -735,7 +735,7 @@ procedure instruct_27(enum, beginpic, endpic: integer);
 var
   i, xpoint, ypoint: integer;
 begin
-  if (enum>=0) and (DData[CurScence, enum, 10] = Sx) and (DData[CurScence, enum, 9] = Sy) then
+  if (enum >= 0) and (DData[CurScence, enum, 10] = Sx) and (DData[CurScence, enum, 9] = Sy) then
     enum := -1;
   if enum = -1 then
   begin
@@ -1584,7 +1584,7 @@ var
   word: utf8string;
   wordutf8, word1utf8: utf8string;
   menuString, menuEngString: array of utf8string;
-  wordwide:widestring;
+  wordwide: widestring;
 begin
   Result := 0;
   //writeln('Expanded 50, the code is ', code);
@@ -1683,7 +1683,7 @@ begin
       pw := @x50[e2];
       pw1 := @x50[e3];
       word := format(putf8char(pw1), [e4]);
-      wordwide:=utf8decode(word);
+      wordwide := utf8decode(word);
       //showmessage(putf8char(pw1)+word);
       for i := 0 to length(wordwide) - 1 do
       begin
@@ -2488,19 +2488,19 @@ var
   surname2: TStringList;
   len, i, hysur: integer;
 begin
-  len := Length(fullname);
+  len := drawLength(fullname);
   case len of
-    1:
+    1,2:
     begin
       surname := '';
       givenname := fullname;
     end;
-    2:
+    3,4:
     begin
-      surname := Copy(fullname, 1, 1);
-      givenname := Copy(fullname, 2, 1);
+      surname := midstr(fullname, 1, 3);
+      givenname := midstr(fullname, 4, 3);
     end;
-    3:
+    5,6:
     begin
       surname2 := TStringList.Create;
       surname2.Add('歐陽');
@@ -2585,7 +2585,7 @@ begin
       surname2.Add('達奚');
       surname2.Add('褚師');
       surname2.Add('第二');
-      surname := Copy(fullname, 1, 2);
+      surname := midstr(fullname, 1, 6);
       hysur := 0;
       for i := 0 to surname2.Count - 1 do
       begin
@@ -2597,19 +2597,19 @@ begin
       end;
       if hysur = 1 then
       begin
-        givenname := Copy(fullname, 3, 1);
+        givenname := midstr(fullname, 7, 3);
       end
       else
       begin
-        surname := Copy(fullname, 1, 1);
-        givenname := Copy(fullname, 2, 2);
+        surname := midstr(fullname, 1, 3);
+        givenname := midstr(fullname, 4, 6);
       end;
       surname2.Free;
     end;
     else
     begin
-      surname := Copy(fullname, 1, 2);
-      givenname := Copy(fullname, 3, len - 2);
+      surname := midstr(fullname, 1, 6);
+      givenname := midstr(fullname, 7, Length(fullname) - 6);
     end;
   end;
   //writeln(len, ',', fullname, ',', surname, ',', givenname);
@@ -2752,14 +2752,14 @@ begin
       ReadTalk(talknum, talk);
       //转为Unicode
       if length(Talk) > 0 then
-        TalkStr := pwidechar(@Talk[0])
+        TalkStr := putf8char(@Talk[0])
       else
         TalkStr := '';
     end
     else
     begin
       if (-talknum >= low(x50)) and (-talknum <= high(x50)) then
-        TalkStr := pwidechar(@x50[-talknum])
+        TalkStr := putf8char(@x50[-talknum])
       else
         TalkStr := '';
     end;
@@ -2910,110 +2910,86 @@ begin
       if not ((ix < Talk_W) and (iy < Talk_H) and (I <= len)) then
         break;
       //检查是否等待按键
-      setlength(TempStr, length(WaitAnyKeyCode));
-      if len - I >= length(TempStr) then
+      if midstr(talkstr, I, length(WaitAnyKeyCode)) = WaitAnyKeyCode then
       begin
-        Move(TalkStr[I], TempStr[1], length(TempStr) * sizeof(widechar));
-        if TempStr = WaitAnyKeyCode then
-        begin
-          Inc(I, length(TempStr));
-          //updateallscreen;
-          WaitAnyKey;
-          Continue;
-        end;
+        Inc(I, length(TempStr));
+        //updateallscreen;
+        WaitAnyKey;
+        Continue;
       end;
       //检查是否延时
-      setlength(TempStr, length(DelayCode));
-      if len - I >= length(TempStr) then
+      if midstr(talkstr, I, length(DelayCode)) = DelayCode then
       begin
-        Move(TalkStr[I], TempStr[1], length(TempStr) * sizeof(widechar));
-        if TempStr = DelayCode then
-        begin
-          Inc(I, length(TempStr));
-          //updateallscreen;
-          SDL_Delay(500);
-          Continue;
-        end;
+        Inc(I, length(DelayCode));
+        //updateallscreen;
+        SDL_Delay(500);
+        Continue;
       end;
       //检查是否换行
-      setlength(TempStr, length(NextLineCode));
-      if len - I >= length(TempStr) then
+      if midstr(talkstr, I, length(NextLineCode)) = NextLineCode then
       begin
-        Move(TalkStr[I], TempStr[1], length(TempStr) * sizeof(widechar));
-        if TempStr = NextLineCode then
+        //当恰好处于换行位置时的处理(屏蔽, 未处理)
+        //if I mod Talk_W <> 1 then
+        //begin
+        Inc(iy);
+        ix := 0;
+        //end;
+        Inc(I, length(NextLineCode));
+        if iy >= Talk_H then
         begin
-          //当恰好处于换行位置时的处理(屏蔽, 未处理)
-          //if I mod Talk_W <> 1 then
-          //begin
-          Inc(iy);
-          ix := 0;
-          //end;
-          Inc(I, length(TempStr));
-          if iy >= Talk_H then
+          if I <= len then
           begin
-            if I <= len then
-            begin
-              WaitAnyKey;
-            end;
-            //LoadFreshScreen;;
-            break;
+            WaitAnyKey;
           end;
-          Continue;
+          //LoadFreshScreen;;
+          break;
         end;
+        Continue;
       end;
       //检查是否更换颜色
       Changed := False;
-      setlength(TempStr, Length(ChangeColorCode) + 1);
-      if len - I >= length(TempStr) then
-      begin
-        Move(TalkStr[I], TempStr[1], length(TempStr) * sizeof(widechar));
-        for I2 := 0 to 5 do
-          if TempStr = ChangeColorCode + IntToStr(I2) then
-          begin
-            DrawBackGroundCol := ColColor($6F);
-            case I2 of
-              0: DrawForeGroundCol := ColColor($63);
-              1: DrawForeGroundCol := ColColor($05);
-              2: DrawForeGroundCol := ColColor($13);
-              3: DrawForeGroundCol := ColColor($93);
-              4: DrawForeGroundCol := ColColor($32);
-              5: DrawForeGroundCol := ColColor($22);
-            end;
-            Inc(I, length(TempStr));
-            Changed := True; //更换颜色
-            break;
-          end;
-        if Changed = True then
+      for I2 := 0 to 5 do
+        if midstr(talkstr, I, length(ChangeColorCode) + 1) = ChangeColorCode + IntToStr(I2) then
         begin
-          continue;
+          DrawBackGroundCol := ColColor($6F);
+          case I2 of
+            0: DrawForeGroundCol := ColColor($63);
+            1: DrawForeGroundCol := ColColor($05);
+            2: DrawForeGroundCol := ColColor($13);
+            3: DrawForeGroundCol := ColColor($93);
+            4: DrawForeGroundCol := ColColor($32);
+            5: DrawForeGroundCol := ColColor($22);
+          end;
+          Inc(I, length(ChangeColorCode) + 1);
+          Changed := True; //更换颜色
+          break;
         end;
+      if Changed = True then
+      begin
+        continue;
       end;
       //检查是否换回默认颜色
-      setlength(TempStr, Length(ChangeColorCode) * 2);
-      if len - I >= length(TempStr) then
+      if midstr(talkstr, I, length(ChangeColorCode) * 2) = ChangeColorCode + ChangeColorCode then
       begin
-        Move(TalkStr[I], TempStr[1], length(TempStr) * sizeof(widechar));
-        if TempStr = ChangeColorCode + ChangeColorCode then
-        begin
-          DrawBackGroundCol := ColColor(BackGroundCol);
-          DrawForeGroundCol := ColColor(ForeGroundCol);
-          Inc(I, length(TempStr));
-          Continue;
-        end;
+        DrawBackGroundCol := ColColor(BackGroundCol);
+        DrawForeGroundCol := ColColor(ForeGroundCol);
+        Inc(I, length(ChangeColorCode) * 2);
+        Continue;
       end;
       //写字符
       if I <= len then
       begin
-        Setlength(tempstr, 4);
-        Move(TalkStr[I], TempStr[1], 3);
-        tempstr[4]:=utf8char(0);
+        tempstr := TalkStr[I];
+        if byte(TalkStr[I]) >= 128 then
+          tempstr := midstr(talkstr, i, 3);
+        tempstr := tempstr + utf8char(0);
         xtemp := Talk_X + ColSpacing * ix;
         //调整半角字符的位置
         if uint16(tempstr[1]) < $1000 then
           xtemp := xtemp + 5;
         DrawShadowText(TempStr, xtemp, Talk_Y + RowSpacing * iy, DrawForeGroundCol, DrawBackGroundCol);
       end;
-      Inc(I);
+      Inc(I, length(tempstr) - 1);
       if not skipSync then
       begin
         SDL_Delay(5); //每个字符间都延时
