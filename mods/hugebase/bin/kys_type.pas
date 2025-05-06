@@ -30,7 +30,7 @@ type
   end;
 
   TItemList = packed record
-    Number: smallint;
+    Number: integer;
     Amount: integer;
   end;
 
@@ -86,72 +86,72 @@ type
 
   TRole = record
     case TCallType of
-      Element: (ListNum, HeadNum, IncLife, ActionNum: smallint;
-        Name: array [0 .. 9] of char;
-        AddAtk, AddSpeed, AddDef, AddMP, RoundLeave: smallint;
-        Sexual, Level: smallint;
+      Element: (ListNum, HeadNum, IncLife, ActionNum: integer;
+        Name: array [0 .. 19] of char;
+        AddAtk, AddSpeed, AddDef, AddMP, RoundLeave: integer;
+        Sexual, Level: integer;
         Exp: uint16;
-        CurrentHP, MaxHP, Hurt, Poison, PhyPower: smallint;
+        CurrentHP, MaxHP, Hurt, Poison, PhyPower: integer;
         ExpForItem: uint16;
-        Equip: array [0 .. 1] of smallint;
-        AmiFrameNum: array [0 .. 4] of smallint;
-        AmiDelay: array [0 .. 4] of smallint;
-        SoundDealy: array [0 .. 4] of smallint;
-        MPType, CurrentMP, MaxMP: smallint;
-        Attack, Speed, Defence, Medcine, UsePoi, MedPoi, DefPoi, Fist, Sword, Knife, Unusual, HidWeapon: smallint;
-        Knowledge, Ethics, AttPoi, Movestep, Repute, Aptitude, PracticeBook: smallint;
+        Equip: array [0 .. 1] of integer;
+        AmiFrameNum: array [0 .. 4] of integer;
+        AmiDelay: array [0 .. 4] of integer;
+        SoundDealy: array [0 .. 4] of integer;
+        MPType, CurrentMP, MaxMP: integer;
+        Attack, Speed, Defence, Medcine, UsePoi, MedPoi, DefPoi, Fist, Sword, Knife, Unusual, HidWeapon: integer;
+        Knowledge, Ethics, AttPoi, Movestep, Repute, Aptitude, PracticeBook: integer;
         ExpForBook: uint16;
-        Magic, MagLevel: array [0 .. 9] of smallint;
-        TakingItem, TakingItemAmount: array [0 .. 3] of smallint;
-        addnum: smallint;
-        NeiGong, NGLevel: array [0 .. 3] of smallint
+        Magic, MagLevel: array [0 .. 9] of integer;
+        TakingItem, TakingItemAmount: array [0 .. 3] of integer;
+        addnum: integer;
+        NeiGong, NGLevel: array [0 .. 3] of integer
       );
-      Address: (Data: array [0 .. 99] of smallint);
+      Address: (Data: array [0 .. 99] of integer);
   end;
 
   TItem = record
     case TCallType of
-      Element: (ListNum: smallint;
-        UnUse: array [0 .. 7] of smallint;
-        ForgeTimes, Price: smallint;
-        Name: array [0 .. 19] of char;
-        Introduction: array [0 .. 29] of char;
-        Magic, AmiNum, User, EquipType, ShowIntro, ItemType, UnKnow5, UnKnow6, UnKnow7: smallint;
-        AddCurrentHP, AddMaxHP, AddPoi, AddPhyPower, ChangeMPType, AddCurrentMP, AddMaxMP: smallint;
-        AddAttack, AddSpeed, AddDefence, AddMedcine, AddUsePoi, AddMedPoi, AddDefPoi: smallint;
-        AddFist, AddSword, AddKnife, AddUnusual, AddHidWeapon, AddKnowledge, AddRepute, AddMove, AddAttPoi: smallint;
-        OnlyPracRole, NeedMPType, NeedMP, NeedAttack, NeedSpeed, NeedUsePoi, NeedMedcine, NeedMedPoi: smallint;
-        NeedFist, NeedSword, NeedKnife, NeedUnusual, NeedHidWeapon, NeedAptitude: smallint;
-        NeedExp, NeedExpForItem, NeedMaterial: smallint;
-        GetItem, NeedMatAmount: array [0 .. 4] of smallint);
-      Address: (Data: array [0 .. 94] of smallint);
+      Element: (ListNum: integer;
+        UnUse: array [0 .. 7] of integer;
+        ForgeTimes, Price: integer;
+        Name: array [0 .. 39] of char;
+        Introduction: array [0 .. 59] of char;
+        Magic, AmiNum, User, EquipType, ShowIntro, ItemType, UnKnow5, UnKnow6, UnKnow7: integer;
+        AddCurrentHP, AddMaxHP, AddPoi, AddPhyPower, ChangeMPType, AddCurrentMP, AddMaxMP: integer;
+        AddAttack, AddSpeed, AddDefence, AddMedcine, AddUsePoi, AddMedPoi, AddDefPoi: integer;
+        AddFist, AddSword, AddKnife, AddUnusual, AddHidWeapon, AddKnowledge, AddRepute, AddMove, AddAttPoi: integer;
+        OnlyPracRole, NeedMPType, NeedMP, NeedAttack, NeedSpeed, NeedUsePoi, NeedMedcine, NeedMedPoi: integer;
+        NeedFist, NeedSword, NeedKnife, NeedUnusual, NeedHidWeapon, NeedAptitude: integer;
+        NeedExp, NeedExpForItem, NeedMaterial: integer;
+        GetItem, NeedMatAmount: array [0 .. 4] of integer);
+      Address: (Data: array [0 .. 94] of integer);
   end;
 
   TScence = record
     case TCallType of
-      Element: (ListNum: smallint;
-        Name: array [0 .. 9] of char;
+      Element: (ListNum: integer;
+        Name: array [0 .. 19] of char;
         //梁羽生群侠传在这里修改了9为49
-        ExitMusic, EntranceMusic: smallint;
-        JumpScence, EnCondition: smallint;
-        MainEntranceY1, MainEntranceX1, MainEntranceY2, MainEntranceX2: smallint;
-        EntranceY, EntranceX: smallint;
-        ExitY, ExitX: array [0 .. 2] of smallint;
-        JumpY1, JumpX1, JumpY2, JumpX2: smallint);
-      Address: (Data: array [0 .. 25] of smallint);
+        ExitMusic, EntranceMusic: integer;
+        JumpScence, EnCondition: integer;
+        MainEntranceY1, MainEntranceX1, MainEntranceY2, MainEntranceX2: integer;
+        EntranceY, EntranceX: integer;
+        ExitY, ExitX: array [0 .. 2] of integer;
+        JumpY1, JumpX1, JumpY2, JumpX2: integer);
+      Address: (Data: array [0 .. 25] of integer);
   end;
 
   TMagic = record
     case TCallType of
-      Element: (ListNum: smallint;
-        Name0: array [0 .. 9] of char;
-        //UnKnow: array[0..4] of smallint;
+      Element: (ListNum: integer;
+        Name0: array [0 .. 19] of char;
+        //UnKnow: array[0..4] of integer;
         //UnKnow: 0-减生命（允许为负）, 1-最低攻击范围, 2-需要物品, 3-需要物品的数量, 4-不明
-        NeedHP, MinStep, NeedItem, NeedItemAmount, ScriptNum: smallint;
-        SoundNum, MagicType, AmiNum, HurtType, AttAreaType, NeedMP, Poison: smallint;
+        NeedHP, MinStep, NeedItem, NeedItemAmount, ScriptNum: integer;
+        SoundNum, MagicType, AmiNum, HurtType, AttAreaType, NeedMP, Poison: integer;
         //MigicType: 对应的动作类型0~5医拳剑刀特暗
         //HurtType: 伤害类型0-生命 1-内力 2-特技 3-内功 6-生命和内力
-        Attack, MoveDistance, AttDistance, AddMP, HurtMP: array [0 .. 9] of smallint;
+        Attack, MoveDistance, AttDistance, AddMP, HurtMP: array [0 .. 9] of integer;
         //这部分的定义随HurtType有很大的不同
         //Attack对于普通武功用0和1计算攻击力, 2内力加成, 3-轻功加成, 4,5, 6,7-仅用于先天一阳指的定身
         //Attack: 状态类特技中用来标记控制的等级, 对应后面AddMP的1~5
@@ -161,28 +161,28 @@ type
         //6,7-加強內力加成, 8,9-加強輕功加成
         //AttDistance: 内功中0,1-回内力, 2,3-回血, 4-特定武功加成, 5-中毒轉內力,
         //6-殺體力, 7-加强資質加成, 8-殺內力, 9-剩余人数加成
-        Name: array [0 .. 19] of char);
-      Address: (Data: array [0 .. 67] of smallint);
+        Name: array [0 .. 39] of char);
+      Address: (Data: array [0 .. 67] of integer);
   end;
 
   TShop = record
     case TCallType of
-      Element: (Item, Amount, Price: array [0 .. 4] of smallint);
-      Address: (Data: array [0 .. 14] of smallint);
+      Element: (Item, Amount, Price: array [0 .. 4] of integer);
+      Address: (Data: array [0 .. 14] of integer);
   end;
 
   TBattleRole = record
     case TCallType of
-      Element: (rnum, Team, Y, X, Face, Dead, Step, Acted: smallint;
-        Pic, ShowNumber, AntiHurt, AutoMode, PreTeam, ExpGot, Auto, Moved: smallint;
-        loverlevel: array [0 .. 9] of smallint;
-        StateLevel, StateRound: array [0 .. 33] of smallint;
-        RealSpeed, RealProgress, BHead: smallint;
-        StaticPic: array [0 .. 3] of smallint;
+      Element: (rnum, Team, Y, X, Face, Dead, Step, Acted: integer;
+        Pic, ShowNumber, AntiHurt, AutoMode, PreTeam, ExpGot, Auto, Moved: integer;
+        loverlevel: array [0 .. 9] of integer;
+        StateLevel, StateRound: array [0 .. 33] of integer;
+        RealSpeed, RealProgress, BHead: integer;
+        StaticPic: array [0 .. 3] of integer;
         shadow, alpha: integer;
         mixColor: uint32;
         mixAlpha: integer);
-      Address: (Data: array [0 .. 82] of smallint);
+      Address: (Data: array [0 .. 82] of integer);
   end;
   //情侣加成, loverlevel：
   //0加攻、1加防、2加移、3抗毒、4武功威力、5内功加成、6替代受伤、7回复生命、8回复内力、9轻功
@@ -291,13 +291,13 @@ var
 
   Earth, Surface, Building, BuildX, BuildY, Entrance: array [0 .. 479, 0 .. 479] of smallint;
   //主地图数据
-  InShip, Useless1, Mx, My, Sx, Sy, MFace, ShipX, ShipY, ShipX1, ShipY1, ShipFace: smallint;
+  InShip, Useless1, Mx, My, Sx, Sy, MFace, ShipX, ShipY, ShipX1, ShipY1, ShipFace: integer;
   //方向
   //2 0
   //3 1
   //ShipX1用来保存当前场景, 如果为-1表示处于大地图
   //ShipY1用来保存钱的高位.
-  TeamList: array [0 .. 5] of smallint;
+  TeamList: array [0 .. 5] of integer;
   RItemList: array of TItemList;
   Rrole: array [-1 .. 1000] of TRole;
   Ritem: array [-1 .. 1000] of TItem;
@@ -384,7 +384,7 @@ var
   //MusicName: utf8string;
 
   //事件和脚本部分
-  x50: array [-$8000 .. $7FFF] of smallint;
+  x50: array [-$8000 .. $7FFF] of integer;
   //扩充指令50所使用的变量
   lua_script: Plua_state;
   //lua脚本

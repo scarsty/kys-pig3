@@ -1521,7 +1521,7 @@ begin
     3: p1 := @Rmagic[num].Name;
   end;
 {$IFDEF fpc}
-  str := u16toutf8(p1);
+  str := p1;
 {$ELSE}
   str := UTF8Encode(GBKToUnicode(p1));
 {$ENDIF}

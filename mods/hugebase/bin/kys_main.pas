@@ -1159,7 +1159,7 @@ var
   str3: utf8string;
   p0, p1: putf8char;
   named: bool;
-  fullname, surname, givenname: widestring;
+  fullname, surname, givenname: utf8string;
   {$IFDEF android}
   env: PJNIEnv;
   jstr: jstring;
@@ -1225,11 +1225,11 @@ begin
   begin
     //if SIMPLE <> 0 then
     //input_name := CP936ToUTF8(Simplified2Traditional(UTF8ToCP936(input_name)));
-    fullname := utf8decode(Simplified2Traditional(input_name));
+    fullname := Simplified2Traditional(input_name);
     p0 := @Rrole[0].Name;
     p1 := @fullname[1];
-    fillchar(Rrole[0].Name[0], 10, 0);
-    for i := 0 to min(4, length(fullname)) - 1 do
+    fillchar(Rrole[0].Name[0], 20, 0);
+    for i := 0 to min(12, length(fullname)) - 1 do
     begin
       p0^ := p1^;
       Inc(p0);
@@ -1238,8 +1238,8 @@ begin
       Inc(p0);
       Inc(p1);
     end;
-    DivideName(pwidechar(@Rrole[0].Name[0]), surname, givenname);
-    ConsoleLog('full: %s, surname: %s, givenname: %s', [WideString(pwidechar(@Rrole[0].Name[0])), surname, givenname]);
+    DivideName(Rrole[0].Name, surname, givenname);
+    ConsoleLog('full: %s, surname: %s, givenname: %s', [Rrole[0].Name, surname, givenname]);
     Redraw;
     str2 := '資質';
     repeat
@@ -1273,7 +1273,7 @@ begin
       str0 := format('%4d', [Rrole[0].Aptitude]);
       DrawEngShadowText(str0, 200, CENTER_Y + 123, ColColor($64), ColColor($66));
       str0 := '選定屬性后按回車或這裡確認';
-      DrawTextWithRect(str0, 175, CENTER_Y + 171, 260, ColColor($64), ColColor($66));
+      DrawTextWithRect(str0, 175, CENTER_Y + 171, 260, 0, 0);
       UpdateAllScreen;
 
       {while SDL_PollEvent(@event) do
@@ -1559,19 +1559,19 @@ begin
   if Result then
   begin
     p1 := p;
-    BufferRead(p1, @Inship, 2);
-    BufferRead(p1, @useless1, 2);
-    BufferRead(p1, @My, 2);
-    BufferRead(p1, @Mx, 2);
-    BufferRead(p1, @Sy, 2);
-    BufferRead(p1, @Sx, 2);
-    BufferRead(p1, @Mface, 2);
-    BufferRead(p1, @shipx, 2);
-    BufferRead(p1, @shipy, 2);
-    BufferRead(p1, @shipx1, 2);
-    BufferRead(p1, @shipy1, 2);
-    BufferRead(p1, @shipface, 2);
-    BufferRead(p1, @teamlist[0], 2 * 6);
+    BufferRead(p1, @Inship, 4);
+    BufferRead(p1, @useless1, 4);
+    BufferRead(p1, @My, 4);
+    BufferRead(p1, @Mx, 4);
+    BufferRead(p1, @Sy, 4);
+    BufferRead(p1, @Sx, 4);
+    BufferRead(p1, @Mface, 4);
+    BufferRead(p1, @shipx, 4);
+    BufferRead(p1, @shipy, 4);
+    BufferRead(p1, @shipx1, 4);
+    BufferRead(p1, @shipy1, 4);
+    BufferRead(p1, @shipface, 4);
+    BufferRead(p1, @teamlist[0], 4 * 6);
     BufferRead(p1, @Ritemlist[0], sizeof(Titemlist) * MAX_ITEM_AMOUNT);
 
     BufferRead(p1, @Rrole[0], ItemOffset - RoleOffset);
@@ -1609,7 +1609,7 @@ begin
 
     //初始化入口
     ReSetEntrance;
-    RoleName[0] := u16toutf8(Rrole[0].Name);
+    RoleName[0] := Rrole[0].Name;
     if MODVersion = 13 then
     begin
       BEGIN_MISSION_NUM := Rrole[650].Data[0];
@@ -1617,7 +1617,7 @@ begin
       for i := 0 to MISSION_AMOUNT - 1 do
       begin
         ReadTalk(BEGIN_MISSION_NUM + i, talkarray);
-        MissionStr[i] := u16toutf8(@talkarray[0]);
+        MissionStr[i] := putf8char(@talkarray[0]);
       end;
     end;
   end;
@@ -1761,19 +1761,19 @@ begin
   p := StrAlloc(LenR + 4);
   p1 := p;
 
-  BufferWrite(p1, @Inship, 2);
-  BufferWrite(p1, @useless1, 2);
-  BufferWrite(p1, @My, 2);
-  BufferWrite(p1, @Mx, 2);
-  BufferWrite(p1, @Sy, 2);
-  BufferWrite(p1, @Sx, 2);
-  BufferWrite(p1, @Mface, 2);
-  BufferWrite(p1, @shipx, 2);
-  BufferWrite(p1, @shipy, 2);
-  BufferWrite(p1, @shipx1, 2);
-  BufferWrite(p1, @shipy1, 2);
-  BufferWrite(p1, @shipface, 2);
-  BufferWrite(p1, @teamlist[0], 2 * 6);
+  BufferWrite(p1, @Inship, 4);
+  BufferWrite(p1, @useless1, 4);
+  BufferWrite(p1, @My, 4);
+  BufferWrite(p1, @Mx, 4);
+  BufferWrite(p1, @Sy, 4);
+  BufferWrite(p1, @Sx, 4);
+  BufferWrite(p1, @Mface, 4);
+  BufferWrite(p1, @shipx, 4);
+  BufferWrite(p1, @shipy, 4);
+  BufferWrite(p1, @shipx1, 4);
+  BufferWrite(p1, @shipy1, 4);
+  BufferWrite(p1, @shipface, 4);
+  BufferWrite(p1, @teamlist[0], 4 * 6);
   BufferWrite(p1, @Ritemlist[0], sizeof(Titemlist) * MAX_ITEM_AMOUNT);
 
   BufferWrite(p1, @Rrole[0], ItemOffset - RoleOffset);
@@ -3061,7 +3061,7 @@ var
 begin
   UpdateAllScreen;
   //显示场景名
-  scencename := u16toutf8(Rscence[snum].Name, 5);
+  scencename := Rscence[snum].Name;
   //c:=sdl_maprgba(screen.format,0,255,0,0);
   DrawTextWithRect(scencename, CENTER_X - DrawLength(scencename) * 5 - 23, 100, 0, 0, $202020);
   SDL_Delay(500);
@@ -4250,8 +4250,8 @@ var
       amount := RItemlist[listnum].Amount;
       str := format('%8d', [amount]);
       DrawShadowText(str, 510 + xp, 3 + yp, ColColor($64), ColColor($66));
-      len := DrawLength(u16toutf8(Ritem[item].Name));
-      DrawU16ShadowText(@Ritem[item].Name, 290 - len * 5 + xp, 3 + yp, 0, $202020);
+      len := DrawLength(Ritem[item].Name);
+      DrawShadowText(Ritem[item].Name, 290 - len * 5 + xp, 3 + yp, 0, $202020);
       //drawshadowtext(@words[Ritem[item].ItemType, 1], 252, 115 + row * 50, colcolor($21), colcolor($23));
 
       //如是罗盘则显示坐标
@@ -4269,14 +4269,14 @@ var
       end
       else
       begin
-        len := drawlength(u16toutf8(Ritem[item].Introduction));
-        DrawU16ShadowText(@Ritem[item].Introduction, 8 + xp, 47 + dt + yp, 0, $202020);
+        len := drawlength(Ritem[item].Introduction);
+        DrawShadowText(Ritem[item].Introduction, 8 + xp, 47 + dt + yp, 0, $202020);
         //如有人使用则显示
         if Ritem[item].User >= 0 then
         begin
           str := '使用';
-          DrawShadowText(str, 18 + drawlength(u16toutf8(Rrole[Ritem[item].User].Name)) * 10 + len * 10 + xp, 47 + dt + yp, ColColor($64), ColColor($66));
-          DrawU16ShadowText(@Rrole[Ritem[item].User].Name, 18 + len * 10 + xp, 47 + dt + yp, ColColor($64), ColColor($66));
+          DrawShadowText(str, 18 + drawlength(Rrole[Ritem[item].User].Name) * 10 + len * 10 + xp, 47 + dt + yp, ColColor($64), ColColor($66));
+          DrawShadowText(Rrole[Ritem[item].User].Name, 18 + len * 10 + xp, 47 + dt + yp, ColColor($64), ColColor($66));
         end;
       end;
     end;
@@ -5050,7 +5050,7 @@ begin
           TransBlackScreen;
           UpdateAllScreen;
           str := '誰要裝備';
-          str1 := u16toutf8(Ritem[inum].Name);
+          str1 := Ritem[inum].Name;
           off := DrawTextFrame(CENTER_X - 275, CENTER_Y - 193, 8 + DrawLength(str1));
           //DrawTextWithRect(str, CENTER_X - 275, CENTER_Y - 193, length(str1) * 22 + 80, 0, $202020);
           DrawShadowText(str, CENTER_X - 275 + off, CENTER_Y - 193 + 3, {160, 32,} 0, $202020);
@@ -5114,7 +5114,7 @@ begin
           TransBlackScreen;
           UpdateAllScreen;
           str := '誰要修煉';
-          str1 := u16toutf8(Ritem[inum].Name);
+          str1 := Ritem[inum].Name;
           //DrawTextWithRect(str, CENTER_X - 275, CENTER_Y - 193, length(str1) * 22 + 80, 0, $202020);
           off := DrawTextFrame(CENTER_X - 275, CENTER_Y - 193, 8 + DrawLength(str1));
           //DrawTextWithRect(str, CENTER_X - 275, CENTER_Y - 193, length(str1) * 22 + 80, 0, $202020);
@@ -5173,7 +5173,7 @@ begin
         if teammate = -1 then
         begin
           str := '誰要服用';
-          str1 := u16toutf8(Ritem[inum].Name);
+          str1 := Ritem[inum].Name;
           DrawTextWithRect(str, CENTER_X - 275, CENTER_Y - 193, DrawLength(str1) * 10 + 80, 0, $202020);
           DrawShadowText(str1, CENTER_X - 275 + 99, CENTER_Y - 193 + 2, {160, 32,} ColColor($64), ColColor($66));
           UpdateAllScreen;
@@ -5587,8 +5587,8 @@ begin
     y := yp - 15;
 
     //显示姓名
-    Name := u16toutf8(Rrole[rnum].Name);
-    DrawTextWithRect(Name, x + 58 - DrawLength(putf8char(@Rrole[rnum].Name)) * 5, y + 180, 0, ColColor($64), ColColor($66), 0, 0);
+    Name := Rrole[rnum].Name;
+    DrawTextWithRect(Name, x + 58 - DrawLength(putf8char(@Rrole[rnum].Name)) * 5, y + 180, 0, 0, 0, 0, 0);
 
     //显示所需字符
     for i := 0 to 5 do
@@ -5690,12 +5690,12 @@ begin
       DrawTextWithRect(strs[19], item2x + 85, item2y, 0, 0, $202020, 0, 0);
       if Rrole[rnum].Equip[0] >= 0 then
       begin
-        DrawTextWithRect(u16toutf8(Ritem[Rrole[rnum].Equip[0]].Name), item1x + 85, item1y + 30, 0, ColColor($64), ColColor($66), 30, 0);
+        DrawTextWithRect(Ritem[Rrole[rnum].Equip[0]].Name, item1x + 85, item1y + 30, 0, ColColor($64), ColColor($66), 30, 0);
         DrawIPic(Rrole[rnum].Equip[0], item1x, item1y, 0, 0, 0, 0);
       end;
       if Rrole[rnum].Equip[1] >= 0 then
       begin
-        DrawTextWithRect(u16toutf8(Ritem[Rrole[rnum].Equip[1]].Name), item2x + 85, item2y + 30, 0, ColColor($64), ColColor($66), 30, 0);
+        DrawTextWithRect(Ritem[Rrole[rnum].Equip[1]].Name, item2x + 85, item2y + 30, 0, ColColor($64), ColColor($66), 30, 0);
         DrawIPic(Rrole[rnum].Equip[1], item2x, item2y, 0, 0, 0, 0);
       end;
     end;
@@ -6042,7 +6042,7 @@ begin
     //for i := 0 to 3 do
     //drawshadowtext(@strs[i, 1], x + 220, y + 60 + 21 * i, colcolor($21), colcolor($23));}
   //str := putf8char(@Rrole[rnum].Name);
-  str := u16toutf8(Rrole[rnum].Name, 5);
+  str := Rrole[rnum].Name;
   DrawShadowText(str, x + 115, y + 8, ColColor($64), ColColor($66), tex, sur);
   str := format('%d', [Rrole[rnum].Level]);
   DrawEngShadowText(str, x + 102 - length(str) * 3, y + 6, ColColor(5), ColColor(7), tex, sur);
@@ -6556,7 +6556,7 @@ begin
         end;
         end;
         end;}
-      DrawU16ShadowText(@Rmagic[magicnum].Name, x1 + 19, y1 + 3, 0, $202020);
+      DrawShadowText(Rmagic[magicnum].Name, x1 + 19, y1 + 3, 0, $202020);
       str := format('%2d', [Rrole[rnum].MagLevel[i] div 100 + 1]);
       DrawEngShadowText(str, x1 + 119, y1 + 3, 0, $202020);
     end;
@@ -6575,7 +6575,7 @@ begin
     if magicnum > 0 then
     begin
       //str := format('%-10s', [putf8char(@Rmagic[magicnum].Name)]);
-      DrawU16ShadowText(@Rmagic[magicnum].Name, x1 + 19, y1 + 3, 0, $202020);
+      DrawShadowText(Rmagic[magicnum].Name, x1 + 19, y1 + 3, 0, $202020);
       str := format('%2d', [Rrole[rnum].NGLevel[i] div 100 + 1]);
       DrawEngShadowText(str, x1 + 119, y1 + 3, 0, $202020);
       //DrawEngShadowText(str, x + 210+i mod 2 * 120, y + 256 + 21 * (i div 2), ColColor($64), ColColor($66));
@@ -6592,7 +6592,7 @@ begin
     mlevel := max(1, GetMagicLevel(rnum, magicnum));
     needexp := min(30000, trunc((1 + (mlevel - 1) * 0.5) * Ritem[Rrole[rnum].PracticeBook].NeedExp * (1 + (7 - Rrole[rnum].Aptitude / 15) * 0.5)));
 
-    DrawTextWithRect(u16toutf8(Ritem[Rrole[rnum].PracticeBook].Name), x + 70, y + 400, 0, 0, $202020, 20, 0);
+    DrawTextWithRect(Ritem[Rrole[rnum].PracticeBook].Name, x + 70, y + 400, 0, 0, $202020, 20, 0);
     str := format('%d/%d', [uint16(Rrole[rnum].ExpForBook), needexp]);
     if mlevel = 10 then
       str := format('%d/=', [uint16(Rrole[rnum].ExpForBook)]);
@@ -7575,7 +7575,7 @@ begin
   begin
     TransBlackScreen;
     DrawRectangle(CENTER_X - 150 + 30, 170, {115, 98,} 155, 52, 0, ColColor(255), 30);
-    DrawU16ShadowText(@Rrole[role2].Name, CENTER_X - 150 + 35, 172, ColColor($23), ColColor($21));
+    DrawShadowText(Rrole[role2].Name, CENTER_X - 150 + 35, 172, ColColor($23), ColColor($21));
     word := ('增加生命');
     DrawShadowText(word, CENTER_X - 150 + 35, 197, ColColor($7), ColColor($5));
     word := format('%4d', [addlife]);
@@ -7612,7 +7612,7 @@ begin
     DrawRectangle(CENTER_X - 150 + 30, 170, 155, 52, 0, ColColor(255), 30);
     word := ('減少中毒');
     DrawShadowText(word, CENTER_X - 150 + 35, 197, ColColor($7), ColColor($5));
-    DrawU16ShadowText(@Rrole[role2].Name, CENTER_X - 150 + 35, 172, ColColor($23), ColColor($21));
+    DrawShadowText(Rrole[role2].Name, CENTER_X - 150 + 35, 172, ColColor($23), ColColor($21));
     word := format('%4d', [minuspoi]);
     DrawEngShadowText(word, CENTER_X - 150 + 135, 197, ColColor($66), ColColor($64));
     ShowSimpleStatus(role2, CENTER_X - 150, 70);
@@ -7769,12 +7769,12 @@ begin
   yp := CENTER_Y - 240 + 70;
 
   //DrawRectangle(30 + xp, 100 + yp, 200, 25, 0, ColColor(255), 25);
-  DrawTextFrame(14 + xp, 99 + yp, 4 + DrawLength(u16toutf8(Ritem[inum].Name)));
+  DrawTextFrame(14 + xp, 99 + yp, 4 + DrawLength(Ritem[inum].Name));
   str := '服用';
   if Ritem[inum].ItemType = 2 then
     str := '練成';
   DrawShadowText(str, 33 + xp, 102 + yp, 0, ColColor($23));
-  DrawU16ShadowText(@Ritem[inum].Name, 73 + xp, 102 + yp, ColColor($64), ColColor($66));
+  DrawShadowText(Ritem[inum].Name, 73 + xp, 102 + yp, ColColor($64), ColColor($66));
 
   //如果增加的项超过11个, 分两列显示
   if p < 11 then
@@ -8332,12 +8332,13 @@ begin
   words := TStringList.Create;
   //words.LoadFromFile(AppPath + 'txt/group.txt');
   words.Add('');
-  words.Add('《金庸巨基傳》');
-  //words.Add('Legend of Little Village III');
+  words.Add('《金庸水滸傳》');
+  words.Add('hugebase');
+  words.Add('Legend of Little Village III');
   words.Add('108 Brothers And Sisters');
   words.Add('');
 
-  words.Add('原鐵血丹心論壇出品');
+  words.Add('鐵血丹心論壇出品');
   words.Add('http://www.tiexuedanxin.net');
   words.Add('http://www.dawuxia.net');
   words.Add('http://www.txdx.net');
@@ -8399,7 +8400,10 @@ begin
   words.Add('流木匆匆');
   words.Add('无酒肆屋');
   words.Add('项羽');
-  words.Add('惩戒');
+  words.Add('楼芊芊');
+  words.Add('短歌微吟');
+  words.Add('蕴殊');
+  words.Add('宁夜');
   words.Add('');
 
   words.Add('場景');
@@ -8437,6 +8441,7 @@ begin
   words.Add('天一水');
   words.Add('天下有敌');
   words.Add('南窗寄傲生');
+  words.Add('xq3366');
   words.Add('');
 
   //words.Add('協調');

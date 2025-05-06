@@ -97,8 +97,8 @@ function HaveMagic(person, mnum, lv: integer): boolean;
 function HaveMagicAmount(rnum: integer; NeiGong: integer = 0): integer;
 function GetMagicLevel(person, mnum: integer): integer;
 procedure StudyMagic(rnum, magicnum, newmagicnum, level, dismode: integer);
-procedure DivideName(fullname: widestring; var surname, givenname: widestring);
-function ReplaceStr(const S, Srch, Replace: widestring): widestring;
+procedure DivideName(fullname: utf8string; var surname, givenname: utf8string);
+function ReplaceStr(const S, Srch, Replace: utf8string): utf8string;
 procedure NewTalk(headnum, talknum, namenum, place, showhead, color, frame: integer; content: utf8string = ''; disname: utf8string = '');
 procedure ShowTitle(talknum, color: integer);
 function Digging(beginPic, goal, shovel, restrict: integer): integer;
@@ -203,7 +203,7 @@ begin
 
   //DrawRectangle(x - 85, y, 170, 76, 0, ColColor(255), 30);
   word := format('%d', [amount]);
-  l1 := DrawLength(u16toutf8(Ritem[inum].Name));
+  l1 := DrawLength(Ritem[inum].Name);
   l2 := DrawLength(word);
   DrawTextFrame(CENTER_X - (6 + l1 + l2) * 5 - 20, y, 6 + l1 + l2);
   x := CENTER_X - (6 + l1 + l2) * 5 + 1;
@@ -220,7 +220,7 @@ begin
   //DrawShadowText(@word[1], x - 60, 3 + y, ColColor($64), ColColor($66));
   DrawIPic(inum, CENTER_X - 40, y - 90, 0, 0, 0, 0);
 
-  DrawU16ShadowText(@Ritem[inum].Name, x + 40, 3 + y, ColColor($64), ColColor($66));
+  DrawShadowText(Ritem[inum].Name, x + 40, 3 + y, ColColor($64), ColColor($66));
   UpdateAllScreen;
   //SDL_UpdateRect2(screen, x - 85, y, 171, 77);
   //有3种机会得到物品-平时, 战斗中偷窃, 战斗结束制造
@@ -962,7 +962,7 @@ begin
   if dismode = 0 then
   begin
     word := '學會';
-    Show3HintString(u16toutf8(Rrole[rnum].Name), word, u16toutf8(Rmagic[mnum].Name));
+    Show3HintString(Rrole[rnum].Name, word, Rmagic[mnum].Name);
   end;
 end;
 
@@ -982,7 +982,7 @@ begin
   if iq > 0 then
   begin
     word := '資質增加';
-    Show3HintString(u16toutf8(Rrole[rnum].Name), word, format('%3d', [iq]));
+    Show3HintString(Rrole[rnum].Name, word, format('%3d', [iq]));
   end;
 end;
 
@@ -1184,7 +1184,7 @@ begin
   Rrole[rnum].Data[datalist] := Rrole[rnum].Data[datalist] + num;
   if word <> '' then
   begin
-    Show3HintString(u16toutf8(Rrole[rnum].Name), word, format('%d', [num]));
+    Show3HintString(Rrole[rnum].Name, word, format('%d', [num]));
   end;
 end;
 
@@ -1682,7 +1682,7 @@ begin
       e4 := e_GetValue(0, e1, e4);
       pw := @x50[e2];
       pw1 := @x50[e3];
-      word := format(u16toutf8(putf8char(pw1)), [e4]);
+      word := format(putf8char(pw1), [e4]);
       wordwide:=utf8decode(word);
       //showmessage(putf8char(pw1)+word);
       for i := 0 to length(wordwide) - 1 do
@@ -1984,7 +1984,7 @@ begin
         begin
           pw^ := 0;
           //DrawU16ShadowText(putf8char(pw1), e3 - 2, e4 + 22 * i - 25, ColColor(e5 and $FF), ColColor((e5 and $FF00) shr 8));
-          DrawU16ShadowText(pw1, e3 - 2, e4 + 22 * i - 25, 0, $202020);
+          DrawShadowText(putf8char(pw1), e3 - 2, e4 + 22 * i - 25, 0, $202020);
           i := i + 1;
           pw1 := pw;
           Inc(pw1);
@@ -1992,7 +1992,7 @@ begin
         Inc(pw);
       end;
       //Drawu16ShadowText(putf8char(pw1), e3 - 2, e4 + 22 - 25, ColColor(e5 and $FF), ColColor((e5 and $FF00) shr 8));
-      Drawu16ShadowText(pw1, e3 - 2, e4 + 22 - 25, 0, $202020);
+      DrawShadowText(putf8char(pw1), e3 - 2, e4 + 22 - 25, 0, $202020);
       UpdateAllScreen;
       //waitanykey;
     end;
@@ -2063,14 +2063,14 @@ begin
         if uint16(pw^) = $2A then
         begin
           pw^ := 0;
-          DrawU16ShadowText(pw1, e3 + 3, e4 + 22 * i + 2, ColColor(e5 and $FF), ColColor((e5 and $FF00) shr 8));
+          DrawShadowText(putf8char(pw1), e3 + 3, e4 + 22 * i + 2, ColColor(e5 and $FF), ColColor((e5 and $FF00) shr 8));
           i := i + 1;
           pw1 := pw;
           Inc(pw1);
         end;
         Inc(pw);
       end;
-      DrawU16ShadowText(pw1, e3 + 3, e4 + 22 * i + 2, ColColor(e5 and $FF), ColColor((e5 and $FF00) shr 8));
+      DrawShadowText(putf8char(pw1), e3 + 3, e4 + 22 * i + 2, ColColor(e5 and $FF), ColColor((e5 and $FF00) shr 8));
       UpdateAllScreen;
       i := WaitAnyKey;
       if i = SDLK_y then
@@ -2100,8 +2100,8 @@ begin
       for i := 0 to e2 - 1 do
       begin
         menuString[i] := '';
-        menuString[i] := u16toutf8(@x50[x50[e3 + i]]);
-        i1 := DrawLength(u16toutf8(@x50[x50[e3 + i]]));
+        menuString[i] := putf8char(@x50[x50[e3 + i]]);
+        i1 := DrawLength(@x50[x50[e3 + i]]);
         if i1 > t1 then
           t1 := i1;
       end;
@@ -2118,8 +2118,8 @@ begin
       for i := 0 to e2 - 1 do
       begin
         menuString[i] := '';
-        menuString[i] := u16toutf8(@x50[x50[e3 + i]]);
-        i1 := DrawLength(u16toutf8(@x50[x50[e3 + i]]));
+        menuString[i] := putf8char(@x50[x50[e3 + i]]);
+        i1 := DrawLength(@x50[x50[e3 + i]]);
         if i1 > i2 then
           i2 := i1;
       end;
@@ -2475,15 +2475,15 @@ begin
     DrawRectangle(CENTER_X - 75, 98, 145, 76, 0, ColColor(255), 30);
     word := '學會';
     DrawShadowText(word, CENTER_X - 90, 125, ColColor(5), ColColor(7));
-    DrawU16ShadowText(@Rrole[rnum].Name, CENTER_X - 90, 100, ColColor($21), ColColor($23));
-    DrawU16ShadowText(@Rmagic[newmagicnum].Name, CENTER_X - 90, 150, ColColor($64), ColColor($66));
+    DrawShadowText(Rrole[rnum].Name, CENTER_X - 90, 100, ColColor($21), ColColor($23));
+    DrawShadowText(Rmagic[newmagicnum].Name, CENTER_X - 90, 150, ColColor($64), ColColor($66));
     UpdateAllScreen;
     WaitAnyKey;
     Redraw;
   end;
 end;
 
-procedure DivideName(fullname: widestring; var surname, givenname: widestring);
+procedure DivideName(fullname: utf8string; var surname, givenname: utf8string);
 var
   surname2: TStringList;
   len, i, hysur: integer;
@@ -2615,10 +2615,10 @@ begin
   //writeln(len, ',', fullname, ',', surname, ',', givenname);
 end;
 
-function ReplaceStr(const S, Srch, Replace: widestring): widestring;
+function ReplaceStr(const S, Srch, Replace: utf8string): utf8string;
 var
   i: integer;
-  Source: widestring;
+  Source: utf8string;
 begin
   Source := S;
   Result := '';
@@ -2645,7 +2645,7 @@ var
   {$IFDEF fpc}
   FullNameUTF8Str, SurNameUTF8Str, GivenNameUTF8Str: utf8string;
   {$ENDIF}
-  FullNameStr, SurNameStr, GivenNameStr, TalkStr, NameStr, TempStr: widestring;
+  FullNameStr, SurNameStr, GivenNameStr, TalkStr, NameStr, TempStr: utf8string;
   Changed: boolean;
   HeadNumR: integer; //用于重定头像的对应人物, 以正确读取名字
   skipSync: boolean = False;
@@ -2808,11 +2808,11 @@ begin
     end;
 
     if (namenum = -2) or (namenum > 0) then
-      NameStr := u16toutf8(@Name[0])
+      NameStr := putf8char(@Name[0])
     else if (namenum = -1) or (namenum = 0) then
       NameStr := '';
     if {(MODVersion in [0, 31]) and} (namenum = 0) then
-      NameStr := u16toutf8(@Rrole[0].Name);
+      NameStr := Rrole[0].Name;
   end
   else
     NameStr := disname;
@@ -2825,10 +2825,10 @@ begin
   // ******************************************//
 
   // *****************分析名字*****************//
-  setlength(Name, 10);
-  Move(Rrole[0].Name[0], Name[0], 10);
+  setlength(Name, 20);
+  Move(Rrole[0].Name[0], Name[0], 20);
   //FullNameStr := CP950ToUTF8(putf8char(@Name[0]));
-  FullNameStr := pwidechar(@Name[0]);
+  FullNameStr := putf8char(@Name[0]);
 
   {$IFDEF fpc}
   //FullNameUTF8Str := UTF8Encode(FullNameStr);
@@ -2847,7 +2847,7 @@ begin
   GivenNameStr := '';
   if (Pos(SurNameCode, TalkStr) > 0) or (Pos(GivenNameCode, TalkStr) > 0) then
   begin
-    DivideName(FullNameStr, SurNameStr, GivenNameStr);
+    //DivideName(FullNameStr, SurNameStr, GivenNameStr);
     //SurNameStr := SurNameUTF8Str;
     //GivenNameStr := GivenNameUTF8Str;
     TalkStr := ReplaceStr(TalkStr, SurNameCode, SurNameStr);
@@ -2882,13 +2882,7 @@ begin
     //显示名字
     if (NameStr <> '') or (showhead <> 0) then
     begin
-      for ix := 1 to length(NameStr) do
-      begin
-        Setlength(TempStr, 2);
-        Move(NameStr[ix], TempStr[1], Sizeof(widechar));
-        tempstr[2] := widechar(0);
-        DrawShadowText(TempStr, Name_X + (ix - 1) * NameColSpacing, Name_Y, ColColor(5), ColColor(7));
-      end;
+      DrawShadowText(NameStr, Name_X + 0, Name_Y, ColColor(5), ColColor(7));
     end;
     UpdateAllScreen;
     //显示对话
@@ -3010,9 +3004,9 @@ begin
       //写字符
       if I <= len then
       begin
-        Setlength(tempstr, 2);
-        Move(TalkStr[I], TempStr[1], Sizeof(widechar));
-        tempstr[2] := widechar(0);
+        Setlength(tempstr, 4);
+        Move(TalkStr[I], TempStr[1], 3);
+        tempstr[4]:=utf8char(0);
         xtemp := Talk_X + ColSpacing * ix;
         //调整半角字符的位置
         if uint16(tempstr[1]) < $1000 then
@@ -3528,7 +3522,7 @@ begin
         temp := '  ';
       if TeamList[i] <> -1 then
       begin
-        temp := temp + u16toutf8(Rrole[TeamList[i]].Name);
+        temp := temp + Rrole[TeamList[i]].Name;
         temp := temp + StringOfChar(' ', 12 - DrawLength(temp)) + IntToStr(Rrole[TeamList[i]].Level);
       end
       else
@@ -3982,7 +3976,7 @@ var
 
       //简介
       ReadTalk(menu + 600, talkarray);
-      str1 := ' ' + u16toutf8(@talkarray[0]);
+      str1 := ' ' + putf8char(@talkarray[0]);
       pw := @talkarray[0];
       for i := 0 to length(talkarray) div 2 - 1 do
       begin
@@ -4002,7 +3996,7 @@ var
         pword[0] := puint16(pw)^;
         Inc(pw);
         i := i + 1;
-        DrawU16ShadowText(@pword[0], CENTER_X - 320 + 250 + 20 * c1, CENTER_Y - 240 + 270 + 23 * r1, ColColor(5), ColColor(7));
+        DrawShadowText(putf8char(@pword[0]), CENTER_X - 320 + 250 + 20 * c1, CENTER_Y - 240 + 270 + 23 * r1, ColColor(5), ColColor(7));
         Inc(c1);
         if c1 = 18 then
         begin
@@ -4963,7 +4957,7 @@ begin
           end
           else //显示文字}
         begin
-          DrawU16ShadowText(@pword, tx + 20 * c1, ty + 20 * r1, ColColor(color1), ColColor(color2));
+          DrawShadowText(putf8char(@pword), tx + 20 * c1, ty + 20 * r1, ColColor(color1), ColColor(color2));
           Inc(c1);
           if c1 = cell then
           begin
@@ -5832,7 +5826,7 @@ begin
       if Ritem[Ritemlist[i].Number].Magic >= 0 then
       begin
         j := j + 1;
-        menuString[j - 1] := ' ' + u16toutf8(Ritem[Ritemlist[i].Number].Name);
+        menuString[j - 1] := ' ' + Ritem[Ritemlist[i].Number].Name;
         itemlist[j - 1] := Ritemlist[i].Number;
       end;
     end;
@@ -6085,7 +6079,7 @@ begin
     buy.BuyAmount[i] := 0;
     totalbuy[i] := 0;
     buy.HoldAmount[i] := GetItemAmount(sell.Item[i]);
-    menuString[i] := u16toutf8(Ritem[sell.Item[i]].Name);
+    menuString[i] := Ritem[sell.Item[i]].Name;
   end;
 
   x := CENTER_X - 190;
@@ -6358,7 +6352,7 @@ begin
     scencex[u - 1] := Rscence[i].MainEntranceX1;
     scencey[u - 1] := Rscence[i].MainEntranceY1;
     scencenum[u - 1] := i;
-    str2[u - 1] := u16toutf8(Rscence[i].Name, 5);
+    str2[u - 1] := Rscence[i].Name;
     str3[u - 1] := format('%3d, %3d', [Rscence[i].MainEntranceY1, Rscence[i].MainEntranceX1]);
   end;
   str := '你的位置';
@@ -6664,7 +6658,7 @@ begin
     loadfreshscreen;
     str2 := '請輸入主角之姓名：' + str;
     w := drawlength(str2);
-    DrawTextWithRect(str2, x, y, 260, ColColor($66), ColColor($63), 0, 1);
+    DrawTextWithRect(str2, x, y, 260, 0, 0, 0, 1);
     //SDL_UpdateRect2(screen, 0, 0, 0, 0);
     SDL_PollEvent(@event);
     CheckBasicEvent;

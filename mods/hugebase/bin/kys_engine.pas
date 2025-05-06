@@ -61,14 +61,14 @@ function GetPositionOnScreen(x, y, CenterX, CenterY: integer): TPosition;
 //显示文字的子程
 function Big5ToUnicode(str: putf8char): utf8string;
 function GBKToUnicode(str: putf8char): utf8string;
-function U16ToUtf8(str: putf8char; len: integer = -1): utf8string;
+//function str: putf8char; len: integer = -1: utf8string;
 function UnicodeToBig5(str: putf8char): utf8string;
 function UnicodeToGBK(str: putf8char): utf8string;
 procedure DrawText(word: utf8string; x_pos, y_pos: integer; color: uint32; engwidth: integer = -1);
 procedure DrawEngText(word: utf8string; x_pos, y_pos: integer; color: uint32);
 procedure DrawShadowText(word: utf8string; x_pos, y_pos: integer; color1, color2: uint32; Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil; realPosition: integer = 0; eng: integer = 0); overload;
 procedure DrawEngShadowText(word: utf8string; x_pos, y_pos: integer; color1, color2: uint32; Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil);
-procedure DrawU16ShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32);
+//procedure DrawU16ShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32);
 
 function Simplified2Traditional(mSimplified: utf8string): utf8string;
 procedure DrawPartPic(pic: pointer; x, y, w, h, x1, y1: integer);
@@ -625,7 +625,7 @@ begin
   {$ENDIF}
 end;
 
-function U16ToUtf8(str: putf8char; len: integer = -1): utf8string;
+{function str: putf8char; len: integer = -1: utf8string;
 var
   strw: widestring;
 begin
@@ -636,7 +636,7 @@ begin
       setlength(strw, len);
   end;
   Result := utf8encode(strw);
-end;
+end;}
 
 //unicode转为big5, 仅用于输入姓名
 function UnicodeToBig5(str: putf8char): utf8string;
@@ -856,7 +856,7 @@ var
 begin
   {if not IsStringUTF8(word)  then
   begin
-    word:=u16toutf8(@word[1]);
+    word:=@word[1];
   end;}
   len := length(putf8char(word));
   if len = 0 then

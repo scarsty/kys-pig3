@@ -570,7 +570,7 @@ begin
   begin
     if Teamlist[i] >= 0 then
     begin
-      menuString[i + 1] := u16toutf8(Rrole[Teamlist[i]].Name);
+      menuString[i + 1] := Rrole[Teamlist[i]].Name;
       max := max + 1;
     end;
   end;
@@ -2896,7 +2896,7 @@ begin
   Redraw;
   if (str = '') and (mnum >= 0) then
   begin
-    str := u16toutf8(Rmagic[mnum].Name);
+    str := Rmagic[mnum].Name;
     color1 := ColColor($14);
     color2 := ColColor($16);
   end
@@ -2967,7 +2967,7 @@ begin
       if ((Rmagic[Rrole[rnum].Magic[i]].NeedItem < 0) or ((Rmagic[Rrole[rnum].Magic[i]].NeedItem >= 0) and (Rmagic[Rrole[rnum].Magic[i]].NeedItemAmount <= GetItemAmount(Rmagic[Rrole[rnum].Magic[i]].NeedItem)))) and ((Rmagic[Rrole[rnum].Magic[i]].NeedMP <= Rrole[rnum].CurrentMP)) then
       begin
         MenuStatus := MenuStatus or (1 shl i);
-        menuString[i] := u16toutf8(Rmagic[Rrole[rnum].Magic[i]].Name);
+        menuString[i] := Rmagic[Rrole[rnum].Magic[i]].Name;
         menuEngString[i] := format('%3d', [Rrole[rnum].MagLevel[i] div 100 + 1]);
         max := max + 1;
       end;
@@ -5871,7 +5871,7 @@ begin
       amount := amount + 1;
       setlength(namestr, amount);
       setlength(a, amount);
-      namestr[amount - 1] := u16toutf8(Rrole[Brole[i].rnum].Name);
+      namestr[amount - 1] := Rrole[Brole[i].rnum].Name;
       a[amount - 1] := i;
     end;
   end;
@@ -6350,7 +6350,7 @@ begin
             284, 282, 283, 260, 287, 274, 141:}
           else
           begin
-            if (Brole[bnum].StateLevel[Rmagic[mnum].AddMP[1]] = 0) then
+            if (Rmagic[mnum].AddMP[1]>=0) and (Brole[bnum].StateLevel[Rmagic[mnum].AddMP[1]] = 0) then
             begin
               movetype := 3;
               if Rrole[rnum].CurrentHP < Rrole[rnum].MaxHP div 2 then
@@ -7577,7 +7577,7 @@ begin
     begin
       if (Brole[i].Team = Brole[bnum].Team) and (Brole[i].Dead = 1) then
       begin
-        menuString[amount] := u16toutf8(Rrole[Brole[i].rnum].Name);
+        menuString[amount] := Rrole[Brole[i].rnum].Name;
         bnumarray[amount] := i;
         amount := amount + 1;
       end;
@@ -8351,7 +8351,7 @@ begin
           if Rrole[Brole[i].rnum].magic[i1] > 0 then
           begin
             mnumarray[amount] := Rrole[Brole[i].rnum].magic[i1];
-            namemagic := u16toutf8(Rrole[Brole[i].rnum].Name) + StringOfChar(' ', 10 - DrawLength(u16toutf8(Rrole[Brole[i].rnum].Name))) + u16toutf8(Rmagic[Rrole[Brole[i].rnum].magic[i1]].Name);
+            namemagic := Rrole[Brole[i].rnum].Name + StringOfChar(' ', 10 - DrawLength(Rrole[Brole[i].rnum].Name)) +Rmagic[Rrole[Brole[i].rnum].magic[i1]].Name;
             //menustring[amount] := putf8char(@namemagic);
             menuString[amount] := namemagic;
             ConsoleLog(menuString[amount]);
@@ -8376,7 +8376,7 @@ begin
           if Rmagic[Rrole[rnum].magic[0]].HurtType = 2 then
           begin
             mnumarray[amount] := Rrole[rnum].magic[0];
-            namemagic := u16toutf8(Rrole[rnum].Name) + StringOfChar(' ', 10 - DrawLength(u16toutf8(Rrole[rnum].Name))) + u16toutf8(Rmagic[Rrole[rnum].magic[0]].Name);
+            namemagic := Rrole[rnum].Name + StringOfChar(' ', 10 - DrawLength(Rrole[rnum].Name)) + Rmagic[Rrole[rnum].magic[0]].Name;
             menuString[amount] := namemagic;
             ConsoleLog(menuString[amount]);
             amount := amount + 1;
