@@ -176,7 +176,8 @@ procedure toc;
 
 procedure ConsoleLog(formatstring: utf8string; content: array of const; cr: boolean = True); overload; inline;
 procedure ConsoleLog(formatstring: utf8string = ''; cr: boolean = True); overload; inline;
-//function Myth_VideoPlay(window: integer; filename: utf8string): integer; cdecl; external 'myth-simpleplayer.dll';
+
+function utf8follow(c1: utf8char): integer;
 
 implementation
 
@@ -840,7 +841,7 @@ procedure DrawText(word: utf8string; x_pos, y_pos: integer; color: uint32; engwi
 var
   dest, src, dst: TSDL_Rect;
   tempcolor, whitecolor: TSDL_Color;
-  len, i, k: integer;
+  len, i, k, len_utf8: integer;
   word0: array [0 .. 2] of uint16 = (32, 0, 0);
   word1: utf8string;
   word2: utf8string;
@@ -893,8 +894,11 @@ begin
     else
     begin
       dest.y := y_pos;
-      k := byte(word[i]) + byte(word[i + 1]) * 256 + byte(word[i + 2]) * 65536;
-      i := i + 3;
+      len_utf8 := utf8follow(word[i]);
+      k := byte(word[i]) + byte(word[i + 1]) * 256;
+      if len_utf8 = 3 then
+        k := k + byte(word[i + 2]) * 65536;
+      i := i + len_utf8;
     end;
     p := CreateFontTile(k, SW_SURFACE, w, h);
     dest.w := w;
@@ -3690,6 +3694,27 @@ begin
     filewrite(i, str[1], length(str));
     fileclose(i);}
   {$ENDIF}
+end;
+
+function utf8follow(c1: utf8char): integer;
+var
+  c: byte;
+begin
+  c := byte(c1);
+  if (c and $80) = 0 then
+    Result := 1
+  else if (c and $E0) = $C0 then
+    Result := 2
+  else if (c and $F0) = $E0 then
+    Result := 3
+  else if (c and $F8) = $F0 then
+    Result := 4
+  else if (c and $FC) = $F8 then
+    Result := 5
+  else if (c and $FE) = $FC then
+    Result := 6
+  else
+    Result := -1;
 end;
 
 end.

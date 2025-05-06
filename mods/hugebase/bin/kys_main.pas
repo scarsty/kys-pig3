@@ -8404,6 +8404,7 @@ begin
   words.Add('短歌微吟');
   words.Add('蕴殊');
   words.Add('宁夜');
+  words.Add('出门在哪儿');
   words.Add('');
 
   words.Add('場景');

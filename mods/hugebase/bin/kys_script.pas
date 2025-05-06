@@ -3,10 +3,10 @@
 interface
 
 uses
-{$IFDEF fpc}
-{$ELSE}
+  {$IFDEF fpc}
+  {$ELSE}
   Windows,
-{$ENDIF}
+  {$ENDIF}
   SysUtils,
   SDL2,
   Math,
@@ -24,7 +24,7 @@ type
     f: lua_CFunction;
   end;
 
-  //初始化脚本配置,运行脚本
+//初始化脚本配置,运行脚本
 procedure InitialScript;
 procedure DestroyScript;
 function ExecScript(filename, functionname: utf8string): integer;
@@ -1520,11 +1520,11 @@ begin
     2: p1 := @Rscence[num].Name;
     3: p1 := @Rmagic[num].Name;
   end;
-{$IFDEF fpc}
+  {$IFDEF fpc}
   str := p1;
-{$ELSE}
+  {$ELSE}
   str := UTF8Encode(GBKToUnicode(p1));
-{$ENDIF}
+  {$ENDIF}
   lua_pushstring(L, @str[1]);
   Result := 1;
 
@@ -1545,7 +1545,8 @@ begin
     2: p1 := @Rscence[num].Name;
     3: p1 := @Rmagic[num].Name;
   end;
-  strw := lua_tostring(L, -3);;
+  strw := lua_tostring(L, -3);
+  ;
   Result := 0;
 
   for i := 0 to 4 do
@@ -1569,11 +1570,11 @@ begin
   ReadTalk(num, a);
   strw := putf8char(a);
 
-{$IFDEF fpc}
+  {$IFDEF fpc}
   str := UTF8Encode(strw);
-{$ELSE}
+  {$ELSE}
   str := UTF8Encode(GBKToUnicode(p1));
-{$ENDIF}
+  {$ENDIF}
   lua_pushstring(L, @str[1]);
   Result := 1;
 

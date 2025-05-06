@@ -1578,13 +1578,13 @@ function instruct_50e(code, e1, e2, e3, e4, e5, e6: integer): integer;
 var
   i, t1, GRP, IDX, offset, len, i1, i2: integer;
   p, p1: putf8char;
-  pw, pw1: puint16;
+  pw, pw1: putf8char;
   //ps :pstring;
   str: utf8string;
   word: utf8string;
   wordutf8, word1utf8: utf8string;
   menuString, menuEngString: array of utf8string;
-  wordwide: widestring;
+  wordwide: utf8string;
 begin
   Result := 0;
   //writeln('Expanded 50, the code is ', code);
@@ -1659,7 +1659,6 @@ begin
     8: //Read talk to string.
     begin
       t1 := e_GetValue(0, e1, e2);
-
       {if t1 <= 0 then
         begin
         len := TIdx[0];
@@ -1675,7 +1674,7 @@ begin
       move(TDEF.GRP[offset], x50[e3], len);
       p := @x50[e3];
       Inc(p, len);
-      p^ := char(0);
+      p^ := utf8char(0);
     end;
     9: //Format the string.
     begin
@@ -1683,14 +1682,13 @@ begin
       pw := @x50[e2];
       pw1 := @x50[e3];
       word := format(putf8char(pw1), [e4]);
-      wordwide := utf8decode(word);
       //showmessage(putf8char(pw1)+word);
-      for i := 0 to length(wordwide) - 1 do
+      for i := 0 to length(word) - 1 do
       begin
-        pw^ := uint16(wordwide[i + 1]);
+        pw^ := utf8char(word[i + 1]);
         Inc(pw);
       end;
-      pw^ := 0;
+      pw^ := utf8char(0);
     end;
     10: //Get the length of a string.
     begin
@@ -1723,10 +1721,10 @@ begin
       pw := @x50[e2];
       for i := 1 to e3 do
       begin
-        pw^ := $20;
+        pw^ := ' ';
         Inc(pw);
       end;
-      pw^ := 0;
+      pw^ := utf8char(0);
     end;
     16: //Write R data.
     begin
@@ -1915,17 +1913,17 @@ begin
         2: pw1 := @Rscence[e3].Name;
         3: pw1 := @Rmagic[e3].Name;
       end;
-      for i := 0 to 4 do
+      for i := 0 to length(pw1) - 1 do
       begin
         pw^ := pw1^;
-        if pw1^ = 0 then
+        if pw1^ = utf8char(0) then
           break;
         Inc(pw);
         Inc(pw1);
       end;
       //(p + i)^ := char($20);
       Inc(pw);
-      pw^ := 0;
+      pw^ := utf8char(0);
       //(p + i + 1)^ := char(0);
     end;
     28: //Get the battle number.
@@ -1978,11 +1976,11 @@ begin
       pw := @x50[e2];
       pw1 := pw;
       //writeln(utf8string(putf8char(pw)));
-      while uint16(pw^) > 0 do
+      while byte(pw^) > 0 do
       begin
-        if uint16(pw^) = $2A then
+        if byte(pw^) = $2A then
         begin
-          pw^ := 0;
+          pw^ := utf8char(0);
           //DrawU16ShadowText(putf8char(pw1), e3 - 2, e4 + 22 * i - 25, ColColor(e5 and $FF), ColColor((e5 and $FF00) shr 8));
           DrawShadowText(putf8char(pw1), e3 - 2, e4 + 22 * i - 25, 0, $202020);
           i := i + 1;
@@ -2031,17 +2029,17 @@ begin
       i1 := 1;
       i2 := 0;
       t1 := 0;
-      while (pw^) > 0 do
+      while byte(pw^) > 0 do
       begin
         //showmessage('');
-        if (pw^) = $2A then
+        if byte(pw^) = $2A then
         begin
           if t1 > i2 then
             i2 := t1;
           t1 := 0;
           i1 := i1 + 1;
         end;
-        if (pw^) = $20 then
+        if byte(pw^) = $20 then
           t1 := t1 + 1;
         Inc(pw);
         t1 := t1 + 1;
@@ -2051,18 +2049,18 @@ begin
       Inc(pw, -1);
       if i1 = 0 then
         i1 := 1;
-      if (pw^) = $2A then
+      if byte(pw^) = $2A then
         i1 := i1 - 1;
       //DrawRectangle(e3, e4, i2 * 20 + 25, i1 * 22 + 5, 0, ColColor(255), 30);
       DrawTextFrame(e3, e4, i2);
       pw := @x50[e2];
       pw1 := pw;
       i := 0;
-      while uint16(pw^) > 0 do
+      while byte(pw^) > 0 do
       begin
-        if uint16(pw^) = $2A then
+        if byte(pw^) = $2A then
         begin
-          pw^ := 0;
+          pw^ := utf8char(0);
           DrawShadowText(putf8char(pw1), e3 + 3, e4 + 22 * i + 2, ColColor(e5 and $FF), ColColor((e5 and $FF00) shr 8));
           i := i + 1;
           pw1 := pw;
@@ -2490,17 +2488,17 @@ var
 begin
   len := drawLength(fullname);
   case len of
-    1,2:
+    1, 2:
     begin
       surname := '';
       givenname := fullname;
     end;
-    3,4:
+    3, 4:
     begin
       surname := midstr(fullname, 1, 3);
       givenname := midstr(fullname, 4, 3);
     end;
-    5,6:
+    5, 6:
     begin
       surname2 := TStringList.Create;
       surname2.Add('歐陽');
@@ -2637,7 +2635,7 @@ end;
 
 procedure NewTalk(headnum, talknum, namenum, place, showhead, color, frame: integer; content: utf8string = ''; disname: utf8string = '');
 var
-  FileHandle, Offset, len, I, I2, ix, iy, xtemp, a: integer;
+  FileHandle, Offset, len, I, I2, ix, iy, xtemp, a, len_utf8: integer;
   Frame_X, Frame_Y, Frame_W, Frame_H, Head_X, Head_Y, Head_W, Head_H, Name_X, Name_Y, Name_W, Name_H, Talk_X, Talk_Y, Talk_W, Talk_H, MaxCol: integer;
   ForeGroundCol, BackGroundCol: byte;
   DrawForeGroundCol, DrawBackGroundCol: cardinal;
@@ -2798,7 +2796,7 @@ begin
       begin
         if (Rrole[i].HeadNum = HeadNumR) or ((i = 0) and (HeadNumR = 0)) then
         begin
-          len := 10;
+          len := 20;
           setlength(Name, len + 1);
           Move(Rrole[i].Name[0], Name[0], len);
           Name[len] := 0;
@@ -2905,8 +2903,8 @@ begin
         skipSync := True;
         SkipTalk := 0;
       end;
-      if SkipTalk = 1 then
-        break;
+      //if SkipTalk = 1 then
+      //break;
       if not ((ix < Talk_W) and (iy < Talk_H) and (I <= len)) then
         break;
       //检查是否等待按键
@@ -2980,8 +2978,8 @@ begin
       if I <= len then
       begin
         tempstr := TalkStr[I];
-        if byte(TalkStr[I]) >= 128 then
-          tempstr := midstr(talkstr, i, 3);
+        len_utf8 := utf8follow(TalkStr[I]);
+        tempstr := midstr(talkstr, i, len_utf8);
         tempstr := tempstr + utf8char(0);
         xtemp := Talk_X + ColSpacing * ix;
         //调整半角字符的位置
@@ -2990,7 +2988,7 @@ begin
         DrawShadowText(TempStr, xtemp, Talk_Y + RowSpacing * iy, DrawForeGroundCol, DrawBackGroundCol);
       end;
       Inc(I, length(tempstr) - 1);
-      if not skipSync then
+      if (not skipSync) and (SkipTalk = 0) then
       begin
         SDL_Delay(5); //每个字符间都延时
         UpdateAllScreen;
@@ -3005,10 +3003,13 @@ begin
           if I - 1 <= len then
           begin
             UpdateAllScreen;
-            WaitAnyKey;
-            if skipSync then
+            if (SkipTalk = 0) then
+            begin
               WaitAnyKey;
-            skipSync := False;
+              if skipSync then
+                WaitAnyKey;
+              skipSync := False;
+            end;
           end;
           UpdateAllScreen;
           //LoadFreshScreen;
@@ -3018,8 +3019,8 @@ begin
     end;
     if I > len then
       break;
-    if SkipTalk = 1 then
-      break;
+    //if SkipTalk = 1 then
+    //break;
   end;
   FreeFreshScreen;
   UpdateAllScreen;
@@ -3890,7 +3891,6 @@ var
   str1, str2: utf8string;
   head: array [0 .. 107] of integer;
   menuString: array [0 .. 107] of utf8string;
-
   x, y, w, max, maxshow: integer;
   menu, menup, menutop, status1: integer;
   headn, talkn, x1, y1: integer;
@@ -3898,15 +3898,15 @@ var
   procedure ShowCommonScrollMenu_starlist(x, y, w, max, maxshow, menu, menutop, headn: integer);
   var
     i, p: integer;
-    hx, hy, hw, hh, Count, len, IDX, GRP, r1, c1, offset, state: integer;
+    hx, hy, hw, hh, Count, len, IDX, GRP, r1, c1, offset, state, len1: integer;
     str1, str2: utf8string;
     talkarray: array of byte;
-    pword: array [0 .. 1] of uint16;
+    pword: utf8string;
     str: putf8char;
     statusstr: utf8string;
     strs: array [0 .. 21] of utf8string;
     color1, color2: uint32;
-    pw: puint16;
+    pw: putf8char;
   begin
     if max + 1 < maxshow then
       maxshow := max + 1;
@@ -3942,8 +3942,8 @@ var
       //DrawRectangle(CENTER_X - 384 + 304, y, 379, maxshow * 22 + 6, 0, ColColor(255), 75);
       str1 := concat(Star[menu], ' ');
       str2 := concat(str1, RoleName[menu]);
-      len := length(str2);
-      DrawShadowText(str2, CENTER_X - 384 + 484 - 20 * (len div 2), CENTER_Y - 240 + 220, ColColor($21), ColColor($23));
+      len := drawlength(str2);
+      DrawShadowText(str2, CENTER_X - 384 + 484 - 10 * (len div 2), CENTER_Y - 240 + 220, ColColor($21), ColColor($23));
       for i := 0 to Count - 1 do
       begin
         //DrawRectangle(screen, hx + 57 * (i + 1), hy, hw, hh, 0, ColColor($FF), 0);
@@ -3953,26 +3953,23 @@ var
       //简介
       ReadTalk(menu + 600, talkarray);
       str1 := ' ' + putf8char(@talkarray[0]);
-      pw := @talkarray[0];
-      for i := 0 to length(talkarray) div 2 - 1 do
+      pw := @str1[1];
+      for i := 0 to length(talkarray) - 1 do
       begin
-        if (pw^ = $2A) then
-          pw^ := 0;
+        if (pw^ = utf8char($2A)) then
+          pw^ := utf8char(0);
         Inc(pw);
       end;
-
-      pword[1] := 0;
-      pw := @talkarray[0];
-      i := 0;
+      i := 1;
       r1 := 0;
       c1 := 0;
-      len := length(talkarray) div 2;
-      while i < len do
+      len := length(str1);
+      while i <= len do
       begin
-        pword[0] := puint16(pw)^;
-        Inc(pw);
-        i := i + 1;
-        DrawShadowText(putf8char(@pword[0]), CENTER_X - 320 + 250 + 20 * c1, CENTER_Y - 240 + 270 + 23 * r1, ColColor(5), ColColor(7));
+        len1 := utf8follow(str1[i]);
+        pword := midstr(str1, i, len1);
+        i := i + len1;
+        DrawShadowText(pword, CENTER_X - 320 + 250 + 20 * c1, CENTER_Y - 240 + 270 + 23 * r1, ColColor(5), ColColor(7));
         Inc(c1);
         if c1 = 18 then
         begin
