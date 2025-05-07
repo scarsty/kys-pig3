@@ -943,7 +943,7 @@ begin
   begin
     w := maxwidth * 10 + 8;
   end;
-  lua_pushinteger(L, CommonScrollMenu(x, y, w, n - 1, 10, menuString));
+  lua_pushinteger(L, CommonScrollMenu(x, y, w, n - 1, 15, menuString));
   Result := 1;
 
 end;

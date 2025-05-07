@@ -140,6 +140,8 @@ function IsCave(snum: integer): boolean;
 
 function CheckString(str: utf8string): boolean;
 
+procedure SpecialFunction;
+
 //输出函数
 //procedure write1();
 
@@ -2025,6 +2027,10 @@ begin
             MenuEsc;
             if where >= 3 then
               break;
+          end;
+          SDLK_TAB:
+          begin
+            SpecialFunction;
           end;
         end;
       end;
@@ -6649,7 +6655,7 @@ begin
   titlex1 := CENTER_X;
   titley1 := 50;
   titlew := 60;
-  max := 4;
+  max := 5;
   LoadTeamSimpleStatus(maxteam);
 
   Redraw;
@@ -6664,7 +6670,8 @@ begin
   menuString[1] := ('存檔');
   menuString[2] := ('設置');
   menuString[3] := ('製作');
-  menuString[4] := ('離開');
+  menuString[4] := ('特殊');
+  menuString[5] := ('離開');
 
   xm := 300;
   ym := 5;
@@ -6691,7 +6698,7 @@ begin
         end;
       end;
       //DrawMPic(2007, titlex1 - 45, titley1 - 15);
-      DrawTextFrame(titlex1 - 20, titley1 - 3, 32, 0);
+      DrawTextFrame(titlex1 - 20, titley1 - 3, max*8, 0);
       //DrawRectangle(screen, titlex1, titley1 - 1, 55 * 8 - 115, 25, 0, ColColor(255), 40);
       for i := 0 to max do
       begin
@@ -6731,7 +6738,8 @@ begin
         1: MenuSave;
         2: MenuSet;
         3: Maker;
-        4: MenuQuit;
+        4: SpecialFunction;
+        5: MenuQuit;
       end;
       intitle := 1;
       pmenu := -1;
@@ -6788,7 +6796,7 @@ begin
         end;
         if (event.button.button = SDL_BUTTON_LEFT) then
         begin
-          if (intitle = 1) and (MouseInRegion(titlex1, titley1, 5 * titlew, 20, xm, ym)) then
+          if (intitle = 1) and (MouseInRegion(titlex1, titley1, (max+1) * titlew, 20, xm, ym)) then
           begin
             menu := (xm - titlex1 - 10) div titlew;
             intitle := 0;
@@ -6797,7 +6805,7 @@ begin
       end;
       SDL_MOUSEMOTION:
       begin
-        if MouseInRegion(titlex1, titley1, 5 * titlew, 20, xm, ym) then
+        if MouseInRegion(titlex1, titley1, (max+1)* titlew, 20, xm, ym) then
         begin
           intitle := 1;
           menu := (xm - titlex1 - 10) div titlew;
@@ -7501,8 +7509,8 @@ begin
   menuString[2] := 'Test';
   //n := 1;
   //if KDEF_SCRIPT > 0 then
-  n := 2;
-  menu := CommonMenu(CENTER_X + 60 * 4, 90, 47, n, 0, menuString);
+  n := 1;
+  menu := CommonMenu(CENTER_X + 60 * 5, 90, 47, n, 0, menuString);
   if menu = 1 then
   begin
     where := 3;
@@ -7724,7 +7732,7 @@ begin
       if (j >= 14) and (j <= 18) then
       begin
         if (random(200) < 200 - 2 * Rrole[rnum].Aptitude) then
-          addvalue[i] := addvalue[i] + 1;
+          addvalue[j] := addvalue[j] + 1;
       end;
     end;
   end;
@@ -8743,5 +8751,20 @@ begin
   ShowMessage(str);
   Result := False;
 end;
+
+procedure SpecialFunction;
+var
+  str, str2: utf8string;
+  begin
+    str := '輸入功能編號';
+    DrawTextWithRect(str, CENTER_X + 120, CENTER_Y - 240 + 130, 128, 0, ColColor($23));
+    str2 := 'f' + IntToStr(EnterNumber(0, 32767, CENTER_X + 120, CENTER_Y - 240 + 200, 0));
+    if ExecScript(AppPath + 'script/1.lua', str2) <> 0 then
+    begin
+      str := ' Script fail!';
+      DrawTextWithRect(str, CENTER_X - 384 + 400, CENTER_Y - 240 + 150, 150, ColColor($64), ColColor($66));
+      WaitAnyKey;
+    end;
+  end;
 
 end.

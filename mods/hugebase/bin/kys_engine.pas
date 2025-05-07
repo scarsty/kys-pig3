@@ -64,6 +64,7 @@ function GBKToUnicode(str: putf8char): utf8string;
 //function str: putf8char; len: integer = -1: utf8string;
 function UnicodeToBig5(str: putf8char): utf8string;
 function UnicodeToGBK(str: putf8char): utf8string;
+function IsStringUTF8(strtmp: utf8string): boolean;
 procedure DrawText(word: utf8string; x_pos, y_pos: integer; color: uint32; engwidth: integer = -1);
 procedure DrawEngText(word: utf8string; x_pos, y_pos: integer; color: uint32);
 procedure DrawShadowText(word: utf8string; x_pos, y_pos: integer; color1, color2: uint32; Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil; realPosition: integer = 0; eng: integer = 0); overload;
@@ -855,10 +856,6 @@ var
   p: pointer;
   w, h: integer;
 begin
-  {if not IsStringUTF8(word)  then
-  begin
-    word:=@word[1];
-  end;}
   len := length(putf8char(word));
   if len = 0 then
     exit;
@@ -3714,7 +3711,7 @@ begin
   else if (c and $FE) = $FC then
     Result := 6
   else
-    Result := -1;
+    Result := 1;    //skip one char
 end;
 
 end.

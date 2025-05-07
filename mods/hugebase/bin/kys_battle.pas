@@ -3321,9 +3321,9 @@ begin
             ModifyState(i, 2, -30, 3);
         end;
 
-        //特系福利, 几率增加攻击范围
+        //特系福利, 几率获得“闪避”状态
         if (Rmagic[mnum].MagicType = 4) and (random(5000) < Rrole[rnum].Unusual * (100 + Brole[bnum].StateLevel[32]) div 100) then
-          ModifyState(bnum, 12, 1, 3);
+          ModifyState(bnum, 16, 20, 3);
 
         //暗系福利, 几率降低移动
         if (Rmagic[mnum].MagicType = 5) and (random(100) < 10 * (100 + Brole[bnum].StateLevel[33]) div 100) then
@@ -6146,7 +6146,7 @@ begin
       //When Medcine is more than 70, and physical power is more than 70, 50% probability to cure one teammate.
       if (Brole[bnum].Acted <> 1) and (Rrole[rnum].Medcine > 70) and (Rrole[rnum].PhyPower >= 70) then
       begin
-        if random(100) < 50 then
+        if random(100) < 30 then
         begin
           NearestMoveByPro(Ax, Ay, Ax1, Ay1, bnum, 1, 0, 17, -1, 1);
           if (Ax1 <> -1) then
@@ -6161,7 +6161,7 @@ begin
       //用毒大于80, 可能尝试用毒
       if (Brole[bnum].Acted <> 1) and (Rrole[rnum].UsePoi > 80) and (Rrole[rnum].PhyPower >= 60) then
       begin
-        if random(100) < 50 then
+        if random(100) < 15 then
         begin
           //应认为不知道对方的抗毒能力
           NearestMove(Ax1, Ay1, bnum);
@@ -6177,7 +6177,7 @@ begin
       //有可能尝试解毒
       if (Brole[bnum].Acted <> 1) and (Rrole[rnum].MedPoi > 50) and (Rrole[rnum].PhyPower >= 70) then
       begin
-        if random(100) < 50 then
+        if random(100) < 30 then
         begin
           NearestMoveByPro(Ax, Ay, Ax1, Ay1, bnum, 1, 0, 20, 1, 2);
           if (Ax1 <> -1) then
@@ -6350,7 +6350,7 @@ begin
             284, 282, 283, 260, 287, 274, 141:}
           else
           begin
-            if (Rmagic[mnum].AddMP[1]>=0) and (Brole[bnum].StateLevel[Rmagic[mnum].AddMP[1]] = 0) then
+            if (Rmagic[mnum].AddMP[1]<0) or (Brole[bnum].StateLevel[Rmagic[mnum].AddMP[1]] = 0) then
             begin
               movetype := 3;
               if Rrole[rnum].CurrentHP < Rrole[rnum].MaxHP div 2 then
@@ -8614,6 +8614,7 @@ begin
       //仅针对前23个状态
       for i := 0 to 23 do
       begin
+        if i = 14 then continue;    //不能用于反伤
         if Brole[aimbnum].StateLevel[i] > 0 then
         begin
           Brole[aimbnum].StateLevel[i] := 0;
@@ -8951,7 +8952,7 @@ begin
     //Rrole[Brole[bnum].rnum].CurrentHP := min(Rrole[Brole[bnum].rnum].CurrentHP + );
     PlayActionAmination(bnum, Rmagic[mnum].MagicType); //动作效果
     PlayMagicAmination(bnum, Rmagic[mnum2].AmiNum);
-    ShowHurtValue(Rmagic[mnum2].HurtType); //显示数字
+    ShowHurtValue(0); //显示数字
   end;
 end;
 
