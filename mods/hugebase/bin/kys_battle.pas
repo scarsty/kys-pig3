@@ -3354,10 +3354,11 @@ begin
           Brole[i].ShowNumber := hurt;
         end;
 
-        //14 乾坤, 反弹
-        if Brole[i].StateLevel[14] > 0 then
+        //14 反伤, 反弹
+        //自身如有反伤状态，取决于谁的强度大
+        if (Brole[i].StateLevel[14] > Brole[bnum].StateLevel[14]) then
         begin
-          hurt1 := hurt * Brole[i].StateLevel[14] div 100;
+          hurt1 := hurt * (Brole[i].StateLevel[14] - Brole[bnum].StateLevel[14]) div 100;
           hurt := max(hurt - hurt1, 0);
           Brole[i].ShowNumber := hurt;
           Brole[bnum].ShowNumber := hurt1;
