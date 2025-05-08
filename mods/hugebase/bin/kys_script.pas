@@ -2132,8 +2132,24 @@ begin
 end;
 
 function SetX50(L: Plua_state): integer; cdecl;
+var
+  str: utf8string;
+  p: putf8char;
+  i: integer;
 begin
-  x50[lua_tointeger(L, -1)] := lua_tointeger(L, -2);
+  if lua_isstring(L, 2) then
+  begin
+    str := lua_tostring(L, 2);
+    p:=putf8char(@x50[lua_tointeger(L, 1)]);
+    for i:=1 to length(str) do
+    begin
+      p^:=str[i];
+      inc(p);
+    end;
+    //p^:=utf8char(0);
+  end
+  else
+    x50[lua_tointeger(L, 1)] := lua_tointeger(L, 2);
   Result := 0;
 end;
 

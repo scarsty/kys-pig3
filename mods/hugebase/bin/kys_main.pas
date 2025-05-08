@@ -1483,7 +1483,31 @@ var
   zfile: unzfile;
   file_info: unz_file_info;
   talkarray: array of byte;
-  temp: array [0 .. 1000] of smallint;
+  temp: array [0 .. 1000000] of smallint;
+  temp1: array [0 .. 1000000] of integer;
+  isold: boolean=false;
+  intsize: integer = 4;
+
+  procedure u16toutf8_load(pu: putf8char);
+  var
+  widestr:widestring;
+  utf8str:utf8string;
+  pw:pwidechar;
+  pu1:putf8char;
+  i:integer;
+  begin
+    pw:=pwidechar(pu);
+    while smallint(pw^)<>0 do
+    begin
+      widestr:=widestr+pw^;
+      pw^:=#0;
+      (pw+1)^:=#0;
+      pw:=pw+2;
+    end;
+    utf8str:=utf8encode(widestr);
+    move(utf8str[1], pu^, length(utf8str));
+  end;
+
 begin
   Result := True;
 
@@ -1561,20 +1585,60 @@ begin
   if Result then
   begin
     p1 := p;
-    BufferRead(p1, @Inship, 4);
-    BufferRead(p1, @useless1, 4);
-    BufferRead(p1, @My, 4);
-    BufferRead(p1, @Mx, 4);
-    BufferRead(p1, @Sy, 4);
-    BufferRead(p1, @Sx, 4);
-    BufferRead(p1, @Mface, 4);
-    BufferRead(p1, @shipx, 4);
-    BufferRead(p1, @shipy, 4);
-    BufferRead(p1, @shipx1, 4);
-    BufferRead(p1, @shipy1, 4);
-    BufferRead(p1, @shipface, 4);
-    BufferRead(p1, @teamlist[0], 4 * 6);
-    BufferRead(p1, @Ritemlist[0], sizeof(Titemlist) * MAX_ITEM_AMOUNT);
+    BufferRead(p1, @Inship, intsize);
+    BufferRead(p1, @useless1, intsize);
+    BufferRead(p1, @My, intsize);
+    if My > 65536 then
+    begin
+      isold := True;
+      intsize := 2;
+      p1 := p;
+      Inship:=0;
+      useless1:=0;
+      My:=0;
+      BufferRead(p1, @Inship, intsize);
+      BufferRead(p1, @useless1, intsize);
+      BufferRead(p1, @My, intsize);
+    end;
+    BufferRead(p1, @Mx, intsize);
+    BufferRead(p1, @Sy, intsize);
+    BufferRead(p1, @Sx, intsize);
+    BufferRead(p1, @Mface, intsize);
+    BufferRead(p1, @shipx, intsize);
+    BufferRead(p1, @shipy, intsize);
+    BufferRead(p1, @shipx1, intsize);
+    BufferRead(p1, @shipy1, intsize);
+    BufferRead(p1, @shipface, intsize);
+
+    if isold then
+    begin
+      for i:=0to 5 do
+      begin
+        BufferRead(p1, @temp[0], intsize);
+        teamlist[i]:=temp[0];
+      end;
+      for i := 0 to MAX_ITEM_AMOUNT - 1 do
+      begin
+        BufferRead(p1, @temp[0], 2);
+        Ritemlist[i].Number:=temp[0];
+        BufferRead(p1, @Ritemlist[i].Amount, 4);
+      end;
+    end
+    else
+    begin
+      BufferRead(p1, @teamlist[0], intsize * 6);
+      BufferRead(p1, @Ritemlist[0], sizeof(Titemlist) * MAX_ITEM_AMOUNT);
+    end;
+
+    if isold then
+    begin
+      move(p1^,temp[0], (lenR - RoleOffset)div 2);
+      for i := 0 to (lenR - RoleOffset) div 4 -1 do
+      begin
+        temp1[i]:=temp[i];
+        end;
+      p1:=@temp1[0];
+    end;
 
     BufferRead(p1, @Rrole[0], ItemOffset - RoleOffset);
     if (num = 0) or (MODVersion = 13) or (MODVersion = 31) then
@@ -1587,6 +1651,22 @@ begin
     else
       p1 := p1 + WeiShopOffset - MagicOffset;
     BufferRead(p1, @Rshop[0], lenR - WeiShopOffset);
+    if isold then
+    begin
+      for i:=0 to high(RRole) do
+      begin
+        u16toutf8_load(@rrole[i].Name);
+      end;
+      for i:=0 to high(RItem) do
+      begin
+        u16toutf8_load(@RItem[i].Name);
+        u16toutf8_load(@RItem[i].Introduction);
+      end;
+      for i:=0 to high(Rscence) do
+      begin
+        u16toutf8_load(@Rscence[i].Name);
+      end;
+    end;
     //ShipX1:=-1;
     //if Rrole[167].HeadNum <> 167 then ShipX1 := Rrole[167].HeadNum;
     //Rrole[167].HeadNum := 167;
@@ -6698,7 +6778,7 @@ begin
         end;
       end;
       //DrawMPic(2007, titlex1 - 45, titley1 - 15);
-      DrawTextFrame(titlex1 - 20, titley1 - 3, max*8, 0);
+      DrawTextFrame(titlex1 - 20, titley1 - 3, max * 8, 0);
       //DrawRectangle(screen, titlex1, titley1 - 1, 55 * 8 - 115, 25, 0, ColColor(255), 40);
       for i := 0 to max do
       begin
@@ -6796,7 +6876,7 @@ begin
         end;
         if (event.button.button = SDL_BUTTON_LEFT) then
         begin
-          if (intitle = 1) and (MouseInRegion(titlex1, titley1, (max+1) * titlew, 20, xm, ym)) then
+          if (intitle = 1) and (MouseInRegion(titlex1, titley1, (max + 1) * titlew, 20, xm, ym)) then
           begin
             menu := (xm - titlex1 - 10) div titlew;
             intitle := 0;
@@ -6805,7 +6885,7 @@ begin
       end;
       SDL_MOUSEMOTION:
       begin
-        if MouseInRegion(titlex1, titley1, (max+1)* titlew, 20, xm, ym) then
+        if MouseInRegion(titlex1, titley1, (max + 1) * titlew, 20, xm, ym) then
         begin
           intitle := 1;
           menu := (xm - titlex1 - 10) div titlew;
@@ -8755,16 +8835,16 @@ end;
 procedure SpecialFunction;
 var
   str, str2: utf8string;
+begin
+  str := '輸入功能編號';
+  DrawTextWithRect(str, CENTER_X + 120, CENTER_Y - 240 + 130, 128, 0, ColColor($23));
+  str2 := 'f' + IntToStr(EnterNumber(0, 32767, CENTER_X + 120, CENTER_Y - 240 + 200, 0));
+  if ExecScript(AppPath + 'script/1.lua', str2) <> 0 then
   begin
-    str := '輸入功能編號';
-    DrawTextWithRect(str, CENTER_X + 120, CENTER_Y - 240 + 130, 128, 0, ColColor($23));
-    str2 := 'f' + IntToStr(EnterNumber(0, 32767, CENTER_X + 120, CENTER_Y - 240 + 200, 0));
-    if ExecScript(AppPath + 'script/1.lua', str2) <> 0 then
-    begin
-      str := ' Script fail!';
-      DrawTextWithRect(str, CENTER_X - 384 + 400, CENTER_Y - 240 + 150, 150, ColColor($64), ColColor($66));
-      WaitAnyKey;
-    end;
+    str := ' Script fail!';
+    DrawTextWithRect(str, CENTER_X - 384 + 400, CENTER_Y - 240 + 150, 150, ColColor($64), ColColor($66));
+    WaitAnyKey;
   end;
+end;
 
 end.
