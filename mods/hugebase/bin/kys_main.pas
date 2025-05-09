@@ -70,6 +70,7 @@ procedure StartAmi;
 procedure ReadFiles;
 function InitialRole: boolean;
 procedure BufferRead(var p: putf8char; buf: putf8char; size: integer);
+procedure BufferRead16to32(var p: putf8char; buf: putf8char; size: integer);
 procedure BufferWrite(var p: putf8char; buf: putf8char; size: integer);
 function LoadR(num: integer): boolean;
 function SaveR(num: integer): boolean;
@@ -1466,6 +1467,17 @@ begin
   p := p + size;
 end;
 
+procedure BufferRead16to32(var p: putf8char; buf: putf8char; size: integer);
+var
+  temp: smallint;
+  temp1: integer;
+begin
+  move(p^, temp, size);
+  p := p + size;
+  temp1 := temp;
+  move(temp1, buf^, 4);
+end;
+
 procedure BufferWrite(var p: putf8char; buf: putf8char; size: integer);
 begin
   move(buf^, p^, size);
@@ -1485,26 +1497,26 @@ var
   talkarray: array of byte;
   temp: array [0 .. 1000000] of smallint;
   temp1: array [0 .. 1000000] of integer;
-  isold: boolean=false;
+  isold: boolean = False;
   intsize: integer = 4;
 
   procedure u16toutf8_load(pu: putf8char);
   var
-  widestr:widestring;
-  utf8str:utf8string;
-  pw:pwidechar;
-  pu1:putf8char;
-  i:integer;
+    widestr: widestring;
+    utf8str: utf8string;
+    pw: pwidechar;
+    pu1: putf8char;
+    i: integer;
   begin
-    pw:=pwidechar(pu);
-    while smallint(pw^)<>0 do
+    pw := pwidechar(pu);
+    while smallint(pw^) <> 0 do
     begin
-      widestr:=widestr+pw^;
-      pw^:=#0;
-      (pw+1)^:=#0;
-      pw:=pw+2;
+      widestr := widestr + pw^;
+      pw^ := #0;
+      (pw +1)^ := #0;
+      pw := pw + 2;
     end;
-    utf8str:=utf8encode(widestr);
+    utf8str := utf8encode(widestr);
     move(utf8str[1], pu^, length(utf8str));
   end;
 
@@ -1588,18 +1600,6 @@ begin
     BufferRead(p1, @Inship, intsize);
     BufferRead(p1, @useless1, intsize);
     BufferRead(p1, @My, intsize);
-    if My > 65536 then
-    begin
-      isold := True;
-      intsize := 2;
-      p1 := p;
-      Inship:=0;
-      useless1:=0;
-      My:=0;
-      BufferRead(p1, @Inship, intsize);
-      BufferRead(p1, @useless1, intsize);
-      BufferRead(p1, @My, intsize);
-    end;
     BufferRead(p1, @Mx, intsize);
     BufferRead(p1, @Sy, intsize);
     BufferRead(p1, @Sx, intsize);
@@ -1609,18 +1609,36 @@ begin
     BufferRead(p1, @shipx1, intsize);
     BufferRead(p1, @shipy1, intsize);
     BufferRead(p1, @shipface, intsize);
+    if My > 65536 then
+    begin
+      isold := True;
+      intsize := 2;
+      p1 := p;
+      BufferRead16to32(p1, @Inship, intsize);
+      BufferRead16to32(p1, @useless1, intsize);
+      BufferRead16to32(p1, @My, intsize);
+      BufferRead16to32(p1, @Mx, intsize);
+      BufferRead16to32(p1, @Sy, intsize);
+      BufferRead16to32(p1, @Sx, intsize);
+      BufferRead16to32(p1, @Mface, intsize);
+      BufferRead16to32(p1, @shipx, intsize);
+      BufferRead16to32(p1, @shipy, intsize);
+      BufferRead16to32(p1, @shipx1, intsize);
+      BufferRead16to32(p1, @shipy1, intsize);
+      BufferRead16to32(p1, @shipface, intsize);
+    end;
 
     if isold then
     begin
-      for i:=0to 5 do
+      for i := 0 to 5 do
       begin
         BufferRead(p1, @temp[0], intsize);
-        teamlist[i]:=temp[0];
+        teamlist[i] := temp[0];
       end;
       for i := 0 to MAX_ITEM_AMOUNT - 1 do
       begin
         BufferRead(p1, @temp[0], 2);
-        Ritemlist[i].Number:=temp[0];
+        Ritemlist[i].Number := temp[0];
         BufferRead(p1, @Ritemlist[i].Amount, 4);
       end;
     end
@@ -1632,12 +1650,12 @@ begin
 
     if isold then
     begin
-      move(p1^,temp[0], (lenR - RoleOffset)div 2);
-      for i := 0 to (lenR - RoleOffset) div 4 -1 do
+      move(p1^, temp[0], (lenR - RoleOffset) div 2);
+      for i := 0 to (lenR - RoleOffset) div 4 - 1 do
       begin
-        temp1[i]:=temp[i];
-        end;
-      p1:=@temp1[0];
+        temp1[i] := temp[i];
+      end;
+      p1 := @temp1[0];
     end;
 
     BufferRead(p1, @Rrole[0], ItemOffset - RoleOffset);
@@ -1653,16 +1671,16 @@ begin
     BufferRead(p1, @Rshop[0], lenR - WeiShopOffset);
     if isold then
     begin
-      for i:=0 to high(RRole) do
+      for i := 0 to high(RRole) do
       begin
         u16toutf8_load(@rrole[i].Name);
       end;
-      for i:=0 to high(RItem) do
+      for i := 0 to high(RItem) do
       begin
         u16toutf8_load(@RItem[i].Name);
         u16toutf8_load(@RItem[i].Introduction);
       end;
-      for i:=0 to high(Rscence) do
+      for i := 0 to high(Rscence) do
       begin
         u16toutf8_load(@Rscence[i].Name);
       end;
@@ -1745,6 +1763,9 @@ begin
     begin
       //修正星位事件
       RRole[168].Data[73] := 97;
+      //修正被动技能
+      RRole[8].AmiFrameNum[0] := 3;
+      RRole[13].AmiFrameNum[0] := 5;
     end;
     //物品使用者修正
     if MODVersion <> 13 then
@@ -1765,7 +1786,7 @@ begin
   end;
 
   //物品修正, 判断标准为最后一个物品的数量
-  if Ritemlist[MAX_ITEM_AMOUNT - 1].Amount <> 0 then
+  {if Ritemlist[MAX_ITEM_AMOUNT - 1].Amount <> 0 then
   begin
     ConsoleLog('Item list format is old, now converting...');
     move(Ritemlist[0], temp[0], sizeof(Titemlist) * MAX_ITEM_AMOUNT);
@@ -1779,7 +1800,7 @@ begin
         Ritemlist[i].Amount := temp[i * 2 + 1];
       end;
     end;
-  end;
+  end;}
 
   {for i1 := 900 downto 00 do
     begin
@@ -8581,7 +8602,7 @@ begin
 
   words.Add('致謝以下開源項目');
   words.Add('JEDI-SDL');
-  words.Add('kys-jedisdl');
+  words.Add('kys-pascal');
   words.Add('UltraStar Deluxe');
   words.Add('Open Chinese Convert');
   words.Add('smallpot');

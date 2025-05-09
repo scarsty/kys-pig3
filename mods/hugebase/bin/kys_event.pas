@@ -1488,8 +1488,9 @@ begin
   words.Free;
   for i := CENTER_Y * 2 - TitlePNGIndex[1].h to 0 do
   begin
-    if i mod 5 = 0 then
-      DrawTPic(1, CENTER_X - 320, i);
+    CheckBasicEvent;
+    //if i mod 5 = 0 then
+    DrawTPic(1, CENTER_X - 320, i);
     UpdateAllScreen;
     SDL_Delay(6);
   end;
@@ -1922,7 +1923,7 @@ begin
         Inc(pw1);
       end;
       //(p + i)^ := char($20);
-      Inc(pw);
+      //Inc(pw);
       pw^ := utf8char(0);
       //(p + i + 1)^ := char(0);
     end;
@@ -3262,7 +3263,6 @@ var
 begin
   if (teamlist[0] >= 0) and (teamlist[1] >= 0) and (teamlist[2] >= 0) and (teamlist[3] >= 0) and (teamlist[4] >= 0) and (teamlist[5] >= 0) then
     exit;
-
   x := 220;
   y := 15;
   while True do
@@ -4827,10 +4827,11 @@ var
   str1, str2, str, talkstr, namestr: utf8string;
   np3, np1, np2, tp, p1, ap: putf8char;
   actorarray, name1, name2, talkarray: array of byte;
-  pword: array [0 .. 1] of uint16;
+  pword: putf8char;
   r, g, b: byte;
   color: uint32;
   gray: boolean;
+  lenutf8: integer;
 begin
   status := GetStarState(starnum);
   cell := 23;
@@ -4838,7 +4839,7 @@ begin
   framey := CENTER_Y - 240 + 160 * (starnum mod 3);
   h := 160;
   w := 768;
-  pword[1] := 0;
+  //pword[1] := 0;
   if starnum mod 3 = 0 then
     Redraw;
   r := random(128);
@@ -4882,10 +4883,10 @@ begin
     str2 := RoleName[starnum];
   end;
   //DrawRectangle(screen, hx, hy - 68, 56, 72, 0, ColColor(255), 0);
-  l := length(str1);
-  DrawShadowText(str1, Sx - (20 * l) div 2, Sy, ColColor($64), ColColor($66));
-  l := length(str2);
-  DrawShadowText(str2, nx - (20 * l) div 2, ny, ColColor($64), ColColor($66));
+  l := drawlength(str1);
+  DrawShadowText(str1, Sx - (10 * l) div 2, Sy, ColColor($64), ColColor($66));
+  l := drawlength(str2);
+  DrawShadowText(str2, nx - (10 * l) div 2, ny, ColColor($64), ColColor($66));
 
   if status > 0 then
   begin
@@ -4897,50 +4898,17 @@ begin
     ch := 0;
     c1 := 0;
     r1 := 0;
-    while (puint16(tp + ch))^ <> 0 {((puint16(tp + ch))^ shl 8 <> 0) and ((puint16(tp + ch))^ shr 8 <> 0)} do
+    while ch < length(talkstr) do
     begin
-      pword[0] := (puint16(tp + ch))^;
-      if pword[0] <> 0 {(pword[0] shr 8 <> 0) and (pword[0] shl 8 <> 0)} then
+      lenutf8 := utf8follow(putf8char(tp + ch)^);
+      DrawShadowText(midstr(talkstr, ch + 1, lenutf8), tx + 20 * c1, ty + 20 * r1, ColColor(color1), ColColor(color2));
+      Inc(c1);
+      if c1 = cell then
       begin
-        ch := ch + 2;
-        {if pword[0] = $2A2A then //**换行
-          begin
-          if c1 > 0 then
-          begin
-          Inc(r1);
-          end;
-          c1 := 0;
-          end
-          else if pword[0] = $2626 then //显示姓名
-          begin
-          i := 0;
-          while (puint16(ap + i)^ shr 8 <> 0) and (puint16(ap + i)^ shl 8 <> 0) do
-          begin
-          pword[0] := puint16(ap + i)^;
-          i := i + 2;
-          DrawU16ShadowText(@pword[0], tx + CHINESE_FONT_SIZE * c1, ty + CHINESE_FONT_SIZE *
-          r1, ColColor(color1), ColColor(color2));
-          Inc(c1);
-          if c1 = cell then
-          begin
-          c1 := 0;
-          Inc(r1);
-          end;
-          end;
-          end
-          else //显示文字}
-        begin
-          DrawShadowText(putf8char(@pword), tx + 20 * c1, ty + 20 * r1, ColColor(color1), ColColor(color2));
-          Inc(c1);
-          if c1 = cell then
-          begin
-            c1 := 0;
-            Inc(r1);
-          end;
-        end;
-      end
-      else
-        break;
+        c1 := 0;
+        Inc(r1);
+      end;
+      ch := ch + lenutf8;
     end;
   end;
   UpdateAllScreen;

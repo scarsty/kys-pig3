@@ -90,9 +90,9 @@ type
         Name: array [0 .. 19] of char;
         AddAtk, AddSpeed, AddDef, AddMP, RoundLeave: integer;
         Sexual, Level: integer;
-        Exp: uint16;
+        Exp: integer;
         CurrentHP, MaxHP, Hurt, Poison, PhyPower: integer;
-        ExpForItem: uint16;
+        ExpForItem: integer;
         Equip: array [0 .. 1] of integer;
         AmiFrameNum: array [0 .. 4] of integer;
         AmiDelay: array [0 .. 4] of integer;
@@ -100,7 +100,7 @@ type
         MPType, CurrentMP, MaxMP: integer;
         Attack, Speed, Defence, Medcine, UsePoi, MedPoi, DefPoi, Fist, Sword, Knife, Unusual, HidWeapon: integer;
         Knowledge, Ethics, AttPoi, Movestep, Repute, Aptitude, PracticeBook: integer;
-        ExpForBook: uint16;
+        ExpForBook: integer;
         Magic, MagLevel: array [0 .. 9] of integer;
         TakingItem, TakingItemAmount: array [0 .. 3] of integer;
         addnum: integer;
