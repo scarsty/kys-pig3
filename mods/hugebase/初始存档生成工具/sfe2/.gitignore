@@ -1,0 +1,5 @@
+.vs/
+sfeConsole/bin/
+sfeConsole/obj/
+packages/SharpZipLib.1.0.0/
+packages/NPOI.2.4.1/

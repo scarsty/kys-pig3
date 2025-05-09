@@ -87,3 +87,5 @@ mods/hugebase/pig3Launcher/pig3Launcher/.vs
 mods/hugebase/talkmaker/backup
 mods/hugebase/talkmaker/lib
 mods/hugebase/talkmaker/*.txt
+mods/hugebase/初始存档生成工具/sfe2/packages
+mods/hugebase/初始存档生成工具/sfe2/sfeConsole/excel

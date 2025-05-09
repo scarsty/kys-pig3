@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <StartArguments>-rangerw -auto -gbk ranger.xlsx ranger.grp ranger.idx</StartArguments>
+    <StartWorkingDirectory>D:\_sty\_bak\kys-all\水浒\初始存档生成工具\</StartWorkingDirectory>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <StartArguments>-rangerw -auto -gbk r.xls ranger.grp ranger.idx</StartArguments>
+    <StartWorkingDirectory>D:\_sty\_bak\kys-all\水浒\演示版\game\save\</StartWorkingDirectory>
+  </PropertyGroup>
+</Project>
