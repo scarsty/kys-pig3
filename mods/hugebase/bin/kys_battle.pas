@@ -2656,8 +2656,28 @@ end;
 procedure AttackAction(bnum, i, mnum, level: integer); overload;
 var
   twice, i1, rnum: integer;
+  five: array[0..5] of real;
+  max_five: real;
 begin
   rnum := Brole[bnum].rnum;
+  if mnum = 115 then
+  begin
+    five[1] := Rrole[rnum].Fist + random();
+    five[2] := Rrole[rnum].Sword + random();
+    five[3] := Rrole[rnum].Knife + random();
+    five[4] := Rrole[rnum].Unusual + random();
+    five[5] := Rrole[rnum].HidWeapon + random();
+    max_five := five[1];
+    RMagic[mnum].MagicType := 1;
+    for i1 := 2 to 5 do
+    begin
+      if five[i1] > max_five then
+      begin
+        RMagic[mnum].MagicType := i1;
+        max_five := five[i1];
+      end;
+    end;
+  end;
   //剑法的连击
   twice := 0;
   if (Rmagic[mnum].MagicType = 2) {and (Rmagic[mnum].HurtType <> 2)} then
@@ -3345,15 +3365,6 @@ begin
           hurt := 0;
         end;
 
-        //16 奇门, 不受伤
-        temp := random(100);
-        if temp < Brole[i].StateLevel[16] then
-        begin
-          //Rrole[Brole[i].rnum].CurrentHP := Rrole[Brole[i].rnum].CurrentHP - hurt;
-          hurt := 1;
-          Brole[i].ShowNumber := hurt;
-        end;
-
         //14 反伤, 反弹
         //自身如有反伤状态，取决于谁的强度大
         if (Brole[i].StateLevel[14] > Brole[bnum].StateLevel[14]) then
@@ -3365,6 +3376,15 @@ begin
           Brole[bnum].AntiHurt := hurt1;
           Rrole[Brole[bnum].rnum].CurrentHP := Rrole[Brole[bnum].rnum].CurrentHP - hurt1;
           BField[4, Brole[bnum].X, Brole[bnum].Y] := 20;
+        end;
+
+        //16 奇门（闪避）, 不受伤
+        temp := random(100);
+        if temp < Brole[i].StateLevel[16] then
+        begin
+          //Rrole[Brole[i].rnum].CurrentHP := Rrole[Brole[i].rnum].CurrentHP - hurt;
+          hurt := min(1, hurt);
+          Brole[i].ShowNumber := hurt;
         end;
 
         //吸星融功法
@@ -4481,7 +4501,7 @@ end;
 //用毒
 procedure UsePoison(bnum: integer);
 var
-  rnum, bnum1, rnum1, poi, step, addpoi, minDefPoi, i: integer;
+  rnum, bnum1, rnum1, poi, step, addpoi, minDefPoi, i, addpoi1: integer;
   select: boolean;
   str: utf8string;
 begin
@@ -4521,6 +4541,20 @@ begin
     begin
       rnum1 := Brole[bnum1].rnum;
       addpoi := Rrole[rnum].UsePoi div 3 - Rrole[rnum1].DefPoi div 4;
+
+      //14 反伤, 反弹
+      //自身如有反伤状态，取决于谁的强度大
+      if (Brole[bnum1].StateLevel[14] > Brole[bnum].StateLevel[14]) then
+      begin
+        addpoi1 := addpoi * (Brole[bnum1].StateLevel[14] - Brole[bnum].StateLevel[14]) div 100;
+        addpoi := max(addpoi - addpoi1, 0);
+        Brole[bnum1].ShowNumber := addpoi;
+        Brole[bnum].ShowNumber := addpoi1;
+        Brole[bnum].AntiHurt := addpoi1;
+        Rrole[Brole[bnum].rnum].Poison := Rrole[Brole[bnum].rnum].Poison + addpoi1;
+        BField[4, Brole[bnum].X, Brole[bnum].Y] := 20;
+      end;
+
       if addpoi < 0 then
         addpoi := 0;
       if addpoi + Rrole[rnum1].Poison > 99 then
@@ -6351,7 +6385,7 @@ begin
             284, 282, 283, 260, 287, 274, 141:}
           else
           begin
-            if (Rmagic[mnum].AddMP[1]<0) or (Brole[bnum].StateLevel[Rmagic[mnum].AddMP[1]] = 0) then
+            if (Rmagic[mnum].AddMP[1] < 0) or (Brole[bnum].StateLevel[Rmagic[mnum].AddMP[1]] = 0) then
             begin
               movetype := 3;
               if Rrole[rnum].CurrentHP < Rrole[rnum].MaxHP div 2 then
@@ -7325,7 +7359,8 @@ begin
   begin
     if (Brole[i].Team <> Brole[bnum].Team) and (Brole[i].Dead = 0) then
     begin
-      curenum := MAX_PHYSICAL_POWER * 3 * level div 100 + random(3);
+      curenum := MAX_PHYSICAL_POWER * 3 * level div 100 + random(3) - Rrole[Brole[i].rnum].DefPoi;
+      curenum := max(0, curenum);
       Rrole[Brole[i].rnum].Poison := Rrole[Brole[i].rnum].Poison + curenum;
       Brole[i].ShowNumber := curenum;
       if Rrole[Brole[i].rnum].Poison > 99 then
@@ -8352,7 +8387,7 @@ begin
           if Rrole[Brole[i].rnum].magic[i1] > 0 then
           begin
             mnumarray[amount] := Rrole[Brole[i].rnum].magic[i1];
-            namemagic := Rrole[Brole[i].rnum].Name + StringOfChar(' ', 10 - DrawLength(Rrole[Brole[i].rnum].Name)) +Rmagic[Rrole[Brole[i].rnum].magic[i1]].Name;
+            namemagic := Rrole[Brole[i].rnum].Name + StringOfChar(' ', 10 - DrawLength(Rrole[Brole[i].rnum].Name)) + Rmagic[Rrole[Brole[i].rnum].magic[i1]].Name;
             //menustring[amount] := putf8char(@namemagic);
             menuString[amount] := namemagic;
             ConsoleLog(menuString[amount]);
