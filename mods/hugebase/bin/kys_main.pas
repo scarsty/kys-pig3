@@ -1753,9 +1753,9 @@ begin
           correctmagic(i);
       end
       else
-        correctmagic(1);
+        correctmagic(i);
     end;
-    //writeln(RRole[168].data[73], RRole[168].data[74]);
+    //writeln(RRole[168].data[73], RRole[168].data[63]);
   end
   else
   begin
@@ -1763,6 +1763,7 @@ begin
     begin
       //修正星位事件
       RRole[168].Data[73] := 97;
+      RRole[168].Data[63] := 121;
       //修正被动技能
       RRole[8].AmiFrameNum[0] := 3;
       RRole[13].AmiFrameNum[0] := 5;

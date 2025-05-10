@@ -494,8 +494,8 @@ begin
       Rrole[rnum].PhyPower := MAX_PHYSICAL_POWER;
     end;
   end;
-  for i := 0 to high(Rrole) do
-    correctmagic(i);
+  //for i := 0 to high(Rrole) do
+  //  correctmagic(i);
 end;
 
 
