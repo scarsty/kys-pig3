@@ -1030,6 +1030,7 @@ begin
             if neinum <= 0 then
               break;
             neilevel := Rrole[Brole[i].rnum].NGLevel[j] div 100 + 1;
+            Rrole[Brole[i].rnum].NGLevel[j]:=min(999, Rrole[Brole[i].rnum].NGLevel[j]+1);
 
             if Rmagic[neinum].addmp[1] > 0 then
             begin
@@ -1075,20 +1076,23 @@ begin
             begin
               if random(100) > 50 then
               begin
-                Brole[i].StateLevel[2] := 50;
-                Brole[i].StateRound[2] := 3;
+                ModifyState(i, 2, 50, 3);
+                //Brole[i].StateLevel[2] := 50;
+                //Brole[i].StateRound[2] := 3;
                 ShowStringOnBrole(putf8char(@Rmagic[neinum].Name) + '·身輕', i, 3);
               end;
               if random(100) > 50 then
               begin
-                Brole[i].StateLevel[3] := 5;
-                Brole[i].StateRound[3] := 3;
+                ModifyState(i, 3, 5, 3);
+                //Brole[i].StateLevel[3] := 5;
+                //Brole[i].StateRound[3] := 3;
                 ShowStringOnBrole(putf8char(@Rmagic[neinum].Name) + '·速行', i, 3);
               end;
               if random(100) > 50 then
               begin
-                Brole[i].StateLevel[16] := 50;
-                Brole[i].StateRound[16] := 3;
+                ModifyState(i, 16, 50, 3);
+                //Brole[i].StateLevel[16] := 50;
+                //Brole[i].StateRound[16] := 3;
                 ShowStringOnBrole(putf8char(@Rmagic[neinum].Name) + '·閃避', i, 3);
               end;
             end;
@@ -1098,14 +1102,16 @@ begin
             begin
               if random(100) > 50 then
               begin
-                Brole[i].StateLevel[0] := 10 * neilevel;
-                Brole[i].StateRound[0] := 3;
+                ModifyState(i, 0, 10 * neilevel, 3);
+                //Brole[i].StateLevel[0] := 10 * neilevel;
+                //Brole[i].StateRound[0] := 3;
                 ShowStringOnBrole(putf8char(@Rmagic[neinum].Name) + '·威力', i, 3);
               end;
               if random(100) > 50 then
               begin
-                Brole[i].StateLevel[1] := 10 * neilevel;
-                Brole[i].StateRound[1] := 3;
+                ModifyState(i, 1, 10 * neilevel, 3);
+                //Brole[i].StateLevel[1] := 10 * neilevel;
+                //Brole[i].StateRound[1] := 3;
                 ShowStringOnBrole(putf8char(@Rmagic[neinum].Name) + '·剛體', i, 3);
               end;
               Rrole[Brole[i].rnum].Hurt := Rrole[Brole[i].rnum].Hurt - 10 * neilevel;
@@ -5729,15 +5735,14 @@ var
   removeStone: boolean;
 begin
   BattleRound := BattleRound + 1;
-
-  if (BattleRound mod 10 = 0) then
+  if (BattleRound mod 15 = 0) then
   begin
-    //乱石嶙峋每整10回合清一次
+    //乱石嶙峋每整15回合清一次
     removeStone := False;
     for i1 := 0 to 63 do
       for i2 := 0 to 63 do
       begin
-        if BField[1, i1, i2] = 1487 * 2 then
+        if BField[1, i1, i2] = 1487 * 2 + 1 then
         begin
           BField[1, i1, i2] := 0;
           removeStone := True;
@@ -7000,7 +7005,7 @@ begin
   BField[4, Brole[bnum].X, Brole[bnum].Y] := 1;
   Brole[bnum].ShowNumber := addMp;
   PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
-  ShowHurtValue(2, 0, '+d%');
+  ShowHurtValue(1, 0, '+d%');
   Brole[bnum].Acted := 1;
 end;
 
@@ -7422,7 +7427,7 @@ begin
         end;
     end;
 
-    BField[1, Ax, Ay] := 1487 * 2;
+    BField[1, Ax, Ay] := 1487 * 2+ 1;
     CalPosOnImage(Ax, Ay, x, y);
     //InitialBPic(1487, x, y, 1, CalBlock(Ax, Ay)); //建筑层需遮挡值
     Redraw;
@@ -9207,7 +9212,7 @@ end;
 procedure TSpecialAbility2.SA2_101(bnum, mnum, mnum2, level: integer);
 var
   str: utf8string;
-  i, rnum, hurt: integer;
+  rnum, hurt: integer;
 begin
   rnum := Brole[bnum].rnum;
   //if (random(100) < 15) then
@@ -9219,7 +9224,7 @@ begin
     BField[4, Brole[bnum].X, Brole[bnum].Y] := 1;
     PlayMagicAmination(bnum, Rmagic[mnum2].AmiNum);
     Rrole[rnum].PhyPower := min(MAX_PHYSICAL_POWER, Rrole[rnum].PhyPower + 20);
-    Brole[bnum].StateLevel[14] := Brole[i].StateLevel[14] + 50;
+    Brole[bnum].StateLevel[14] := Brole[bnum].StateLevel[14] + 50;
   end;
 end;
 
