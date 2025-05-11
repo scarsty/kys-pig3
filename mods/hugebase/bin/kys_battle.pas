@@ -807,9 +807,9 @@ begin
       Bx := Brole[m].X;
       By := Brole[m].Y;
       Redraw;
-      NewTalk(loverlist[k, 0], loverlist[k, 4] + 1, -2, 0, 0, 28515, 0);
+      NewTalk(loverlist[k, 0], loverlist[k, 4] + 1, -2, 1, 0, 28515, 0);
       Brole[m].loverlevel[loverlist[k, 2]] := loverlist[k, 3];
-      if (loverlist[k, 2] <> 6) then  //替代伤害，如果同时被打到可能会不太正常
+      if (loverlist[k, 2] <> 6) then  //替代伤害为单向，如果同时被打到可能会不太正常
         Brole[n].loverlevel[loverlist[k, 2]] := loverlist[k, 3];
     end;
   end;
