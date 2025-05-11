@@ -1073,6 +1073,20 @@ begin
   end;
   list.Free;
 
+  setlength(loverstrs, length(Brole[0].LoverLevel));
+  for i := 0 to high(loverstrs) do
+    loverstrs[i] := '';
+  loverstrs[0] := '攻擊♥';
+  loverstrs[1] := '防禦♥';
+  loverstrs[2] := '移動♥';
+  loverstrs[3] := '避毒♥';
+  loverstrs[4] := '強武♥';
+  loverstrs[5] := '強內♥';
+  loverstrs[6] := '代傷♥';
+  loverstrs[7] := '回命♥';
+  loverstrs[8] := '回內♥';
+  loverstrs[9] := '輕功♥';
+
   setlength(statestrs, length(Brole[0].StateLevel));
   for i := 0 to high(statestrs) do
     statestrs[i] := '';
@@ -1500,7 +1514,7 @@ var
   isold: boolean = False;
   intsize: integer = 4;
 
-  procedure u16toutf8_load(pu: putf8char);
+  procedure u16toutf8_load(pu: putf8char; len: integer=-1);
   var
     widestr: widestring;
     utf8str: utf8string;
@@ -1516,6 +1530,7 @@ var
       (pw +1)^ := #0;
       pw := pw + 2;
     end;
+    if len>0 then setlength(widestr, len);
     utf8str := utf8encode(widestr);
     move(utf8str[1], pu^, length(utf8str));
   end;
@@ -1669,6 +1684,7 @@ begin
     else
       p1 := p1 + WeiShopOffset - MagicOffset;
     BufferRead(p1, @Rshop[0], lenR - WeiShopOffset);
+    //转换旧版数据
     if isold then
     begin
       for i := 0 to high(RRole) do
@@ -1682,7 +1698,7 @@ begin
       end;
       for i := 0 to high(Rscence) do
       begin
-        u16toutf8_load(@Rscence[i].Name);
+        u16toutf8_load(@Rscence[i].Name,5);
       end;
     end;
     //ShipX1:=-1;
@@ -1743,6 +1759,7 @@ begin
   begin
     //if MODVersion = 13 then
     move(Rrole[low(Rrole)], Rrole0[low(Rrole0)], sizeof(TRole) * length(Rrole));
+    move(Rscence[low(Rscence)], Rscence0[low(Rscence0)], sizeof(Tscence) * length(Rscence));
     //writeln(RRole[168].data[73], RRole[168].data[74]);
     //这里误将星位事件清掉了
     for i := 0 to high(Rrole) do
@@ -5964,6 +5981,12 @@ begin
   SetColorByPro(Rrole[rnum].HidWeapon, 300, color1, color2);
   DrawEngShadowText(str, x + 280 + 100, y + 5 + h * 11, color1, color2);
 
+  if IsConsole then
+  begin
+    //str := format('%4d', [Rrole[rnum].DefPoi]);
+    //DrawEngShadowText(str, x + 280 + 100, y + 5 + h * 12, color1, color2);
+  end;
+
   {//武功
     for i := 0 to 9 do
     begin
@@ -5998,6 +6021,30 @@ begin
     //14乾坤,15灵精,16奇门,17博采,18聆音,19青翼,20回体
     //21,22,23,24,25,26定身,27控制
     k := 0;
+    for i := 0 to high(Brole[bnum].loverlevel) do
+    begin
+      if (Brole[bnum].loverlevel[i] <> 0) and (loverstrs[i] <> '') then
+      begin
+        if Brole[bnum].loverlevel[i] > 0 then
+        begin
+          color1 := $fd6c9e;
+          color2 := $ff69b4;
+        end
+        else
+        begin
+          color1 := ColColor($50);
+          color2 := ColColor($4E);
+        end;
+        DrawShadowText(loverstrs[i], xp + 70 + 70 * (k mod 4), yp + 360 + h * (k div 4), color1, color2);
+        if IsConsole then
+        begin
+          //str := IntToStr(Brole[bnum].loverlevel[i]);
+          //DrawEngShadowText(str, xp + 110 + 50 * (k mod 8), yp + 360 + h * (k div 8), color1, color2);
+        end;
+        k := k + 1;
+      end;
+    end;
+    k := 0;
     for i := 0 to high(Brole[bnum].StateLevel) do
     begin
       if (Brole[bnum].StateLevel[i] <> 0) and (statestrs[i] <> '') then
@@ -6012,11 +6059,11 @@ begin
           color1 := ColColor($50);
           color2 := ColColor($4E);
         end;
-        DrawShadowText(statestrs[i], xp + 70 + 50 * (k mod 8), yp + 360 + h * (k div 8), color1, color2);
+        DrawShadowText(statestrs[i], xp + 70 + 50 * (k mod 8), yp + 390 + h * (k div 8), color1, color2);
         if IsConsole then
         begin
           str := IntToStr(Brole[bnum].StateRound[i]);
-          DrawEngShadowText(str, xp + 110 + 50 * (k mod 8), yp + 360 + h * (k div 8), color1, color2);
+          DrawEngShadowText(str, xp + 110 + 50 * (k mod 8), yp + 390 + h * (k div 8), color1, color2);
         end;
         k := k + 1;
       end;
@@ -8585,6 +8632,7 @@ begin
   words.Add('winson7891');
   words.Add('halfrice');
   words.Add('soastao');
+  words.Add('NamelessOne47');
   words.Add('ice');
   words.Add('黑天鹅');
   words.Add('');

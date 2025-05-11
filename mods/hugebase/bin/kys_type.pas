@@ -184,6 +184,7 @@ type
         mixAlpha: integer);
       Address: (Data: array [0 .. 82] of integer);
   end;
+
   //情侣加成, loverlevel：
   //0加攻、1加防、2加移、3抗毒、4武功威力、5内功加成、6替代受伤、7回复生命、8回复内力、9轻功
   //特技导致状态, Statelevel-程度, StateRound-剩余回合数
@@ -299,14 +300,13 @@ var
   //ShipY1用来保存钱的高位.
   TeamList: array [0 .. 5] of integer;
   RItemList: array of TItemList;
-  Rrole: array [-1 .. 1000] of TRole;
-  Ritem: array [-1 .. 1000] of TItem;
-  Rscence: array [-1 .. 1000] of TScence;
-  Rmagic: array [-1 .. 1000] of TMagic;
-  RShop: array [-1 .. 20] of TShop;
+  Rrole, Rrole0: array [-1 .. 1000] of TRole;
+  Ritem, Ritem0: array [-1 .. 1000] of TItem;
+  Rscence,Rscence0: array [-1 .. 1000] of TScence;
+  Rmagic,Rmagic0: array [-1 .. 1000] of TMagic;
+  RShop,RShop0: array [-1 .. 20] of TShop;
   //R文件数据, 均远大于原有容量
-  Rrole0: array [-1 .. 1000] of TRole;
-  //初始进度的人物, 一般来说敌人会先读取这里
+  //一般来说敌人会先读取Rrole0
   //Ritem0: array[-1..1000] of TItem;
   //初始进度的物品, 一般来说敌人会先读取这里
 
@@ -521,7 +521,7 @@ var
 
   versionstr: utf8string = '  108 Brothers and Sisters';
 
-  BattleNames, statestrs: array of utf8string; //状态的字串
+  BattleNames, loverstrs, statestrs: array of utf8string; //状态的字串
 
   EXPAND_GROUND: integer = 1;
   ExGroundS, ExGroundB: array [-64 .. 127, -64 .. 127] of smallint; //用来使场景边缘的显示效果改善

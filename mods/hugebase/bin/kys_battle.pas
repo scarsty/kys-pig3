@@ -13,6 +13,7 @@ uses
 //从游戏文件的命名来看, 应是'war'这个词的缩写,
 //但实际上战斗的规模很小, 使用'battle'显然更合适
 function Battle(battlenum, getexp: integer; forceSingle: integer = 0): boolean;
+function getBnum(rnum: integer): integer;
 procedure LoadBattleTiles();
 procedure FreeBattleTiles();
 function InitialBField: boolean;
@@ -338,6 +339,19 @@ begin
     Result := True
   else
     Result := False;
+end;
+
+function getBnum(rnum: integer): integer;
+var
+  i: integer;
+begin
+  Result := -1;
+  for i := 0 to BRoleAmount - 1 do
+    if rnum = Brole[i].rnum then
+    begin
+      Result := i;
+      break;
+    end;
 end;
 
 procedure LoadBattleTiles();
@@ -795,14 +809,8 @@ begin
       Redraw;
       NewTalk(loverlist[k, 0], loverlist[k, 4] + 1, -2, 0, 0, 28515, 0);
       Brole[m].loverlevel[loverlist[k, 2]] := loverlist[k, 3];
-      //替代受伤
-      if loverlist[k, 2] = 6 then
-        for i := 0 to BRoleAmount - 1 do
-          if loverlist[k, 3] = Brole[i].rnum then
-          begin
-            Brole[m].loverlevel[loverlist[k, 2]] := i;
-            break;
-          end;
+      if (loverlist[k, 2] <> 6) then  //替代伤害，如果同时被打到可能会不太正常
+        Brole[n].loverlevel[loverlist[k, 2]] := loverlist[k, 3];
     end;
   end;
 
@@ -1030,7 +1038,7 @@ begin
             if neinum <= 0 then
               break;
             neilevel := Rrole[Brole[i].rnum].NGLevel[j] div 100 + 1;
-            Rrole[Brole[i].rnum].NGLevel[j]:=min(999, Rrole[Brole[i].rnum].NGLevel[j]+1);
+            Rrole[Brole[i].rnum].NGLevel[j] := min(999, Rrole[Brole[i].rnum].NGLevel[j] + 1);
 
             if Rmagic[neinum].addmp[1] > 0 then
             begin
@@ -1046,7 +1054,7 @@ begin
                     if Brole[bnum].Team <> Brole[i].Team then
                     begin
                       pnum := Rmagic[neinum].addmp[0] + (Rmagic[neinum].addmp[1] - Rmagic[neinum].addmp[0]) * neilevel div 10;
-                      if pnum > Rrole[Brole[bnum].rnum].DefPoi then
+                      if pnum > Rrole[Brole[bnum].rnum].DefPoi + Brole[bnum].StateLevel[3] then
                       begin
                         Rrole[Brole[bnum].rnum].Poison := Rrole[Brole[bnum].rnum].Poison + pnum;
                         ShowStringOnBrole(putf8char(@Rmagic[neinum].Name) + '·群毒', i, 2);
@@ -2886,7 +2894,7 @@ begin
       //8号状态, 风雷, 攻击后直线敌人后移N格
       if (Brole[bnum].StateLevel[8] > 0) and (Brole[bnum].Team <> Brole[i].Team) then
       begin
-        if (BField[4, Brole[i].X, Brole[i].Y] > 0) and ((Brole[i].Y = Bx) or (Brole[i].Y = By)) then
+        if (BField[4, Brole[i].X, Brole[i].Y] > 0) and ((Brole[i].X = Bx) or (Brole[i].Y = By)) then
         begin
           incx := sign(Brole[i].X - Bx);
           incy := sign(Brole[i].Y - By);
@@ -3313,7 +3321,7 @@ end;
 //判断是否有非行动方角色在攻击范围之内, 以及对状态的控制
 procedure CalHurtRole(bnum, mnum, level: integer; mode: integer = 0);
 var
-  i, rnum, hurt, addpoi, mp, hurt1: integer;
+  i, rnum, hurt, addpoi, mp, hurt1, bnum1: integer;
   k, j, s, temp, i1, neinum, neilevel: integer;
 begin
 
@@ -3352,7 +3360,7 @@ begin
           ModifyState(bnum, 16, 20, 3);
 
         //暗系福利, 几率降低移动
-        if (Rmagic[mnum].MagicType = 5) and (random(100) < 10 * (100 + Brole[bnum].StateLevel[33]) div 100) then
+        if (Rmagic[mnum].MagicType = 5) and (random(100) < 10 + Brole[bnum].StateLevel[33]) then
           ModifyState(i, 3, -(Rrole[rnum].HidWeapon div 200), 3);
 
         //以下是状态影响最终伤害的处理, 主要是守方的被动状态
@@ -3410,12 +3418,20 @@ begin
           end;
         end;
 
-        if (Brole[i].loverlevel[6] > 0) and (Brole[Brole[i].loverlevel[6]].dead = 0) then
+        if (Brole[i].loverlevel[6] > 0) then
         begin
-          //情侣, 替代受伤
-          Brole[Brole[i].loverlevel[6]].ShowNumber := hurt;
-          Rrole[Brole[i].loverlevel[6]].CurrentHP := Rrole[Brole[i].loverlevel[6]].CurrentHP - hurt;
-          //if Rrole[brole[i].loverlevel[6]].CurrentHP<0 then Rrole[brole[i].loverlevel[6]].CurrentHP:=0;
+          bnum1 := getbnum(Brole[i].loverlevel[6]);
+          if (bnum1 >= 0) and (Brole[bnum1].dead = 0) then
+          begin
+            //情侣, 替代受伤
+            Brole[bnum1].ShowNumber := hurt;
+            Rrole[Brole[i].loverlevel[6]].CurrentHP := Rrole[Brole[i].loverlevel[6]].CurrentHP - hurt;
+            BField[4, Brole[bnum1].X, Brole[bnum1].Y] := 1;
+            hurt := 0;
+            Brole[i].ShowNumber := 0;
+            //if Rrole[brole[i].loverlevel[6]].CurrentHP<0 then Rrole[brole[i].loverlevel[6]].CurrentHP:=0;
+            //设定不能出现互相替代
+          end;
         end
         else
         begin
@@ -3503,14 +3519,14 @@ begin
           Rrole[rnum].CurrentMP := Rrole[rnum].MaxMP;
       end;
       //中毒
-      addpoi := Rrole[rnum].AttPoi div 5 + Rmagic[mnum].Poison * level div 2 - Rrole[Brole[i].rnum].DefPoi;
-      if (Rmagic[mnum].AttAreaType = 6) and (Brole[i].StateLevel[11] > 0) then
-        addpoi := addpoi + Brole[i].StateLevel[11]; //毒箭状态
+      addpoi := Rrole[rnum].AttPoi div 5 + Rmagic[mnum].Poison * level div 2 - Rrole[Brole[i].rnum].DefPoi - Brole[i].StateLevel[3];
+      if (Rmagic[mnum].AttAreaType = 6) and (Brole[bnum].StateLevel[11] > 0) then
+        addpoi := addpoi + Brole[bnum].StateLevel[11]; //毒箭状态
       if addpoi + Rrole[Brole[i].rnum].Poison > 99 then
         addpoi := 99 - Rrole[Brole[i].rnum].Poison;
       if addpoi < 0 then
         addpoi := 0;
-      if Rrole[Brole[i].rnum].DefPoi >= 99 then
+      if Rrole[Brole[i].rnum].DefPoi + Brole[i].StateLevel[3] >= 99 then
         addpoi := 0;
       Rrole[Brole[i].rnum].Poison := Rrole[Brole[i].rnum].Poison + addpoi;
     end;
@@ -4526,10 +4542,10 @@ begin
     begin
       if (Brole[i].Dead = 0) and (Brole[i].Team <> Brole[bnum].Team) then
       begin
-        if (Rrole[Brole[i].rnum].DefPoi <= minDefPoi) and (Rrole[Brole[i].rnum].Poison < 100) and (BField[3, Brole[i].X, Brole[i].Y] >= 0) then
+        if (Rrole[Brole[i].rnum].DefPoi <= minDefPoi) and (Rrole[Brole[i].rnum].Poison + Brole[i].StateLevel[3] < 100) and (BField[3, Brole[i].X, Brole[i].Y] >= 0) then
         begin
           //bnum1 := i;
-          minDefPoi := Rrole[Brole[i].rnum].DefPoi;
+          minDefPoi := Rrole[Brole[i].rnum].DefPoi + Brole[i].StateLevel[3];
           //showmessage(inttostr(mindefpoi));
           Select := True;
           Ax := Brole[i].X;
@@ -4546,7 +4562,7 @@ begin
     if Brole[bnum1].Team <> Brole[bnum].Team then
     begin
       rnum1 := Brole[bnum1].rnum;
-      addpoi := Rrole[rnum].UsePoi div 3 - Rrole[rnum1].DefPoi div 4;
+      addpoi := Rrole[rnum].UsePoi div 3 - (Rrole[rnum1].DefPoi + Brole[bnum1].StateLevel[3]) div 4;
 
       //14 反伤, 反弹
       //自身如有反伤状态，取决于谁的强度大
@@ -4763,7 +4779,7 @@ begin
           //Brole[bnum1].ShowNumber := hurt;
           //Brole[bnum1].ExpGot := Brole[bnum1].ExpGot + hurt;
           //Rrole[rnum1].Hurt := min(Rrole[rnum1].Hurt + hurt div LIFE_HURT, 99);
-          Rrole[rnum1].Poison := min(Rrole[rnum1].Poison + Ritem[inum].AddPoi * (100 - Rrole[rnum1].DefPoi) div 100, 99);
+          Rrole[rnum1].Poison := min(Rrole[rnum1].Poison + Ritem[inum].AddPoi * (100 - Rrole[rnum1].DefPoi - Brole[bnum1].StateLevel[3]) div 100, 99);
           SetAminationPosition(0, 0, 0);
           str := putf8char(@Ritem[inum].Name);
           ShowMagicName(inum, str);
@@ -7364,7 +7380,7 @@ begin
   begin
     if (Brole[i].Team <> Brole[bnum].Team) and (Brole[i].Dead = 0) then
     begin
-      curenum := MAX_PHYSICAL_POWER * 3 * level div 100 + random(3) - Rrole[Brole[i].rnum].DefPoi;
+      curenum := MAX_PHYSICAL_POWER * 3 * level div 100 + random(3) - Rrole[Brole[i].rnum].DefPoi - Brole[i].StateLevel[3];
       curenum := max(0, curenum);
       Rrole[Brole[i].rnum].Poison := Rrole[Brole[i].rnum].Poison + curenum;
       Brole[i].ShowNumber := curenum;
@@ -7427,7 +7443,7 @@ begin
         end;
     end;
 
-    BField[1, Ax, Ay] := 1487 * 2+ 1;
+    BField[1, Ax, Ay] := 1487 * 2 + 1;
     CalPosOnImage(Ax, Ay, x, y);
     //InitialBPic(1487, x, y, 1, CalBlock(Ax, Ay)); //建筑层需遮挡值
     Redraw;

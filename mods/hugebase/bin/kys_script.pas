@@ -201,6 +201,8 @@ function PlayMovieScript(L: Plua_state): integer; cdecl;
 
 function SetPro(L: Plua_state; pos: puint16): integer;
 
+function ResetScence(L: Plua_state): integer; cdecl;
+
 implementation
 
 uses
@@ -464,6 +466,7 @@ begin
   lua_register(Lua_script, 'setshowmainrole', SetShowMR);
   lua_register(Lua_script, 'setscreenblendmode', SetScreenBlendMode);
   lua_register(Lua_script, 'playmovie', PlayMovieScript);
+  lua_register(Lua_script, 'resetscence', ResetScence);
 
 end;
 
@@ -2140,11 +2143,11 @@ begin
   if lua_isstring(L, 2) then
   begin
     str := lua_tostring(L, 2);
-    p:=putf8char(@x50[lua_tointeger(L, 1)]);
-    for i:=1 to length(str) do
+    p := putf8char(@x50[lua_tointeger(L, 1)]);
+    for i := 1 to length(str) do
     begin
-      p^:=str[i];
-      inc(p);
+      p^ := str[i];
+      Inc(p);
     end;
     //p^:=utf8char(0);
   end
@@ -2256,6 +2259,13 @@ begin
       Inc(pos);
     end;
   end;
+end;
+
+function ResetScence(L: Plua_state): integer; cdecl;
+begin
+  move(Rscence0[low(Rscence0)], Rscence[low(Rscence)], sizeof(Tscence) * length(Rscence));
+  resetEntrance;
+  Result := 0;
 end;
 
 end.
