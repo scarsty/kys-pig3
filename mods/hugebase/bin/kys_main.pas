@@ -4315,7 +4315,7 @@ var
   curitem0: integer;
   refresh: boolean;
   //显示物品选单, intitle表示有灰度
-  ItemTypeList: array [0 .. 8] of integer = (0, 1, 3, 4, 21, 22, 23, 30, 31);
+  ItemTypeList: array [0 .. 10] of integer = (0, 10, 11, 3, 4, 21, 22, 23, 24, 25, 32);
 
   procedure ShowMenuItem(lostfocus: integer);
   var
@@ -4541,7 +4541,7 @@ begin
   titlex1 := CENTER_X - 200;
   titley1 := 50;
   titlew := 45;
-  titlemax := 8;
+  titlemax := 10;
   xp := titlex1;
   yp := titley1 + 25; //菜单的总体初始位置
 
@@ -4597,14 +4597,16 @@ begin
   setlength(menuString, titlemax + 1);
   //menustring[0] := ('全部物品');
   menuString[0] := ('劇情');
-  menuString[1] := ('兵甲');
-  menuString[2] := ('丹藥');
-  menuString[3] := ('暗器');
-  menuString[4] := ('拳經');
-  menuString[5] := ('劍譜');
-  menuString[6] := ('刀錄');
-  menuString[7] := ('奇門');
-  menuString[8] := ('心法');
+  menuString[1] := ('兵器');
+  menuString[2] := ('護甲');
+  menuString[3] := ('丹藥');
+  menuString[4] := ('暗器');
+  menuString[5] := ('拳經');
+  menuString[6] := ('劍譜');
+  menuString[7] := ('刀錄');
+  menuString[8] := ('奇門');
+  menuString[9] := ('暗器');
+  menuString[10] := ('心法');
 
   xm := CENTER_X - 384 + 300;
   ym := CENTER_Y - 240 + 5;
@@ -4691,7 +4693,7 @@ begin
           end;
         end;
       end;
-      DrawTextFrame(titlex1 - 8, titley1 - 3, 40);
+      DrawTextFrame(titlex1 - 8, titley1 - 3, titlemax * 5);
       //DrawRectangle(titlex1, titley1 - 1, d * col + 7, 25, 0, ColColor(255), 40);
       str := '·';
       for i := 0 to titlemax do
@@ -5032,9 +5034,10 @@ end;
 //读物品列表, 主要是战斗中需屏蔽一部分物品
 //利用一个不可能用到的数值（-1）, 表示读取所有物品
 //一般来说, 参数为物品自身的类型 0-剧情, 1-装备, 2-秘籍, 3-药品, 4-暗器
-//因为秘籍太多, 以下进行一些扩展
-//20-无武功秘籍, 21-拳法, 22-剑法, 23-刀法, 24-特殊, 25-暗器, 26-吸取内力, 27-特技, 28-内功
-//此处为游戏需要, 有扩展即30=24+25+27, 31=20+26+28
+//以下进行一些扩展
+//10-兵器，11-护甲
+//20-无对应武学, 21-拳法, 22-剑法, 23-刀法, 24-特殊, 25-暗器, 26-吸取内力, 27-特技, 28-内功
+//此处为游戏需要, 32=20+26+27+28
 function ReadItemList(ItemType: integer): integer;
 var
   i, p, subType, mnum: integer;
@@ -5048,6 +5051,10 @@ begin
     if (RItemlist[i].Number >= 0) then
     begin
       subType := Ritem[RItemlist[i].Number].ItemType;
+      if (subType = 1) and (ItemType >= 10) then
+      begin
+        subType := 10 + Ritem[RItemlist[i].Number].EquipType;
+      end;
       //当ItemType>=20时, 认为要选择某一类秘籍
       if (subType = 2) and (ItemType >= 20) then
       begin
@@ -5063,10 +5070,12 @@ begin
               subType := 20 + Rmagic[mnum].MagicType;
           end;
         //扩展部分, 合并部分分类
-        if (subType = 2) or (subType = 24) or (subType = 25) or (subType = 27) then
-          subType := 30;
-        if (subType = 20) or (subType = 26) or (subType = 28) then
-          subType := 31;
+        //if (subType = 2) or (subType = 24) or (subType = 25) or (subType = 27) then
+        //  subType := 30;
+        //if (subType = 20) or (subType = 26) or (subType = 28) then
+        //  subType := 31;
+        if (subType = 20) or (subType = 26) or (subType = 27) or (subType = 28) then
+          subType := 32;
       end;
 
       if (subType = ItemType) or (ItemType = -1) then
