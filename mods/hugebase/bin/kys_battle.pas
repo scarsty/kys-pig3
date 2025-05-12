@@ -3436,14 +3436,16 @@ begin
         else
         begin
           //慈悲状态, 替代减血
-          if Brole[i].StateLevel[23] > 0 then
+          if Brole[i].StateRound[23] > 0 then
           begin
-            Brole[Brole[i].StateLevel[23]].ShowNumber := hurt;
-            BField[4, Brole[Brole[i].StateLevel[23]].X, Brole[Brole[i].StateLevel[23]].Y] := 1;
-            BField[4, Brole[i].X, Brole[i].Y] := 0;
-            Rrole[Brole[Brole[i].StateLevel[23]].rnum].CurrentHP := Rrole[Brole[Brole[i].StateLevel[23]].rnum].CurrentHP - hurt;
+            bnum1 := getbnum(Brole[i].StateLevel[23]);
+            Brole[bnum1].ShowNumber := Brole[bnum1].ShowNumber + hurt;
+            BField[4, Brole[bnum1].X, Brole[bnum1].Y] := 1;
+            //BField[4, Brole[i].X, Brole[i].Y] := 1;
+            Brole[i].ShowNumber := 0;
+            Rrole[Brole[bnum1].rnum].CurrentHP := Rrole[Brole[bnum1].rnum].CurrentHP - hurt;
             //受伤
-            Rrole[Brole[Brole[i].StateLevel[23]].rnum].Hurt := Rrole[Brole[Brole[i].StateLevel[23]].rnum].Hurt + hurt * 100 div Rrole[Brole[Brole[i].StateLevel[23]].rnum].MAXHP div LIFE_HURT;
+            Rrole[Brole[bnum1].rnum].Hurt := Rrole[Brole[bnum1].rnum].Hurt + hurt * 100 div Rrole[Brole[bnum1].rnum].MAXHP div LIFE_HURT;
           end
           else
           begin
@@ -3480,7 +3482,7 @@ begin
               end;
             end;
             //普通减血
-            Brole[i].ShowNumber := hurt;
+            Brole[i].ShowNumber := Brole[bnum1].ShowNumber + hurt;
             Rrole[Brole[i].rnum].CurrentHP := Rrole[Brole[i].rnum].CurrentHP - hurt;
             //受伤
             Rrole[Brole[i].rnum].Hurt := Rrole[Brole[i].rnum].Hurt + hurt * 100 div Rrole[Brole[i].rnum].MAXHP div LIFE_HURT;
@@ -3506,7 +3508,7 @@ begin
       begin
         hurt := Rmagic[mnum].HurtMP[level - 1] + random(5) - random(5);
         if Rmagic[mnum].HurtType <> 6 then
-          Brole[i].ShowNumber := hurt;
+          Brole[i].ShowNumber := Brole[bnum1].ShowNumber + hurt;
         Rrole[Brole[i].rnum].CurrentMP := Rrole[Brole[i].rnum].CurrentMP - hurt;
         if Rrole[Brole[i].rnum].CurrentMP <= 0 then
           Rrole[Brole[i].rnum].CurrentMP := 0;
@@ -6778,7 +6780,7 @@ begin
             //慈悲
             if Rmagic[mnum].AddMP[s] = 23 then
             begin
-              Brole[i].StateLevel[Rmagic[mnum].AddMP[s]] := bnum;
+              Brole[i].StateLevel[Rmagic[mnum].AddMP[s]] := Brole[bnum].rnum;
               Brole[i].StateRound[Rmagic[mnum].AddMP[s]] := Rmagic[mnum].HurtMP[level - 1];
             end
             else
@@ -8303,7 +8305,7 @@ begin
       if Brole[aimbnum].Team = Brole[bnum].Team then
       begin
         ERound := Rmagic[mnum].Attack[0] + (Rmagic[mnum].Attack[1] - Rmagic[mnum].Attack[0]) * level div 10;
-        for I := 0 to STATUS_AMOUNT - 3 do
+        for I := 0 to STATUS_AMOUNT - 1 do
         begin
           if Brole[aimbnum].StateLevel[i] > 0 then
             Brole[aimbnum].StateRound[i] := Brole[aimbnum].StateRound[i] + ERound;

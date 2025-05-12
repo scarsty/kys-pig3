@@ -359,7 +359,9 @@ var
 
   //以下是各类贴图内容与索引
   //云的贴图内容及索引
-  TDEF, WARFLD, KDEF: TIDXGRP;
+  WARFLD, KDEF: TIDXGRP;
+  TDEF : TList<utf8string>;
+
   //MPic, SPic, WPic, EPic, FPic, HPic, CPic, KDef, TDef, NameGrp: TByteArray;
   //MIdx, SIdx, WIdx, EIdx, Fidx, HIdx, CIdx, KIdx, TIdx, NameIdx: TIntArray;
 

@@ -1660,19 +1660,8 @@ begin
     8: //Read talk to string.
     begin
       t1 := e_GetValue(0, e1, e2);
-      {if t1 <= 0 then
-        begin
-        len := TIdx[0];
-        offset := 0;
-        end
-        else
-        begin
-        len := TIdx[t1] - TIdx[t1 - 1];
-        offset := TIdx[t1 - 1];
-        end;}
-      offset := TDEF.IDX[t1];
-      len := TDEF.IDX[t1 + 1] - offset;
-      move(TDEF.GRP[offset], x50[e3], len);
+      len := length(TDEF[t1 - 1]);
+      move(TDEF[t1 - 1][1], x50[e3], len);
       p := @x50[e3];
       Inc(p, len);
       p^ := utf8char(0);
@@ -2719,30 +2708,6 @@ begin
   ForeGroundCol := color and $FF;
   BackGroundCol := (color and $FF00) shr 8;
   // ******************************************//
-
-  // *****************读取对话*****************//
-  {len := 0;
-    if talknum = 0 then
-    begin
-    offset := 0;
-    len := TIdx[0];
-    end
-    else
-    begin
-    offset := TIdx[talknum - 1];
-    len := TIdx[talknum] - offset;
-    end;
-
-    setlength(talk, len + 1);
-    move(TDef[offset], talk[0], len);
-    for i := 0 to len - 1 do
-    begin
-    talk[i] := talk[i] xor $FF;
-    if talk[i] = 255 then
-    talk[i] := 0;
-    end;
-    talk[len] := 0;}
-
   //如果talknum小于0, 则读取x50中的内容
   if content = '' then
   begin
@@ -5875,36 +5840,18 @@ begin
   end;
 end;
 
+//注意在读取的时候减1，使编号与编辑器中看到的行号一致
 procedure ReadTalk(talknum: integer; var talk: Tbytearray; needxor: integer = 0);
 var
   len, offset, i: integer;
 begin
-  if (talknum >= 0) and (talknum <= TDEF.Amount) then
+  if (talknum > 0) and (talknum <= tdef.Count) then
   begin
-    {len := 0;
-      if talknum = 0 then
-      begin
-      offset := 0;
-      len := TIdx[0];
-      end
-      else
-      begin
-      offset := TIdx[talknum - 1];
-      len := TIdx[talknum] - offset;
-      end;}
-    offset := TDEF.IDX[talknum];
-    len := TDEF.IDX[talknum + 1] - offset;
+    len := length(TDEF[talknum - 1]);
     if len < 0 then
       exit;
     setlength(talk, len + 1);
-    move(TDEF.GRP[offset], talk[0], len);
-    if needxor = 1 then
-      for i := 0 to len - 1 do
-      begin
-        talk[i] := talk[i] xor $FF;
-        if talk[i] = 255 then
-          talk[i] := 0;
-      end;
+    move(TDEF[talknum - 1][1], talk[0], len);
     talk[len] := 0;
   end
   else

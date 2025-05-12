@@ -1014,7 +1014,7 @@ begin
   //pWarfld := ReadFileToBuffer(nil, AppPath + 'resource/warfld.grp', -1, 1);
 
   KDEF := LoadIdxGrp('resource/kdef.idx', 'resource/kdef.grp');
-  TDEF := LoadIdxGrp('resource/talk1.idx', 'resource/talk1.grp');
+  //TDEF := LoadIdxGrp('resource/talk1.idx', 'resource/talk1.grp');
   WARFLD := LoadIdxGrp('resource/warfld.idx', 'resource/warfld.grp');
   //LoadIdxGrp('resource/name.idx', 'resource/name.grp', NameIdx, NameGrp);
 
@@ -1025,20 +1025,8 @@ begin
   //if fileexists('resource/black.pic') then
   //begin
   //blackscreen := IMG_Load('resource/black.pic');
-
   //end;
 
-  {for i1 := 0 to 479 do
-    begin
-    for i := 0 to 639 do
-    begin
-    b := ((i - ((CENTER_X * 2) shr 1)) * (i - ((CENTER_X * 2) shr 1)) + (i1 - ((CENTER_Y * 2) shr 1)) *
-    (i1 - ((CENTER_Y * 2) shr 1))) div 150;
-    if b > 100 then
-    b := 100;
-    snowalpha[i1][i] := b;
-    end;
-    end;}
   //showmessage(inttostr((CENTER_X * 2) shr 1));
   //InitialSurfaces;
   //载入108人名, 星位名
@@ -1070,6 +1058,16 @@ begin
   for i := 0 to list.Count - 1 do
   begin
     BattleNames[i] := list.Strings[i];
+  end;
+  list.Free;
+
+  //载入对话
+  list := TStringList.Create;
+  list.loadfromfile(AppPath + 'resource/talk1.txt');
+  TDEF := TList<utf8string>.Create;
+  for i := 0 to list.Count - 1 do
+  begin
+    TDEF.Add(list.Strings[i]);
   end;
   list.Free;
 
@@ -6047,9 +6045,9 @@ begin
     k := 0;
     for i := 0 to high(Brole[bnum].StateLevel) do
     begin
-      if (Brole[bnum].StateLevel[i] <> 0) and (statestrs[i] <> '') then
+      if (Brole[bnum].StateRound[i] <> 0) and (statestrs[i] <> '') then
       begin
-        if Brole[bnum].StateLevel[i] > 0 then
+        if Brole[bnum].StateLevel[i] >= 0 then
         begin
           color1 := ColColor($14);
           color2 := ColColor($16);
