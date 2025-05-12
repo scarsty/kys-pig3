@@ -1,0 +1,3 @@
+在[FILE]项下面增加如下两项：
+    SMAPIMZ =resource\smap.imz
+    SMAPPNGPATH = resource\smap\

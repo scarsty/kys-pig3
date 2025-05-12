@@ -1,0 +1,237 @@
+﻿本程序为免费游戏，您可以任意使用，复制，再发布，反编译。
+
+本游戏使用的FFmpeg遵循其LGPL协议。其源码如下：
+
+procedure PlayMovie(filename: string; fullwindow: integer);
+var
+  pFormatCtx: pAVFormatContext;
+  pCodecCtx, pCodecCtxA: pAVCodecContext;
+  pCodec, pCodecA: pAVCodec;
+  pFrame: pAVFrame;
+  pFrameRGB: pAVFrame;
+  packet: TAVPacket;
+  i, videoStream, audioStream, frameFinished, size: integer;
+  buffer: pbyte;
+  framenum, frametime, frame_timer_begin: real;
+  bmp: pSDL_Overlay;
+  pict: TAVPicture;
+  img_convert_ctx: pSwsContext;
+  rect: TSDL_Rect;
+  pp: pointer;
+  p2: puint16;
+  p: ppbyte;
+  time1, time2, xcoord, ycoord: real;
+  A: HSTREAM;
+  textureid: gluint;
+  timerV, timerA: real;
+  posA: integer;
+  //a1 : TVideoState;
+{$IFDEF MSWINDOWS}
+  {Channel: HSTREAM;
+  Info: xVideo_ChannelInfo;
+  pos: real;}
+{$ENDIF}
+begin
+{$IFDEF MSWINDOWS}
+  {xVideo_Init(0, 0);
+  Channel := xVideo_StreamCreateFile(PChar(filename), 0, 0, xVideo_STREAM_MIX);
+  if Channel <> 0 then
+  begin
+    xVideo_ChannelSetAttribute(Channel, xVideo_ATTRIB_VOL, VOLUME);
+    xVideo_ChannelGetInfo(Channel, @Info);
+    if fullwindow = 0 then
+      xVideo_ChannelResizeWindow(Channel, 0, (RealScreen.w - Info.Width) div 2,
+        (RealScreen.h - Info.Height) div 2, Info.Width, Info.Height);
+    xVideo_ChannelPlay(Channel);
+    pos := xVideo_ChannelGetLength(Channel, xVideo_POS_MILISEC);
+    while SDL_PollEvent(@event) >= 0 do
+    begin
+      CheckBasicEvent;
+      //if (event.type_ = SDL_QUITEV) and (EXIT_GAME = 1) then
+      //break;
+      if ((event.key.keysym.sym = SDLK_ESCAPE) or (event.button.button = SDL_BUTTON_RIGHT)) then
+        break;
+      if xVideo_ChannelGetPosition(Channel, xVideo_POS_MILISEC) >= pos then
+        break;
+      SDL_Delay(40);
+    end;
+    xVideo_StreamFree(Channel);
+  end;
+  xVideo_Free();}
+{$ENDIF}
+  av_register_all();
+  if av_open_input_file(pFormatCtx, PChar(filename), nil, 0, nil) = 0 then
+  begin
+    A := BASS_StreamCreateFile(False, PChar(filename), 0, 0, 0);
+    BASS_ChannelSetAttribute(A, BASS_ATTRIB_VOL, VOLUME / 100.0);
+    av_find_stream_info(pFormatCtx);
+    videoStream := -1;
+    for i := 0 to pFormatCtx.nb_streams - 1 do
+    begin
+      if pFormatCtx.streams[i].codec.codec_type = AVMEDIA_TYPE_VIDEO then
+      begin
+        videoStream := i;
+        break;
+      end;
+    end;
+    {audioStream := -1;
+    for i := 0 to pFormatCtx.nb_streams - 1 do
+    begin
+      if pFormatCtx.streams[i].codec.codec_type = AVMEDIA_TYPE_AUDIO then
+      begin
+        audioStream := i;
+        break;
+      end;
+    end;}
+    pCodecCtx := pFormatCtx.streams[videoStream].codec;
+    frametime := 1.0e6 / pFormatCtx.streams[videoStream].r_frame_rate.num;  //每帧的时间(毫秒)
+    pCodec := avcodec_find_decoder(pCodecCtx.codec_id);
+    avcodec_open(pCodecCtx, pCodec);
+    {pCodecCtxA := pFormatCtx.streams[audioStream].codec;
+    pCodecA := avcodec_find_decoder(pCodecCtxA.codec_id);
+    avcodec_open(pCodecCtxA, pCodecA);}
+    pFrame := avcodec_alloc_frame();
+    pFrameRGB := avcodec_alloc_frame();
+    size := avpicture_get_size(PIX_FMT_RGB24, pCodecCtx.Width, pCodecCtx.Height);
+    buffer := av_malloc(size);
+    avpicture_fill(pAVPicture(pFrameRGB), buffer, PIX_FMT_RGB24,
+      pCodecCtx.Width, pCodecCtx.Height);
+    //writeln(pFrameRGB.linesize[0]);
+    //RealScreen := SDL_SetVideoMode(RealScreen.w, RealScreen.h, 32, ScreenFlag {and (not SDL_OPENGL) and
+    //(not SDL_RESIZABLE)});
+    if GLHR = 0 then
+      bmp := SDL_CreateYUVOverlay(pCodecCtx.Width, pCodecCtx.Height, SDL_YV12_OVERLAY, RealScreen);
+    rect.x := (RealScreen.w - pCodecCtx.Width) div 2;
+    rect.y := (RealScreen.h - pCodecCtx.Height) div 2;;
+    rect.w := pCodecCtx.Width;
+    rect.h := pCodecCtx.Height;
+
+    frame_timer_begin := av_gettime() / 1e3;
+    BASS_ChannelPlay(A, False);
+    while SDL_PollEvent(@event) >= 0 do
+    begin
+      //time1 := av_gettime() / 1e3;
+      if av_read_frame(pFormatCtx, packet) < 0 then
+        break;
+      if ((event.key.keysym.sym = SDLK_ESCAPE) or (event.button.button = SDL_BUTTON_RIGHT)) then
+        break;
+      //if (event.type_ = SDL_QUITEV) then
+      //break;
+      {if (event.type_ = SDL_VIDEORESIZE) then
+      begin
+        SDL_FreeYUVOverlay(bmp);
+        bmp := SDL_CreateYUVOverlay(pCodecCtx.Width, pCodecCtx.Height, SDL_YV12_OVERLAY, RealScreen);
+        rect.x := (RealScreen.w - pCodecCtx.Width) div 2;
+        rect.y := (RealScreen.h - pCodecCtx.Height) div 2;;
+        rect.w := pCodecCtx.Width;
+        rect.h := pCodecCtx.Height;
+      end;}
+      CheckBasicEvent;
+      if (packet.stream_index = videoStream) then
+      begin
+        avcodec_decode_video2(pCodecCtx, pFrame, frameFinished, @packet);
+        if (frameFinished <> 0) then
+        begin
+          if GLHR = 0 then
+          begin
+            SDL_LockYUVOverlay(bmp);
+            p := bmp.pixels;
+            pp := pointer((p)^);
+            pict.Data[0] := pp;
+            Inc(p, 2);  pp := pointer(p^);
+            pict.Data[1] := pp;
+            Inc(p, -1);  pp := pointer(p^);
+            pict.Data[2] := pp;
+            p2 := bmp.pitches;
+            pict.linesize[0] := (p2^);
+            Inc(p2, 2);
+            pict.linesize[1] := (p2^);
+            Inc(p2, -1);
+            pict.linesize[2] := (p2^);
+            img_convert_ctx :=
+              sws_getContext(pCodecCtx.Width, pCodecCtx.Height, pCodecCtx.pix_fmt, pCodecCtx.Width,
+              pCodecCtx.Height, PIX_FMT_YUV420P, SWS_BICUBIC, nil, nil, nil);
+            sws_scale(img_convert_ctx, @pFrame.Data[0], @pFrame.linesize[0], 0, pCodecCtx.Height,
+              @pict.Data[0], @pict.linesize[0]);
+            SDL_UnLockYUVOverlay(bmp);
+            if fullwindow = 0 then
+              SDL_DisplayYUVOverlay(bmp, @rect)
+            else
+              SDL_DisplayYUVOverlay(bmp, nil);
+          end
+          else
+          begin
+            glGenTextures(1, @TextureID);
+            glBindTexture(GL_TEXTURE_2D, TextureID);
+            img_convert_ctx :=
+              sws_getContext(pCodecCtx.Width, pCodecCtx.Height, pCodecCtx.pix_fmt, pCodecCtx.Width,
+              pCodecCtx.Height, PIX_FMT_RGB24, SWS_BICUBIC, nil, nil, nil);
+            sws_scale(img_convert_ctx, @pFrame.Data[0], @pFrame.linesize[0], 0, pCodecCtx.Height,
+              @pFrameRGB.Data[0], @pFrameRGB.linesize[0]);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pCodecCtx.Width, pCodecCtx.Height,
+              0, GL_RGB, GL_UNSIGNED_BYTE, pFrameRGB.Data[0]);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            xcoord := pCodecCtx.Width / RealScreen.w;
+            ycoord := pCodecCtx.Height / RealScreen.h;
+            {if xcoord > ycoord then
+            begin
+              xcoord := ycoord / xcoord;
+              ycoord := 1;
+            end
+            else
+            begin
+              ycoord := xcoord / ycoord;
+              xcoord := 1;
+            end;}
+            glClear(GL_COLOR_BUFFER_BIT);
+            glEnable(GL_TEXTURE_2D);
+            glBegin(GL_QUADS);
+            glTexCoord2f(0.0, 0.0);
+            glVertex3f(-xcoord, ycoord, 0.0);
+            glTexCoord2f(1.0, 0.0);
+            glVertex3f(xcoord, ycoord, 0.0);
+            glTexCoord2f(1.0, 1.0);
+            glVertex3f(xcoord, -ycoord, 0.0);
+            glTexCoord2f(0.0, 1.0);
+            glVertex3f(-xcoord, -ycoord, 0.0);
+            glEnd;
+            glDeleteTextures(1, @TextureID);
+            SDL_GL_SwapBuffers();
+          end;
+        end;
+        av_free_packet(@packet);
+        timerA := BASS_ChannelBytes2Seconds(A, BASS_ChannelGetPosition(A, BASS_POS_BYTE)) * 1e3;  //音频的时间为标准
+        timerV := (pCodecCtx.frame_number - 1) * frametime;  //该帧的实际时间
+        SDL_Delay(max(0, round(timerV - timerA)));   //让视频追赶音频
+        //writeln(pCodecCtx.frame_number, timerV, timerA);
+      end;
+      av_free_packet(@packet);
+    end;
+    if GLHR = 0 then
+      SDL_FreeYUVOverlay(bmp);
+
+    av_free(pFrame);
+    av_free(pFrameRGB);
+    av_free(buffer);
+    avcodec_close(pCodecCtx);
+    av_close_input_file(pFormatCtx);
+    RealScreen := SDL_SetVideoMode(RealScreen.w, RealScreen.h, 32, ScreenFlag);
+    BASS_ChannelStop(A);
+    BASS_StreamFree(A);
+  end;
+
+end;
+
+本游戏使用的运行库SDL遵循其LGPL协议。
+
+本游戏使用的运行库SDL_ttf，SDL_Image，SDL_gfx，zlib等遵循其zlib协议。
+
+本游戏使用的Pas Header文件，主要来自JEDI-SDL，以及开源项目UltraStar Deluxe。
+
+本游戏使用的BASS，BASSMIDI解码器来自http://www.un4seen.com。
+
+本游戏使用Free Pascal Compiler 2.7.1编译。
+
+本游戏禁止用于商业用途.
+
