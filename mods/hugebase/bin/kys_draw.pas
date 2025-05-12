@@ -587,19 +587,19 @@ begin
     DrawRoleOnScence(Cx, Cy);
     end;}
 
-  if (CurScence = 71) and (MODVersion = 13) then
-  begin
-    word := formatfloat('0', TimeInWater div 60) + ':' + formatfloat('00', TimeInWater mod 60);
-    DrawShadowText(word, 5, 5, ColColor(5), ColColor(7));
-    if (time <= 0) then
-    begin
-      instruct_15;
-    end;
-  end;
   if ShowBlackScreen then
     DrawBlackScreen;
   if HaveText = 1 then
     CleanTextScreen;
+  if (CurScence = 71) and (MODVersion = 13) then
+  begin
+    word := formatfloat('0', TimeInWater div 60) + ':' + formatfloat('00', TimeInWater mod 60);
+    DrawShadowText(word, 5, 5, ColColor(5), ColColor(7));
+    if (TimeInWater <= 0) then
+    begin
+      instruct_15;
+    end;
+  end;
   DrawVirtualKey;
   //if (blackscreen > 0) and (CurEvent > 0) then
   //DrawRectangleWithoutFrame(screen, 0, 0, screen.w, screen.h, 0, 100 - blackscreen * 10);
@@ -1413,7 +1413,7 @@ begin
   DrawTPic(l, x - 1, y + yp, nil, 0, alpha, mixColor, mixAlpha);
   //for i := 0 to len div 2 - 1 do
   //begin
-    //DrawTPic(m, x + 19 + i * 20, y+yp, nil, 0, alpha, mixColor, mixAlpha);
+  //DrawTPic(m, x + 19 + i * 20, y+yp, nil, 0, alpha, mixColor, mixAlpha);
   //end;
   rect.x := 0;
   rect.y := 0;
@@ -1426,7 +1426,7 @@ begin
   //  rect.y := 0;
   //  rect.h := TitlePNGIndex[20].h;
   //  rect.w := 10;
-    //DrawTPic(m, x + 19 + (len - 1) * 10, y+yp, @rect, 0, alpha, mixColor, mixAlpha);
+  //DrawTPic(m, x + 19 + (len - 1) * 10, y+yp, @rect, 0, alpha, mixColor, mixAlpha);
   //end;
   DrawTPic(r, x + 19 + len * 10, y + yp, nil, 0, alpha, mixColor, mixAlpha);
   Result := 19;

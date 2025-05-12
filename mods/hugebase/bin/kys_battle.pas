@@ -6900,12 +6900,17 @@ begin
       PlayActionAmination(bnum, Rmagic[mnum].MagicType); //动作效果
 
       rnum := Brole[bnum].rnum;
-
       addvalue := 100 * level;
       if addvalue > Rrole[Brole[aimbnum].rnum].CurrentMP then
+      begin
         addvalue := Rrole[Brole[aimbnum].rnum].CurrentMP;
+      end;
       if addvalue > Rrole[Brole[bnum].rnum].MAXHP - Rrole[Brole[bnum].rnum].CurrentHP then
+      begin
         addvalue := Rrole[Brole[bnum].rnum].MAXHP - Rrole[Brole[bnum].rnum].CurrentHP;
+      end;
+      Rrole[Brole[aimbnum].rnum].CurrentMP := Rrole[Brole[aimbnum].rnum].CurrentMP - addvalue;
+      Rrole[Brole[bnum].rnum].CurrentHP := Rrole[Brole[bnum].rnum].CurrentHP + addvalue;
       BField[4, Brole[bnum].X, Brole[bnum].Y] := 1;
       BField[4, Brole[aimbnum].X, Brole[aimbnum].Y] := 1;
       if Brole[aimbnum].StateLevel[Si] > 10 then
@@ -6915,7 +6920,6 @@ begin
         Brole[aimbnum].StateLevel[Si] := 10;
         Brole[aimbnum].StateRound[Si] := 3;
       end;
-
       PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
     end;
   end;
@@ -7241,7 +7245,7 @@ begin
         if Brole[i].StateLevel[Si] >= 0 then
         begin
           Brole[i].StateLevel[Si] := Rmagic[mnum].Attack[0] + trunc(Rmagic[mnum].Attack[0] * (100 + (Rmagic[mnum].Attack[1] - Rmagic[mnum].Attack[0]) * level / 10) / 100);
-          Brole[i].StateRound[Si] := Rmagic[mnum].HurtMP[level];
+          Brole[i].StateRound[Si] := Rmagic[mnum].HurtMP[level - 1];
         end
         else
         begin
@@ -7256,7 +7260,7 @@ begin
         if Brole[i].StateLevel[Si] <= 0 then
         begin
           Brole[i].StateLevel[Si] := -(Rmagic[mnum].Attack[0] + trunc(Rmagic[mnum].Attack[0] * (100 + (Rmagic[mnum].Attack[1] - Rmagic[mnum].Attack[0]) * level / 10) / 100));
-          Brole[i].StateRound[Si] := Rmagic[mnum].HurtMP[level];
+          Brole[i].StateRound[Si] := Rmagic[mnum].HurtMP[level - 1];
         end
         else
         begin
@@ -8719,7 +8723,7 @@ begin
       if Brole[i].StateLevel[2] >= 0 then
       begin
         Brole[i].StateLevel[2] := Rmagic[mnum].Attack[0] + trunc(Rmagic[mnum].Attack[0] * (100 + (Rmagic[mnum].Attack[1] - Rmagic[mnum].Attack[0]) * level / 10) / 100);
-        Brole[i].StateRound[2] := Rmagic[mnum].HurtMP[level];
+        Brole[i].StateRound[2] := Rmagic[mnum].HurtMP[level - 1];
       end
       else
       begin

@@ -1514,7 +1514,7 @@ var
   isold: boolean = False;
   intsize: integer = 4;
 
-  procedure u16toutf8_load(pu: putf8char; len: integer=-1);
+  procedure u16toutf8_load(pu: putf8char; len: integer = -1);
   var
     widestr: widestring;
     utf8str: utf8string;
@@ -1530,7 +1530,7 @@ var
       (pw +1)^ := #0;
       pw := pw + 2;
     end;
-    if len>0 then setlength(widestr, len);
+    if len > 0 then setlength(widestr, len);
     utf8str := utf8encode(widestr);
     move(utf8str[1], pu^, length(utf8str));
   end;
@@ -1698,7 +1698,7 @@ begin
       end;
       for i := 0 to high(Rscence) do
       begin
-        u16toutf8_load(@Rscence[i].Name,5);
+        u16toutf8_load(@Rscence[i].Name, 5);
       end;
     end;
     //ShipX1:=-1;
