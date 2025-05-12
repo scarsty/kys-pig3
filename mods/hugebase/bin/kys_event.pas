@@ -3780,18 +3780,18 @@ begin
   hh := 72;
   DrawRectangleWithoutFrame(0, 40, CENTER_X * 2, 230, 0, 40);
 
-  hx := 263 - Count * 29;
+  hx := CENTER_X - 85;
   for i := 1 to Count do
   begin
     //DrawRectangle(screen, hx + 57 * i, hy, hw, hh, 0, colcolor($FF), 0);
-    DrawHeadPic(headnum, hx + 57 * i, hy + 8);
+    DrawHeadPic(headnum, hx, hy + 8);
   end;
 
   str1 := concat(Star[position], ' ');
   str2 := concat(RoleName[position], ' 成為夥伴');
   str := concat(str1, str2);
-  l := length(str);
-  DrawShadowText(str, CENTER_X - 20 * (l div 2) - 10, 230, ColColor($5), ColColor($8));
+  l := drawlength(str);
+  DrawShadowText(str, CENTER_X - 10 * (l div 2) - 10, 230, ColColor($5), ColColor($8));
   UpdateAllScreen;
   WaitAnyKey;
   Redraw;
