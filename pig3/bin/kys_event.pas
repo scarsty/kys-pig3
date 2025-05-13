@@ -2042,7 +2042,7 @@ begin
       if byte(pw^) = $2A then
         i1 := i1 - 1;
       //DrawRectangle(e3, e4, i2 * 20 + 25, i1 * 22 + 5, 0, ColColor(255), 30);
-      DrawTextFrame(e3, e4, i2);
+      DrawTextFrame(e3 - 15, e4, i2 * 2 div 3);
       pw := @x50[e2];
       pw1 := pw;
       i := 0;

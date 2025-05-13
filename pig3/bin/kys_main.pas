@@ -2269,7 +2269,7 @@ begin
           end;
           //第一步时短暂停止方便可以只走一格
           if (speed <= 1) then
-            SDL_Delay(50);
+            walking := 0;
         end;
         2:
         begin
@@ -3076,7 +3076,7 @@ begin
 
           //一定步数之内一次动一格
           if (speed <= 1) then
-            SDL_Delay(50);
+            walking := 0;
         end;
         2:
         begin
@@ -4605,7 +4605,7 @@ begin
   menuString[6] := ('劍譜');
   menuString[7] := ('刀錄');
   menuString[8] := ('奇門');
-  menuString[9] := ('千機');
+  menuString[9] := ('暗典');
   menuString[10] := ('心法');
 
   xm := CENTER_X - 384 + 300;

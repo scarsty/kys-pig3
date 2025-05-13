@@ -302,9 +302,9 @@ var
   RItemList: array of TItemList;
   Rrole, Rrole0: array [-1 .. 1000] of TRole;
   Ritem, Ritem0: array [-1 .. 1000] of TItem;
-  Rscence,Rscence0: array [-1 .. 1000] of TScence;
-  Rmagic,Rmagic0: array [-1 .. 1000] of TMagic;
-  RShop,RShop0: array [-1 .. 20] of TShop;
+  Rscence, Rscence0: array [-1 .. 1000] of TScence;
+  Rmagic, Rmagic0: array [-1 .. 1000] of TMagic;
+  RShop, RShop0: array [-1 .. 20] of TShop;
   //R文件数据, 均远大于原有容量
   //一般来说敌人会先读取Rrole0
   //Ritem0: array[-1..1000] of TItem;
@@ -360,7 +360,7 @@ var
   //以下是各类贴图内容与索引
   //云的贴图内容及索引
   WARFLD, KDEF: TIDXGRP;
-  TDEF : TList<utf8string>;
+  TDEF: TList<utf8string>;
 
   //MPic, SPic, WPic, EPic, FPic, HPic, CPic, KDef, TDef, NameGrp: TByteArray;
   //MIdx, SIdx, WIdx, EIdx, Fidx, HIdx, CIdx, KIdx, TIdx, NameIdx: TIntArray;
@@ -579,9 +579,7 @@ var
   SimpleStatus: array [0 .. 5] of PSDL_Texture; //全队简明状态的表面
   SimpleText: array [0 .. 5] of PSDL_Texture; //全队简明状态文字的表面
 
-  ForceBattleWin: integer = 0;
   SkipTalk: integer = 0;
-
 
   //指针图片
   //CursorSurface: array[0..6] of PSDL_Cursor;
@@ -613,6 +611,8 @@ var
 
   //播放视频
   smallpot: Pointer;
+
+  ForceBattleWin: integer = 0;
 
 const
   //色值蒙版, 注意透明蒙版在创建表面时需设为0而不应用此值
