@@ -3165,7 +3165,7 @@ begin
 
   //if where <= 1 then
   MFace := SFace;
-
+  resetEntrance();
   if (exitscencemusicnum > 0) and (where <> 3) then
   begin
     StopMP3;
