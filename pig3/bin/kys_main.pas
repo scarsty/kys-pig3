@@ -1074,16 +1074,16 @@ begin
   setlength(loverstrs, length(Brole[0].LoverLevel));
   for i := 0 to high(loverstrs) do
     loverstrs[i] := '';
-  loverstrs[0] := '攻擊♥';
-  loverstrs[1] := '防禦♥';
-  loverstrs[2] := '移動♥';
-  loverstrs[3] := '避毒♥';
-  loverstrs[4] := '強武♥';
-  loverstrs[5] := '強內♥';
-  loverstrs[6] := '代傷♥';
-  loverstrs[7] := '回命♥';
-  loverstrs[8] := '回內♥';
-  loverstrs[9] := '輕功♥';
+  loverstrs[0] := '攻擊';
+  loverstrs[1] := '防禦';
+  loverstrs[2] := '移動';
+  loverstrs[3] := '避毒';
+  loverstrs[4] := '強武';
+  loverstrs[5] := '強內';
+  loverstrs[6] := '代傷';
+  loverstrs[7] := '回命';
+  loverstrs[8] := '回內';
+  loverstrs[9] := '輕功';
 
   setlength(statestrs, length(Brole[0].StateLevel));
   for i := 0 to high(statestrs) do
@@ -4623,7 +4623,7 @@ begin
   //tempsur := SDL_DisplayFormat(screen);
 
   if where = 2 then
-    menu := 2
+    menu := 3
   else
     menu := MenuItemType;
   iamount := ReadItemList(ItemTypeList[MenuItemType]);
@@ -5017,9 +5017,9 @@ begin
     event.key.keysym.sym := 0;
     event.button.button := 0;
     SDL_Delay(20);
-    if (where = 2) and (Result) and (menu = 2) then
+    if (where = 2) and (Result) and (menu = 3) then
       break;
-    if (MODVersion <> 13) and (where = 2) and (Result) and (menu = 3) then
+    if (MODVersion <> 13) and (where = 2) and (Result) and (menu = 4) then
       break;
     if where > 2 then
       break;
@@ -5655,6 +5655,7 @@ var
   Name: utf8string;
   item1x, item1y, item2x, item2y: integer;
   addnum: array [0 .. 3] of integer;
+  simple_temp: integer;
 begin
   //where := 2;
   strs[0] := '等級';
@@ -6043,6 +6044,11 @@ begin
           color2 := ColColor($4E);
         end;
         DrawShadowText(loverstrs[i], xp + 70 + 70 * (k mod 4), yp + 360 + h * (k div 4), color1, color2);
+        simple_temp := SIMPLE;
+        SIMPLE := 0;
+        //心形无法正确转换
+        DrawShadowText('♥', xp + 110 + 70 * (k mod 4), yp + 360 + h * (k div 4), color1, color2);
+        SIMPLE := simple_temp;
         if IsConsole then
         begin
           //str := IntToStr(Brole[bnum].loverlevel[i]);
