@@ -2208,9 +2208,9 @@ begin
                 Axp1 := Axp;
                 Ayp1 := Ayp;
                 case i of
-                  0: Axp1 := Axp - 1;
+                  0: if axp1 > 0 then Axp1 := Axp - 1;
                   1: Ayp1 := Ayp + 1;
-                  2: Ayp1 := Ayp - 1;
+                  2: if ayp1 > 0 then Ayp1 := Ayp - 1;
                   3: Axp1 := Axp + 1;
                 end;
                 step := Fway[Axp1, Ayp1];
@@ -2351,7 +2351,7 @@ begin
         DrawMPic(1, pos.x, pos.y, -1, 0, 50, 0, 0);
         if not CanWalk(axp, ayp) then
         begin
-          if Entrance[axp, ayp] >= 0 then
+          if inregion(axp, 0, 479) and inregion(ayp, 0, 479) and (Entrance[axp, ayp] >= 0) then
             DrawMPic(2001, pos.x, pos.y, -1, 0, 75, 0, 0)
           else
             DrawMPic(2001, pos.x, pos.y, -1, 0, 50, 0, 0);

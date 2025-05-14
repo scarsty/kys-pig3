@@ -2574,9 +2574,7 @@ begin
         if BField[2, i1, i2] >= 0 then
           BField[3, i1, i2] := 0;
       end;
-
 end;
-
 
 //攻击
 procedure Attack(bnum: integer);
@@ -3324,7 +3322,6 @@ var
   i, rnum, hurt, addpoi, mp, hurt1, bnum1: integer;
   k, j, s, temp, i1, neinum, neilevel: integer;
 begin
-
   rnum := Brole[bnum].rnum;
   {if Rrole[rnum].CurrentMP < Rmagic[mnum].NeedMP * ((level + 1) div 2) then
     level := Rrole[rnum].CurrentMP div Rmagic[mnum].NeedMP * 2;
@@ -3366,7 +3363,7 @@ begin
         //以下是状态影响最终伤害的处理, 主要是守方的被动状态
         //4 受伤害增加或减少
         hurt := (100 - Brole[i].StateLevel[4]) * hurt div 100;
-        Brole[i].ShowNumber := hurt;
+        //Brole[i].ShowNumber := hurt;
 
         //15, 靈精, 内力代替
         if random(100) < Brole[i].StateLevel[15] then
@@ -3482,7 +3479,7 @@ begin
               end;
             end;
             //普通减血
-            Brole[i].ShowNumber := Brole[bnum1].ShowNumber + hurt;
+            Brole[i].ShowNumber := Brole[i].ShowNumber + hurt;
             Rrole[Brole[i].rnum].CurrentHP := Rrole[Brole[i].rnum].CurrentHP - hurt;
             //受伤
             Rrole[Brole[i].rnum].Hurt := Rrole[Brole[i].rnum].Hurt + hurt * 100 div Rrole[Brole[i].rnum].MAXHP div LIFE_HURT;
