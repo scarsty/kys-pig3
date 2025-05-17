@@ -1000,6 +1000,11 @@ begin
         else
         begin
           AutoBattle3(i);
+          if Rrole[Brole[i].rnum].addnum = 3 then    //额外一次攻击
+          begin
+            Brole[i].Acted := 0;
+            AutoBattle3(i);
+          end;
           Brole[i].Acted := 1;
         end;
       end
@@ -1080,7 +1085,7 @@ begin
             end;
 
             //葵花宝典, 每回合随机获得加轻、加移、闪避状态
-            if Rmagic[neinum].AddMP[2] = 1 then
+            if (Rmagic[neinum].AddMP[2] = 1) or (Rmagic[neinum].AddMP[2] = 10) then
             begin
               if random(100) > 50 then
               begin
@@ -1106,7 +1111,7 @@ begin
             end;
 
             //九阴真经, 每回合随机获得加攻、加防状态, 减受伤
-            if Rmagic[neinum].AddMP[2] = 2 then
+            if (Rmagic[neinum].AddMP[2] = 2) or (Rmagic[neinum].AddMP[2] = 10) then
             begin
               if random(100) > 50 then
               begin
@@ -1128,7 +1133,7 @@ begin
             end;
 
             //北冥真气, 周围5*5格人减内, 自己回内
-            if Rmagic[neinum].addmp[2] = 3 then
+            if (Rmagic[neinum].addmp[2] = 3) or (Rmagic[neinum].AddMP[2] = 10) then
             begin
               for x1 := -2 to 2 do
                 for y1 := -2 to 2 do
@@ -2695,7 +2700,9 @@ begin
   if (Rmagic[mnum].MagicType = 2) {and (Rmagic[mnum].HurtType <> 2)} then
     if random(1000) < Rrole[Brole[bnum].rnum].Sword * (100 + Brole[bnum].StateLevel[30]) div 100 then
       twice := 1;
-  twice := twice + Brole[bnum].StateLevel[13] + Rrole[Brole[bnum].rnum].addnum;
+  twice := twice + Brole[bnum].StateLevel[13];
+  if Rrole[Brole[bnum].rnum].addnum = 1 then
+    twice := twice + 1;
   //if Rmagic[mnum].HurtType = 2 then twice := 0;
   //执行攻击效果, 执行次数为（1+本身互博能力+连击状态+剑法连击）
   for i1 := 0 to twice do
