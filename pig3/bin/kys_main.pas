@@ -8645,7 +8645,9 @@ begin
   words.Add('winson7891');
   words.Add('halfrice');
   words.Add('soastao');
+  words.Add('雲淡風清');
   words.Add('NamelessOne47');
+  words.Add('门客');
   words.Add('ice');
   words.Add('黑天鹅');
   words.Add('');
