@@ -4500,6 +4500,7 @@ begin
   if lv < minlevel then
     lv := minlevel;
 
+  if rnum >= 930 then exit;
   //这里设定敌人升到多少级就增加多少级的属性
   //logN(4, lv)的取值从0到3, 这个算法比较奇怪, 若一次升很多级可能导致属性过高
 

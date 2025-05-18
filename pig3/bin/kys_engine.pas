@@ -1531,7 +1531,7 @@ begin
     screenTex := SDL_CreateTexture(render, 0, SDL_TEXTUREACCESS_TARGET, CENTER_X * 2, CENTER_Y * 2);
     ImgSGroundTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, ImageWidth, ImageHeight);
     ImgBGroundTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, ImageWidth, ImageHeight);
-    SimpleStateTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, 270, 90);
+    SimpleStateTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, 960, 90);
     for i := 0 to 5 do
       SimpleStatusTex[i] := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, 270, 90);
 

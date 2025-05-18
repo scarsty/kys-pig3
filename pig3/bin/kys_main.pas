@@ -6106,7 +6106,7 @@ begin
     exit;
   x1 := 0;
   y1 := 0;
-  w1 := 270;
+  w1 := 960;
   h1 := 90;
   GetRealRect(x1, y1, w1, h1);
   //ss := SDL_CreateRGBSurface(screen.flags, 270, 90, 32, RMask, GMask, BMask, AMask);
@@ -6137,7 +6137,7 @@ begin
 
   dest2.x := x;
   dest2.y := y;
-  dest2.w := 270;
+  dest2.w := 960;
   dest2.h := 90;
 
   x := 0;
@@ -6162,7 +6162,7 @@ begin
   if Rrole[rnum].MaxHP = 0 then
     w := 138
   else
-    w := 138 * Rrole[rnum].CurrentHP div Rrole[rnum].MaxHP;
+    w := 138 * Rrole[rnum].CurrentHP div min(Rrole[rnum].MaxHP, 9999);
   color := MapRGBA(196, max(0, 25 - Rrole[rnum].Hurt div 5), 16);
   DrawRectangleWithoutFrame(x + 96, y + 32, w, 9, color, -1);
   //DrawRectangleWithoutFrame(x + 96 + w, y + 32, 138 - w, 9, color, alpha);
