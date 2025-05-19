@@ -6534,7 +6534,8 @@ function EnterString(var str: utf8string; x, y, w, h: integer): bool;
 var
   r: TSDL_Rect;
   str2: utf8string;
-  l, i: integer;
+  l: integer;
+  i: uint32;
 begin
   r.x := x;
   r.y := y;
