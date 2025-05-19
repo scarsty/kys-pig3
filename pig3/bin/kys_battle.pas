@@ -8509,8 +8509,7 @@ begin
   for i := 0 to BRoleAmount - 1 do
     if (Brole[i].dead = 0) then
     begin
-      if Rrole[Brole[i].rnum].CurrentHP > 9999 then continue;
-      Rrole[Brole[i].rnum].CurrentHP := min(life, Rrole[Brole[i].rnum].MaxHP);
+      Rrole[Brole[i].rnum].CurrentHP := life;
       //Brole[i].ShowNumber := minlife;
       BField[4, Brole[i].X, Brole[i].Y] := 1 + random(6);
     end;

@@ -4500,7 +4500,7 @@ begin
   if lv < minlevel then
     lv := minlevel;
 
-  if rnum >= 930 then exit;
+  if rnum >= 930 then exit;    //特殊人物不受影响
   //这里设定敌人升到多少级就增加多少级的属性
   //logN(4, lv)的取值从0到3, 这个算法比较奇怪, 若一次升很多级可能导致属性过高
 
@@ -6534,7 +6534,7 @@ function EnterString(var str: utf8string; x, y, w, h: integer): bool;
 var
   r: TSDL_Rect;
   str2: utf8string;
-  l: integer;
+  l, i: integer;
 begin
   r.x := x;
   r.y := y;
@@ -6544,8 +6544,10 @@ begin
   SDL_SetTextInputRect(@r);
   while True do
   begin
+    i := i + 1;
     loadfreshscreen;
     str2 := '請輸入主角之姓名：' + str;
+    if (i mod 16 < 8) then str2 := str2 + '_';
     w := drawlength(str2);
     DrawTextWithRect(str2, x, y, 260, 0, 0, 0, 1);
     //SDL_UpdateRect2(screen, 0, 0, 0, 0);
