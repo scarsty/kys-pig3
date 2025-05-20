@@ -2092,14 +2092,14 @@ begin
         stillcount := stillcount + 1
       else
         stillcount := 0;
-      if stillcount >= 10 then
+      {if stillcount >= 10 then
       begin
         if not (MODVersion in [31]) then
           still := 1;
         mstep := mstep + 1;
         if mstep > 6 then
           mstep := 1;
-      end;
+      end;}
       next_time := now + 320;
     end;
 
@@ -2872,6 +2872,10 @@ begin
         if (event.key.keysym.sym = SDLK_RETURN) or (event.key.keysym.sym = SDLK_SPACE) then
         begin
           CheckEvent1;
+        end;
+        if (event.key.keysym.sym = SDLK_TAB) then
+        begin
+          SpecialFunction;
         end;
       end;
       SDL_KEYDOWN:
@@ -8648,6 +8652,8 @@ begin
   words.Add('雲淡風清');
   words.Add('NamelessOne47');
   words.Add('门客');
+  words.Add('泥巴');
+  words.Add('王子');
   words.Add('ice');
   words.Add('黑天鹅');
   words.Add('');
@@ -8670,6 +8676,12 @@ begin
   words.Add('UltraStar Deluxe');
   words.Add('Open Chinese Convert');
   words.Add('smallpot');
+  words.Add('');
+
+  words.Add('致謝以下MOD項目');
+  words.Add('金庸群俠前傳');
+  words.Add('人在江湖-青蓬風雲');
+  words.Add('逐夢江湖行');
   words.Add('');
 
   words.Add('特別致謝短歌行MIDI音色庫');

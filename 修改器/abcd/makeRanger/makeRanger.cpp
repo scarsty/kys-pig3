@@ -78,7 +78,6 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    system("chcp 65001");
     std::string filename = argv[1];
     std::print("Processing file: {}\n", filename);
 

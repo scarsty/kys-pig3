@@ -716,6 +716,7 @@ begin
         13:
         begin
           Rrole[rnum] := Rrole0[rnum];
+          if Rrole[rnum].RoundLeave < 0 then continue;    //特殊人物不受影响
           if AUTO_LEVELUP = 0 then
           begin
             minrnum := 738;
