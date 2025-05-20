@@ -149,6 +149,7 @@ type
     procedure SA_35(bnum, mnum, level: integer);
     procedure SA_36(bnum, mnum, level: integer);
     procedure SA_37(bnum, mnum, level: integer);
+    procedure SA_38(bnum, mnum, level: integer);
   end;
 
   {$M-}
@@ -8743,6 +8744,31 @@ begin
   PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
   Brole[bnum].Acted := 1;
 end;
+
+//38所有敌人血，内，体为50
+procedure TSpecialAbility.SA_38(bnum, mnum, level: integer);
+var
+  i, rnum: integer;
+begin
+  ShowMagicName(mnum);
+  rnum := Brole[bnum].rnum;
+  for i := 0 to BRoleAmount - 1 do
+  begin
+    if Brole[i].Team <> Brole[bnum].team then
+    begin
+      Brole[i].ShowNumber := Rrole[Brole[i].rnum].CurrentHP -50;
+      Rrole[Brole[i].rnum].CurrentHP := 50;
+      Rrole[Brole[i].rnum].CurrentMP := 50;
+      Rrole[Brole[i].rnum].PhyPower := 50;
+      BField[4, Brole[i].x, Brole[i].Y] := 1;
+    end;
+  end;
+  PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+  PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+  ShowHurtValue(0); //显示数字
+  Brole[bnum].Acted := 1;
+end;
+
 
 //被动技能的名字, 触发时机, 几率, 动画均在r中
 

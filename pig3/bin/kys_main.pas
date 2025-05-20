@@ -8649,7 +8649,6 @@ begin
   words.Add('winson7891');
   words.Add('halfrice');
   words.Add('soastao');
-  words.Add('雲淡風清');
   words.Add('NamelessOne47');
   words.Add('门客');
   words.Add('泥巴');
@@ -8680,7 +8679,7 @@ begin
 
   words.Add('致謝以下MOD項目');
   words.Add('金庸群俠前傳');
-  words.Add('人在江湖-青蓬風雲');
+  words.Add('人在江湖-雜兵模擬器');
   words.Add('逐夢江湖行');
   words.Add('');
 
