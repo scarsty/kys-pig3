@@ -1,15 +1,15 @@
-#include <cmath>
+Ôªø#include <cmath>
 #include <cstdio>
 #include <iostream>
 #include <numeric>
 #include <string>
 #include <vector>
 #include <algorithm>
-#include "File.h"
-#include "convert.h"
+
 #include <windows.h>
 #include <corecrt_io.h>
 #include <direct.h>
+#include <print>
 #include "opencv2/opencv.hpp"
 
 using namespace std;
@@ -23,7 +23,7 @@ static void copyFile(std::string file1, std::string file2)
 #ifdef _WIN32
     CopyFileA(file1.c_str(), file2.c_str(), FALSE);
 #else
-    //≤ª÷™’¶≈™£¨œ»≤ª“™¡À
+    //‰∏çÁü•ÂíãÂºÑÔºåÂÖà‰∏çË¶Å‰∫Ü
     //char buf[BUFSIZ];
     //size_t size;
 
@@ -51,104 +51,53 @@ void mkdir(std::string pathname)
     }
 }
 
-bool compare_filenames( std::string a,  std::string b)
+void autocrop(cv::Mat& m)
 {
-    int a1 = atoi(convert::findANumber(a).c_str());
-    int b1 =  atoi(convert::findANumber(b).c_str());
-    return a1 < b1;
-}
-
-int mainrfff()
-{
-    string workpath = R"(C:\Users\sty\Desktop\fight\new)";
-    for (int i = 0; i < 1200; i++)
+    int minX = m.cols - 1;
+    int minY = m.rows - 1;
+    int maxX = 0;
+    int maxY = 0;
+    for (int i = 0; i < m.rows; i++)
     {
-        int k = 0;
-        string ka;
-        string fftxt;
-        string path0 = convert::formatString((workpath + "\\fight%04d\\").c_str(), i);
-        string path1 = convert::formatString((workpath + "1\\fight%04d\\").c_str(), i);
-        for (int j = 0; j < 10; j++)
+        for (int j = 0; j < m.cols; j++)
         {
-            string path = convert::formatString((workpath + "\\fight%04d\\%02d\\").c_str(), i, j);
-            if (File::fileExist(path + "index.ka"))
+            if (m.at<cv::Vec3b>(i, j)[0] != 0 || m.at<cv::Vec3b>(i, j)[1] != 0 || m.at<cv::Vec3b>(i, j)[2] != 0)
             {
-                mkdir(path1);
-                auto kathis = convert::readStringFromFile(path + "index.ka");
-                ka += kathis;
-                fftxt += convert::formatString("%d, %d\r\n", j, kathis.size() / 4 / 4);
-                auto files = File::getFilesInPath(path, 0, 0);
-                std::sort(files.begin(), files.end(), compare_filenames);
-                for (auto f : files)
-                {
-                    if (File::getFileExt(f) != "png")
-                    {
-                        continue;
-                    }
-                    copyFile(path + f, path1 + convert::formatString("%d.png", k));
-                    k++;
-                }
+                minX = std::min(minX, j);
+                minY = std::min(minY, i);
+                maxX = std::max(maxX, j);
+                maxY = std::max(maxY, i);
             }
         }
-        convert::writeStringToFile(ka, path1 + "index.ka");
-        convert::writeStringToFile(fftxt, path1 + "fightframe.txt");
     }
-    return 0;
+    cv::Rect rect(minX, minY, maxX - minX + 1, maxY - minY + 1);
+    m = m(rect);
 }
+
+
 
 int main()
 {
-    string path = R"(C:\Users\sty\Desktop\eft\eft235\)";
-    auto files = File::getFilesInPath(path,1);
-    for (auto f : files)
+    cv::Mat m = cv::imread("map.bmp");
+    autocrop(m);
+    size_t size = 8;
+    int width = m.cols / size;
+    int height = m.rows / size;
+    int k = 0;
+    for (int i = 0; i < size; i++)
     {
-        if (File::getFileExt(f) != "png")
+        for (int j = 0; j < size; j++)
         {
-            continue;
-        }
-        cv::Mat img = cv::imread(path+f,-1);
-        std::vector<cv::Mat> chs;
-        cv::split(img, chs);
-
-        cv::Mat alpha;
-        if (chs.size() == 4)
-        {
-            alpha = chs[3];
-            if (alpha.at<uint8_t>(0, 0) == 0)
+            cv::Mat m1 = m(cv::Rect(j * width, i * height, width, height));
+            double minv, maxv;
+            cv::minMaxLoc(m1, &minv, &maxv);
+            if (minv != maxv)
             {
-                //continue;
+                cv::imwrite(std::format("{}.png", k), m1);
+                std::print("{}: {},{}\n", k, minv, maxv);
             }
+            k++;
         }
-        else
-        {
-            alpha = cv::Mat::zeros(img.rows, img.cols, CV_8UC1);
-            chs.push_back(alpha);
-        }
-        printf("%s\n", f.c_str());
-        for (int ir = 0; ir < img.rows; ir++)
-        {
-            for (int ic = 0; ic < img.cols; ic++)
-            {
-                uint8_t* v;
-                if (img.channels() == 4)
-                {
-                    v = (uint8_t*)&img.at<cv::Vec4b>(ir, ic);
-                }
-                else
-                {
-                    v = (uint8_t*)&img.at<cv::Vec3b>(ir, ic);
-                }
-                //if (v != cv::Vec3b(0, 0, 0))
-                {
-                    int v1 = (v[0] + v[1] + v[2]) / 1.5;
-                    if (v1 > 255) v1 = 255;
-                    alpha.at<uint8_t>(ir, ic) =v1 ;
-                }
-            }
-        }
-        //chs.push_back(alpha);
-        cv::merge(chs,alpha);
-        cv::imwrite(path+f, alpha);
     }
     return 0;
 }

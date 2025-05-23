@@ -24,10 +24,10 @@
     <ClCompile Include="hug.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\dat\project\common\convert.cpp">
+    <ClCompile Include="C:\project\mlcc\filefunc.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\dat\project\common\File.cpp">
+    <ClCompile Include="C:\project\mlcc\strfunc.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

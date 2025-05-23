@@ -8,10 +8,11 @@
 #ifdef _WIN32
 #include <shlwapi.h>
 #endif
-#include "File.h"
-#include "convert.h"
+#include "filefunc.h"
+#include "strfunc.h"
 #include "opencv2/opencv.hpp"
 #include <io.h>
+#include <format>
 
 using namespace std;
 
@@ -29,7 +30,7 @@ int getFileLength(const string& filepath)
 
 int getFileRecord(const string& filepath)
 {
-    auto buffer = File::readFile(filepath.c_str());
+    auto buffer = filefunc::readFile(filepath.c_str());
     int fileLength = buffer.size();
     int size = *(int*)(buffer.data() + fileLength - 4);
     return size;
@@ -70,7 +71,7 @@ int pair_grp_idx(string pathgrp, string pathidx)
     };
 
     std::vector<grpidx> gggg;
-    grps = File::getFilesInPath(pathgrp);
+    grps = filefunc::getFilesInPath(pathgrp);
     for (auto grp : grps)
     {
         auto grp0 = pathgrp + grp;
@@ -78,7 +79,7 @@ int pair_grp_idx(string pathgrp, string pathidx)
         gggg.push_back({ grp0, getFileLength(grp0) });
     }
 
-    idxs = File::getFilesInPath(pathidx);
+    idxs = filefunc::getFilesInPath(pathidx);
     for (auto idx : idxs)
     {
         auto idx0 = pathidx + idx;
@@ -88,7 +89,7 @@ int pair_grp_idx(string pathgrp, string pathidx)
             if (getFileRecord(idx0) == gi.record)
             {
                 //printf("find %s\n", gi.grpname.c_str());
-                copyFile(idx0, File::changeFileExt(gi.grpname, "idx"));
+                copyFile(idx0, filefunc::changeFileExt(gi.grpname, "idx"));
             }
         }
     }
@@ -97,17 +98,17 @@ int pair_grp_idx(string pathgrp, string pathidx)
 
 int convert_grpidx_to_png()
 {
-    auto col = File::readFile("mmap.col");
+    auto col = filefunc::readFile("mmap.col");
     string offset;
     for (int n = 0; n < 999; n++)
     {
-        auto filename = convert::formatString("fight%03d.idx", n);
-        if (File::fileExist(filename))
+        auto filename = std::format("fight{:03}.idx", n);
+        if (filefunc::fileExist(filename))
         {
             vector<int> idx;
-            File::readFileToVector(filename, idx);
+            filefunc::readFileToVector(filename, idx);
             idx.insert(idx.begin(), 0);
-            auto grp = File::readFile(File::changeFileExt(filename, "grp"));
+            auto grp = filefunc::readFile(filefunc::changeFileExt(filename, "grp"));
 
             printf("Found %s, %d images\n", filename.c_str(), idx.size() - 1);
 
@@ -177,11 +178,14 @@ int convert_grpidx_to_png()
                 }
                 string path = "人物" + std::to_string(n) + "第" + std::to_string(m) + "帧.png";
                 cv::imwrite(path, image);
-                offset += convert::formatString("ID %d Frame %d, Xoff: %d Yoff %d\n", n, m, xoff, yoff);
+                #include <format> // Add this include directive at the top of the file
+
+                // Replace the problematic line with the following:
+                offset += std::format("ID {} Frame {}, Xoff: {} Yoff {}\n", n, m, xoff, yoff);
                 //fout << "ID" << std::to_string(n) << " Frame" << std::to_string(m) << ", Xoff: " << x << " Yoff: " << y << "\n" << endl;
             }
         }
     }
-    convert::writeStringToFile(offset, "offset.txt");
+    filefunc::writeStringToFile(offset, "offset.txt");
     return 0;
 }

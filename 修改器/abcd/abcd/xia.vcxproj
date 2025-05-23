@@ -148,24 +148,25 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(CONDA_PATH)\include;../include;$(USR_LOCAL)\include\opencv4;$(USR_LOCAL)\include;C:\dat\project\common;C:\dat\project\microsoft\vcpkg\installed\x64-windows\include;C:\dat\project\lib-collection\include;$(CUDA_PATH)\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CONDA_PATH)\include;../include;$(USR_LOCAL)\include\opencv4;$(USR_LOCAL)\include;C:\project\mlcc;C:\dat\project\microsoft\vcpkg\installed\x64-windows\include;C:\project\local\include;$(CUDA_PATH)\include</AdditionalIncludeDirectories>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(CONDA_PATH)\libs;$(USR_LOCAL)\lib\x64;C:\dat\project\lib-collection\lib\x64;C:\dat\project\microsoft\vcpkg\installed\x64-windows\lib;$(CUDA_PATH)\lib\x64</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opencv_world320.lib;lz4.lib;cublas.lib;cudnn.lib;cudart.lib;tesseract41.lib;leptonica-1.78.0.lib;fftw3f.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(CONDA_PATH)\libs;$(USR_LOCAL)\lib\x64;C:\project\local\lib\x64;C:\dat\project\microsoft\vcpkg\installed\x64-windows\lib;$(CUDA_PATH)\lib\x64</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opencv_world320.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <DelayLoadDLLs>opencv_world320.dll</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\..\..\dat\project\common\convert.cpp" />
-    <ClCompile Include="..\..\..\..\..\..\..\dat\project\common\File.cpp" />
     <ClCompile Include="a-star.cpp" />
+    <ClCompile Include="C:\project\mlcc\filefunc.cpp" />
+    <ClCompile Include="C:\project\mlcc\strfunc.cpp" />
     <ClCompile Include="grpidx.cpp" />
     <ClCompile Include="hug.cpp" />
   </ItemGroup>
