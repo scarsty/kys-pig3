@@ -8,6 +8,7 @@ uses
   bass,
   lua52,
   Classes,
+  libzip,
   Generics.Collections;
 
 type
@@ -217,7 +218,7 @@ type
   TLoadTileData = record
     amount: integer;
     path: utf8string;
-    filemem: putf8char;
+    filemem: pzip_t;
     beginIndex: ^TPNGIndex;
   end;
 
@@ -487,7 +488,7 @@ var
   ReadingTiles: boolean = False;
   LoadingBattleTiles: boolean = False;
 
-  pMPic, pSPic, {pBPic,} pEPic, pHPic, pIPic: putf8char; //图片文件保存的位置
+  pMPic, pSPic, {pBPic,} pEPic, pHPic, pIPic: pzip_t; //图片文件保存的位置
 
   ScreenBlendMode: integer = 0; //色调 0-白天 1-夜晚 2-黄昏 3-水下
 

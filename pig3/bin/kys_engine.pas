@@ -23,12 +23,14 @@ uses
   bassmidi,
   bass,
   Math,
-  unzip,
-  ziputils,
   {$IFDEF windows}
   potdll,
   {$endif}
-  mythoutput;
+  mythoutput,
+  libzip;
+
+type
+  IntegerArray = array of integer;
 
 function EventFilter(p: pointer; e: PSDL_Event): longint; cdecl;
 procedure SendKeyEvent(keyvalue: integer); stdcall; export;
@@ -103,12 +105,12 @@ function FileGetlength(filename: utf8string): integer;
 procedure FreeFileBuffer(var p: putf8char);
 function LoadIdxGrp(stridx, strgrp: utf8string): TIDXGRP;
 function LoadPNGTiles(path: utf8string; var PNGIndexArray: TPNGIndexArray; LoadPic: integer = 1; frame: psmallint = nil): integer; overload;
-procedure LoadOnePNGTexture(path: utf8string; p: putf8char; var PNGIndex: TPNGIndex; forceLoad: integer = 0); overload;
+procedure LoadOnePNGTexture(path: utf8string; z: pzip_t; var PNGIndex: TPNGIndex; forceLoad: integer = 0); overload;
 function LoadTileFromFile(filename: utf8string; var pt: Pointer; usesur: integer; var w, h: integer): boolean;
 function LoadTileFromMem(p: putf8char; len: integer; var pt: Pointer; usesur: integer; var w, h: integer): boolean;
 function LoadStringFromIMZMEM(path: utf8string; p: putf8char; num: integer): utf8string;
-function LoadStringFromZIP(zfilename, filename: utf8string): utf8string; overload;
-function LoadStringFromZIP(zfile: unzFile; filename: utf8string): utf8string; overload;
+//function LoadStringFromZIP(zfilename, filename: utf8string): utf8string; overload;
+//function LoadStringFromZIP(zfile: unzFile; filename: utf8string): utf8string; overload;
 //function LoadSurfaceFromZIPFile(zipFile: unzFile; filename: utf8string): PSDL_Surface;
 //procedure FreeAllSurface;
 procedure DestroyAllTextures(all: integer = 1);
@@ -179,6 +181,9 @@ procedure ConsoleLog(formatstring: utf8string; content: array of const; cr: bool
 procedure ConsoleLog(formatstring: utf8string = ''; cr: boolean = True); overload; inline;
 
 function utf8follow(c1: utf8char): integer;
+
+function readFiletostring(filename: utf8string): utf8string; overload;
+function readnumbersformstring(str: utf8string): IntegerArray; overload;
 
 implementation
 
@@ -2027,10 +2032,10 @@ begin
 
     if (PNG_TILE = 2) and (PNG_LOAD_ALL = 0) then
     begin
-      pMPic := ReadFileToBuffer(nil, AppPath + 'resource/mmap.imz', -1, 1);
-      pSPic := ReadFileToBuffer(nil, AppPath + 'resource/smap.imz', -1, 1);
-      pHPic := ReadFileToBuffer(nil, AppPath + 'resource/head.imz', -1, 1);
-      pIPic := ReadFileToBuffer(nil, AppPath + 'resource/item.imz', -1, 1);
+      pMPic := zip_open(putf8char(AppPath + 'resource/mmap.zip'), ZIP_RDONLY);
+      pSPic := zip_open(putf8char(AppPath + 'resource/smap.zip'), ZIP_RDONLY);
+      pHPic := zip_open(putf8char(AppPath + 'resource/head.zip'), ZIP_RDONLY);
+      pIPic := zip_open(putf8char(AppPath + 'resource/item.zip'), ZIP_RDONLY);
     end;
     ReadTiles;
   end;
@@ -2086,7 +2091,7 @@ function LoadPNGTilesThread(Data: pointer): longint; cdecl;
 var
   i: integer;
   d: TLoadTileData;
-  pPic: putf8char;
+  pPic: pzip_t;
   pIndex: ^TPNGIndex;
   path: utf8string;
 begin
@@ -2207,74 +2212,81 @@ var
   //zipFile: unzFile;
   //info: unz_file_info;
   offset: array of smallint;
+  buf: ansistring;
   p: putf8char;
   po: pointer;
+  z: pzip_t;
+  zf: pzip_file_t;
+  len: ptruint;
+  nums: array of integer;
 begin
   //载入偏移值文件, 计算贴图的最大数量
   size := 0;
   Result := 0;
   p := nil;
-
+  z := nil;
   if PNG_TILE = 2 then
   begin
-    ConsoleLog('Searching imz file %s', [path]);
-    p := ReadFileToBuffer(nil, AppPath + path + '.imz', -1, 1);
-    if p <> nil then
+    ConsoleLog('Searching file %s.zip', [path]);
+    z := zip_open(PChar(AppPath + path + '.zip'), ZIP_RDONLY, nil);
+    if z <> nil then
     begin
-      n := pinteger(p)^;
+      //zf:=zip_fopen(z, 'index.ka', 8);
+      //len:=zip_getsize(z, 'index.ka');
+      //setlength(offset, len div 2 + 2);
+      //zip_fread(zf, @offset[0], len);
+      //zip_fclose(zf);
+      buf := zip_express(z, 'index.ka');
+      setlength(offset, length(buf) div 2 + 2);
+      move(buf[1], offset[0], length(buf));
+      Result := length(buf) div 4;
+
       if (frame <> nil) then
       begin
-        size := StrBufSize(p);
-        fillchar(frame^, 10, 0);
-        move((p + size - 10)^, frame^, 10);
-      end;
-      Result := min(maxCount, n);
-      //最大的有帧数的数量作为贴图的最大编号
-      for i := Result - 1 downto 0 do
-      begin
-        if pinteger(p + pinteger(p + 4 + i * 4)^ + 4)^ > 0 then
+        nums := readnumbersformstring(zip_express(z, 'fightframe.txt'));
+        for i := 0 to length(nums) div 2 - 1 do
         begin
-          Result := i + 1;
-          break;
+          (frame +nums[i * 2])^ := nums[i * 2 + 1];
         end;
       end;
+
 
       //初始化贴图索引, 并计算全部帧数和
       setlength(PNGIndexArray, Result);
       Count := 0;
       for i := 0 to Result - 1 do
       begin
-        pngoff := pinteger(p + 4 + i * 4)^;
         with PNGIndexArray[i] do
         begin
           FileNum := i;
-          PointerNum := Count;
-          x := psmallint(p + pngoff)^;
-          y := psmallint(p + pngoff + 2)^;
-          Frame := pinteger(p + pngoff + 4)^;
-          Count := Count + frame;
+          PointerNum := 1;
+          Frame := 1;
+          //CurPointer := nil;
+          x := offset[i * 2];
+          y := offset[i * 2 + 1];
           Loaded := 0;
+          UseGRP := 0;
           setlength(Pointers, Frame);
         end;
       end;
+      //ConsoleLog('%d index, %d real tiles', [Result, Count]);
     end
     else
-      ConsoleLog('Can''t find imz file');
+      ConsoleLog('Can''t find zip file');
   end;
 
-  if (PNG_TILE = 1) or (p = nil) then
+  if (PNG_TILE = 1) or (z = nil) then
   begin
     ConsoleLog('Searching index of png files %s/index.ka', [path]);
     path := path + '/';
     if (frame <> nil) then
     begin
       fillchar(frame^, 10, 0);
-      p := ReadFileToBuffer(nil, AppPath + path + '/fightframe.ka', -1, 1);
-      if p <> nil then
+      nums := readnumbersformstring(readFiletostring(AppPath + path + '/fightframe.txt'));
+      for i := 0 to length(nums) div 2 - 1 do
       begin
-        move(p^, frame^, 10);
+        (frame +nums[i * 2])^ := nums[i * 2 + 1];
       end;
-      FreeFileBuffer(p);
     end;
     p := ReadFileToBuffer(nil, AppPath + path + '/index.ka', -1, 1);
     size := StrBufSize(p);
@@ -2339,25 +2351,27 @@ begin
     ConsoleLog('Now loading...', False);
     for i := 0 to Result - 1 do
     begin
-      LoadOnePNGTexture(path, p, PNGIndexArray[i], 1);
+      LoadOnePNGTexture(path, z, PNGIndexArray[i], 1);
     end;
     ConsoleLog('end');
   end;
-  FreeFileBuffer(p);
+  zip_close(z);
+  //FreeFileBuffer(p);
 
 end;
 
 //这个函数没有容错处理, 在独立文件和打包文件都不存在时会引起游戏崩溃, 需要特别注意!
 //p如果为nil, 则试图读取文件
-procedure LoadOnePNGTexture(path: utf8string; p: putf8char; var PNGIndex: TPNGIndex; forceLoad: integer = 0); overload;
+procedure LoadOnePNGTexture(path: utf8string; z: pzip_t; var PNGIndex: TPNGIndex; forceLoad: integer = 0); overload;
 var
-  j, k, index, len, off, w1, h1: integer;
+  i, j, k, index, len, off, w1, h1: integer;
   frommem: boolean;
   pb, pc: pointer;
+  buf: ansistring;
 begin
   SDL_PollEvent(@event);
   CheckBasicEvent;
-  frommem := ((PNG_TILE = 2) and (p <> nil));
+  frommem := ((PNG_TILE = 2) and (z <> nil));
   if not frommem then
     path := path + '/';
   with PNGIndex do
@@ -2373,41 +2387,57 @@ begin
       //Inc(CurPointer, PointerNum);
       //temptex := CurPointerT;
       //tempsur := CurPointer;
-      if Frame = 1 then
+
+      if frommem then
       begin
-        if frommem then
-        begin
-          off := pinteger(p + 4 + filenum * 4)^ + 8;
-          index := pinteger(p + off)^;
-          len := pinteger(p + off + 4)^;
-          LoadTileFromMem(p + index, len, Pointers[0], SW_SURFACE, w, h);
-        end
+        Frame := 1;
+        buf := zip_express(z, IntToStr(filenum) + '.png');
+        if length(buf) > 0 then
+          LoadTileFromMem(@buf[1], length(buf), Pointers[0], SW_SURFACE, w, h)
         else
+        begin
+          setlength(Pointers, 10);
+          for i := 0 to 9 do
+          begin
+            buf := zip_express(z, IntToStr(filenum) + '_' + IntToStr(i) + '.png');
+            if length(buf) > 0 then
+            begin
+              LoadTileFromMem(@buf[1], length(buf), Pointers[i], SW_SURFACE, w, h);
+            end
+            else
+            begin
+              frame := i;
+              PointerNum := 0;
+              break;
+            end;
+          end;
+          setlength(Pointers, Frame);
+        end;
+        //off := pinteger(p + 4 + filenum * 4)^ + 8;
+        //index := pinteger(p + off)^;
+        //len := pinteger(p + off + 4)^;
+        //LoadTileFromMem(p + index, len, Pointers[0], SW_SURFACE, w, h);
+      end
+      else
+      begin
+        if Frame = 1 then
         begin
           if LoadTileFromFile(AppPath + path + IntToStr(filenum) + '.png', Pointers[0], SW_SURFACE, w, h) = False then
             LoadTileFromFile(AppPath + path + IntToStr(filenum) + '_0.png', Pointers[0], SW_SURFACE, w, h);
         end;
-      end;
-      if Frame > 1 then
-      begin
-        for j := 0 to Frame - 1 do
+        if Frame > 1 then
         begin
-          if frommem then
+          for j := 0 to Frame - 1 do
           begin
-            off := pinteger(p + 4 + filenum * 4)^ + 8;
-            index := pinteger(p + off + j * 8)^;
-            len := pinteger(p + off + j * 8 + 4)^;
-            LoadTileFromMem(p + index, len, Pointers[j], SW_SURFACE, w, h);
-          end
-          else
             LoadTileFromFile(AppPath + path + IntToStr(filenum) + '_' + IntToStr(j) + '.png', Pointers[j], SW_SURFACE, w1, h1);
-          if (j = 0) then
-          begin
-            w := w1;
-            h := h1;
+            if (j = 0) then
+            begin
+              w := w1;
+              h := h1;
+            end;
+            //Inc(temptex, 1);
+            //Inc(tempsur, 1);
           end;
-          //Inc(temptex, 1);
-          //Inc(tempsur, 1);
         end;
       end;
     end;
@@ -2502,51 +2532,6 @@ begin
   move((p + index)^, Result[1], len);
 end;
 
-function LoadStringFromZIP(zfilename, filename: utf8string): utf8string; overload;
-var
-  zfile: unzfile;
-  file_info: unz_file_info;
-  len: integer;
-begin
-  Result := '';
-  zfile := unzOpen(putf8char(zfilename));
-  if (zfile <> nil) then
-  begin
-    if (unzLocateFile(zfile, putf8char(filename), 2) = UNZ_OK) then
-    begin
-      unzLocateFile(zfile, putf8char(filename), 2);
-      unzOpenCurrentFile(zfile);
-      unzGetCurrentFileInfo(zfile, @file_info, nil, 0, nil, 0, nil, 0);
-      len := file_info.uncompressed_size;
-      setlength(Result, len);
-      unzReadCurrentFile(zfile, putf8char(Result), len);
-      unzCloseCurrentFile(zfile);
-    end;
-    unzClose(zfile);
-  end;
-end;
-
-function LoadStringFromZIP(zfile: unzFile; filename: utf8string): utf8string; overload;
-var
-  file_info: unz_file_info;
-  len: integer;
-begin
-  Result := '';
-  if (zfile <> nil) then
-  begin
-    if (unzLocateFile(zfile, putf8char(filename), 2) = UNZ_OK) then
-    begin
-      unzLocateFile(zfile, putf8char(filename), 2);
-      unzOpenCurrentFile(zfile);
-      unzGetCurrentFileInfo(zfile, @file_info, nil, 0, nil, 0, nil, 0);
-      len := file_info.uncompressed_size;
-      setlength(Result, len);
-      unzReadCurrentFile(zfile, putf8char(Result), len);
-      unzCloseCurrentFile(zfile);
-    end;
-  end;
-end;
-
 procedure DestroyAllTextures(all: integer = 1);
 var
   i: integer;
@@ -2602,12 +2587,12 @@ begin
     SDL_DestroyTexture(screenTex);
     SDL_DestroyTexture(ImgSGroundTex);
     SDL_DestroyTexture(ImgBGroundTex);
-    FreeFileBuffer(pMPic);
-    FreeFileBuffer(pSPic);
-    //FreeFileBuffer(pBPic);
-    //FreeFileBuffer(pEPic);
-    FreeFileBuffer(pHPic);
-    FreeFileBuffer(pIPic);
+    zip_close(pMPic);
+    zip_close(pSPic);
+    //zip_close(pBPic);
+    //zip_close(pEPic);
+    zip_close(pHPic);
+    zip_close(pIPic);
   end;
 
 end;
@@ -3712,6 +3697,57 @@ begin
     Result := 6
   else
     Result := 1;    //skip one char
+end;
+
+function readFiletostring(filename: utf8string): utf8string; overload;
+var
+  f: TFileStream;
+  len: integer;
+begin
+  Result := '';
+  if not FileExists(filename) then
+    exit;
+  f := TFileStream.Create(filename, fmOpenRead or fmShareDenyNone);
+  try
+    len := f.Size;
+    SetLength(Result, len);
+    f.ReadBuffer(Result[1], len);
+  finally
+    f.Free;
+  end;
+end;
+
+function readnumbersformstring(str: utf8string): IntegerArray; overload;
+var
+  i, n, k: integer;
+  s: utf8string;
+  //numbers1: array of integer;
+begin
+  i := 1;
+  n := length(str);
+  //k:=0;
+  //setlength(numbers1, 10);
+  while i <= n do
+  begin
+    if (str[i] >= '0') and (str[i] <= '9') then
+    begin
+      s := s + str[i];
+    end
+    else if (str[i] = ',') or (str[i] = #10) then
+    begin
+      //s[j] := #0;
+      setlength(Result, length(Result) + 1);
+      Result[length(Result) - 1] := StrToInt(s);
+      //Inc(Result);
+      s := '';
+    end;
+    Inc(i);
+  end;
+  if (s <> '') then
+  begin
+    setlength(Result, length(Result) + 1);
+    Result[length(Result) - 1] := StrToInt(s);
+  end;
 end;
 
 end.

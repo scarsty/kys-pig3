@@ -43,10 +43,10 @@ uses
   bass,
   kys_type,
   Classes,
-  zip,
-  unzip,
-  ziputils,
   fileinfo,
+  libzip,
+  zip,
+  ziputils,
   Generics.Collections,
   {$IFDEF windows}
   potdll,
@@ -875,7 +875,8 @@ var
   tempstr: utf8string;
   list: TStringList;
   cf: char;
-  zfile: zipfile;
+  z: pzip_t;
+  zfile: pzip_file_t;
 begin
   iniFilename := AppPath + iniFilename;
 
@@ -1137,21 +1138,21 @@ begin
   else
   begin
     filename := AppPath + 'save/0.zip';
-    zfile := unzOpen(putf8char(filename));
-    if zfile <> nil then
+    z := zip_open(putf8char(filename));
+    if z <> nil then
     begin
-      if (unzLocateFile(zfile, putf8char('ranger.idx'), 2) = UNZ_OK) then
+      zfile := zip_fopen(z, putf8char('ranger.idx'));
+      if (zfile <> nil) then
       begin
-        unzOpenCurrentFile(zfile);
-        unzReadCurrentFile(zfile, @RoleOffset, 4);
-        unzReadCurrentFile(zfile, @ItemOffset, 4);
-        unzReadCurrentFile(zfile, @ScenceOffset, 4);
-        unzReadCurrentFile(zfile, @MagicOffset, 4);
-        unzReadCurrentFile(zfile, @WeiShopOffset, 4);
-        unzReadCurrentFile(zfile, @LenR, 4);
-        unzCloseCurrentFile(zfile);
+        zip_fread(zfile, @RoleOffset, 4);
+        zip_fread(zfile, @ItemOffset, 4);
+        zip_fread(zfile, @ScenceOffset, 4);
+        zip_fread(zfile, @MagicOffset, 4);
+        zip_fread(zfile, @WeiShopOffset, 4);
+        zip_fread(zfile, @LenR, 4);
+        zip_fclose(zfile);
       end;
-      unzClose(zfile);
+      zip_Close(z);
     end;
   end;
   ScenceAmount := (MagicOffset - ScenceOffset) div sizeof(TScence);
@@ -1504,8 +1505,8 @@ var
   str, p, p1: putf8char;
   key1, key2: pbyte;
   IDX, GRP, t1, offset, i, j, i1, i2, lenkey: integer;
-  zfile: unzfile;
-  file_info: unz_file_info;
+  z: pzip_t;
+  zfile: pzip_file_t;
   talkarray: array of byte;
   temp: array [0 .. 1000000] of smallint;
   temp1: array [0 .. 1000000] of integer;
@@ -1575,31 +1576,26 @@ begin
   end
   else
   begin
-    zfile := unzOpen(putf8char(zfilename));
-    if (zfile <> nil) then
+    z := zip_Open(putf8char(zfilename));
+    if (z <> nil) then
     begin
-      if (unzLocateFile(zfile, putf8char(filenamer), 2) = UNZ_OK) and (unzLocateFile(zfile, putf8char(filenames), 2) = UNZ_OK) and (unzLocateFile(zfile, putf8char(filenamed), 2) = UNZ_OK) then
+      //if (zip_fopen(zfile, putf8char(filenamer), 2) = UNZ_OK) and (unzLocateFile(zfile, putf8char(filenames), 2) = UNZ_OK) and (unzLocateFile(zfile, putf8char(filenamed), 2) = UNZ_OK) then
       begin
-        unzLocateFile(zfile, putf8char(filenamer), 2);
-        unzOpenCurrentFile(zfile);
-        unzGetCurrentFileInfo(zfile, @file_info, nil, 0, nil, 0, nil, 0);
+        zfile := zip_fopen(z, putf8char(filenamer));
+        //unzGetCurrentFileInfo(zfile, @file_info, nil, 0, nil, 0, nil, 0);
         //LenOfData := file_info.uncompressed_size;
-        unzReadCurrentFile(zfile, p, LenR);
-        unzCloseCurrentFile(zfile);
-        unzLocateFile(zfile, putf8char(filenames), 2);
-        unzOpenCurrentFile(zfile);
-        unzReadCurrentFile(zfile, @Sdata[0, 0, 0, 0], sizeof(Sdata));
-        unzCloseCurrentFile(zfile);
-        unzLocateFile(zfile, putf8char(filenamed), 2);
-        unzOpenCurrentFile(zfile);
-        unzReadCurrentFile(zfile, @Ddata[0, 0, 0], sizeof(Ddata));
-        unzCloseCurrentFile(zfile);
-      end
-      else
-      begin
-        Result := False;
+        zip_fread(zfile, p, LenR);
+        zip_fclose(zfile);
+        zfile := zip_fopen(z, putf8char(filenames));
+        //unzOpenCurrentFile(zfile);
+        zip_fread(zfile, @Sdata[0, 0, 0, 0], sizeof(Sdata));
+        zip_fclose(zfile);
+        zfile := zip_fopen(z, putf8char(filenamed));
+        //unzOpenCurrentFile(zfile);
+        zip_fread(zfile, @Ddata[0, 0, 0], sizeof(Ddata));
+        zip_fclose(zfile);
       end;
-      unzClose(zfile);
+      zip_close(z);
     end
     else
     begin
@@ -1866,7 +1862,9 @@ var
   IDX, GRP, i1, i2: integer;
   BasicOffset, i: integer;
   zfile: zipfile;
-  file_info: zip_fileinfo;
+  z: pzip_t;
+  //zfile: pzip_file_t;
+  //file_info: zip_fileinfo;
 begin
   Result := True;
   BasicOffset := 0;
@@ -1949,6 +1947,8 @@ begin
   begin
     zfile := zipOpen(putf8char(zfilename), 0);
     if zfile = nil then
+    //z := zip_Open(putf8char(zfilename), zip_create or ZIP_TRUNCATE);
+    //if z = nil then
     begin
       Result := False;
     end
@@ -1964,6 +1964,10 @@ begin
       zipWriteInFileInZip(zFile, @Ddata[0, 0, 0], ScenceAmount * 200 * 11 * 2);
       zipCloseFileInZip(zfile);
       zipClose(zfile, nil);
+      //zip_compress(z, putf8char(filenamer), p, lenR);
+      //zip_compress(z, putf8char(filenames), @Sdata[0, 0, 0, 0], ScenceAmount * 64 * 64 * 6 * 2);
+      //zip_compress(z, putf8char(filenamed), @Ddata[0, 0, 0], ScenceAmount * 200 * 11 * 2);
+      //zip_Close(z);
     end;
   end;
   StrDispose(p);
