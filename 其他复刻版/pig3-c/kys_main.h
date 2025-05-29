@@ -1,3 +1,4 @@
+﻿#pragma once
 #include "kys_type.h"
 
 int Run(void);

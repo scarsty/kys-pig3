@@ -1,72 +1,55 @@
+﻿#pragma once
+#include "SDL3/SDL.h"
+#include "SDL3_image/SDL_image.h"
+#include "SDL3_ttf/SDL_ttf.h"
+#include "bass.h"
+#include <locale.h>
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
-#include <locale.h>
 #include <wchar.h>
-#include <math.h>
-#include "SDL.h"
-#include "SDL_ttf.h"
-#include "SDL_image.h"
-#include "bass.h"
+#include <vector>
 
-//#define FAST
+#define MAX_PATH 1024
 
-
-#ifndef __kys_type__
-#define __kys_type__
+typedef unsigned char byte;
 
 typedef struct Position
 {
     int x, y;
 } Position;
 
-
 typedef struct PNGIndex
 {
     int FileNum, PointerNum, Frame, x, y, w, h, Loaded, UseGRP;
-    void *BeginPointer;
-    SDL_Surface **CurPointer;
-    SDL_Texture **CurPointerT;
+    SDL_Surface* CurPointer;
+    SDL_Texture* CurPointerT;
 } PNGIndex;
 
-typedef struct KYSConstants
-{
+inline SDL_Event event;
+inline SDL_Window* window;
+inline SDL_Renderer* render;
 
-    SDL_Event event;
-    SDL_Window *window;
-    SDL_Renderer *render;
+inline int MODVersion;
+inline char* TitleString;
+inline char AppPath[MAX_PATH];
 
+inline char *CHINESE_FONT, *ENGLISH_FONT;
+inline int CHINESE_FONT_SIZE, CHINESE_FONT_REALSIZE, ENGLISH_FONT_SIZE, ENGLISH_FONT_REALSIZE;
 
-    int MODVersion;
-    char *TitleString;
-    char AppPath[MAX_PATH];
+inline TTF_Font *Font, *Engfont;
 
-    char *CHINESE_FONT, *ENGLISH_FONT;
-    int CHINESE_FONT_SIZE, CHINESE_FONT_REALSIZE, ENGLISH_FONT_SIZE, ENGLISH_FONT_REALSIZE;
+inline int SoundFlag, RenderFlag, WindowFlag;
+inline int RENDERER, SOUND3D, CENTER_X, CENTER_Y, RESOLUTIONX, RESOLUTIONY;
 
-    TTF_Font *Font, *Engfont;
+inline int StartMusic;
+inline int SW_SURFACE;
 
-    int SoundFlag, RenderFlag, WindowFlag;
-    int RENDERER, SOUND3D, CENTER_X, CENTER_Y, RESOLUTIONX, RESOLUTIONY;
+inline int Where;
 
-    int StartMusic;
+inline char* versionstr;
 
-    int SW_SURFACE;
+inline Position OpenPicPosition;
 
-    int Where;
-
-    wchar_t *versionstr;
-
-    Position OpenPicPosition;
-
-
-} KYSConstants;
-
-
-extern KYSConstants KYS;
-
-extern PNGIndex *TitlePNGIndex;
-extern SDL_Texture **TitlePNGTex;
-extern SDL_Surface **TitlePNGSur;
-
-#endif
+inline std::vector<PNGIndex> TitlePNGs;
 

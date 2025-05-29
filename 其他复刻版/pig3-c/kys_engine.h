@@ -1,7 +1,8 @@
+﻿#pragma once
 #include "kys_type.h"
 
-int DrawUText(wchar_t *text, int x_pos, int y_pos, Uint32 color, int engwidth);
-int DrawShadowText(wchar_t *text, int x_pos, int y_pos, Uint32 color1, Uint32 color2);
+int DrawUText(char *text, int x_pos, int y_pos, Uint32 color, int engwidth);
+int DrawShadowText(char *text, int x_pos, int y_pos, Uint32 color1, Uint32 color2);
 
 char *ReadFileToBuffer(char *p, char *filename, int size, int needmalloc, int *filesize);
 void FreeFileBuffer(char *p);

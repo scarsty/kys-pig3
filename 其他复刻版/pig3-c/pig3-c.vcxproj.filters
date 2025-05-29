@@ -15,41 +15,21 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="kys_main.c">
+    <ClCompile Include="kys_main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="main.c">
+    <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="kys_engine.c">
+    <ClCompile Include="kys_engine.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="kys_type.c">
+    <ClCompile Include="kys_type.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="kys_draw.c">
+    <ClCompile Include="kys_draw.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="lib\SDL2.lib">
-      <Filter>资源文件</Filter>
-    </Library>
-    <Library Include="lib\SDL2main.lib">
-      <Filter>资源文件</Filter>
-    </Library>
-    <Library Include="lib\SDL2test.lib">
-      <Filter>资源文件</Filter>
-    </Library>
-    <Library Include="lib\bass.lib">
-      <Filter>资源文件</Filter>
-    </Library>
-    <Library Include="lib\SDL2_image.lib">
-      <Filter>资源文件</Filter>
-    </Library>
-    <Library Include="lib\SDL2_ttf.lib">
-      <Filter>资源文件</Filter>
-    </Library>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="kys_engine.h">

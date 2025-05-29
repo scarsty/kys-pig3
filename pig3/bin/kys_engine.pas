@@ -2250,6 +2250,14 @@ begin
         end;
       end;
 
+      for i := length(buf) div 4 downto 0 do
+      begin
+        if (zip_name_locate(z, PChar(IntToStr(i) + '.png')) >= 0) or (zip_name_locate(z, PChar(IntToStr(i) + '_0.png')) >= 0) then
+        begin
+          Result := i + 1;
+          break;
+        end;
+      end;
 
       //初始化贴图索引, 并计算全部帧数和
       setlength(PNGIndexArray, Result);
@@ -2262,6 +2270,25 @@ begin
           PointerNum := 1;
           Frame := 1;
           //CurPointer := nil;
+          if zip_name_locate(z, PChar(IntToStr(i) + '.png')) >= 0 then
+          begin
+            PointerNum := Count;
+            Frame := 1;
+            Count := Count + 1;
+          end
+          else
+          begin
+            k := 0;
+            while zip_name_locate(z, PChar(IntToStr(i) + '_' + IntToStr(k) + '.png')) >= 0 do
+            begin
+              k := k + 1;
+              if k = 1 then
+                PointerNum := Count;
+              Count := Count + 1;
+            end;
+            Frame := k;
+          end;
+
           x := offset[i * 2];
           y := offset[i * 2 + 1];
           Loaded := 0;

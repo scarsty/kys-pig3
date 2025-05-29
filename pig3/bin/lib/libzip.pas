@@ -38,9 +38,9 @@ type
   end;
   Pzip_file_t = ^zip_file_t;
 
-  zip_source_t  = record
+  zip_source_t = record
   end;
-      Pzip_source_t = ^zip_source_t;
+  Pzip_source_t = ^zip_source_t;
 
   Zip_Stat_t = record
     valid: uint64;                // which fields have valid values
@@ -72,10 +72,12 @@ function zip_fopen(zip: Pzip_t; entryname: pchar; f: integer = ZIP_FL_UNCHANGED)
 function zip_fread(zip_file: pzip_file_t; buf: Pointer; len: uint64): integer; cdecl; external zipdll;
 function zip_fclose(_Nonnull: pzip_file_t): integer; cdecl; external zipdll;
 
-function zip_source_buffer(_Nonnull:pzip_t; const _Nullable:Pointer; len:uint64; needfree:integer=0): pzip_source_t; cdecl; external zipdll;
+function zip_name_locate(zip: Pzip_t; const fname: pchar; flags: integer = 1): int64; cdecl; external zipdll;
+
+function zip_source_buffer(_Nonnull: pzip_t; const _Nullable: Pointer; len: uint64; needfree: integer = 0): pzip_source_t; cdecl; external zipdll;
 function zip_source_close(_Nonnull: pzip_source_t): integer; cdecl; external zipdll;
 
-function zip_file_add(archive:pzip_t; const name:pchar; source:pzip_source_t; flags:integer): uint64; cdecl; external zipdll;
+function zip_file_add(archive: pzip_t; const Name: pchar; Source: pzip_source_t; flags: integer): uint64; cdecl; external zipdll;
 
 function zip_set_file_compression(zip: Pzip_t; index: uint64; comp_method: word; comp_flags: cardinal): integer; cdecl; external zipdll;
 
@@ -148,17 +150,17 @@ end;
 
 function zip_compress(zip: Pzip_t; filename: utf8string; p: pointer; size: integer): integer; overload;
 var
-  source: pzip_source_t;
+  Source: pzip_source_t;
   index: uint64;
 begin
-  source := zip_source_buffer(zip, p, size, 0);
-  if source = nil then
+  Source := zip_source_buffer(zip, p, size, 0);
+  if Source = nil then
     Exit(-1); // error creating source
-  index := zip_file_add(zip, @filename[1], source, 8192);
-  zip_set_file_compression(zip, index, 1, 10); // set compression method to deflate
+  index := zip_file_add(zip, @filename[1], Source, 8192);
+  zip_set_file_compression(zip, index, 8, 5); // set compression method to deflate
   if index = uint64(-1) then
   begin
-    zip_source_close(source); // free the source if adding failed
+    zip_source_close(Source); // free the source if adding failed
     Exit(-1); // error adding file
   end;
   Result := integer(index); // return the index of the added file

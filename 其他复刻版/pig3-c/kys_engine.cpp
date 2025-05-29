@@ -1,8 +1,8 @@
-#include "kys_engine.h"
+ï»¿#include "kys_engine.h"
 #include <math.h>
 #include <io.h>
 
-int DrawUText(wchar_t *text, int x_pos, int y_pos, Uint32 color, int engwidth)
+int DrawUText(char *text, int x_pos, int y_pos, Uint32 color, int engwidth)
 {
     SDL_Texture *tex;
     SDL_Surface *sur;
@@ -18,17 +18,17 @@ int DrawUText(wchar_t *text, int x_pos, int y_pos, Uint32 color, int engwidth)
     rect.x = x_pos;
     rect.y = y_pos;
 
-    sur = TTF_RenderUNICODE_Blended(KYS.Font, (Uint16 *)text, col);
+    sur = TTF_RenderText_Blended(Font, text, 10,col);
     rect.h = (*sur).h;
     rect.w = (*sur).w;
-    tex = SDL_CreateTextureFromSurface(KYS.render, sur);
-    SDL_RenderCopy(KYS.render, tex, NULL, &rect);
-    SDL_FreeSurface(sur);
+    tex = SDL_CreateTextureFromSurface(render, sur);
+    SDL_RenderTexture(render, tex, NULL, &rect);
+    SDL_DestroySurface(sur);
     SDL_DestroyTexture(tex);
     return 0;
 }
 
-int DrawShadowText(wchar_t *text, int x_pos, int y_pos, Uint32 color1, Uint32 color2)
+int DrawShadowText(char *text, int x_pos, int y_pos, Uint32 color1, Uint32 color2)
 {
     DrawUText(text, x_pos + 1, y_pos, color2, 20);
     DrawUText(text, x_pos, y_pos, color1, 20);
@@ -116,7 +116,7 @@ int LoadPNGTiles(char *path, PNGIndex **P, SDL_Texture ***T, SDL_Surface ***S, i
         pi[i].PointerNum = -1;
         pi[i].Frame = 0;
         pi[i].CurPointer = NULL;
-        sprintf(c, "%s/%s/%d.png", KYS.AppPath, path, i);
+        sprintf(c, "%s/%s/%d.png", AppPath, path, i);
         if (access(c, 0) == 0)
         {
             pi[i].PointerNum = Count;
@@ -126,7 +126,7 @@ int LoadPNGTiles(char *path, PNGIndex **P, SDL_Texture ***T, SDL_Surface ***S, i
         else
         {
             k = 0;
-            sprintf(c, "%s/%s/%d_%d.png", KYS.AppPath, path, i, k);
+            sprintf(c, "%s/%s/%d_%d.png", AppPath, path, i, k);
             while(access(c, 0) == 0)
             {
                 k++;
@@ -169,12 +169,12 @@ void LoadOnePNGTexture(char *path, char *p, PNGIndex *P, int forceLoad)
     P->CurPointerT = (SDL_Texture **)P->BeginPointer;
     P->CurPointerT += P->PointerNum;
 
-    sprintf(c, "%s/%s/%d.png", KYS.AppPath, path, P->FileNum);
+    sprintf(c, "%s/%s/%d.png", AppPath, path, P->FileNum);
 
     if (((P->Loaded == 0) || (forceLoad == 1)) && (P->PointerNum >= 0) && (P->Frame > 0))
     {
-        *(P->CurPointerT) = IMG_LoadTexture(KYS.render, c);
-        SDL_QueryTexture(*(P->CurPointerT), NULL, NULL, &P->w, &P->h);
+        *(P->CurPointerT) = IMG_LoadTexture(render, c);
+        //SDL_QueryTexture(*(P->CurPointerT), NULL, NULL, &P->w, &P->h);
     }
 
     P->Loaded = 1;
@@ -188,16 +188,16 @@ int DrawPNGTile(SDL_Renderer *render, PNGIndex P, int FrameNum,
 {
     SDL_Rect rect;
     byte r, g, b, a, r1, g1, b1;
-    boolean newtex = 0;
+    bool newtex = 0;
     SDL_Texture *tex, *tex1, *ptex;
 
-    if (KYS.SW_SURFACE != 0)
+    if (SW_SURFACE != 0)
     {
         //DrawPNGTileS(CurTargetSurface, PNGIndex, FrameNum, px, py, region, shadow, alpha, mixColor,
         //mixAlpha, scalex, scaley, angle);
         return 0;
     }
-    //shadowÉèÖÃ»ìºÏ·½Ê½, ÒÔ¼°Ô¤ÉèÖµµÈ
+    //shadowè®¾ç½®æ··åˆæ–¹å¼, ä»¥åŠé¢„è®¾å€¼ç­‰
     if ((P.CurPointerT == NULL) || (*(P.CurPointerT) == NULL))
     {
         return 0;
@@ -240,7 +240,7 @@ int DrawPNGTile(SDL_Renderer *render, PNGIndex P, int FrameNum,
         mixAlpha = shadow * 10;
     }
 
-    //×¢Òâ»ìºÏÉ«µÄÎÊÌâ, ¸ÃËã·¨ºÜÆæ¹Ö, ÈôÇ¿ÖÆÖ¸¶¨»ìºÏÉ«ÓÃmixAlpha < 0
+    //æ³¨æ„æ··åˆè‰²çš„é—®é¢˜, è¯¥ç®—æ³•å¾ˆå¥‡æ€ª, è‹¥å¼ºåˆ¶æŒ‡å®šæ··åˆè‰²ç”¨mixAlpha < 0
     if ((mixAlpha > 0) && (shadow <= 0))
     {
         GetRGBA(mixColor, &r, &g, &b, NULL);
@@ -267,7 +267,7 @@ int DrawPNGTile(SDL_Renderer *render, PNGIndex P, int FrameNum,
         newtex = 1;
         SDL_SetRenderTarget(render, tex);
         SDL_SetTextureBlendMode(tex1, SDL_BLENDMODE_NONE);
-        SDL_RenderCopy(render, tex1, NULL, NULL);
+        SDL_RenderTexture(render, tex1, NULL, NULL);
         SDL_SetTextureBlendMode(tex1, SDL_BLENDMODE_BLEND);
         SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_ADD);
         SDL_SetRenderDrawColor(render, r, g, b, 255 * mixAlpha / 100);
@@ -284,7 +284,7 @@ int DrawPNGTile(SDL_Renderer *render, PNGIndex P, int FrameNum,
     {
         SDL_SetTextureAlphaMod(tex, 255);
     }
-    SDL_RenderCopyEx(render, tex, region, &rect, angle, center, SDL_FLIP_NONE);
+    //SDL_RenderTexture(render, tex, region, &rect, angle, center, SDL_FLIP_NONE);
     //SDL_RenderCopy(render, tex, nil, nil);
     if (newtex)
     {
@@ -312,13 +312,13 @@ void GetRGBA(Uint32 color, byte *r, byte *g, byte *b, byte *a)
 
 void UpdateAllScreen()
 {
-    SDL_RenderPresent(KYS.render);
+    SDL_RenderPresent(render);
 }
 
 void CleanKeyValue()
 {
-    KYS.event.key.keysym.sym = 0;
-    KYS.event.button.button = 0;
+    event.key.scancode = 0;
+    event.button.button = 0;
 }
 
 void CheckBasicEvent()

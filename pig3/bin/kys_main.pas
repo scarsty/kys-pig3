@@ -45,8 +45,8 @@ uses
   Classes,
   fileinfo,
   libzip,
-  zip,
-  ziputils,
+  //zip,
+  //ziputils,
   Generics.Collections,
   {$IFDEF windows}
   potdll,
@@ -957,7 +957,7 @@ begin
     if SW_OUTPUT = 1 then
       TEXT_LAYER := 0;
 
-    if (not FileExists(AppPath + 'resource/mmap/index.ka')) and (not FileExists(AppPath + 'resource/mmap.imz')) then
+    if (not FileExists(AppPath + 'resource/mmap/index.ka')) and (not FileExists(AppPath + 'resource/mmap.zip')) then
       PNG_TILE := 0;
     if (not FileExists(AppPath + 'save/ranger.grp')) then
       ZIP_SAVE := 1;
@@ -1861,7 +1861,7 @@ var
   p, p1: putf8char;
   IDX, GRP, i1, i2: integer;
   BasicOffset, i: integer;
-  zfile: zipfile;
+  //zfile: zipfile;
   z: pzip_t;
   //zfile: pzip_file_t;
   //file_info: zip_fileinfo;
@@ -1945,16 +1945,16 @@ begin
   end
   else
   begin
-    zfile := zipOpen(putf8char(zfilename), 0);
-    if zfile = nil then
-    //z := zip_Open(putf8char(zfilename), zip_create or ZIP_TRUNCATE);
-    //if z = nil then
+    //zfile := zipOpen(putf8char(zfilename), 0);
+    //if zfile = nil then
+    z := zip_Open(putf8char(zfilename), zip_create or ZIP_TRUNCATE);
+    if z = nil then
     begin
       Result := False;
     end
     else
     begin
-      zipOpenNewFileInZip(zFile, putf8char(filenamer), nil, nil, 0, nil, 0, nil, Z_DEFLATED, Z_DEFAULT_COMPRESSION);
+      {zipOpenNewFileInZip(zFile, putf8char(filenamer), nil, nil, 0, nil, 0, nil, Z_DEFLATED, Z_DEFAULT_COMPRESSION);
       zipWriteInFileInZip(zFile, p, lenR);
       zipCloseFileInZip(zfile);
       zipOpenNewFileInZip(zFile, putf8char(filenames), nil, nil, 0, nil, 0, nil, Z_DEFLATED, Z_DEFAULT_COMPRESSION);
@@ -1963,11 +1963,11 @@ begin
       zipOpenNewFileInZip(zFile, putf8char(filenamed), nil, nil, 0, nil, 0, nil, Z_DEFLATED, Z_DEFAULT_COMPRESSION);
       zipWriteInFileInZip(zFile, @Ddata[0, 0, 0], ScenceAmount * 200 * 11 * 2);
       zipCloseFileInZip(zfile);
-      zipClose(zfile, nil);
-      //zip_compress(z, putf8char(filenamer), p, lenR);
-      //zip_compress(z, putf8char(filenames), @Sdata[0, 0, 0, 0], ScenceAmount * 64 * 64 * 6 * 2);
-      //zip_compress(z, putf8char(filenamed), @Ddata[0, 0, 0], ScenceAmount * 200 * 11 * 2);
-      //zip_Close(z);
+      zipClose(zfile, nil);}
+      zip_compress(z, putf8char(filenamer), p, lenR);
+      zip_compress(z, putf8char(filenames), @Sdata[0, 0, 0, 0], ScenceAmount * 64 * 64 * 6 * 2);
+      zip_compress(z, putf8char(filenamed), @Ddata[0, 0, 0], ScenceAmount * 200 * 11 * 2);
+      zip_Close(z);
     end;
   end;
   StrDispose(p);
