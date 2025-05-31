@@ -32,11 +32,11 @@ procedure DrawIPic(num, px, py, shadow, alpha: integer; mixColor: uint32; mixAlp
 //绘制整个屏幕的子程
 procedure Redraw;
 procedure DrawMMap;
-procedure DrawScence;
-procedure DrawScenceWithoutRole(x, y: integer);
-procedure DrawRoleOnScence(x, y: integer);
+procedure DrawScene;
+procedure DrawSceneWithoutRole(x, y: integer);
+procedure DrawRoleOnScene(x, y: integer);
 procedure ExpandGroundOnImg();
-procedure InitialScence(Visible: integer = 0);
+procedure InitialScene(Visible: integer = 0);
 function CalBlock(x, y: integer): integer;
 procedure CalPosOnImage(i1, i2: integer; var x, y: integer);
 procedure CalLTPosOnImageByCenter(i1, i2: integer; var x, y: integer);
@@ -335,7 +335,7 @@ begin
   //ScreenTint := 1;
   case where of
     0: DrawMMap;
-    1: DrawScence;
+    1: DrawScene;
     2:
     begin
       DrawBField;
@@ -484,14 +484,14 @@ begin
 end;
 
 //画场景到屏幕
-procedure DrawScence;
+procedure DrawScene;
 var
   x, y, xpoint, ypoint, axp, ayp, i, i1, i2, num, sum, widthregion, sumregion, cx1, cy1: integer;
   dest: TSDL_Rect;
   word: utf8string;
   pos: Tposition;
 begin
-  //DrawScenceWithoutRole(Sx, Sy);
+  //DrawSceneWithoutRole(Sx, Sy);
   //先画无主角的场景, 再画主角
   //如在事件中, 则以Cx, Cy为中心, 否则以主角坐标为中心
 
@@ -539,59 +539,59 @@ begin
       begin
         Pos := GetPositionOnScreen(i1, i2, Cx1, Cy1);
 
-        if SData[CurScence, 4, i1, i2] > 0 then
+        if SData[CurScene, 4, i1, i2] > 0 then
         begin
-          num := SData[CurScence, 0, i1, i2] div 2;
+          num := SData[CurScene, 0, i1, i2] div 2;
           if num > 0 then
             DrawSPic(num, pos.x, pos.y);
         end;
-        if (SData[CurScence, 1, i1, i2] > 0) {and (SData[CurScence, 4, i1, i2] > 0)} then
+        if (SData[CurScene, 1, i1, i2] > 0) {and (SData[CurScene, 4, i1, i2] > 0)} then
         begin
-          num := SData[CurScence, 1, i1, i2] div 2;
+          num := SData[CurScene, 1, i1, i2] div 2;
           //if num > 0 then
-          DrawSPic(num, pos.x, pos.y - SData[CurScence, 4, i1, i2]);
+          DrawSPic(num, pos.x, pos.y - SData[CurScene, 4, i1, i2]);
         end;
         if showMR and (i1 = Sx) and (i2 = Sy) then
-          DrawSPic(CurScenceRolePic, pos.x, pos.y - SData[CurScence, 4, i1, i2]);
-        if (SData[CurScence, 2, i1, i2] > 0) then
+          DrawSPic(CurSceneRolePic, pos.x, pos.y - SData[CurScene, 4, i1, i2]);
+        if (SData[CurScene, 2, i1, i2] > 0) then
         begin
-          num := SData[CurScence, 2, i1, i2] div 2;
+          num := SData[CurScene, 2, i1, i2] div 2;
           //if num > 0 then
-          DrawSPic(num, pos.x, pos.y - SData[CurScence, 5, i1, i2]);
+          DrawSPic(num, pos.x, pos.y - SData[CurScene, 5, i1, i2]);
         end;
-        if (SData[CurScence, 3, i1, i2] >= 0) then
+        if (SData[CurScene, 3, i1, i2] >= 0) then
         begin
-          num := DData[CurScence, SData[CurScence, 3, i1, i2], 5] div 2;
+          num := DData[CurScene, SData[CurScene, 3, i1, i2], 5] div 2;
           if num > 0 then
-            DrawSPic(num, pos.x, pos.y - SData[CurScence, 4, i1, i2]);
+            DrawSPic(num, pos.x, pos.y - SData[CurScene, 4, i1, i2]);
         end;
       end;
     end;
 
   {if (CurEvent < 0) then
     begin
-    DrawScenceWithoutRole(Sx, Sy);
-    DrawRoleOnScence(Sx, Sy);
+    DrawSceneWithoutRole(Sx, Sy);
+    DrawRoleOnScene(Sx, Sy);
     end
     else
     begin
-    DrawScenceWithoutRole(Cx, Cy);
-    if (DData[CurScence, CurEvent, 10] = Sx) and (DData[CurScence, CurEvent, 9] = Sy) then
+    DrawSceneWithoutRole(Cx, Cy);
+    if (DData[CurScene, CurEvent, 10] = Sx) and (DData[CurScene, CurEvent, 9] = Sy) then
     begin
-    if DData[CurScence, CurEvent, 5] <= 0 then
+    if DData[CurScene, CurEvent, 5] <= 0 then
     begin
-    DrawRoleOnScence(Cx, Cy);
+    DrawRoleOnScene(Cx, Cy);
     end;
     end
     else
-    DrawRoleOnScence(Cx, Cy);
+    DrawRoleOnScene(Cx, Cy);
     end;}
 
   if ShowBlackScreen then
     DrawBlackScreen;
   if HaveText = 1 then
     CleanTextScreen;
-  if (CurScence = 71) and (MODVersion = 13) then
+  if (CurScene = 71) and (MODVersion = 13) then
   begin
     word := formatfloat('0', TimeInWater div 60) + ':' + formatfloat('00', TimeInWater mod 60);
     DrawShadowText(word, 5, 5, ColColor(5), ColColor(7));
@@ -606,12 +606,12 @@ begin
 end;
 
 //画不含主角的场景
-procedure DrawScenceWithoutRole(x, y: integer);
+procedure DrawSceneWithoutRole(x, y: integer);
 var
   x1, y1: integer;
 begin
   CalLTPosOnImageByCenter(x, y, x1, y1);
-  //LoadScencePart(x1, y1);
+  //LoadScenePart(x1, y1);
   if ShowBlackScreen then
     DrawBlackScreen;
   if HaveText = 1 then
@@ -668,7 +668,7 @@ end;
 
 
 //画主角于场景
-procedure DrawRoleOnScence(x, y: integer);
+procedure DrawRoleOnScene(x, y: integer);
 var
   i, xpoint, ypoint: integer;
   pos, pos1: TPosition;
@@ -676,7 +676,7 @@ begin
   if ShowMR then
   begin
     pos := GetPositionOnScreen(Sx, Sy, x, y);
-    //DrawSPic(CurScenceRolePic, pos.x, pos.y - SData[CurScence, 4, Sx, Sy], 0, 100, CalBlock(Sx, Sy), 0, 0);
+    //DrawSPic(CurSceneRolePic, pos.x, pos.y - SData[CurScene, 4, Sx, Sy], 0, 100, CalBlock(Sx, Sy), 0, 0);
   end;
 end;
 
@@ -690,12 +690,12 @@ begin
     for i2 := 0 to 63 do
     begin
       case where of
-        1: Ex[i1, i2] := SData[CurScence, 0, i1, i2];
+        1: Ex[i1, i2] := SData[CurScene, 0, i1, i2];
         2: Ex[i1, i2] := BField[0, i1, i2];
       end;
     end;
   //绝情谷, 明教地道效果比较奇怪, 屏蔽
-  if (EXPAND_GROUND <> 0) and ((MODVersion <> 13) or ((CurScence <> 81) and (CurScence <> 72))) then
+  if (EXPAND_GROUND <> 0) and ((MODVersion <> 13) or ((CurScene <> 81) and (CurScene <> 72))) then
   begin
     for i1 := 31 downto -64 do
       for i2 := 0 to 63 do
@@ -755,12 +755,12 @@ begin
   end;
 end;
 
-//Save the image informations of the whole scence.
+//Save the image informations of the whole scene.
 //生成场景映像
 //0-全部映像
 //1-可见部分
 //2-先刷新背景, 副线程专用
-procedure InitialScence(Visible: integer = 0);
+procedure InitialScene(Visible: integer = 0);
 var
   i1, i2, x, y, x1, y1, w, h, num, mini, maxi, depth, sumi, j: integer;
   pos: TPosition;
@@ -773,30 +773,30 @@ begin
     begin
       for j := 0 to 2 do
       begin
-        num := SData[CurScence, j, i1, i2] div 2;
+        num := SData[CurScene, j, i1, i2] div 2;
         if (num > 0) and (num < SPicAmount) then
           LoadOnePNGTexture('resource/smap', pSPic, SPNGIndex[num]);
       end;
-      if (SData[CurScence, 3, i1, i2] >= 0) then
+      if (SData[CurScene, 3, i1, i2] >= 0) then
       begin
-        num := DData[CurScence, SData[CurScence, 3, i1, i2], 5] div 2;
+        num := DData[CurScene, SData[CurScene, 3, i1, i2], 5] div 2;
         if (num > 0) and (num < SPicAmount) then
           LoadOnePNGTexture('resource/smap', pSPic, SPNGIndex[num]);
-        {for num := DData[CurScence, SData[CurScence, 3, i1, i2], 7] div 2
-          to DData[CurScence, SData[CurScence, 3, i1, i2], 6] div 2 do
+        {for num := DData[CurScene, SData[CurScene, 3, i1, i2], 7] div 2
+          to DData[CurScene, SData[CurScene, 3, i1, i2], 6] div 2 do
           if  (num > 0) and (num<SPicAmount) then
           LoadOnePNGTexture('resource/smap', pSPic, num, SPNGIndex[num], @SPNGTex[0]);}
       end;
     end;
   ExpandGroundOnImg();
-  if IsCave(CurScence) then
+  if IsCave(CurScene) then
   begin
     ShowBlackScreen := True;
   end
   else
     ShowBlackScreen := False;
   {SDL_LockMutex(mutex);
-    LoadingScence := True;
+    LoadingScene := True;
 
     if Visible = 0 then
     begin
@@ -804,8 +804,8 @@ begin
     y1 := 0;
     w := ImageWidth;
     h := ImageHeight;
-    SDL_FillRect(ImgScence, nil, 1);
-    SDL_FillRect(ImgScenceBack, nil, 1);
+    SDL_FillRect(ImgScene, nil, 1);
+    SDL_FillRect(ImgSceneBack, nil, 1);
     ExpandGroundOnImg();
     end
     else
@@ -834,7 +834,7 @@ begin
     else
     onback := 0;
 
-    if (Visible = 2) and IsCave(CurScence) then
+    if (Visible = 2) and IsCave(CurScene) then
     begin
     x1 := x1 + CENTER_X - 125;
     y1 := y1 + CENTER_Y - 125;
@@ -846,9 +846,9 @@ begin
     for i2 := 0 to 63 do
     begin
     CalPosOnImage(i1, i2, x, y);
-    if (SData[CurScence, 4, i1, i2] <= 0) then
+    if (SData[CurScene, 4, i1, i2] <= 0) then
     begin
-    num := SData[CurScence, 0, i1, i2] div 2;
+    num := SData[CurScene, 0, i1, i2] div 2;
     if num > 0 then
     InitialSPic(num, x, y, x1, y1, w, h, 1, 0, onback);
     end;
@@ -859,7 +859,7 @@ begin
     begin
     i2 := sumi - i1;
     if (i2 >= 0) and (i2 <= 63) then
-    InitialScenceOnePosition(i1, i2, x1, y1, w, h, CalBlock(i1, i2), onback);
+    InitialSceneOnePosition(i1, i2, x1, y1, w, h, CalBlock(i1, i2), onback);
     end;
     end;
 
@@ -881,9 +881,9 @@ begin
     dest.y := y1;
     dest.w := w;
     dest.h := h;
-    SDL_BlitSurface(ImgScenceBack, @dest, ImgScence, @dest);
+    SDL_BlitSurface(ImgSceneBack, @dest, ImgScene, @dest);
     end;
-    LoadingScence := False;
+    LoadingScene := False;
     SDL_UnLockMutex(mutex);}
 end;
 

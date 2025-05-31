@@ -1649,7 +1649,7 @@ var
   menuString: array [0 .. 1] of utf8string;
   Tex: PSDL_Texture;
 begin
-  //NeedRefreshScence := 0;
+  //NeedRefreshScene := 0;
   if (EXIT_GAME = 0) or (AskingQuit) then
   begin
     //以下为 Windows 的 API, 可能会影响移植性
@@ -1679,7 +1679,7 @@ begin
     UpdateAllScreen;
     AskingQuit := False;
   end;
-  //NeedRefreshScence := 1;
+  //NeedRefreshScene := 1;
 end;
 
 function JoyAxisMouse(interval: uint32; param: pointer): uint32;
@@ -1735,7 +1735,7 @@ var
   end;
 
 begin
-  //if not ((LoadingTiles) or (LoadingScence)) then
+  //if not ((LoadingTiles) or (LoadingScene)) then
   SDL_FlushEvent(SDL_MOUSEWHEEL);
   SDL_FlushEvent(SDL_JOYAXISMOTION);
   SDL_FlushEvent(SDL_FINGERMOTION);

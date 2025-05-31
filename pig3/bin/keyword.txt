@@ -19,7 +19,7 @@ BEGIN_BATTLE_ROLE_PIC
 BEGIN_EVENT
 BEGIN_LEAVE_EVENT
 BEGIN_MISSION_NUM
-BEGIN_SCENCE
+BEGIN_SCENE
 BEGIN_Sx
 BEGIN_Sy
 BEGIN_WALKPIC
@@ -51,7 +51,7 @@ CalPoint
 CalRNum
 CanEquip
 CanWalk
-CanWalkInScence
+CanWalkInScene
 CENTER_X
 CENTER_Y
 ChangeCol
@@ -84,7 +84,7 @@ CP936ToUTF8
 CP950ToUTF8
 CureAction
 CurEvent
-CurScence
+CurScene
 CurTargetSurface
 Cx
 Cy
@@ -121,9 +121,9 @@ DrawRectangle
 DrawRectangleWithoutFrame
 DrawRLE8Pic
 DrawRoleOnBfield
-DrawRoleOnScence
-DrawScence
-DrawScenceWithoutRole
+DrawRoleOnScene
+DrawScene
+DrawSceneWithoutRole
 DrawShadowText
 DrawSimpleStatusByTeam
 DrawSPic
@@ -184,11 +184,11 @@ InitialBPic
 InitialBRole
 InitialMusic
 InitialRole
-InitialScence
-InitialScenceOnePosition
+InitialScene
+InitialSceneOnePosition
 InitialSPic
 InitialWholeBField
-InScence
+InScene
 instruct_0
 instruct_1
 instruct_10
@@ -259,7 +259,7 @@ instruct_8
 instruct_9
 integer
 ITEM_BEGIN_PIC
-JmpScence
+JmpScene
 JudgeInScreen
 Lamp
 LevelUp
@@ -274,7 +274,7 @@ LoadOnePNGTile
 LoadPic
 LoadPNGTiles
 LoadR
-LoadScencePart
+LoadScenePart
 LoadSPNGTileThread
 LoadSurfaceFromFile
 LoadSurfaceFromMem
@@ -326,7 +326,7 @@ Mx
 My
 NearestMove
 NearestMoveByPro
-NeedRefreshScence
+NeedRefreshScene
 NewShop
 NewShop_Menu
 NewShop_ShowMenu
@@ -381,7 +381,7 @@ Rmagic
 RoleEnding
 round
 Rrole
-Rscence
+Rscene
 Run
 SaveR
 screen
@@ -1063,7 +1063,7 @@ ShowMenu
 ShowMenuItem
 ShowMenuSystem
 ShowMultiMenu
-ShowScenceName
+ShowSceneName
 ShowSimpleStatus
 ShowStarList
 ShowStatus

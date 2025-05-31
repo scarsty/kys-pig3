@@ -128,13 +128,13 @@ type
       Address: (Data: array [0 .. 94] of integer);
   end;
 
-  TScence = record
+  TScene = record
     case TCallType of
       Element: (ListNum: integer;
         Name: array [0 .. 19] of char;
         //梁羽生群侠传在这里修改了9为49
         ExitMusic, EntranceMusic: integer;
-        JumpScence, EnCondition: integer;
+        JumpScene, EnCondition: integer;
         MainEntranceY1, MainEntranceX1, MainEntranceY2, MainEntranceX2: integer;
         EntranceY, EntranceX: integer;
         ExitY, ExitX: array [0 .. 2] of integer;
@@ -258,7 +258,7 @@ var
   STATUS_AMOUNT: integer = 29; //状态数
   //ITEM_BEGIN_PIC: integer = 5720; //物品起始图片
   BEGIN_EVENT: integer = 301; //初始事件
-  BEGIN_SCENCE: integer = 0; //初始场景
+  BEGIN_SCENE: integer = 0; //初始场景
   BEGIN_Sx: integer = 20; //初始坐标(程序中的x, y与游戏中是相反的, 这是早期的遗留问题)
   BEGIN_Sy: integer = 19; //初始坐标
   SOFTSTAR_BEGIN_TALK: integer = 2547; //软体娃娃对话的开始编号
@@ -303,7 +303,7 @@ var
   RItemList: array of TItemList;
   Rrole, Rrole0: array [-1 .. 1000] of TRole;
   Ritem, Ritem0: array [-1 .. 1000] of TItem;
-  Rscence, Rscence0: array [-1 .. 1000] of TScence;
+  Rscene, Rscene0: array [-1 .. 1000] of TScene;
   Rmagic, Rmagic0: array [-1 .. 1000] of TMagic;
   RShop, RShop0: array [-1 .. 20] of TShop;
   //R文件数据, 均远大于原有容量
@@ -346,7 +346,7 @@ var
   SW_OUTPUT: integer = 0; //输出方式 0-与渲染器相同 1-表面, SW_SURFACE=1才有效
   SMOOTH: integer = 1; //平滑设置 0-完全不平滑, 1-线性平滑, 2-各项异性平滑
 
-  //ImgScence, ImgScenceBack, ImgBField, ImgBBuild: PSDL_Surface;
+  //ImgScene, ImgSceneBack, ImgBField, ImgBBuild: PSDL_Surface;
   //重画场景和战场的图形映像. 实时重画场景效率较低, 故首先生成映像, 需要时载入
   //Img1在场景中用于副线程动态效果, Img2在战场用于仅保存建筑层以方便快速载入
 
@@ -382,7 +382,7 @@ var
   ASound: array of HSAMPLE;
 
   StartMusic: integer;
-  ExitScenceMusicNum: integer; //离开场景的音乐
+  ExitSceneMusicNum: integer; //离开场景的音乐
   nowmusic: integer = -1; //正在播放的音乐
   //MusicName: utf8string;
 
@@ -391,8 +391,8 @@ var
   //扩充指令50所使用的变量
   lua_script: Plua_state;
   //lua脚本
-  CurScenceRolePic: integer; //主角场景内当前贴图编号, 引入该常量主要用途是25指令事件号为-1的情况
-  NeedRefreshScence: integer = 1; //事件是否改写了贴图
+  CurSceneRolePic: integer; //主角场景内当前贴图编号, 引入该常量主要用途是25指令事件号为-1的情况
+  NeedRefreshScene: integer = 1; //事件是否改写了贴图
 
   //游戏体验设置
   CLOUD_AMOUNT: integer = 60; //云的数量
@@ -400,7 +400,7 @@ var
 
   WALK_SPEED, WALK_SPEED2: integer; //行走时的主延时, 如果觉得行走速度慢可以修改这里.
   MMAPAMI: integer; //主地图动态效果
-  SCENCEAMI: integer; //场景内动态效果的处理方式: 0-关闭, 1-打开, 2-用另一线程处理, 当明显内场景速度拖慢时可以尝试2
+  SCENEAMI: integer; //场景内动态效果的处理方式: 0-关闭, 1-打开, 2-用另一线程处理, 当明显内场景速度拖慢时可以尝试2
   //updating screen should be in main thread, so this is too complicable.
   SEMIREAL: integer = 0; //半即時
   KDEF_SCRIPT: integer = 0; //使用脚本处理事件
@@ -424,7 +424,7 @@ var
   //主地图步数, 是否处于静止
   Cx, Cy, SFace, SStep: integer;
   //场景内坐标, 场景中心点, 方向, 步数
-  CurScence, CurEvent, CurItem, CurrentBattle, Where: integer;
+  CurScene, CurEvent, CurItem, CurrentBattle, Where: integer;
   //当前场景, 事件(在场景中的事件号), 使用物品, 战斗
   //where: 0-主地图, 1-场景, 2-战场, 3-开头画面
   SaveNum: integer;
@@ -454,7 +454,7 @@ var
   BATTLE_SPEED: integer = 10;
   EFFECT_STRING: integer = 0;
   SIMPLE: integer = 0; //简繁
-  LoadingScence: boolean;
+  LoadingScene: boolean;
 
   LastShowScene: smallint = -1;
   WoodManSta: TWoodMan;
@@ -462,7 +462,7 @@ var
   Star: array [0 .. 107] of utf8string;
   RoleName: array [0 .. 107] of utf8string;
   loverlist: array [0 .. 24, 0 .. 4] of smallint;
-  ScenceAmount: integer;
+  SceneAmount: integer;
 
   SelectAimMode: integer;
   //选择攻击目标的方式, 0-范围内敌方, 1-范围内我方, 2-敌方全部, 3-我方全部, 4-自身, 5-范围内全部, 6-全部
@@ -520,7 +520,7 @@ var
   openAudio: HSTREAM;
   MovieName: utf8string;
 
-  BasicOffset, RoleOffset, ItemOffset, ScenceOffset, MagicOffset, WeiShopOffset, LenR: integer;
+  BasicOffset, RoleOffset, ItemOffset, SceneOffset, MagicOffset, WeiShopOffset, LenR: integer;
 
   versionstr: utf8string = '  108 Brothers and Sisters';
 
