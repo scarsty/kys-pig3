@@ -61,7 +61,7 @@ pig3/pig3-c/include/
 pig3/pig3-c/Release/
 pig3/bin/backup/
 mods/promise/backup/
-abcd/.vs/
+tools/abcd/.vs/
 mods/promise/lib/__history
 mods/promise/__history
 *.~dsk
@@ -86,8 +86,8 @@ tools/pig3Launcher/pig3Launcher/.vs
 tools/初始存档生成工具/sfe2/packages
 tools/初始存档生成工具/sfe2/sfeConsole/excel
 tools/初始存档生成工具/~$ranger.xlsx
-修改器/abcd/makeRanger/x64
-修改器/abcd/abcd/x64
+tools/abcd/makeRanger/x64
+tools/abcd/abcd/x64
 其他复刻版/pig3-c/.vs
 其他复刻版/pig3-c/pig3-c/x64
 tools/pig3Launcher/.svn
