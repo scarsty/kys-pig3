@@ -1,15 +1,21 @@
-# kys-more
+# hugebase
+<img src='https://raw.githubusercontent.com/scarsty/kys-pig3/master/pig3/logo.png' width='20%'/>
 
-本工程收集了一些金庸群侠传制作工具的代码，和一些其他人复刻的非主流版本。
+All heros in Kam Yung stories - 108 brothers and sisters
 
-这些源码一般都在其他场合发布过，此处仅作为资料的收集。
+*The final edition*
 
-# 其他单独发布的工具
+<img src='https://raw.githubusercontent.com/scarsty/kys-pig3/master/pig3/13.png'/>
 
-如果作者单独在github上发布的，此处不再重复收集，仅列出地址。
+The codes can be complied with free pascal with lazarus or CodeTyphon for Windows, MacOSX, linux and Android (please see <https://github.com/godka/pig3android> to get more information). 
+Another project kys-cpp <https://github.com/scarsty/kys-cpp> is much more strongly recommended.
 
-upedit：<https://github.com/Upwinded/UPEdit> 游戏修改器
+The external libraries are SDL/SDL-ttf/SDL-image, BASS, FFmpeg, Lua.
 
-sfe：<https://github.com/godka/sfe/> fishedit的改进版
+Special thanks to JEDI-SDL, UltraStar Deluxe, Open Chinese Convert, and DuanGeXing SoundFonts.
 
-sfe2：<https://github.com/godka/sfe2> KA重新编写的修改器，只有命令行
+This project is a derivative of kys-pascal (known as kys-jedisdl).
+
+The codes are distributed under zlib license.
+
+<img src='https://raw.githubusercontent.com/scarsty/kys-pig3/master/pig3/12.jpg'/>
