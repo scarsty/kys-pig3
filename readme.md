@@ -1,4 +1,4 @@
-# hugebase
+# Pig3 (hugebase)
 <img src='https://raw.githubusercontent.com/scarsty/kys-pig3/master/pig3/logo.png' width='20%'/>
 
 All heros in Kam Yung stories - 108 brothers and sisters

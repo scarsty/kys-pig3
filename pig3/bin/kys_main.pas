@@ -546,6 +546,8 @@ begin
   ConsoleLog('Play movie and start music');
   if (OPEN_MOVIE = 1) then
     PlayMovie(AppPath + 'movie/1.wmv');
+  SDL_GetWindowSize(window, @RESOLUTIONX, @RESOLUTIONY);
+  ResizeWindow(RESOLUTIONX, RESOLUTIONY);
   PlayMP3(StartMusic, -1);
   ConsoleLog('Begin.....');
   Redraw;
@@ -2257,23 +2259,23 @@ begin
           speed := speed + 1;
           Mx1 := Mx;
           My1 := My;
-          case mface of
-            0: Mx1 := Mx1 - 1;
-            1: My1 := My1 + 1;
-            2: My1 := My1 - 1;
-            3: Mx1 := Mx1 + 1;
-          end;
-          Mstep := Mstep + 1;
-          if Mstep >= 7 then
-            Mstep := 1;
-          if CanWalk(Mx1, My1) = True then
+          if (Speed = 1) or (Speed >= 5) then
           begin
-            Mx := Mx1;
-            My := My1;
+            case mface of
+              0: Mx1 := Mx1 - 1;
+              1: My1 := My1 + 1;
+              2: My1 := My1 - 1;
+              3: Mx1 := Mx1 + 1;
+            end;
+            Mstep := Mstep + 1;
+            if Mstep >= 7 then
+              Mstep := 1;
+            if CanWalk(Mx1, My1) = True then
+            begin
+              Mx := Mx1;
+              My := My1;
+            end;
           end;
-          //第一步时短暂停止方便可以只走一格
-          if (speed <= 1) then
-            walking := 0;
         end;
         2:
         begin
@@ -3053,38 +3055,25 @@ begin
         begin
           speed := speed + 1;
           stillcount := 0;
-          {if walking = 2 then //如果用鼠标则重置方向
-            begin
-            SDL_GetMouseState2(x, y);
-            if (x < CENTER_x) and (y < CENTER_y) then
-            Sface := 2;
-            if (x > CENTER_x) and (y < CENTER_y) then
-            Sface := 0;
-            if (x < CENTER_x) and (y > CENTER_y) then
-            Sface := 3;
-            if (x > CENTER_x) and (y > CENTER_y) then
-            Sface := 1;
-            end;}
-          Sx1 := Sx;
-          Sy1 := Sy;
-          case Sface of
-            0: Sx1 := Sx1 - 1;
-            1: Sy1 := Sy1 + 1;
-            2: Sy1 := Sy1 - 1;
-            3: Sx1 := Sx1 + 1;
-          end;
-          Sstep := Sstep + 1;
-          if Sstep >= 7 then
-            Sstep := 1;
-          if CanWalkInScene(Sx1, Sy1) = True then
+          if (Speed = 1) or (Speed >= 5) then
           begin
-            Sx := Sx1;
-            Sy := Sy1;
+            Sx1 := Sx;
+            Sy1 := Sy;
+            case Sface of
+              0: Sx1 := Sx1 - 1;
+              1: Sy1 := Sy1 + 1;
+              2: Sy1 := Sy1 - 1;
+              3: Sx1 := Sx1 + 1;
+            end;
+            Sstep := Sstep + 1;
+            if Sstep >= 7 then
+              Sstep := 1;
+            if CanWalkInScene(Sx1, Sy1) = True then
+            begin
+              Sx := Sx1;
+              Sy := Sy1;
+            end;
           end;
-
-          //一定步数之内一次动一格
-          if (speed <= 1) then
-            walking := 0;
         end;
         2:
         begin
@@ -8517,9 +8506,9 @@ begin
   words.Add('');
 
   words.Add('鐵血丹心論壇出品');
-  words.Add('http://www.tiexuedanxin.net');
-  words.Add('http://www.dawuxia.net');
-  words.Add('http://www.txdx.net');
+  words.Add('www.tiexuedanxin.net');
+  words.Add('www.dawuxia.net');
+  words.Add('www.txdx.net');
   words.Add('');
 
   words.Add('總策劃');
@@ -8654,7 +8643,7 @@ begin
   words.Add('halfrice');
   words.Add('soastao');
   words.Add('NamelessOne47');
-  words.Add('门客');
+  words.Add('lsl330');
   words.Add('泥巴');
   words.Add('王子');
   words.Add('ice');
@@ -8669,7 +8658,7 @@ begin
   words.Add('OpenGL');
   words.Add('bass & bassmidi');
   words.Add('FFmpeg / Libav');
-  words.Add('zlib / minizip');
+  words.Add('zlib / minizip / libzip');
   words.Add('lua');
   words.Add('');
 
