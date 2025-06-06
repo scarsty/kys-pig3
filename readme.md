@@ -1,4 +1,4 @@
-# Pig3 (hugebase)
+# Pig3 (金庸水浒传hugebase)
 <img src='https://raw.githubusercontent.com/scarsty/kys-pig3/master/pig3/logo.png' width='20%'/>
 
 All heros in Kam Yung stories - 108 brothers and sisters
@@ -19,3 +19,4 @@ This project is a derivative of kys-pascal (known as kys-jedisdl).
 The codes are distributed under zlib license.
 
 <img src='https://raw.githubusercontent.com/scarsty/kys-pig3/master/pig3/12.jpg'/>
+
