@@ -439,9 +439,9 @@ begin
       MONEY_ID := 174;
       COMPASS_ID := 182;
       BEGIN_LEAVE_EVENT := 950;
-      BEGIN_NAME_IN_TALK := 2977;
+      BEGIN_NAME_IN_TALK := 0;
       MAX_LOVER := 0;
-      EventScriptPath := 'script/oldevent/oldevent_';
+      //EventScriptPath := 'script/oldevent/oldevent_';
       EventScriptExt := '.lua';
     end;
     12:
@@ -1687,10 +1687,13 @@ begin
       begin
         u16toutf8_load(@rrole[i].Name);
       end;
-      for i := 0 to high(RItem) do
+      if (MODVersion = 13) or (MODVersion = 31) then
       begin
-        u16toutf8_load(@RItem[i].Name);
-        u16toutf8_load(@RItem[i].Introduction);
+        for i := 0 to high(RItem) do
+        begin
+          u16toutf8_load(@RItem[i].Name);
+          u16toutf8_load(@RItem[i].Introduction);
+        end;
       end;
       for i := 0 to high(Rscene) do
       begin
@@ -2334,7 +2337,6 @@ begin
           UpdateAllScreen;
         end;
       end;
-
       //SDL_Delay(WALK_SPEED);
     end;
 
@@ -2435,14 +2437,17 @@ begin
   end
   else
   begin
-    if buildx[x, y] = 0 then
-      Result := True
-    else
-      Result := False;
     if (x <= 0) or (x >= 479) or (y <= 0) or (y >= 479) then
-      Result := False;
-    if (earth[x, y] = 838) or ((earth[x, y] >= 612) and (earth[x, y] <= 670)) then
-      Result := False;
+      Result := False
+    else
+    begin
+      if (buildx[x, y] = 0) then
+        Result := True
+      else
+        Result := False;
+      if (earth[x, y] = 838) or ((earth[x, y] >= 612) and (earth[x, y] <= 670)) then
+        Result := False;
+    end;
     if ((earth[Mx, My] >= 358) and (earth[Mx, My] <= 362)) or ((earth[Mx, My] >= 506) and (earth[Mx, My] <= 670)) or ((earth[Mx, My] >= 1016) and (earth[Mx, My] <= 1022)) then
       InShip := 1
     else
