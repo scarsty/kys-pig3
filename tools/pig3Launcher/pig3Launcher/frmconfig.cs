@@ -217,7 +217,9 @@ namespace pig3config
 
         private void button1_Click(object sender, EventArgs e)
         {
-            configIniValueAll(1);            
+            configIniValueAll(1);
+            iniPath = @".\game0\config\kysmod.ini";
+            configIniValueAll(1);
             MessageBox.Show("保存成功！");
         }
 

@@ -208,6 +208,13 @@ begin
   //versionstr :=  SDL_AndroidGetExternalStoragePath();
   //test;
   //cellphone:=1;
+  if ParamCount >= 1 then
+  begin
+    setlength(AppPath, length(AppPath) - 1);
+    AppPath := AppPath + ParamStr(1) + '/';
+  end;
+  ConsoleLog(AppPath);
+
   ReadFiles;
 
   ConsoleLog('Read ini and data files ended');
@@ -416,7 +423,7 @@ begin
   Setlength(Asound, 99);
   FileVerInfo := TFileVersionInfo.Create(nil);
   try
-    FileVerInfo.FileName := ParamStr(1);
+    FileVerInfo.FileName := ParamStr(0);
     FileVerInfo.ReadFileInfo;
     versionstr := versionstr + '-' + FileVerInfo.VersionStrings.Values['FileVersion'];
   finally

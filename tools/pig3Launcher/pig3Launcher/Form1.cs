@@ -287,11 +287,22 @@ namespace pig3Launcher
 
         private void button4_Click(object sender, EventArgs e)
         {
-            canStartGame = false;
-            //START DOWNLOAD
-            thread = new Thread(startDownLoad);
-            thread.Start();
-
+            try
+            {
+                if (canStartGame)
+                {
+                    Process.ShellExecute(@".\bin\kys_pig3.exe 0");
+                    Application.Exit();
+                }
+                else
+                {
+                    MessageBox.Show("请等待更新");
+                }
+            }
+            catch (Exception ee)
+            {
+                MessageBox.Show("未找到exe文件，启动程序失败");
+            }
         }
 
     }
