@@ -790,6 +790,8 @@ begin
       Result := pointer(sur);
       CharTex.add(key, sur);
     end;
+    //SDL_FreeSurface(tempsur);
+    //某些字体可能写过界，free失败
   end;
 end;
 
