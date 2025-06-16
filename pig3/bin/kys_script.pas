@@ -540,7 +540,7 @@ begin
   n := lua_gettop(L);
   Result := lua52.lua_tointeger(L, pos);
   //writeln(n, pos, p5032pos, p5032value);
-  if n + pos + 1 = p5032pos then
+  if ((pos < 0) and (n + pos + 1 = p5032pos)) or ((pos > 0) and (pos = p5032pos)) then
   begin
     Result := p5032value;
     p5032pos := -100;
@@ -686,8 +686,6 @@ begin
   end;
   Result := 0;
 end;
-
-
 
 
 //talk指令, 参数为3个数字和两个字串,
