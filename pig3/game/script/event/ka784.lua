@@ -1,0 +1,24 @@
+--胡青牛 花草 水 灵药
+clear();
+itemA='花草';
+itemB='水';
+personID=87;
+personSay="有花草和水的話，我可以幫你製作一些靈藥。";
+list1={214,215,216,217,218,219};
+list2={209,210};
+list3={
+	[string.format('%d+%d',214,209)]=3,
+	[string.format('%d+%d',217,210)]=13,
+	[string.format('%d+%d',215,209)]=4,
+	[string.format('%d+%d',217,209)]=7,
+	[string.format('%d+%d',215,210)]=12,
+	[string.format('%d+%d',216,209)]=5,
+	[string.format('%d+%d',216,210)]=16,
+	[string.format('%d+%d',218,209)]=8,
+	[string.format('%d+%d',218,210)]=14,
+	[string.format('%d+%d',219,209)]=9,
+	[string.format('%d+%d',219,210)]=15,
+	[string.format('%d+%d',214,210)]=11,
+};
+execevent(241);
+exit();

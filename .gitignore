@@ -91,3 +91,13 @@ tools/abcd/abcd/x64
 其他复刻版/pig3-c/.vs
 其他复刻版/pig3-c/pig3-c/x64
 tools/pig3Launcher/.svn
+水浒
+pig3/game/config
+pig3/game/license
+pig3/game/movie
+pig3/game/resource
+pig3/game/txt
+pig3/game0/config
+pig3/game0/resource
+pig3/game0/save
+pig3/game0/txt

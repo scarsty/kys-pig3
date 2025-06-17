@@ -1,0 +1,2 @@
+WeiShop();
+exit();

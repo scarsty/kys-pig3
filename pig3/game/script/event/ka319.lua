@@ -1,0 +1,62 @@
+SceneFromTo(32, 47, 17, 35);
+Talk(412, "＜這就是北帝廟了。咦，那邊幾個傢伙，瞧他們的著裝，應該是鳳家的家丁，我去聽聽他們在說些什麼。＞", -2, 0, 0, 0);
+SetScenePosition2(32, 47);
+WalkFromTo(32, 47, 19, 41);
+Talk(355, "這小子到底是哪兒冒出來的，抓了少爺不說，現在連老爺都被他留下了。", -2, 1, 0, 0);
+Talk(355, "咱真是看走了眼，老爺居然都制不住這小子。", -2, 0, 0, 0);
+Talk(415, "＜看來已經有人先我一步來找鳳天南的麻煩了，進去看看是何方高人。＞", -2, 0, 0, 0);
+WalkFromTo(19, 41, 29, 41);
+WalkFromTo(29, 41, 29, 31);
+DarkScene();
+instruct_50(21, 0, 130, 1, 5, 8264, 0);
+instruct_50(21, 0, 130, 1, 6, 8264, 0);
+instruct_50(21, 0, 130, 1, 7, 8264, 0);
+ModifyEvent(130, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -2, -2);
+LightScene();
+Talk(415, "＜咦，瞧那人的衣著華麗，手上握著一根黃金棍，莫非就是鳳天南？不好，他想溜。＞", -2, 0, 0, 0);
+showstringwithbox(10, 10, '是否追擊鳳天南？');
+pause();
+a = menu(2, 10, 40, -1, {'追擊', '進北帝廟看看吧'});
+if a == 0 then
+    DarkScene();
+    ModifyEvent(130, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, -2, -2);
+    SetSceneMap(130, 2, 54, 16, 8264);
+    SetSceneMap(130, 2, 54, 17, 8266);
+    SetSceneMap(130, 2, 55, 17, 8266);
+    instruct_50(21, 0, 130, 1, 5, 0, 0);
+    instruct_50(21, 0, 130, 1, 6, 0, 0);
+    instruct_50(21, 0, 130, 1, 7, 0, 0);
+    SetScenePosition2(55, 18);
+    LightScene();
+    Talk(416, "鳳天南休走。", -2, 0, 0, 0);
+    Talk(361, "不自量力，兄弟們，上。", -2, 1, 0, 0);
+    if TryBattle(3) == false then 
+        Dead();
+        exit();
+    end
+    SetSceneMap(130, 2, 54, 16, 0);
+    SetSceneMap(130, 2, 54, 17, 0);
+    SetSceneMap(130, 2, 55, 17, 0);
+    SetSceneMap(130, 2, 24, 19, 8268);
+    SetSceneMap(130, 1, 27, 18, 8354);
+    SetSceneMap(130, 1, 25, 18, 8352);
+    SetSceneMap(130, 1, 17, 35, 0);
+    SetSceneMap(130, 1, 18, 34, 0);
+    LightScene();
+    instruct_50(21, 0, 130, 4, 4, 320, 0);
+    instruct_50(21, 0, 130, 5, 4, 320, 0);
+    GetItem(48, 1);
+    exit();
+else
+    DarkScene();
+    ModifyEvent(130, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, -2, -2);
+    SetSceneMap(130, 1, 24, 19, 7402);
+    SetSceneMap(130, 1, 24, 18, 7404);
+    SetSceneMap(130, 1, 26, 19, 8270);
+    SetSceneMap(130, 1, 26, 18, 8270);
+    instruct_50(21, 0, 130, 4, 4, 321, 0);
+    instruct_50(21, 0, 130, 5, 4, 321, 0);
+    SetSceneMap(130, 1, 17, 35, 0);
+    SetSceneMap(130, 1, 18, 34, 0);
+    LightScene();
+end

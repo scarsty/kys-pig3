@@ -1,0 +1,28 @@
+SceneFromTo(28, 15, 25, 36);
+Talk(199, "教主要練返老還童丹，需要美女一百名。這小娘子細皮嫩肉的，帶回去一定重重有賞。", -2, 1, 0, 0);
+Talk(343, "好噢～", -2, 1, 0, 0);
+DarkScene();
+SetScenePosition2(24, 36);
+SetRoleFace(0);
+LightScene();
+Talk(416, "光天化日之下，在這官道之上，你們就敢強搶民女？！", -2, 0, 0, 0);
+Talk(199, "唉呦，哪來的愣頭青，敢管我們神龍教的事。弟兄們，讓他知道知道厲害！", -2, 1, 0, 0);
+SetAttribute(199, 1, 1, 0, 50);
+if TryBattle(113) == true then goto label0 end;
+    Dead();
+    exit();
+::label0::
+    SetSceneMap(56, 1, 22, 35, 0);
+    SetSceneMap(56, 1, 23, 34, 0);
+    SetSceneMap(56, 1, 25, 34, 0);
+    LightScene();
+    Talk(0, "這位大姐，你可是史風史相公家的？", -2, 0, 0, 0);
+    Talk(0, "正是，多謝恩人相救。", "居民女", 11, 1, 0);
+    Talk(0, "你相公想死你了，託我前來搭救。你趕快回家吧。", -2, 0, 0, 0);
+    DarkScene();
+    SetSceneMap(56, 1, 24, 34, 0);
+    ModifyEvent(56, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -2, -2);
+    ModifyEvent(13, 10, 1, 0, 1059, 0, 0, 8850, 8850, 8850, 0, -2, -2);
+    ModifyEvent(13, 9, 1, 0, 1059, 0, 0, -2, -2, -2, 0, -2, -2);
+    LightScene();
+exit();
