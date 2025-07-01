@@ -44,7 +44,7 @@
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
             <Libraries Value="lib;arm64-android"/>
-            <OtherUnitFiles Value="lib;lib\ffmpeg"/>
+            <OtherUnitFiles Value="lib\ffmpeg"/>
             <UnitOutputDirectory Value="tmp\android"/>
           </SearchPaths>
           <Parsing>
@@ -92,7 +92,7 @@
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
             <Libraries Value="lib;."/>
-            <OtherUnitFiles Value="lib;lib\ffmpeg"/>
+            <OtherUnitFiles Value="lib"/>
             <UnitOutputDirectory Value="tmp\debug"/>
           </SearchPaths>
           <Parsing>
@@ -144,10 +144,10 @@
     </RunParams>
     <RequiredPackages Count="1">
       <Item1>
-        <PackageName Value="adLCL"/>
+        <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="10">
+    <Units Count="8">
       <Unit0>
         <Filename Value="kys_pig3.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -180,14 +180,6 @@
         <Filename Value="kys_type.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit7>
-      <Unit8>
-        <Filename Value="macro.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit8>
-      <Unit9>
-        <Filename Value="lib\mythoutput.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit9>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -199,7 +191,7 @@
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
       <Libraries Value="lib;."/>
-      <OtherUnitFiles Value="lib;lib\ffmpeg"/>
+      <OtherUnitFiles Value="lib"/>
       <UnitOutputDirectory Value="tmp\release"/>
     </SearchPaths>
     <Parsing>
