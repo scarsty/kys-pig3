@@ -27,9 +27,6 @@ uses
   {$IFDEF UNIX}
   baseUnix,
   {$ENDIF}
-  {$IFDEF ANDROID}
-  jni,
-  {$ENDIF}
   LCLIntf,
   LCLType,
   LConvEncoding,
@@ -197,11 +194,12 @@ begin
   AppPath := '../game/';
   {$ENDIF}
   {$IFDEF android}
-  AppPath := SDL_AndroidGetExternalStoragePath() + '/game/';
+  ConsoleLog('Run for android');
+  AppPath :=  SDL_AndroidGetExternalStoragePath() + '/game/';
   //for i := 1 to 4 do
   //AppPath:= ExtractFileDir(AppPath);
   str := SDL_AndroidGetExternalStoragePath() + '/pig3_place_game_here';
-  //if not fileexists(str) then
+  if not fileexists(str) then
   FileClose(filecreate(str));
   CellPhone := 1;
   {$ENDIF}
@@ -216,8 +214,6 @@ begin
   ConsoleLog(AppPath);
 
   ReadFiles;
-
-  ConsoleLog('Read ini and data files ended');
 
   SetMODVersion;
 
@@ -589,6 +585,7 @@ begin
   headnum := 0;
   alpha := 100;
   alphastep := -2;
+  consolelog('Try to load save 0');
   LoadR(0);
   menu := 0;
   //ScreenBlendMode := 1;
@@ -834,6 +831,7 @@ begin
     end;
   end;
   where := 3;
+  Consolelog('begin end');
 end;
 
 //开头字幕
@@ -1185,15 +1183,6 @@ var
   p0, p1: putf8char;
   named: bool;
   fullname, surname, givenname: utf8string;
-  {$IFDEF android}
-  env: PJNIEnv;
-  jstr: jstring;
-  cstr: putf8char;
-  activity: jobject;
-  clazz: jclass;
-  method_id: jmethodID;
-  e: TSDL_event;
-  {$ENDIF}
 begin
   LoadR(0);
   //显示输入姓名的对话框
@@ -1211,21 +1200,6 @@ begin
     str := '请输入主角之姓名';
   end;
 
-  {$IFDEF android}
-  ShowStatus(0);
-  UpdateAllScreen;
-  str0 := '點擊一下開始選屬性！';
-  DrawTextWithRect(@str0[1], 175, CENTER_Y + 171, 10, ColColor($64), ColColor($66));
-  env := SDL_AndroidGetJNIEnv();
-  activity := SDL_AndroidGetActivity();
-  clazz := env^.GetObjectClass(env, activity);
-  method_id := env^.GetMethodID(env, clazz, 'mythSetName', '()Ljava/lang/String;');
-  jstr := jstring(env^.CallObjectMethod(env, activity, method_id));
-  cstr := env^.GetStringUTFChars(env, jstr, 0);
-  input_name := strpas(cstr);
-  env^.ReleaseStringUTFChars(env, jstr, cstr);
-  Result := True;
-  {$ELSE}
   //if FULLSCREEN = 0 then
   //  Result := inputquery('Enter name', str, input_name)
   //else
@@ -1244,7 +1218,6 @@ begin
     Redraw;
     UpdateAllScreen;
   end;
-  {$ENDIF}
   Result := Result and (input_name <> '');
   if Result then
   begin
@@ -1517,8 +1490,8 @@ var
   z: pzip_t;
   zfile: pzip_file_t;
   talkarray: array of byte;
-  temp: array [0 .. 1000000] of smallint;
-  temp1: array [0 .. 1000000] of integer;
+  temp: array [0 .. 100000] of smallint;
+  temp1: array [0 .. 100000] of integer;
   isold: boolean = False;
   intsize: integer = 4;
 
@@ -1545,8 +1518,10 @@ var
 
 begin
   Result := True;
-
+    consolelog('%d', [lenr]);
   p := StrAlloc(LenR + 8192);
+
+
 
   SaveNum := num;
   zfilename := AppPath + 'save/' + IntToStr(num) + '.zip';

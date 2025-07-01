@@ -26,7 +26,7 @@ uses
   {$IFDEF windows}
   potdll,
   {$endif}
-  mythoutput,
+  //mythoutput,
   libzip;
 
 type
@@ -3678,7 +3678,8 @@ begin
   end;
   {$IFDEF android}
   str := format(formatstring, content);
-  mythoutput.mythoutput(putf8char(str));
+  SDL_Log('%s', [@str[1]]);
+  //mythoutput.mythoutput(putf8char(str));
   {i := fileopen(SDL_AndroidGetExternalStoragePath()+'/pig3_place_game_here',fmopenwrite);
     fileseek(i, 0, 2);
     filewrite(i, str[1], length(str));
@@ -3699,7 +3700,8 @@ begin
   end;
   {$IFDEF android}
   str := format(formatstring, []);
-  mythoutput.mythoutput(putf8char(str));
+  SDL_Log('%s', [@str[1]]);
+  //mythoutput.mythoutput(putf8char(str));
   {i := fileopen(SDL_AndroidGetExternalStoragePath()+'/pig3_place_game_here',fmopenwrite);
     fileseek(i, 0, 2);
     filewrite(i, str[1], length(str));

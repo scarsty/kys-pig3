@@ -56,7 +56,16 @@ type
   end;
 
 const
+
+  {$IFDEF MSWINDOWS}
   zipdll = 'zip.dll';
+  {$ELSE}
+  {$IFDEF DARWIN}
+  zipdll = 'libzip.dylib';
+  {$ELSE}
+  zipdll = 'libzip.so';
+  {$ENDIF}
+  {$ENDIF}
 
   ZIP_CREATE = 1;
   ZIP_TRUNCATE = 8;

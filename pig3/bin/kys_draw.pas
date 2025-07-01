@@ -355,6 +355,7 @@ begin
       DrawTPic(10, CENTER_X - 384 + 110, CENTER_Y - 240 + 5);
       DrawTPic(10, CENTER_X - 384 + 591, CENTER_Y - 240 + 5);
       DrawShadowText(versionstr, 5, CENTER_Y * 2 - 30, ColColor($64), ColColor($66));
+      DrawVirtualKey;
     end;
     4: //处于标题动画中
     begin
