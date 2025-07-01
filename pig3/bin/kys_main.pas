@@ -195,17 +195,17 @@ begin
   {$ENDIF}
   {$IFDEF android}
   ConsoleLog('Run for android');
-  AppPath :=  SDL_AndroidGetExternalStoragePath() + '/game/';
+  AppPath := SDL_AndroidGetExternalStoragePath() + '/game/';
   //for i := 1 to 4 do
   //AppPath:= ExtractFileDir(AppPath);
   str := SDL_AndroidGetExternalStoragePath() + '/pig3_place_game_here';
   if not fileexists(str) then
-  FileClose(filecreate(str));
+    FileClose(filecreate(str));
   CellPhone := 1;
   {$ENDIF}
   //versionstr :=  SDL_AndroidGetExternalStoragePath();
   //test;
-  //cellphone:=1;
+  //cellphone := 1;
   if ParamCount >= 1 then
   begin
     setlength(AppPath, length(AppPath) - 1);
@@ -288,7 +288,7 @@ begin
 
   if CellPhone = 1 then
   begin
-    WindowFlag := WindowFlag or SDL_WINDOW_FULLSCREEN_DESKTOP;
+    //WindowFlag := WindowFlag or SDL_WINDOW_FULLSCREEN_DESKTOP;
     KEEP_SCREEN_RATIO := 0;
     TEXT_LAYER := 0;
   end;
@@ -954,8 +954,8 @@ begin
       ShowVirtualKey := Kys_ini.ReadInteger('system', 'Virtual_Key', 1);
       VirtualKeyX := Kys_ini.ReadInteger('system', 'Virtual_Key_X', 150);
       VirtualKeyY := Kys_ini.ReadInteger('system', 'Virtual_Key_Y', 250);
-      VirtualKeySize := Kys_ini.ReadInteger('system', 'Virtual_Key_Size', 60);
-      VirtualKeySpace := Kys_ini.ReadInteger('system', 'Virtual_Key_Space', 25);
+      VirtualKeySize := Kys_ini.ReadInteger('system', 'Virtual_Key_Size', 50);
+      VirtualKeySpace := Kys_ini.ReadInteger('system', 'Virtual_Key_Space', 15);
     end
     else
       ShowVirtualKey := 0;
@@ -1518,9 +1518,8 @@ var
 
 begin
   Result := True;
-    consolelog('%d', [lenr]);
+  consolelog('%d', [lenr]);
   p := StrAlloc(LenR + 8192);
-
 
 
   SaveNum := num;
@@ -2362,7 +2361,7 @@ end;
 //function in kys_main.pas
 function CanWalk(x, y: integer): boolean;
 begin
-  if (MODVersion = 13) and (CellPhone = 0) then
+  if (MODVersion = 13) {and (CellPhone = 0)} then
   begin
     Result := False;
     if (x >= 0) and (y >= 0) and (x < 480) and (y < 480) then

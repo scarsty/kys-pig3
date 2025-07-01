@@ -215,7 +215,6 @@ begin
 end;
 
 
-
 //显示头像
 procedure DrawHeadPic(num, px, py: integer; shadow: integer = 0; alpha: integer = 0; mixColor: uint32 = 0; mixAlpha: integer = 0; scalex: real = 1; scaley: real = 1); overload;
 var
@@ -1050,7 +1049,6 @@ begin
 end;
 
 
-
 //画带光标的子程
 //此子程效率不高
 procedure DrawBFieldWithCursor(AttAreaType, step, range: integer);
@@ -1468,10 +1466,13 @@ begin
       SDLK_DOWN: d := 0;
       SDLK_RIGHT: r := 0;
     end;
-    DrawTPic(27, VirtualKeyX, VirtualKeyY, nil, 0, u);
-    DrawTPic(29, VirtualKeyX - VirtualKeySize - VirtualKeySpace, VirtualKeyY + VirtualKeySize + VirtualKeySpace, nil, 0, l);
-    DrawTPic(28, VirtualKeyX, VirtualKeyY + VirtualKeySize * 2 + VirtualKeySpace * 2, nil, 0, d);
-    DrawTPic(30, VirtualKeyX + VirtualKeySize + VirtualKeySpace, VirtualKeyY + VirtualKeySize + VirtualKeySpace, nil, 0, r);
+    DrawTPic(51, VirtualKeyX, VirtualKeyY, nil, 0, u);
+    DrawTPic(53, VirtualKeyX - VirtualKeySize - VirtualKeySpace, VirtualKeyY + VirtualKeySize + VirtualKeySpace, nil, 0, l);
+    DrawTPic(52, VirtualKeyX, VirtualKeyY + VirtualKeySize * 2 + VirtualKeySpace * 2, nil, 0, d);
+    DrawTPic(54, VirtualKeyX + VirtualKeySize + VirtualKeySpace, VirtualKeyY + VirtualKeySize + VirtualKeySpace, nil, 0, r);
+    DrawTPic(56, 0, 0, nil, 0, 50);
+    DrawTPic(57, center_x * 2 - 100, center_y * 2 - 100, nil, 0, 50);
+    //DrawTPic(55, 10, center_y * 2 - 70, nil, 0, 50);
   end;
 end;
 

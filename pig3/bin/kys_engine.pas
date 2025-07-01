@@ -1714,12 +1714,13 @@ var
 
   function inEscape(x, y: integer): boolean; inline;
   begin
-    Result := (x > CENTER_X * 2 - 100) and (y < 100);
+    Result := (x < 100) and (y < 100);
   end;
 
   function inSwitchShowVirtualKey(x, y: integer): boolean; inline;
   begin
-    Result := (x < 100) and (y < 100);
+    result := false;
+    //Result := (x < 100) and (y > CENTER_Y * 2 - 100);
   end;
 
   function inVirtualKey(x, y: integer; var key: uint32): uint32;
@@ -1837,6 +1838,7 @@ begin
         SDL_GetMouseState2(x, y);
         if inEscape(x, y) or inReturn(x, y) then
           event.type_ := 0;
+        inVirtualKey(x, y, VirtualKeyValue);
       end;
     end;
     SDL_MOUSEBUTTONDOWN:
@@ -1890,7 +1892,7 @@ begin
           event.type_ := SDL_RELEASED;
           event.key.keysym.sym := 0;
         end
-        else if (showVirtualKey <> 0) and (inVirtualKey(x, y, VirtualKeyValue) = 0) then
+        else if (showVirtualKey <> 0) and (VirtualKeyValue<>0)and(inVirtualKey(x, y, VirtualKeyValue) = 0) then
         begin
           event.type_ := SDL_RELEASED;
           event.key.keysym.sym := 0;
