@@ -952,8 +952,8 @@ begin
     if CellPhone <> 0 then
     begin
       ShowVirtualKey := Kys_ini.ReadInteger('system', 'Virtual_Key', 1);
-      VirtualKeyX := Kys_ini.ReadInteger('system', 'Virtual_Key_X', 150);
-      VirtualKeyY := Kys_ini.ReadInteger('system', 'Virtual_Key_Y', 250);
+      VirtualKeyX := Kys_ini.ReadInteger('system', 'Virtual_Key_X', 100);
+      VirtualKeyY := Kys_ini.ReadInteger('system', 'Virtual_Key_Y', 300);
       VirtualKeySize := Kys_ini.ReadInteger('system', 'Virtual_Key_Size', 50);
       VirtualKeySpace := Kys_ini.ReadInteger('system', 'Virtual_Key_Space', 15);
     end
