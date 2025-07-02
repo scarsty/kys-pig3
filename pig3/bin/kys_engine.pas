@@ -547,7 +547,7 @@ begin
   begin
     bpp := surface.format.BytesPerPixel;
     //Here p is the address to the pixel we want to set
-    p := Pointer(uint32(surface.pixels) + y * surface.pitch + x * bpp);
+    p := Pointer(nativeint(surface.pixels) + y * surface.pitch + x * bpp);
     case bpp of
       1: longword(p^) := pixel;
       2: puint16(p)^ := pixel;

@@ -6148,7 +6148,7 @@ begin
     w := 138 * Rrole[rnum].CurrentHP div min(Rrole[rnum].MaxHP, 9999);
   color := MapRGBA(196, max(0, 25 - Rrole[rnum].Hurt div 5), 16);
   DrawRectangleWithoutFrame(x + 96, y + 32, w, 9, color, -1);
-  //DrawRectangleWithoutFrame(x + 96 + w, y + 32, 138 - w, 9, color, alpha);
+  DrawRectangleWithoutFrame(x + 96 + w, y + 32, 138 - w, 9, color, alpha);
   if Rrole[rnum].MaxMP = 0 then
     w := 138
   else

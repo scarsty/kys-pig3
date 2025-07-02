@@ -32,6 +32,9 @@ android {
         }
     }
     applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "kys-pig3-${variant.buildType.name}.apk"
+        }
         tasks["merge${variant.name.capitalize()}Assets"]
             .dependsOn("externalNativeBuild${variant.name.capitalize()}")
     }
