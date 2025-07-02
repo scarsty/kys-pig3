@@ -101,3 +101,12 @@ pig3/game0/config
 pig3/game0/resource
 pig3/game0/save
 pig3/game0/txt
+kys-pig3-androidstudio/.gradle
+kys-pig3-androidstudio/.idea
+kys-pig3-androidstudio/app/.cxx
+kys-pig3-androidstudio/app/build
+kys-pig3-androidstudio/app/jni/SDL2/
+kys-pig3-androidstudio/app/jni/SDL2_image
+kys-pig3-androidstudio/app/jni/SDL2_ttf
+kys-pig3-androidstudio/build
+*.so
