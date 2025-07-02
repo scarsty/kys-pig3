@@ -195,7 +195,9 @@ begin
   {$ENDIF}
   {$IFDEF android}
   ConsoleLog('Run for android');
-  AppPath := SDL_AndroidGetExternalStoragePath() + '/game/';
+  AppPath := '/sdcard/kys-pig3/game/';
+  if not fileexists(AppPath + 'config/kysmod.ini') then
+    AppPath := SDL_AndroidGetExternalStoragePath() + '/game/';
   //for i := 1 to 4 do
   //AppPath:= ExtractFileDir(AppPath);
   str := SDL_AndroidGetExternalStoragePath() + '/pig3_place_game_here';
