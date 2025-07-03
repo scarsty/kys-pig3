@@ -111,3 +111,5 @@ kys-pig3-androidstudio/app/jni/SDL2_ttf
 kys-pig3-androidstudio/build
 *.so
 pig3/bin-cangshui
+pig3/game/script/event
+pig3/game0/script/event
