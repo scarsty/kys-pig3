@@ -110,3 +110,4 @@ kys-pig3-androidstudio/app/jni/SDL2_image
 kys-pig3-androidstudio/app/jni/SDL2_ttf
 kys-pig3-androidstudio/build
 *.so
+pig3/bin-cangshui
