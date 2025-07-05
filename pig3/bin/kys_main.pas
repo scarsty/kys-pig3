@@ -203,6 +203,7 @@ begin
   str := SDL_AndroidGetExternalStoragePath() + '/pig3_place_game_here';
   if not fileexists(str) then
     FileClose(filecreate(str));
+  SDL_SetHint(SDL_HINT_ORIENTATIONS, 'LandscapeLeft LandscapeRight');
   CellPhone := 1;
   {$ENDIF}
   //versionstr :=  SDL_AndroidGetExternalStoragePath();
