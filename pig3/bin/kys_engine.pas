@@ -5,8 +5,6 @@ interface
 uses
   {$IFDEF fpc}
   LConvEncoding,
-  LCLType,
-  LCLIntf,
   {$ENDIF}
   {$IFDEF mswindows}
   Windows,
@@ -19,7 +17,6 @@ uses
   SDL2,
   kys_type,
   kys_main,
-  Dialogs,
   bassmidi,
   bass,
   Math,
@@ -685,7 +682,7 @@ begin
   Result[L + 1] := char(0);
   if L > 0 then
     LCMapString($0800, $02000000, putf8char(mTraditional), L, @Result[1], L);
-  result := CP936TOUTF8(result);
+  Result := CP936TOUTF8(Result);
   {$ELSE}
   Result := mTraditional;
   {$ENDIF}
@@ -1391,7 +1388,7 @@ begin
   if L > 0 then
     LCMapString(GetUserDefaultLCID, $04000000, putf8char(mSimplified), L, @Result[1], L);
   //writeln(L,mSimplified,',',result,GetUserDefaultLCID);
-  result := CP936TOUTF8(result);
+  Result := CP936TOUTF8(Result);
   {$ELSE}
   Result := mSimplified;
   {$ENDIF}
@@ -1659,8 +1656,10 @@ begin
       SDL_GetWMInfo(@info);
       if MessageBox(info.window, 'Are you sure to quit?', 'Confirmation', MB_ICONQUESTION or MB_YESNO) = idYes then
       Quit;}
+    {$ifdef windows}
     if MessageDlg('Are you sure to quit?', mtConfirmation, [mbOK, mbCancel], 0) = idOk then
       Quit;
+    {$endif}
   end
   else
   begin
@@ -1719,7 +1718,7 @@ var
 
   function inSwitchShowVirtualKey(x, y: integer): boolean; inline;
   begin
-    result := false;
+    Result := False;
     //Result := (x < 100) and (y > CENTER_Y * 2 - 100);
   end;
 
@@ -1892,7 +1891,7 @@ begin
           event.type_ := SDL_RELEASED;
           event.key.keysym.sym := 0;
         end
-        else if (showVirtualKey <> 0) and (VirtualKeyValue<>0)and(inVirtualKey(x, y, VirtualKeyValue) = 0) then
+        else if (showVirtualKey <> 0) and (VirtualKeyValue <> 0) and (inVirtualKey(x, y, VirtualKeyValue) = 0) then
         begin
           event.type_ := SDL_RELEASED;
           event.key.keysym.sym := 0;

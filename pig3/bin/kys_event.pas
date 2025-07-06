@@ -4,7 +4,6 @@ interface
 
 uses
   LConvEncoding,
-  LCLType,
   SysUtils,
   StrUtils,
   SDL2,
@@ -137,7 +136,7 @@ procedure NewShop(shop_num: integer);
 
 procedure ShowMap;
 function EnterNumber(MinValue, MaxValue, x, y: integer; Default: integer = 0): smallint;
-function EnterString(var str: utf8string; x, y, w, h: integer): bool;
+function EnterString(var str: utf8string; x, y, w, h: integer): boolean;
 
 implementation
 
@@ -1859,7 +1858,7 @@ begin
     26:
     begin
       e6 := e_GetValue(0, e1, e6);
-      t1 := uint16(e3) + uint16(e4) * $10000 + uint(e6);
+      t1 := uint16(e3) + uint16(e4) * $10000 + dword(e6);
       i := uint16(e3) + uint16(e4) * $10000;
       case t1 of
         $1D295E: x50[e5] := CurScene;
@@ -3407,7 +3406,7 @@ var
   StateList: array of integer;
   i, n, menuid: integer;
   temp, str1, str2, statusstr, str: utf8string;
-  escape, refresh: Bool;
+  escape, refresh: Boolean;
   strs: array [0 .. 21] of utf8string;
   color1, color2: uint32;
 begin
@@ -6529,7 +6528,7 @@ begin
   FreeFreshScreen;
 end;
 
-function EnterString(var str: utf8string; x, y, w, h: integer): bool;
+function EnterString(var str: utf8string; x, y, w, h: integer): boolean;
 var
   r: TSDL_Rect;
   str2: utf8string;

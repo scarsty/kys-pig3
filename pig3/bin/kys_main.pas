@@ -27,8 +27,6 @@ uses
   {$IFDEF UNIX}
   baseUnix,
   {$ENDIF}
-  LCLIntf,
-  LCLType,
   LConvEncoding,
   SysUtils,
   SDL2_TTF,
@@ -36,7 +34,6 @@ uses
   SDL2_image,
   Math,
   iniFiles,
-  Dialogs,
   bass,
   kys_type,
   Classes,
@@ -8906,7 +8903,7 @@ function CheckString(str: utf8string): boolean;
 begin
   Redraw;
   UpdateAllScreen;
-  ShowMessage(str);
+  //ShowMessage(str);
   Result := False;
 end;
 
