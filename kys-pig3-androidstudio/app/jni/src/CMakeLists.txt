@@ -4,7 +4,7 @@ project(main)
 
 find_library(SDL2 SDL2)
 
-link_directories(. ../../lib/arm64-v8a)
+link_directories(. ../../lib/${ANDROID_ABI})
 
 add_library(main SHARED)
 
