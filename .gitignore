@@ -113,3 +113,4 @@ kys-pig3-androidstudio/build
 pig3/bin-cangshui
 pig3/game/script/event
 pig3/game0/script/event
+*.xlsx
