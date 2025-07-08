@@ -421,7 +421,9 @@ begin
   try
     FileVerInfo.FileName := ParamStr(0);
     FileVerInfo.ReadFileInfo;
+    ConsoleLog('%s', [FileVerInfo.FileName]);
     versionstr := versionstr + '-' + FileVerInfo.VersionStrings.Values['FileVersion'];
+    ConsoleLog('%s', [versionstr]);
   finally
     FileVerInfo.Free;
   end;

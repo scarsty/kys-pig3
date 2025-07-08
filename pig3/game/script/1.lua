@@ -46,6 +46,7 @@ function f1()
 	if a>=0 then
 		item, num  = getitemlist(a);
 		getitem(item, num);
+		setnameasstring("大騙紙", 0, 0);
 	end
 end
 
@@ -54,6 +55,7 @@ function f2()
     for i=0, 276 do
 		additem(i, 20);
 	end
+	setnameasstring("大騙紙", 0, 0);
 end
 
 function f3()
@@ -81,6 +83,7 @@ function f3()
 			clear();
 			i = i + 1;
 		end;
+		setnameasstring("大騙紙", 0, 0);
 	end
 	rest();
 end
@@ -95,8 +98,9 @@ function f4()
 	while i<10 do
 		putrolepro(0, b, 63 + i);
 		putrolepro(0, b, 73 + i);
-		i=i+1;
+		i=i+1;		
 	end
+	setnameasstring("大騙紙", 0, 0);
 	rest();
 end
 
@@ -112,6 +116,7 @@ function f5()
 		putrolepro(0, b, 96 + i);
 		i=i+1;
 	end
+	setnameasstring("大騙紙", 0, 0);
 	rest();
 end
 
@@ -154,6 +159,7 @@ function f6()
 			clear();
 			i = i + 1;
 		end;
+		setnameasstring("大騙紙", 0, 0);
 	end
 	rest();
 end
@@ -197,6 +203,7 @@ function f7()
 			clear();
 			i = i + 1;
 		end;
+		setnameasstring("大騙紙", 0, 0);
 	end
 	rest();
 end
@@ -204,11 +211,17 @@ end
 function f8()
 	b = enternumber(0, 1000, 200, 120, 0);
 	getitem(b, 10);
+	setnameasstring("大騙紙", 0, 0);
 end
 
 function f9()
 	i = enternumber(1, 299, 200, 120, 0);
 	trybattle(i-1);
+end
+
+function f10()
+	i = enternumber(0, 1000, 200, 120, 0);
+	setteam(0, i);
 end
 
 function f100()

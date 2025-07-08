@@ -203,6 +203,20 @@ function SetPro(L: Plua_state; pos: puint16): integer;
 
 function ResetScene(L: Plua_state): integer; cdecl;
 
+function setteam(L: Plua_state): integer; cdecl;
+function getteam(L: Plua_state): integer; cdecl;
+
+function readmem(L: Plua_state): integer; cdecl;
+function writemem(L: Plua_state): integer; cdecl;
+
+function getrolename(L: Plua_state): integer; cdecl;
+function getitemname(L: Plua_state): integer; cdecl;
+function getmagicname(L: Plua_state): integer; cdecl;
+function getsubmapame(L: Plua_state): integer; cdecl;
+
+function drawlength_s(L: Plua_state): integer; cdecl;
+function getkey(L: Plua_state): integer; cdecl;
+
 implementation
 
 uses
@@ -467,6 +481,20 @@ begin
   lua_register(Lua_script, 'setscreenblendmode', SetScreenBlendMode);
   lua_register(Lua_script, 'playmovie', PlayMovieScript);
   lua_register(Lua_script, 'resetscene', ResetScene);
+
+    lua_register(Lua_script, 'setteam', setteam);
+  lua_register(Lua_script, 'getteam', getteam);
+
+  lua_register(Lua_script, 'read_mem', readmem);
+  lua_register(Lua_script, 'write_mem', writemem);
+
+  lua_register(Lua_script, 'getrolename', getrolename);
+  lua_register(Lua_script, 'getitemname', getitemname);
+  lua_register(Lua_script, 'getmagicname', getmagicname);
+  lua_register(Lua_script, 'getsubmapname', getsubmapame);
+
+  lua_register(Lua_script, 'drawlength', drawlength_s);
+  lua_register(Lua_script, 'getkey', getkey);
 
 end;
 
@@ -1547,10 +1575,8 @@ begin
     3: p1 := @Rmagic[num].Name;
   end;
   strw := lua_tostring(L, -3);
-  ;
   Result := 0;
-
-  for i := 0 to 4 do
+  for i := 0 to length(strw) do
   begin
     (p1 + i)^ := widechar(0);
     if i < length(strw) then
@@ -2264,6 +2290,80 @@ begin
   move(Rscene0[low(Rscene0)], Rscene[low(Rscene)], sizeof(Tscene) * length(Rscene));
   resetEntrance;
   Result := 0;
+end;
+
+function setteam(L: Plua_state): integer; cdecl;
+begin
+  TeamList[lua_tointeger(L, -2)] := lua_tointeger(L, -1);
+  Result := 0;
+end;
+
+function getteam(L: Plua_state): integer; cdecl;
+begin
+  lua_pushnumber(L, TeamList[lua_tointeger(L, -1)]);
+  Result := 1;
+end;
+
+function readmem(L: Plua_state): integer; cdecl;
+var
+  x: integer;
+begin
+  x := lua_tointeger(L, -1);
+  instruct_50e(26, 0, 0, x mod 65536, x div 65536, 9999, 0);
+  lua_pushnumber(L, x50[9999]);
+  Result := 1;
+end;
+
+function writemem(L: Plua_state): integer; cdecl;
+var
+  x: integer;
+begin
+  x := lua_tointeger(L, -2);
+  x50[9999] := lua_tointeger(L, -1);
+  instruct_50e(25, 1, 0, x mod 65536, x div 65536, 9999, 0);
+  Result := 0;
+end;
+
+function getrolename(L: Plua_state): integer; cdecl;
+begin
+  lua_pushstring(L, @Rrole[lua_tointeger(L, -1)].Name[0]);
+  Result := 1;
+end;
+
+function getitemname(L: Plua_state): integer; cdecl;
+begin
+  lua_pushstring(L, @Ritem[lua_tointeger(L, -1)].Name[0]);
+  Result := 1;
+end;
+
+function getmagicname(L: Plua_state): integer; cdecl;
+begin
+  lua_pushstring(L, @Rmagic[lua_tointeger(L, -1)].Name[0]);
+  Result := 1;
+end;
+
+function getsubmapame(L: Plua_state): integer; cdecl;
+begin
+  lua_pushstring(L, @Rscene[lua_tointeger(L, -1)].Name[0]);
+  Result := 1;
+end;
+
+function drawlength_s(L: Plua_state): integer; cdecl;
+var
+  str: utf8string;
+begin
+  str := lua_tostring(L, -1);
+  lua_pushinteger(L, drawlength(str));
+  Result := 1;
+end;
+
+function getkey(L: Plua_state): integer; cdecl;
+var
+  key: integer;
+begin
+  key := waitanykey();
+  lua_pushinteger(L, key);
+  Result := 1;
 end;
 
 end.

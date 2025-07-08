@@ -1846,7 +1846,7 @@ begin
           round(event.button.y / (RealScreen.h / screen.h)) - 2 * CENTER_y + 18) div 36 + Bx;
           Ayp := (round(event.button.x / (RealScreen.w / screen.w)) - CENTER_x + 2 *
           round(event.button.y / (RealScreen.h / screen.h)) - 2 * CENTER_y + 18) div 36 + By;}
-        if (abs(Axp - Bx) + abs(Ayp - By) <= step) and (BField[3, Axp, Ayp] >= 0) then
+        if (Axp >= 0) and (Ayp >= 0) and (abs(Axp - Bx) + abs(Ayp - By) <= step) and (BField[3, Axp, Ayp] >= 0) then
         begin
           Ax := Axp;
           Ay := Ayp;
@@ -4123,7 +4123,6 @@ begin
     end;
   end;
 end;
-
 
 
 //增加经验
@@ -8756,7 +8755,7 @@ begin
   begin
     if Brole[i].Team <> Brole[bnum].team then
     begin
-      Brole[i].ShowNumber := Rrole[Brole[i].rnum].CurrentHP -50;
+      Brole[i].ShowNumber := Rrole[Brole[i].rnum].CurrentHP - 50;
       Rrole[Brole[i].rnum].CurrentHP := 50;
       Rrole[Brole[i].rnum].CurrentMP := 50;
       Rrole[Brole[i].rnum].PhyPower := 50;
