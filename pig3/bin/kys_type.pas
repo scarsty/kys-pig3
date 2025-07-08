@@ -198,10 +198,11 @@ type
   TWarData = record
     case TCallType of
       Element: (Warnum: smallint;
-        Name: array [0 .. 9] of char;
+        Name1: array [0 .. 9] of char;
         BFieldNum, ExpGot, MusicNum: smallint;
         TeamMate, AutoTeamMate, TeamY, TeamX: array [0 .. 5] of smallint;
-        Enemy, EnemyY, EnemyX: array [0 .. 19] of smallint);
+        Enemy, EnemyY, EnemyX: array [0 .. 19] of smallint;
+        Name: array [0 .. 99] of char);
       Address: (Data: array [0 .. $5C] of smallint);
   end;
   //战场数据, 即war.sta文件的映像

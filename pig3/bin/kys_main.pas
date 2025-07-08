@@ -1059,15 +1059,11 @@ begin
     end;
   list.Free;
   //载入战斗名
-  list := TStringList.Create;
-  if FileExists(AppPath + 'txt/battlename.txt') then
-    list.LoadFromFile(AppPath + 'txt/battlename.txt');
-  setlength(BattleNames, list.Count);
-  for i := 0 to list.Count - 1 do
+  setlength(BattleNames, length(WarStaList));
+  for i := 0 to length(WarStaList) - 1 do
   begin
-    BattleNames[i] := list.Strings[i];
+    BattleNames[i] := WarStaList[i].Name;
   end;
-  list.Free;
 
   //载入对话
   list := TStringList.Create;

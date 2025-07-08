@@ -1656,10 +1656,10 @@ begin
       SDL_GetWMInfo(@info);
       if MessageBox(info.window, 'Are you sure to quit?', 'Confirmation', MB_ICONQUESTION or MB_YESNO) = idYes then
       Quit;}
-    {$ifdef windows}
-    if MessageDlg('Are you sure to quit?', mtConfirmation, [mbOK, mbCancel], 0) = idOk then
-      Quit;
-    {$endif}
+    //{$ifdef windows}
+    //if MessageDlg('Are you sure to quit?', mtConfirmation, [mbOK, mbCancel], 0) = idOk then
+    //  Quit;
+    //{$endif}
   end
   else
   begin
