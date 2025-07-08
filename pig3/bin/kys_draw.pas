@@ -1470,9 +1470,10 @@ begin
     DrawTPic(53, VirtualKeyX - VirtualKeySize - VirtualKeySpace, VirtualKeyY + VirtualKeySize + VirtualKeySpace, nil, 0, l);
     DrawTPic(52, VirtualKeyX, VirtualKeyY + VirtualKeySize * 2 + VirtualKeySpace * 2, nil, 0, d);
     DrawTPic(54, VirtualKeyX + VirtualKeySize + VirtualKeySpace, VirtualKeyY + VirtualKeySize + VirtualKeySpace, nil, 0, r);
-    DrawTPic(56, 0, 0, nil, 0, 50);
-    DrawTPic(57, center_x * 2 - 100, center_y * 2 - 100, nil, 0, 50);
-    //DrawTPic(55, 10, center_y * 2 - 70, nil, 0, 50);
+    DrawTPic(56, center_x * 2 - 100, center_y * 2 - 200, nil, 0, 50);
+    DrawTPic(57, center_x * 2 - 200, center_y * 2 - 100, nil, 0, 50);
+    DrawTPic(55, center_x - 120, center_y * 2 - 70, nil, 0, 50);
+    DrawTPic(58, center_x + 50, center_y * 2 - 70, nil, 0, 50);
   end;
 end;
 

@@ -1708,18 +1708,23 @@ var
 
   function inReturn(x, y: integer): boolean; inline;
   begin
-    Result := (x > CENTER_X * 2 - 100) and (y > CENTER_Y * 2 - 100);
+    Result := InRegion(x, y, CENTER_X * 2 - 200, CENTER_Y * 2 - 100, 100, 100);
   end;
 
   function inEscape(x, y: integer): boolean; inline;
   begin
-    Result := (x < 100) and (y < 100);
+    Result := InRegion(x, y, CENTER_X * 2 - 100, CENTER_Y * 2 - 200, 100, 100) or InRegion(x, y, center_x + 50, center_y * 2 - 70, 60, 60);
   end;
 
   function inSwitchShowVirtualKey(x, y: integer): boolean; inline;
   begin
     Result := False;
     //Result := (x < 100) and (y > CENTER_Y * 2 - 100);
+  end;
+
+  function inTab(x, y: integer): boolean; inline;
+  begin
+    Result := InRegion(x, y, center_x - 120, center_y * 2 - 70, 60, 60);
   end;
 
   function inVirtualKey(x, y: integer; var key: uint32): uint32;
@@ -1873,6 +1878,14 @@ begin
           event.type_ := SDL_KEYUP;
           event.key.keysym.sym := SDLK_RETURN;
           ConsoleLog('Change to return');
+        end
+        else if inTab(x, y) then
+        begin
+          //event.button.x := RESOLUTIONX div 2;
+          //event.button.y := RESOLUTIONY div 2;
+          event.type_ := SDL_KEYUP;
+          event.key.keysym.sym := SDLK_TAB;
+          ConsoleLog('Change to tab');
         end
         else if (showVirtualKey <> 0) and (inVirtualKey(x, y, VirtualKeyValue) <> 0) then
         begin
