@@ -28,7 +28,6 @@ uses
 
   {$IFDEF android}
 exports
-  SDL_main,
   Run,
   SendKeyEvent;
   {$ENDIF}
