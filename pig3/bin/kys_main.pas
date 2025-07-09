@@ -49,11 +49,9 @@ uses
   elfreader, {needed for reading ELF executables}
   machoreader; {needed for reading MACH-O executables}
 
-  //function main(paracount: integer; paras: PPChar): integer; stdcall; export;
-
 //程序重要子程
-procedure Run0;
-procedure Run; stdcall; export;
+function SDL_main(argc: integer; argv: ppansichar): integer;
+procedure Run;
 procedure Quit;
 procedure SetMODVersion;
 
@@ -155,11 +153,12 @@ uses
   result := 0;
   end;}
 
-procedure Run0;
+function SDL_main(argc: integer; argv: ppansichar): integer;
 var
   th: PSDL_Thread;
 begin
-  th := SDL_CreateThread(@Run, nil, nil);
+  Run;
+  Result := 0;
 end;
 
 //初始化字体, 音效, 视频, 启动游戏
