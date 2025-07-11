@@ -1718,8 +1718,8 @@ var
 
   function inSwitchShowVirtualKey(x, y: integer): boolean; inline;
   begin
-    Result := False;
-    //Result := (x < 100) and (y > CENTER_Y * 2 - 100);
+    //Result := False;
+    Result := (x < 100) and (y > CENTER_Y * 2 - 100);
   end;
 
   function inTab(x, y: integer): boolean; inline;
