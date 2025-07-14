@@ -1158,7 +1158,7 @@ begin
   //DrawTextWithRect(@str2[1], CENTER_X - 103, CENTER_Y - 30, 156, ColColor($64), ColColor($66));
   recordfreshscreen;
   UpdateAllScreen;
-  Result := EnterString(input_name, CENTER_X - 153, CENTER_Y + 10, 86, 100);
+  Result := EnterString(input_name, CENTER_X - 163, CENTER_Y + 10, 86, 100);
   freefreshscreen;
 
   if FULLSCREEN = 1 then
@@ -6030,6 +6030,7 @@ var
   tex: PSDL_Texture;
   sur: PSDL_Surface;
   dest, dest2, rectcut: TSDL_Rect;
+  destf: TSDL_FRect;
   tran: byte;
   bigtran, Mask, mixColor: uint32;
   engsize, x1, y1, w1, h1, alpha, mixAlpha: integer;
@@ -6248,7 +6249,8 @@ begin
     if SW_SURFACE = 0 then
     begin
       SDL_SetRenderTarget(render, screenTex);
-      SDL_RenderTexture(render, SimpleStateTex, nil, @dest2);
+      destf:=rect2f(dest2);
+      SDL_RenderTexture(render, SimpleStateTex, nil, @destf);
     end
     else
     begin

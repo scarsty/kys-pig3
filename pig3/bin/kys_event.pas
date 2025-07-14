@@ -6546,9 +6546,12 @@ begin
     i := i + 1;
     loadfreshscreen;
     str2 := '請輸入主角之姓名：' + str;
-    if (i mod 16 < 8) then str2 := str2 + '_';
+    if (i mod 16 < 8) then
+      str2 := str2 + '_'
+    else
+      str2 := str2 + ' ';
     w := drawlength(str2);
-    DrawTextWithRect(str2, x, y, 260, 0, 0, 0, 1);
+    DrawTextWithRect(str2, x, y, 280, 0, 0, 0, 1);
     //SDL_UpdateRect2(screen, 0, 0, 0, 0);
     SDL_PollEvent(@event);
     CheckBasicEvent;

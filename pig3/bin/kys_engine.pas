@@ -1067,7 +1067,8 @@ begin
         end;
       SDL_SetRenderTarget(render, TextScreenTex);
       SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
-      SDL_RenderTexture(render, tex, nil, @dest);
+      destf := rect2f(dest);
+      SDL_RenderTexture(render, tex, nil, @destf);
       SDL_DestroyTexture(tex);
       SDL_SetRenderTarget(render, ptex);
     end;
@@ -3047,7 +3048,7 @@ procedure DrawSimpleStatusByTeam(i, px, py: integer; mixColor: uint32; mixAlpha:
 var
   tempsur: PSDL_Surface;
   dest, dest2, rectcut: TSDL_Rect;
-  destf: TSDL_FRect;
+  destf, rectcutf: TSDL_FRect;
   x, y, w, h: integer;
   r, g, b, r1, g1, b1: byte;
 begin
@@ -3088,7 +3089,8 @@ begin
         SDL_SetTextureColorMod(SimpleTextTex[i], 255, 255, 255);
       SDL_SetRenderTarget(render, TextScreenTex);
       destf := rect2f(dest2);
-      SDL_RenderTexture(render, SimpleTextTex[i], @rectcut, @destf);
+      rectcutf := rect2f(rectcut);
+      SDL_RenderTexture(render, SimpleTextTex[i], @rectcutf, @destf);
       SDL_SetRenderTarget(render, screenTex);
     end;
   end
@@ -3424,6 +3426,7 @@ end;
 procedure CleanTextScreenRect(x, y, w, h: integer); overload;
 var
   dest: TSDL_Rect;
+  destf: TSDL_FRect;
 begin
   if (TEXT_LAYER = 1) then
   begin
@@ -3439,7 +3442,8 @@ begin
         SDL_SetRenderTarget(render, TextScreenTex);
         SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_NONE);
         SDL_SetRenderDrawColor(render, 255, 255, 255, 0);
-        SDL_RenderFillRect(render, @dest);
+        destf := rect2f(dest);
+        SDL_RenderFillRect(render, @destf);
         SDL_SetRenderTarget(render, screenTex);
       end
       else
