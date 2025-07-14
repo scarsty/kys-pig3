@@ -686,7 +686,7 @@ begin
   Cx := y1;
   Cy := x1;
   if s <> 0 then
-    while (SDL_PollEvent(@event) or true) do
+    while (SDL_PollEvent(@event) or True) do
     begin
       CheckBasicEvent;
       SDL_Delay(50);
@@ -700,7 +700,7 @@ begin
   s := sign(y2 - y1);
   i := y1 + s;
   if s <> 0 then
-    while (SDL_PollEvent(@event) or true) do
+    while (SDL_PollEvent(@event) or True) do
     begin
       CheckBasicEvent;
       SDL_Delay(50);
@@ -740,7 +740,7 @@ begin
   begin
     //showMR := false;
     i := beginpic;
-    while SDL_PollEvent(@event) or true do
+    while SDL_PollEvent(@event) or True do
     begin
       CheckBasicEvent;
       CurSceneRolePic := i div 2;
@@ -758,7 +758,7 @@ begin
   else
   begin
     i := beginpic;
-    while SDL_PollEvent(@event) or true do
+    while SDL_PollEvent(@event) or True do
     begin
       CheckBasicEvent;
       DData[CurScene, enum, 5] := i;
@@ -799,7 +799,7 @@ begin
   if s < 0 then
     Sface := 2;
   if s <> 0 then
-    while SDL_PollEvent(@event) or true do
+    while SDL_PollEvent(@event) or True do
     begin
       CheckBasicEvent;
       SDL_Delay(50);
@@ -822,7 +822,7 @@ begin
   if s < 0 then
     Sface := 0;
   if s <> 0 then
-    while SDL_PollEvent(@event) or true do
+    while SDL_PollEvent(@event) or True do
     begin
       SDL_Delay(50);
       SStep := SStep + 1;
@@ -1138,7 +1138,7 @@ begin
   SData[CurScene, 3, DData[CurScene, enum1, 10], DData[CurScene, enum1, 9]] := enum1;
   SData[CurScene, 3, DData[CurScene, enum2, 10], DData[CurScene, enum2, 9]] := enum2;
   i := 0;
-  while SDL_PollEvent(@event) or true do
+  while SDL_PollEvent(@event) or True do
   begin
     CheckBasicEvent;
     DData[CurScene, enum1, 5] := beginpic1 + i;
@@ -1323,7 +1323,7 @@ begin
   SData[CurScene, 3, DData[CurScene, enum2, 10], DData[CurScene, enum2, 9]] := enum2;
   SData[CurScene, 3, DData[CurScene, enum3, 10], DData[CurScene, enum3, 9]] := enum3;
   i := 0;
-  while SDL_PollEvent(@event) or true do
+  while SDL_PollEvent(@event) or True do
   begin
     CheckBasicEvent;
     DData[CurScene, enum1, 5] := beginpic1 + i;
@@ -2852,7 +2852,7 @@ begin
     ix := 0;
     iy := 0;
     skipSync := False;
-    while SDL_PollEvent(@event) or true do
+    while SDL_PollEvent(@event) or True do
     begin
       CheckBasicEvent;
       //部分功能
@@ -3406,7 +3406,7 @@ var
   StateList: array of integer;
   i, n, menuid: integer;
   temp, str1, str2, statusstr, str: utf8string;
-  escape, refresh: Boolean;
+  escape, refresh: boolean;
   strs: array [0 .. 21] of utf8string;
   color1, color2: uint32;
 begin
@@ -5780,7 +5780,7 @@ begin
     DrawSPic(4678 + DanceList[i], 320 - 43 * (DanceLong div 2) + i * 43, 120 - 62); //end;70
     DanceList[i] := tmp;
   end;
-  while SDL_PollEvent(@event) or true do
+  while SDL_PollEvent(@event) or True do
   begin
     now := SDL_GetTicks;
     //70%,turn red
@@ -5991,7 +5991,7 @@ begin
   lr := 0;
   select := 0;
   sure := False;
-  while SDL_PollEvent(@event) or true do
+  while SDL_PollEvent(@event) or True do
   begin
     if refresh then
     begin
@@ -6244,7 +6244,7 @@ begin
   end;
   str := '你的位置';
   strboat := '船的位置';
-  while SDL_PollEvent(@event) or true do
+  while SDL_PollEvent(@event) or True do
   begin
     if (n mod 10 = 0) then
     begin
@@ -6425,7 +6425,7 @@ begin
   sure := 0; //1-键盘按下, 2-鼠标按下
   pvalue := -1;
   pmenu := -1;
-  while SDL_PollEvent(@event) or true do
+  while SDL_PollEvent(@event) or True do
   begin
     CheckBasicEvent;
     case event.type_ of
@@ -6540,7 +6540,7 @@ begin
   r.w := w;
   r.h := h;
   SDL_StartTextInput(window);
-  SDL_SetTextInputArea(window, @r,0);
+  SDL_SetTextInputArea(window, @r, 0);
   while True do
   begin
     i := i + 1;

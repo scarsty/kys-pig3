@@ -482,7 +482,7 @@ begin
   lua_register(Lua_script, 'playmovie', PlayMovieScript);
   lua_register(Lua_script, 'resetscene', ResetScene);
 
-    lua_register(Lua_script, 'setteam', setteam);
+  lua_register(Lua_script, 'setteam', setteam);
   lua_register(Lua_script, 'getteam', getteam);
 
   lua_register(Lua_script, 'read_mem', readmem);

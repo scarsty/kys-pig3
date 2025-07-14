@@ -43,7 +43,7 @@ uses
   //ziputils,
   Generics.Collections,
   {$IFDEF windows}
-  //potdll,
+  potdll,
   {$ENDIF}
   winpeimagereader, {need this for reading exe info}
   elfreader, {needed for reading ELF executables}
@@ -134,6 +134,8 @@ function CheckString(str: utf8string): boolean;
 
 procedure SpecialFunction;
 
+function SDL_GetAndroidExternalStoragePath(): pansichar; cdecl; external 'libSDL3.so';
+
 //输出函数
 //procedure write1();
 
@@ -192,7 +194,7 @@ begin
     FileClose(filecreate(str));
   SDL_SetHint(SDL_HINT_ORIENTATIONS, 'LandscapeLeft LandscapeRight');
   CellPhone := 1;
-  render_str:= '';
+  render_str := '';
   {$ENDIF}
   //versionstr :=  SDL_GetAndroidExternalStoragePath();
   //test;
@@ -224,7 +226,7 @@ begin
   //找渲染器
 
   if RENDERER = 1 then
-    render_str:= 'opengl';
+    render_str := 'opengl';
 
   if RENDERER = 2 then
   begin
@@ -329,7 +331,7 @@ begin
 
   ConsoleLog('Initial ended, start game');
   {$IFDEF windows}
-  //smallpot := PotCreateFromWindow(window);
+  smallpot := PotCreateFromWindow(window);
   {$ENDIF}
   Start;
   Quit;
@@ -540,7 +542,7 @@ begin
   LoadR(0);
   menu := 0;
   //ScreenBlendMode := 1;
-  while (SDL_PollEvent(@event) or true) do
+  while (SDL_PollEvent(@event) or True) do
   begin
     Redraw;
     //DrawHeadPic(headnum, CENTER_X - 250, CENTER_Y - 30, 0, alpha, 0, 0);
@@ -673,7 +675,7 @@ begin
     DrawTPic(9, x, y, nil, 0, 100 - i * 5);
     UpdateAllScreen;
     SDL_Delay(20);
-    if SDL_PollEvent(@event) or true then
+    if SDL_PollEvent(@event) or True then
     begin
       CleanKeyValue;
       if ((event.key.key = SDLK_ESCAPE) or (event.button.button = SDL_BUTTON_RIGHT)) then
@@ -712,7 +714,7 @@ begin
     DrawTPic(9, x, y);
     UpdateAllScreen;
     SDL_Delay(20);
-    if SDL_PollEvent(@event) or true then
+    if SDL_PollEvent(@event) or True then
     begin
       if ((event.key.key = SDLK_ESCAPE) or (event.button.button = SDL_BUTTON_RIGHT)) then
         exit;
@@ -737,7 +739,7 @@ begin
     DrawTPic(10, x + i * 5 + 34, y);
     UpdateAllScreen;
     SDL_Delay(20);
-    if SDL_PollEvent(@event) or true then
+    if SDL_PollEvent(@event) or True then
     begin
       if ((event.key.key = SDLK_ESCAPE) or (event.button.button = SDL_BUTTON_RIGHT)) then
         exit;
@@ -756,7 +758,7 @@ begin
     DrawTPic(14 + i, x - 40, CENTER_Y - 30 + 150, nil, 0, 0);
     UpdateAllScreen;
     SDL_Delay(20);
-    if SDL_PollEvent(@event) or true then
+    if SDL_PollEvent(@event) or True then
     begin
       if ((event.key.key = SDLK_ESCAPE) or (event.button.button = SDL_BUTTON_RIGHT)) then
         exit;
@@ -774,7 +776,7 @@ begin
     end;
     UpdateAllScreen;
     SDL_Delay(20);
-    if SDL_PollEvent(@event) or true then
+    if SDL_PollEvent(@event) or True then
     begin
       if ((event.key.key = SDLK_ESCAPE) or (event.button.button = SDL_BUTTON_RIGHT)) then
         exit;
@@ -1919,7 +1921,7 @@ begin
   //SDL_EventState(SDL_mousebuttonDOWN, SDL_ENABLE);
   event.key.key := 0;
   event.button.button := 0;
-  while (SDL_PollEvent(@event) or true) do
+  while (SDL_PollEvent(@event) or True) do
   begin
     CheckBasicEvent;
     if (event.type_ = SDL_EVENT_KEY_UP) or (event.type_ = SDL_EVENT_MOUSE_BUTTON_UP) then
@@ -1987,7 +1989,7 @@ begin
   stillcount := 0;
   MStep := 0;
   //事件轮询(并非等待)
-  while SDL_PollEvent(@event) or true do
+  while SDL_PollEvent(@event) or True do
   begin
     //如果当前处于标题画面, 则退出, 用于战斗失败
     if where >= 3 then
@@ -2690,7 +2692,7 @@ begin
   CheckEvent3;
   //if SCENEAMI = 2 then
   //UpDate := SDL_CreateThread(@UpdateSceneAmi, nil, nil);
-  while (SDL_PollEvent(@event) or true) do
+  while (SDL_PollEvent(@event) or True) do
   begin
     timer1 := SDL_GetTicks();
     now2 := now2 + 20;
@@ -3801,7 +3803,7 @@ begin
   premenu := -1;
   event.key.key := 0;
   event.button.button := 0;
-  while SDL_PollEvent(@event) or true do
+  while SDL_PollEvent(@event) or True do
   begin
     if menu <> premenu then
     begin
@@ -3931,8 +3933,8 @@ begin
     UpdateAllScreen;
     SDL_PollEvent(@event);
     CheckBasicEvent;
-    if PRESENT_SYNC = 0 then
-      SDL_Delay(10);
+    //if PRESENT_SYNC = 0 then
+    SDL_Delay(10);
   end;
   //DrawMMap;
   //showmessage(inttostr(where));
@@ -3953,7 +3955,7 @@ begin
     end;
   end;
 
-  while (SDL_PollEvent(@event) or true) do
+  while (SDL_PollEvent(@event) or True) do
   begin
     if where >= 3 then
     begin
@@ -4108,8 +4110,8 @@ begin
       UpdateAllScreen;
       SDL_PollEvent(@event);
       CheckBasicEvent;
-      if PRESENT_SYNC = 0 then
-        SDL_Delay(10);
+      //if PRESENT_SYNC = 0 then
+      SDL_Delay(10);
     end;
   end;
 
@@ -4569,7 +4571,7 @@ begin
   event.key.key := 0;
   event.button.button := 0;
   refresh := True;
-  while (SDL_PollEvent(@event) or true) do
+  while (SDL_PollEvent(@event) or True) do
   begin
     if refresh then
     begin
@@ -5425,7 +5427,7 @@ begin
   f := 0;
   equip := 0;
   preequip := -1;
-  while SDL_PollEvent(@event) or true do
+  while SDL_PollEvent(@event) or True do
   begin
     if (menu <> premenu) or (equip <> preequip) then
     begin
@@ -6361,7 +6363,7 @@ begin
     else
       maxselect := 2;
   end;
-  while SDL_PollEvent(@event) or true do
+  while SDL_PollEvent(@event) or True do
   begin
     if (menu <> premenu) or (select <> preselect) then
     begin
@@ -6774,7 +6776,7 @@ begin
   event.button.button := 0;
   intitle := 1; //该值表示是否在标题栏处, 用于判断是否按下
 
-  while (SDL_PollEvent(@event) or true) do
+  while (SDL_PollEvent(@event) or True) do
   begin
     if (menu <> pmenu) then
     begin
@@ -6971,7 +6973,7 @@ begin
   arrowy := 4;
   arrowlx := x + 170;
   arrowrx := x + 235;
-  while SDL_PollEvent(@event) or true do
+  while SDL_PollEvent(@event) or True do
   begin
     if (menu <> pmenu) or (valuechanged = 1) or (leftright <> 0) then
     begin
@@ -7245,10 +7247,10 @@ begin
       SDL_SetRenderTarget(render, nil);
       SDL_RenderClear(render);
       if FULLSCREEN = 0 then
-        SDL_SetWindowFullscreen(window, false)
+        SDL_SetWindowFullscreen(window, False)
       else
       begin
-        SDL_SetWindowFullscreen(window, true);
+        SDL_SetWindowFullscreen(window, True);
       end;
       SDL_SetRenderTarget(render, screenTex);
       MenuEscType := -1;
@@ -7983,7 +7985,7 @@ begin
     i := 0;
     //普通事件写成子程, 需跳转事件写成函数
     len := length(e);
-    while SDL_PollEvent(@event) or true do
+    while SDL_PollEvent(@event) or True do
     begin
       CheckBasicEvent;
       if (i >= len - 1) then
@@ -8673,7 +8675,7 @@ begin
   end
   else
   begin
-    sur := SDL_CreateSurface( texw, texh, SDL_GetPixelFormatForMasks(32, Rmask, Gmask, Bmask, Amask));
+    sur := SDL_CreateSurface(texw, texh, SDL_GetPixelFormatForMasks(32, Rmask, Gmask, Bmask, Amask));
     if TEXT_LAYER = 0 then
       SDL_SetSurfaceBlendMode(sur, SDL_BLENDMODE_BLEND)
     else
@@ -8721,7 +8723,7 @@ begin
   i := 0;
   CleanTextScreen;
   HaveText := 1;
-  while SDL_PollEvent(@event) or true do
+  while SDL_PollEvent(@event) or True do
   begin
     dest.x := 0;
     dest.y := -i;

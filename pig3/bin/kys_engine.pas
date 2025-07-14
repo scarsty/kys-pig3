@@ -21,7 +21,7 @@ uses
   bass,
   Math,
   {$IFDEF windows}
-  //potdll,
+  potdll,
   {$endif}
   //mythoutput,
   libzip;
@@ -2878,7 +2878,7 @@ end;
 function PlayMovie(filename: utf8string): boolean;
 begin
   {$IFDEF windows}
-  //PotInputVideo(smallpot, @filename[1]);
+  PotPlayVideo(smallpot, @filename[1], VOLUME / 100.0);
   {$ENDIF}
 end;
 
@@ -3176,6 +3176,7 @@ begin
     tex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, w, h);
     SDL_SetRenderTarget(render, tex);
     destf := rect2f(dest);
+    //SDL_SetTextureBlendMode(screenTex, SDL_BLENDMODE_NONE);
     SDL_RenderTexture(render, screenTex, @destf, nil);
     SDL_SetRenderTarget(render, screenTex);
     FreshScreen.Add(tex);
@@ -3220,6 +3221,7 @@ begin
         dest.h := round(hf);
         CleanTextScreenRect(x, y, dest.w, dest.h);
         destf := rect2f(dest);
+        SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_NONE);
         SDL_RenderTexture(render, tex, nil, @destf);
       end;
     end

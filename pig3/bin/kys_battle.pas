@@ -916,7 +916,7 @@ begin
     begin
       Redraw;
       act := 0;
-      while SDL_PollEvent(@event) or true do
+      while SDL_PollEvent(@event) or True do
       begin
         for i := 0 to BRoleAmount - 1 do
         begin
@@ -1624,7 +1624,7 @@ begin
       end;
     end;
     a := BField[3, Ax, Ay] - 1;
-    while (SDL_PollEvent(@event) or true) do
+    while (SDL_PollEvent(@event) or True) do
     begin
       CheckBasicEvent;
       if sign(linebx[a] - Bx) > 0 then
@@ -3309,7 +3309,7 @@ begin
   i := 0;
   if endpic > 0 then
   begin
-    while (SDL_PollEvent(@event) or true) do
+    while (SDL_PollEvent(@event) or True) do
     begin
       CheckBasicEvent;
       DrawBFieldWithEft(i, beginpic, endpic, min, bnum, aimMode, mode, $FFFFFFFF, enum);
@@ -3856,7 +3856,7 @@ begin
     Brole[i].ShowNumber := -1;
   end;
   i1 := 0;
-  while SDL_PollEvent(@event) or true do
+  while SDL_PollEvent(@event) or True do
   begin
     CheckBasicEvent;
     Redraw;
@@ -3906,7 +3906,7 @@ begin
     y := (Brole[bnum].X - Bx) * 9 + (Brole[bnum].Y - By) * 9 + CENTER_Y - 40;
     i1 := 0;
     i2 := 5 - sign(up) * 5;
-    while SDL_PollEvent(@event) or true do
+    while SDL_PollEvent(@event) or True do
     begin
       CheckBasicEvent;
       Redraw;
@@ -3968,7 +3968,7 @@ begin
   end;
   //撤退渐变效果
   j := 0;
-  while (SDL_PollEvent(@event) or true) and needeffect do
+  while (SDL_PollEvent(@event) or True) and needeffect do
   begin
     CheckBasicEvent;
     for i := 0 to BRoleAmount - 1 do
@@ -4509,7 +4509,7 @@ begin
     //LoadIdxGrp(filename + '.idx', filename + '.grp', FIdx, FPic);
 
     i := beginpic;
-    while (SDL_PollEvent(@event) or true) do
+    while (SDL_PollEvent(@event) or True) do
     begin
       CheckBasicEvent;
       DrawBFieldWithAction(bnum, i);

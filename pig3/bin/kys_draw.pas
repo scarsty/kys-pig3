@@ -626,7 +626,7 @@ procedure DrawBlackScreen;
     distance: real;
     alpha: byte;
   begin
-    BlackScreenSur := SDL_CreateSurface( CENTER_X * 2, CENTER_Y * 2, SDL_GetPixelFormatForMasks(32, Rmask, Gmask, Bmask, Amask));
+    BlackScreenSur := SDL_CreateSurface(CENTER_X * 2, CENTER_Y * 2, SDL_GetPixelFormatForMasks(32, Rmask, Gmask, Bmask, Amask));
     SDL_FillSurfaceRect(BlackScreenSur, nil, MapRGBA(0, 0, 0, 255));
     for i1 := 0 to CENTER_X * 2 - 1 do
       for i2 := 0 to CENTER_Y * 2 - 1 do
@@ -1383,7 +1383,7 @@ begin
   CalLTPosOnImageByCenter(x, y, dest.x, dest.y);
   dest.w := CENTER_X * 2;
   dest.h := CENTER_Y * 2;
-  destf:=Rect2f(dest);
+  destf := Rect2f(dest);
   if SW_SURFACE = 0 then
   begin
     case where of
