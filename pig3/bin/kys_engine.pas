@@ -173,8 +173,8 @@ function InRegion(x, x1, x2: integer): boolean; overload;
 procedure tic;
 procedure toc;
 
-procedure ConsoleLog(formatstring: utf8string; content: array of const; cr: boolean = True); overload; inline;
-procedure ConsoleLog(formatstring: utf8string = ''; cr: boolean = True); overload; inline;
+procedure kyslog(formatstring: utf8string; content: array of const; cr: boolean = True); overload; inline;
+procedure kyslog(formatstring: utf8string = ''; cr: boolean = True); overload; inline;
 
 function utf8follow(c1: utf8char): integer;
 
@@ -729,9 +729,9 @@ begin
     {try
       SDL_DestroySurface(tempsur);
     except
-      ConsoleLog('Free font surface %s %d failed', [widechar(num), size0]);
+      kyslog('Free font surface %s %d failed', [widechar(num), size0]);
     end;}
-    ConsoleLog(format('%s(%d)', [pt, CharTex.Count]), False);
+    kyslog(format('%s(%d)', [pt, CharTex.Count]), False);
     if usesur = 0 then
     begin
       tex := SDL_CreateTextureFromSurface(render, sur);
@@ -1822,7 +1822,7 @@ begin
           //event.button.y := RESOLUTIONY div 2;
           event.button.button := SDL_BUTTON_RIGHT;
           event.key.key := SDLK_ESCAPE;
-          ConsoleLog('Change to escape');
+          kyslog('Change to escape');
         end
         else if inReturn(x, y) then
         begin
@@ -1830,7 +1830,7 @@ begin
           //event.button.y := RESOLUTIONY div 2;
           event.type_ := SDL_EVENT_KEY_UP;
           event.key.key := SDLK_RETURN;
-          ConsoleLog('Change to return');
+          kyslog('Change to return');
         end
         else if inTab(x, y) then
         begin
@@ -1838,7 +1838,7 @@ begin
           //event.button.y := RESOLUTIONY div 2;
           event.type_ := SDL_EVENT_KEY_UP;
           event.key.key := SDLK_TAB;
-          ConsoleLog('Change to tab');
+          kyslog('Change to tab');
         end
         else if (showVirtualKey <> 0) and (inVirtualKey(x, y, VirtualKeyValue) <> 0) then
         begin
@@ -2196,7 +2196,7 @@ begin
   z := nil;
   if PNG_TILE = 2 then
   begin
-    ConsoleLog('Searching file %s.zip', [path]);
+    kyslog('Searching file %s.zip', [path]);
     z := zip_open(PChar(AppPath + path + '.zip'), ZIP_RDONLY, nil);
     if z <> nil then
     begin
@@ -2265,15 +2265,15 @@ begin
           setlength(Pointers, Frame);
         end;
       end;
-      //ConsoleLog('%d index, %d real tiles', [Result, Count]);
+      //kyslog('%d index, %d real tiles', [Result, Count]);
     end
     else
-      ConsoleLog('Can''t find zip file');
+      kyslog('Can''t find zip file');
   end;
 
   if (PNG_TILE = 1) or (z = nil) then
   begin
-    ConsoleLog('Searching index of png files %s/index.ka', [path]);
+    kyslog('Searching index of png files %s/index.ka', [path]);
     path := path + '/';
     if (frame <> nil) then
     begin
@@ -2337,19 +2337,19 @@ begin
     end;
   end;
 
-  ConsoleLog('%d index, %d real tiles', [Result, Count]);
+  kyslog('%d index, %d real tiles', [Result, Count]);
 
   for i := 0 to Result - 1 do
     PNGIndexArray[i].BeginPointer := po;
 
   if LoadPic = 1 then
   begin
-    ConsoleLog('Now loading...', False);
+    kyslog('Now loading...', False);
     for i := 0 to Result - 1 do
     begin
       LoadOnePNGTexture(path, z, PNGIndexArray[i], 1);
     end;
-    ConsoleLog('end');
+    kyslog('end');
   end;
   zip_close(z);
   //FreeFileBuffer(p);
@@ -2529,7 +2529,7 @@ begin
   off := pinteger(p + 4 + num * 4)^ + 8;
   index := pinteger(p + off)^;
   len := pinteger(p + off + 4)^;
-  //ConsoleLog('%d %d %d', [num, off, len]);
+  //kyslog('%d %d %d', [num, off, len]);
   setlength(Result, len);
   move((p + index)^, Result[1], len);
 end;
@@ -2855,7 +2855,7 @@ begin
     if newsur then
       SDL_DestroySurface(sur);
   except
-    ConsoleLog('Bad PNGINDEX, filenum %d, width %d, height %d', [PNGIndex.FileNum, PNGIndex.w, PNGIndex.h]);
+    kyslog('Bad PNGINDEX, filenum %d, width %d, height %d', [PNGIndex.FileNum, PNGIndex.w, PNGIndex.h]);
   end;
 end;
 
@@ -2939,7 +2939,7 @@ begin
     scale := 1
   else
     scale := min(RESOLUTIONX / CENTER_X / 2, RESOLUTIONY / CENTER_Y / 2);
-  //ConsoleLog('scale is %f', [scale]);
+  //kyslog('scale is %f', [scale]);
   //非初始化时先关闭字体
   if force <> -1 then
   begin
@@ -2964,7 +2964,7 @@ begin
     chnsize := round(chnsize * scale);
     engsize := round(engsize * scale);
   end;
-  //ConsoleLog('size is %d and %d', [chnsize, engsize]);
+  //kyslog('size is %d and %d', [chnsize, engsize]);
   //{$ifdef android}
   {p := ReadFileToBuffer(nil, putf8char(AppPath + CHINESE_FONT), -1, 1);
     font := TTF_OpenFontRW(SDL_IOFromMem(p, FileGetlength(putf8char(AppPath + CHINESE_FONT))), 1, chnsize);
@@ -2979,16 +2979,16 @@ begin
 
   CHINESE_FONT_REALSIZE := chnsize;
   ENGLISH_FONT_REALSIZE := engsize;
-  //ConsoleLog('real size is %d and %d', [CHINESE_FONT_REALSIZE, ENGLISH_FONT_REALSIZE]);
+  //kyslog('real size is %d and %d', [CHINESE_FONT_REALSIZE, ENGLISH_FONT_REALSIZE]);
 
   if (font = nil) or (engfont = nil) then
-    ConsoleLog('Read fonts failed');
+    kyslog('Read fonts failed');
 
   //测试中文字体的空格宽度
   Text := TTF_RenderText_solid(font, @word[0], 0, tempcolor);
   CHNFONT_SPACEWIDTH := Text.w;
   SDL_DestroySurface(Text);
-  //ConsoleLog('space size is %d', [CHNFONT_SPACEWIDTH]);
+  //kyslog('space size is %d', [CHNFONT_SPACEWIDTH]);
   //writeln(chnsize, engsize);
 end;
 
@@ -3188,7 +3188,7 @@ begin
     FreshScreen.Add(sur);
   end;
   //CleanTextScreenRect(x, y, w, h);
-  ConsoleLog('Now the amount of fresh screens is %d', [FreshScreen.Count]);
+  kyslog('Now the amount of fresh screens is %d', [FreshScreen.Count]);
 
 end;
 
@@ -3659,7 +3659,7 @@ end;
 procedure toc;
 begin
   QueryPerformanceCounter(cccc2);
-  ConsoleLog(' %3.2f us', [(cccc2 - cccc1) / tttt * 1E6]);
+  kyslog(' %3.2f us', [(cccc2 - cccc1) / tttt * 1E6]);
 end;
 
 {$ELSE}
@@ -3671,12 +3671,12 @@ end;
 
 procedure toc;
 begin
-  ConsoleLog(' %d ms', [SDL_GetTicks - tttt]);
+  kyslog(' %d ms', [SDL_GetTicks - tttt]);
 end;
 
 {$ENDIF}
 
-procedure ConsoleLog(formatstring: utf8string; content: array of const; cr: boolean = True); overload; inline;
+procedure kyslog(formatstring: utf8string; content: array of const; cr: boolean = True); overload; inline;
 var
   i: integer;
   str: utf8string;
@@ -3698,7 +3698,7 @@ begin
   {$ENDIF}
 end;
 
-procedure ConsoleLog(formatstring: utf8string = ''; cr: boolean = True); overload; inline;
+procedure kyslog(formatstring: utf8string = ''; cr: boolean = True); overload; inline;
 var
   i: integer;
   str: utf8string;

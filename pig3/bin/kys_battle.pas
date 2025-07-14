@@ -1505,7 +1505,7 @@ begin
       begin
         if (event.key.key = SDLK_RETURN) or (event.key.key = SDLK_SPACE) then
         begin
-          ConsoleLog('%d/%d/%d', [event.type_, event.key.key, menu]);
+          kyslog('%d/%d/%d', [event.type_, event.key.key, menu]);
           break;
         end;
         if (event.key.key = SDLK_ESCAPE) then
@@ -6651,7 +6651,7 @@ begin
       begin
         pFunc(bnum, mnum, level);
         Result := True;
-        ConsoleLog('Use Special Ability %d, level %d', [mnum, level]);
+        kyslog('Use Special Ability %d, level %d', [mnum, level]);
       end;
     end;
 end;
@@ -8422,7 +8422,7 @@ begin
             namemagic := Rrole[Brole[i].rnum].Name + StringOfChar(' ', 10 - DrawLength(Rrole[Brole[i].rnum].Name)) + Rmagic[Rrole[Brole[i].rnum].magic[i1]].Name;
             //menustring[amount] := putf8char(@namemagic);
             menuString[amount] := namemagic;
-            ConsoleLog(menuString[amount]);
+            kyslog(menuString[amount]);
             amount := amount + 1;
           end;
         end;
@@ -8446,7 +8446,7 @@ begin
             mnumarray[amount] := Rrole[rnum].magic[0];
             namemagic := Rrole[rnum].Name + StringOfChar(' ', 10 - DrawLength(Rrole[rnum].Name)) + Rmagic[Rrole[rnum].magic[0]].Name;
             menuString[amount] := namemagic;
-            ConsoleLog(menuString[amount]);
+            kyslog(menuString[amount]);
             amount := amount + 1;
           end;
         end;

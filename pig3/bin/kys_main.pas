@@ -183,7 +183,7 @@ begin
   AppPath := '../game/';
   {$ENDIF}
   {$IFDEF android}
-  ConsoleLog('Run for android');
+  kyslog('Run for android');
   AppPath := '/sdcard/kys-pig3/game/';
   if not fileexists(AppPath + 'config/kysmod.ini') then
     AppPath := SDL_GetAndroidExternalStoragePath() + '/game/';
@@ -204,7 +204,7 @@ begin
     setlength(AppPath, length(AppPath) - 1);
     AppPath := AppPath + ParamStr(1) + '/';
   end;
-  ConsoleLog(AppPath);
+  kyslog(AppPath);
 
   ReadFiles;
 
@@ -248,13 +248,13 @@ begin
   //if PRESENT_SYNC <> 0 then
   //  RenderFlag := RenderFlag or SDL_RENDERER_PRESENTVSYNC;
 
-  ConsoleLog('Creating window with width and height %d and %d', [RESOLUTIONX, RESOLUTIONY]);
+  kyslog('Creating window with width and height %d and %d', [RESOLUTIONX, RESOLUTIONY]);
   window := SDL_CreateWindow(putf8char(TitleString), RESOLUTIONX, RESOLUTIONY, WindowFlag);
   SDL_GetWindowSize(window, @RESOLUTIONX, @RESOLUTIONY);
 
   if (CellPhone = 1) then
   begin
-    ConsoleLog('Width and height of the window is %d, %d', [RESOLUTIONX, RESOLUTIONY]);
+    kyslog('Width and height of the window is %d, %d', [RESOLUTIONX, RESOLUTIONY]);
     if (RESOLUTIONY > RESOLUTIONX) then
       ScreenRotate := 0;
     //SDL_WarpMouseInWindow(window, RESOLUTIONX, RESOLUTIONY);
@@ -263,7 +263,7 @@ begin
   if SW_OUTPUT <> 0 then
     RealScreen := SDL_GetWindowSurface(window);
 
-  ConsoleLog('Creating renderer');
+  kyslog('Creating renderer');
   render := SDL_CreateRenderer(window, render_str);
 
   logo := img_loadtexture(render, putf8char(AppPath + 'resource/logo.png'));
@@ -279,27 +279,27 @@ begin
   SDL_RenderPresent(render);
   SDL_DestroyTexture(logo);
 
-  ConsoleLog('All pictures will be loaded as surface: %d', [SW_SURFACE]);
-  ConsoleLog('Text will be drawn on single layer: %d', [TEXT_LAYER]);
+  kyslog('All pictures will be loaded as surface: %d', [SW_SURFACE]);
+  kyslog('Text will be drawn on single layer: %d', [TEXT_LAYER]);
 
   ImageWidth := (36 * 32 + CENTER_X) * 2;
   ImageHeight := (18 * 32 + CENTER_Y) * 2;
 
   //初始化字体
-  ConsoleLog('Try to load the fonts');
+  kyslog('Try to load the fonts');
   TTF_Init();
   SetFontSize(20, 18, -1);
 
-  ConsoleLog('Creating rendered textures');
+  kyslog('Creating rendered textures');
   CreateMainRenderTextures;
   CreateAssistantRenderTextures;
 
-  ConsoleLog('Initial lua script environment');
+  kyslog('Initial lua script environment');
   InitialScript;
-  ConsoleLog('Initial music');
+  kyslog('Initial music');
   InitialMusic;
 
-  ConsoleLog('Record the state of the direction keys');
+  kyslog('Record the state of the direction keys');
   //mutex := SDL_CreateMutex();
   keystate := putf8char(SDL_GetKeyboardState(nil));
   keyup := puint8(keystate + sdl_SCANCODE_up);
@@ -307,7 +307,7 @@ begin
   keyleft := puint8(keystate + sdl_SCANCODE_left);
   keyright := puint8(keystate + sdl_SCANCODE_right);
 
-  ConsoleLog('Set event filter');
+  kyslog('Set event filter');
   SDL_SetEventFilter(@EventFilter, nil);
 
   {if CellPhone = 0 then
@@ -315,7 +315,7 @@ begin
     SDL_InitSubSystem(SDL_INIT_JOYSTICK);
     if SDL_NumJoysticks() > 0 then
     begin
-      ConsoleLog('Found joystick');
+      kyslog('Found joystick');
       joy := SDL_OpenJoystick(0);
       if SDL_GetNumJoystickAxes(joy) > 0 then
       begin
@@ -326,10 +326,10 @@ begin
   end
   else
   begin
-    ConsoleLog('Ignore joystick in cellphone ');
+    kyslog('Ignore joystick in cellphone ');
   end;}
 
-  ConsoleLog('Initial ended, start game');
+  kyslog('Initial ended, start game');
   {$IFDEF windows}
   smallpot := PotCreateFromWindow(window);
   {$ENDIF}
@@ -372,9 +372,9 @@ begin
   try
     FileVerInfo.FileName := ParamStr(0);
     FileVerInfo.ReadFileInfo;
-    ConsoleLog('%s', [FileVerInfo.FileName]);
+    kyslog('%s', [FileVerInfo.FileName]);
     versionstr := versionstr + '-' + FileVerInfo.VersionStrings.Values['FileVersion'];
-    ConsoleLog('%s', [versionstr]);
+    kyslog('%s', [versionstr]);
   finally
     FileVerInfo.Free;
   end;
@@ -499,13 +499,13 @@ begin
     ScreenBlendMode := 1;
     end;}
 
-  ConsoleLog('Play movie and start music');
+  kyslog('Play movie and start music');
   if (OPEN_MOVIE = 1) then
     PlayMovie(AppPath + 'movie/1.wmv');
   SDL_GetWindowSize(window, @RESOLUTIONX, @RESOLUTIONY);
   ResizeWindow(RESOLUTIONX, RESOLUTIONY);
   PlayMP3(StartMusic, -1);
-  ConsoleLog('Begin.....');
+  kyslog('Begin.....');
   Redraw;
   UpdateAllScreen;
 
@@ -538,7 +538,7 @@ begin
   headnum := 0;
   alpha := 100;
   alphastep := -2;
-  consolelog('Try to load save 0');
+  kyslog('Try to load save 0');
   LoadR(0);
   menu := 0;
   //ScreenBlendMode := 1;
@@ -784,7 +784,7 @@ begin
     end;
   end;
   where := 3;
-  Consolelog('begin end');
+  kyslog('begin end');
 end;
 
 //开头字幕
@@ -844,7 +844,7 @@ begin
     Quit;
 
   Kys_ini := TIniFile.Create(iniFilename);
-  ConsoleLog('Find ini file: %s', [iniFilename]);
+  kyslog('Find ini file: %s', [iniFilename]);
   try
     SIMPLE := Kys_ini.ReadInteger('system', 'SIMPLE', 0);
     //FULLSCREEN := Kys_ini.ReadInteger('system', 'FULLSCREEN', 0);
@@ -1186,7 +1186,7 @@ begin
       Inc(p1);
     end;
     DivideName(Rrole[0].Name, surname, givenname);
-    ConsoleLog('full: %s, surname: %s, givenname: %s', [Rrole[0].Name, surname, givenname]);
+    kyslog('full: %s, surname: %s, givenname: %s', [Rrole[0].Name, surname, givenname]);
     Redraw;
     str2 := '資質';
     repeat
@@ -1467,7 +1467,7 @@ var
 
 begin
   Result := True;
-  consolelog('%d', [lenr]);
+  kyslog('%d', [lenr]);
   p := StrAlloc(LenR + 8192);
 
 
@@ -1735,7 +1735,7 @@ begin
   //物品修正, 判断标准为最后一个物品的数量
   {if Ritemlist[MAX_ITEM_AMOUNT - 1].Amount <> 0 then
   begin
-    ConsoleLog('Item list format is old, now converting...');
+    kyslog('Item list format is old, now converting...');
     move(Ritemlist[0], temp[0], sizeof(Titemlist) * MAX_ITEM_AMOUNT);
     for i := 0 to MAX_ITEM_AMOUNT - 1 do
     begin
@@ -4808,7 +4808,7 @@ begin
             begin
               CurItem := RItemlist[itemlist[(y * col + x + listLT)]].Number;
               dragitem := curItem;
-              ConsoleLog('%d', [curItem]);
+              kyslog('%d', [curItem]);
             end;
           end;
         end;
@@ -4861,7 +4861,7 @@ begin
             //curitem0 := curitem;
             refresh := True;
             dragitem := -1;
-            ConsoleLog('%d %d', [dragitem, curitem]);
+            kyslog('%d %d', [dragitem, curitem]);
           end;
         end;
       end;
@@ -7981,7 +7981,7 @@ begin
     len := KDEF.IDX[num + 1] - offset;
     setlength(e, len div 2 + 1);
     move(KDEF.GRP[offset], e[0], len);
-    ConsoleLog('Event %d', [num]);
+    kyslog('Event %d', [num]);
     i := 0;
     //普通事件写成子程, 需跳转事件写成函数
     len := length(e);
@@ -8378,14 +8378,14 @@ begin
   begin
     if KDEF_SCRIPT = 1 then
     begin
-      ConsoleLog('Enter script %d', [num]);
+      kyslog('Enter script %d', [num]);
       ExecScript(AppPath + EventScriptPath + IntToStr(num) + '.lua', '');
     end
     else
     begin
-      ConsoleLog('Enter script %d', [num]);
+      kyslog('Enter script %d', [num]);
       script := LoadStringFromIMZMEM(AppPath + 'script/event/', pEvent, num);
-      //ConsoleLog(script);
+      //kyslog(script);
       ExecScriptString(script, '');
     end;
   end;
@@ -8662,7 +8662,7 @@ begin
   if SW_SURFACE = 0 then
   begin
     tex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, texw, texh);
-    ConsoleLog('Big texture, the width and height are %d and %d', [texw, texh]);
+    kyslog('Big texture, the width and height are %d and %d', [texw, texh]);
     SDL_SetRenderTarget(render, tex);
     SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_NONE);
     SDL_SetRenderDrawColor(render, 0, 0, 0, 255);
