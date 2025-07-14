@@ -8,7 +8,7 @@ uses
   Windows,
   {$ENDIF}
   SysUtils,
-  SDL2,
+  SDL3,
   Math,
   lua52,
   kys_type,
@@ -602,14 +602,14 @@ end;
 function ClearButton(L: Plua_state): integer; cdecl;
 begin
   //event.type_ := 0;
-  event.key.keysym.sym := 0;
+  event.key.key := 0;
   event.button.button := 0;
   Result := 0;
 
 end;
 
 //检查按键
-//event.key.keysym.sym = 1 when mouse motion.
+//event.key.key = 1 when mouse motion.
 function CheckButton(L: Plua_state): integer; cdecl;
 var
   t: integer;
@@ -633,7 +633,7 @@ function GetButton(L: Plua_state): integer; cdecl;
 var
   t: integer;
 begin
-  lua_pushinteger(L, event.key.keysym.sym);
+  lua_pushinteger(L, event.key.key);
   lua_pushinteger(L, event.button.button);
   Result := 2;
 

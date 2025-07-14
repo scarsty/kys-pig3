@@ -9,7 +9,7 @@ uses
   Windows,
   {$ENDIF}
   SysUtils,
-  SDL2,
+  SDL3,
   Math,
   kys_type,
   kys_main,
@@ -626,8 +626,8 @@ procedure DrawBlackScreen;
     distance: real;
     alpha: byte;
   begin
-    BlackScreenSur := SDL_CreateRGBSurface(0, CENTER_X * 2, CENTER_Y * 2, 32, RMASK, GMASK, BMASK, AMASK);
-    SDL_FillRect(BlackScreenSur, nil, MapRGBA(0, 0, 0, 255));
+    BlackScreenSur := SDL_CreateSurface( CENTER_X * 2, CENTER_Y * 2, SDL_GetPixelFormatForMasks(32, Rmask, Gmask, Bmask, Amask));
+    SDL_FillSurfaceRect(BlackScreenSur, nil, MapRGBA(0, 0, 0, 255));
     for i1 := 0 to CENTER_X * 2 - 1 do
       for i2 := 0 to CENTER_Y * 2 - 1 do
       begin
@@ -652,10 +652,10 @@ begin
       CreateBlackScreenSur;
       BlackScreenTex := SDL_CreateTextureFromSurface(render, BlackScreenSur);
       SDL_SetTextureBlendMode(BlackScreenTex, SDL_BLENDMODE_BLEND);
-      SDL_FreeSurface(BlackScreenSur);
+      SDL_DestroySurface(BlackScreenSur);
     end;
     SDL_SetRenderTarget(render, screenTex);
-    SDL_RenderCopy(render, BlackScreenTex, nil, nil);
+    SDL_RenderTexture(render, BlackScreenTex, nil, nil);
   end
   else
   begin
@@ -804,8 +804,8 @@ begin
     y1 := 0;
     w := ImageWidth;
     h := ImageHeight;
-    SDL_FillRect(ImgScene, nil, 1);
-    SDL_FillRect(ImgSceneBack, nil, 1);
+    SDL_FillSurfaceRect(ImgScene, nil, 1);
+    SDL_FillSurfaceRect(ImgSceneBack, nil, 1);
     ExpandGroundOnImg();
     end
     else
@@ -1020,8 +1020,8 @@ var
   sumi, i1, i2, j, num: integer;
 begin
   //FillChar(BlockImg2[0], sizeof(BlockImg2[0]) * length(BlockImg2), -1);
-  //SDL_FillRect(ImgBField, nil, 0);
-  //SDL_FillRect(ImgBBuild, nil, 1);
+  //SDL_FillSurfaceRect(ImgBField, nil, 0);
+  //SDL_FillSurfaceRect(ImgBBuild, nil, 1);
   for i1 := 0 to 63 do
     for i2 := 0 to 63 do
     begin
@@ -1058,7 +1058,7 @@ var
   pos: TPosition;
   HighLight: boolean;
 begin
-  {SDL_FillRect(screen, nil, 0);
+  {SDL_FillSurfaceRect(screen, nil, 0);
     CalLTPosOnImageByCenter(Bx, By, x, y);
     LoadBfieldPart(x, y, 1);
     TransBlackScreen;}
@@ -1378,15 +1378,17 @@ end;
 procedure LoadGroundTex(x, y: integer);
 var
   dest: TSDL_Rect;
+  destf: TSDL_fRect;
 begin
   CalLTPosOnImageByCenter(x, y, dest.x, dest.y);
   dest.w := CENTER_X * 2;
   dest.h := CENTER_Y * 2;
+  destf:=Rect2f(dest);
   if SW_SURFACE = 0 then
   begin
     case where of
-      1: SDL_RenderCopy(render, ImgSGroundTex, @dest, nil);
-      2: SDL_RenderCopy(render, ImgBGroundTex, @dest, nil);
+      1: SDL_RenderTexture(render, ImgSGroundTex, @destf, nil);
+      2: SDL_RenderTexture(render, ImgBGroundTex, @destf, nil);
     end;
   end
   else

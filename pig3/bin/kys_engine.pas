@@ -12,16 +12,16 @@ uses
   {$ENDIF}
   Classes,
   SysUtils,
-  SDL2_ttf,
-  SDL2_image,
-  SDL2,
+  SDL3_ttf,
+  SDL3_image,
+  SDL3,
   kys_type,
   kys_main,
   bassmidi,
   bass,
   Math,
   {$IFDEF windows}
-  potdll,
+  //potdll,
   {$endif}
   //mythoutput,
   libzip;
@@ -45,7 +45,6 @@ procedure PlaySound(SoundNum: integer); overload;
 procedure PlaySound(filename: putf8char; times: integer); overload;
 
 //基本绘图子程
-function GetPixel(surface: PSDL_Surface; x: integer; y: integer): uint32;
 procedure PutPixel(surface: PSDL_Surface; x: integer; y: integer; pixel: uint32);
 function ColColor(num: integer): uint32; inline;
 procedure DrawRectangle(x, y, w, h: integer; colorin, colorframe: uint32; alpha: integer; trans: integer = 1);
@@ -182,6 +181,8 @@ function utf8follow(c1: utf8char): integer;
 function readFiletostring(filename: utf8string): utf8string; overload;
 function readnumbersformstring(str: utf8string): IntegerArray; overload;
 
+function Rect2f(r: tsdl_rect): tsdl_frect;
+
 implementation
 
 uses
@@ -190,10 +191,10 @@ uses
 function EventFilter(p: pointer; e: PSDL_Event): longint; cdecl;
 begin
   Result := 1;
-  {or (e.type_ = SDL_FINGERMOTION)}
+  {or (e.type_ = SDL_EVENT_FINGER_MOTION)}
   case e.type_ of
-    SDL_FINGERUP, SDL_FINGERDOWN, SDL_CONTROLLERAXISMOTION, SDL_CONTROLLERBUTTONDOWN, SDL_CONTROLLERBUTTONUP: Result := 0;
-    SDL_FINGERMOTION:
+    SDL_EVENT_FINGER_UP, SDL_EVENT_FINGER_DOWN, SDL_EVENT_GAMEPAD_AXIS_MOTION, SDL_EVENT_GAMEPAD_BUTTON_DOWN, SDL_EVENT_GAMEPAD_BUTTON_UP: Result := 0;
+    SDL_EVENT_FINGER_MOTION:
       if CellPhone = 0 then
         Result := 0;
   end;
@@ -203,8 +204,8 @@ procedure SendKeyEvent(keyvalue: integer);
 var
   e: tsdl_event;
 begin
-  e.type_ := SDL_KEYUP;
-  e.key.keysym.sym := keyvalue;
+  e.type_ := SDL_EVENT_KEY_UP;
+  e.key.key := keyvalue;
   SDL_PushEvent(@e);
 end;
 
@@ -500,67 +501,20 @@ begin
     end;}
 end;
 
-
-//获取某像素信息
-function GetPixel(surface: PSDL_Surface; x: integer; y: integer): uint32;
-type
-  TByteArray = array [0 .. 2] of byte;
-  PByteArray = ^TByteArray;
-var
-  bpp: integer;
-  p: PInteger;
-begin
-  if (x >= 0) and (x < surface.w) and (y >= 0) and (y < surface.h) then
-  begin
-    bpp := surface.format.BytesPerPixel;
-    //Here p is the address to the pixel we want to retrieve
-    p := Pointer(uint32(surface.pixels) + y * surface.pitch + x * bpp);
-    case bpp of
-      1: Result := longword(p^);
-      2: Result := puint16(p)^;
-      {3:
-        if (SDL_BYTEORDER = SDL_BIG_ENDIAN) then
-        Result := PByteArray(p)[0] shl 16 or PByteArray(p)[1] shl 8 or PByteArray(p)[2]
-        else
-        Result := PByteArray(p)[0] or PByteArray(p)[1] shl 8 or PByteArray(p)[2] shl 16;}
-      4: Result := puint32(p)^;
-      else
-        Result := 0; //shouldn't happen, but avoids warnings
-    end;
-  end;
-
-end;
-
 //画像素
 procedure PutPixel(surface: PSDL_Surface; x: integer; y: integer; pixel: uint32);
-type
-  TByteArray = array [0 .. 2] of byte;
-  PByteArray = ^TByteArray;
 var
   bpp: integer;
   p: PInteger;
 begin
   if (x >= 0) and (x < surface.w) and (y >= 0) and (y < surface.h) then
   begin
-    bpp := surface.format.BytesPerPixel;
+    bpp := 4;
     //Here p is the address to the pixel we want to set
     p := Pointer(nativeint(surface.pixels) + y * surface.pitch + x * bpp);
     case bpp of
       1: longword(p^) := pixel;
       2: puint16(p)^ := pixel;
-      {3:
-        if (SDL_BYTEORDER = SDL_BIG_ENDIAN) then
-        begin
-        PByteArray(p)[0] := (pixel shr 16) and $FF;
-        PByteArray(p)[1] := (pixel shr 8) and $FF;
-        PByteArray(p)[2] := pixel and $FF;
-        end
-        else
-        begin
-        PByteArray(p)[0] := pixel and $FF;
-        PByteArray(p)[1] := (pixel shr 8) and $FF;
-        PByteArray(p)[2] := (pixel shr 16) and $FF;
-        end;}
       4: puint32(p)^ := pixel;
     end;
   end;
@@ -700,6 +654,7 @@ var
   sur, tempsur: PSDL_Surface;
   tex, temptex: PSDL_Texture;
   pt: putf8char;
+  wf, hf: single;
 begin
   //是否可能是已有纹理
   if num >= 128 then
@@ -736,7 +691,9 @@ begin
       begin
         tex := CharTex[key];
         Result := tex;
-        SDL_QueryTexture(tex, nil, nil, @w, @h);
+        SDL_GetTextureSize(tex, @wf, @hf);
+        w := round(wf);
+        h := round(hf);
       end;
       else
       begin
@@ -749,7 +706,7 @@ begin
   end
   else
   begin
-    tempsur := TTF_RenderUTF8_blended(pfont, @word[0], TSDL_Color(whitecolor));
+    tempsur := TTF_RenderText_blended(pfont, @word[0], 0, TSDL_Color(whitecolor));
     if tempsur <> nil then
     begin
       src.w := tempsur.w - src.x;
@@ -766,11 +723,11 @@ begin
     dst.h := src.h;
     w := src.w;
     h := src.h;
-    sur := SDL_CreateRGBSurface(0, dst.w, dst.h, 32, RMASK, GMASK, BMASK, AMASK);
+    sur := SDL_CreateSurface(dst.w, dst.h, SDL_GetPixelFormatForMasks(32, Rmask, Gmask, Bmask, Amask));
     SDL_SetSurfaceBlendMode(tempsur, SDL_BLENDMODE_NONE);
     SDL_BlitSurface(tempsur, @src, sur, @dst);
     {try
-      SDL_FreeSurface(tempsur);
+      SDL_DestroySurface(tempsur);
     except
       ConsoleLog('Free font surface %s %d failed', [widechar(num), size0]);
     end;}
@@ -778,7 +735,7 @@ begin
     if usesur = 0 then
     begin
       tex := SDL_CreateTextureFromSurface(render, sur);
-      SDL_FreeSurface(sur);
+      SDL_DestroySurface(sur);
       Result := Tex;
       CharTex.add(key, tex);
     end
@@ -787,7 +744,7 @@ begin
       Result := pointer(sur);
       CharTex.add(key, sur);
     end;
-    //SDL_FreeSurface(tempsur);
+    //SDL_DestroySurface(tempsur);
     //某些字体可能写过界，free失败
   end;
 end;
@@ -844,7 +801,8 @@ end;
 //engsize如果未指定则按照中文宽度一半
 procedure DrawText(word: utf8string; x_pos, y_pos: integer; color: uint32; engwidth: integer = -1);
 var
-  dest, src, dst: TSDL_Rect;
+  src, dst: TSDL_Rect;
+  dest: TSDL_Frect;
   tempcolor, whitecolor: TSDL_Color;
   len, i, k, len_utf8: integer;
   word0: array [0 .. 2] of uint16 = (32, 0, 0);
@@ -912,10 +870,10 @@ begin
         if TEXT_LAYER = 1 then
         begin
           SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_MOD);
-          SDL_RenderCopy(render, tex, nil, @dest);
+          SDL_RenderTexture(render, tex, nil, @dest);
           SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
         end;
-        SDL_RenderCopy(render, tex, nil, @dest);
+        SDL_RenderTexture(render, tex, nil, @dest);
       end;
       else
       begin
@@ -1018,21 +976,13 @@ begin
   DrawShadowText(word, x_pos, y_pos + 4, color1, color2, Tex, Sur, 0, 1);
 end;
 
-//显示Unicode16阴影文字
-procedure DrawU16ShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32);
-var
-  words: utf8string;
-begin
-  words := utf8encode(WideString(pwidechar(word)));
-  DrawShadowText(words, x_pos + 1, y_pos, color1, color2);
-end;
-
 //画带边框矩形, (x坐标, y坐标, 宽度, 高度, 内部颜色, 边框颜色, 透明度, 可能转为单行框）
 procedure DrawRectangle(x, y, w, h: integer; colorin, colorframe: uint32; alpha: integer; trans: integer = 1);
 var
   i1, i2, l1, l2, l3, l4, x1, y1, w1, h1: integer;
   tempscr, tempsur1: PSDL_Surface;
   dest: TSDL_Rect;
+  destf: TSDL_FRect;
   r, g, b, r1, g1, b1, a: byte;
   tex, ptex: PSDL_Texture;
   color: TSDL_Color;
@@ -1069,7 +1019,7 @@ begin
         if not ((l1 >= 4) and (l2 >= 4) and (l3 >= 4) and (l4 >= 4)) then
         begin
           SDL_SetRenderDrawColor(render, 0, 0, 0, 0);
-          SDL_RenderDrawPoint(render, i1, i2);
+          SDL_RenderPoint(render, i1, i2);
         end;
         //框线
         {if TEXT_LAYER = 0 then
@@ -1078,13 +1028,14 @@ begin
           begin
           a := round(250 - abs(i1 / w + i2 / h - 1) * 150);
           SDL_SetRenderDrawColor(render, r1, g1, b1, a);
-          SDL_RenderDrawPoint(render, i1, i2);
+          SDL_RenderPoint(render, i1, i2);
           end;}
       end;
     SDL_SetRenderTarget(render, ptex);
     SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
     //SDL_SetRenderDrawColor(render, 255, 255, 255, 255);
-    SDL_RenderCopy(render, tex, nil, @dest);
+    destf := rect2f(dest);
+    SDL_RenderTexture(render, tex, nil, @destf);
     SDL_DestroyTexture(tex);
 
     if TEXT_LAYER = 1 then
@@ -1111,12 +1062,12 @@ begin
             begin
             a := round(250 - abs(i1 / w + i2 / h - 1) * 150);
             SDL_SetRenderDrawColor(render, r1, g1, b1, a);
-            SDL_RenderDrawPoint(render, i1, i2);
+            SDL_RenderPoint(render, i1, i2);
             end;}
         end;
       SDL_SetRenderTarget(render, TextScreenTex);
       SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
-      SDL_RenderCopy(render, tex, nil, @dest);
+      SDL_RenderTexture(render, tex, nil, @dest);
       SDL_DestroyTexture(tex);
       SDL_SetRenderTarget(render, ptex);
     end;
@@ -1126,10 +1077,10 @@ begin
     w := abs(w);
     h := abs(h);
 
-    tempscr := SDL_CreateRGBSurface(0, w + 1, h + 1, 32, RMask, GMask, BMask, AMask);
+    tempscr := SDL_CreateSurface(w + 1, h + 1, SDL_GetPixelFormatForMasks(32, Rmask, Gmask, Bmask, Amask));
     GetRGBA(colorin, @r, @g, @b);
     GetRGBA(colorframe, @r1, @g1, @b1);
-    SDL_FillRect(tempscr, nil, MapRGBA(r, g, b, alpha * 255 div 100));
+    SDL_FillSurfaceRect(tempscr, nil, MapRGBA(r, g, b, alpha * 255 div 100));
 
     dest.x := x;
     dest.y := y;
@@ -1164,14 +1115,14 @@ begin
       end;
 
     SDL_BlitSurface(tempscr, nil, CurTargetSurface, @dest);
-    SDL_FreeSurface(tempscr);
+    SDL_DestroySurface(tempscr);
 
     if (TEXT_LAYER = 1) and (CurTargetSurface = screen) then
     begin
       GetRealRect(x, y, w, h);
-      tempscr := SDL_CreateRGBSurface(0, w + 1, h + 1, 32, RMask, GMask, BMask, AMask);
+      tempscr := SDL_CreateSurface(w + 1, h + 1, SDL_GetPixelFormatForMasks(32, Rmask, Gmask, Bmask, Amask));
       GetRGBA(colorframe, @r1, @g1, @b1);
-      SDL_FillRect(tempscr, nil, 0);
+      SDL_FillSurfaceRect(tempscr, nil, 0);
       x1 := 0;
       y1 := 0;
       for i1 := 0 to w do
@@ -1196,7 +1147,7 @@ begin
       dest.w := 0;
       dest.h := 0;
       SDL_BlitSurface(tempscr, nil, TextScreen, @dest);
-      SDL_FreeSurface(tempscr);
+      SDL_DestroySurface(tempscr);
     end;
   end;
 end;
@@ -1208,6 +1159,7 @@ var
   tempsur: PSDL_Surface;
   temptex: PSDL_Texture;
   dest: TSDL_Rect;
+  destf: TSDL_FRect;
   i1, i2: integer;
   tran: byte;
   bigtran: uint32;
@@ -1225,14 +1177,15 @@ begin
     dest.y := y;
     dest.w := w;
     dest.h := h;
-    SDL_RenderFillRect(render, @dest);
+    destf := rect2f(dest);
+    SDL_RenderFillRect(render, @destf);
   end
   else
   begin
     if (w > 0) and (h > 0) then
     begin
-      tempsur := SDL_CreateRGBSurface(0, w, h, 32, RMask, GMask, BMask, AMASK);
-      SDL_FillRect(tempsur, nil, MapRGBA(r, g, b, 255 - alpha * 255 div 100));
+      tempsur := SDL_CreateSurface(w, h, SDL_GetPixelFormatForMasks(32, Rmask, Gmask, Bmask, Amask));
+      SDL_FillSurfaceRect(tempsur, nil, MapRGBA(r, g, b, 255 - alpha * 255 div 100));
       //SDL_SetSurfaceAlphaMod(tempscr, 255 - alpha * 255 div 100);
       SDL_SetSurfaceBlendMode(tempsur, SDL_BLENDMODE_BLEND);
       if CurTargetSurface = TextScreen then
@@ -1243,7 +1196,7 @@ begin
       dest.h := h;
       if alpha < 0 then
       begin
-        //SDL_FillRect(tempscr, nil, MapRGBA(r, g, b, 255 - alpha * 255 div 100));
+        //SDL_FillSurfaceRect(tempscr, nil, MapRGBA(r, g, b, 255 - alpha * 255 div 100));
         for i1 := 0 to w - 1 do
           for i2 := 0 to h - 1 do
           begin
@@ -1258,12 +1211,13 @@ begin
       begin
         temptex := SDL_CreateTextureFromSurface(render, tempsur);
         SDL_SetTextureBlendMode(temptex, SDL_BLENDMODE_BLEND);
-        SDL_RenderCopy(render, temptex, nil, @dest);
+        destf := rect2f(dest);
+        SDL_RenderTexture(render, temptex, nil, @destf);
         SDL_DestroyTexture(temptex);
       end
       else
         SDL_BlitSurface(tempsur, nil, CurTargetSurface, @dest);
-      SDL_FreeSurface(tempsur);
+      SDL_DestroySurface(tempsur);
     end;
   end;
   //SDL_SetRenderTarget(render, ptex);
@@ -1271,20 +1225,20 @@ begin
   //SDL_SetTextureAlphaMod(tex, 255-255*alpha div 100);
   //writeln(alpha);
   //SDL_SetRenderDrawColor(render, 255,255,255,255);
-  //SDL_RenderCopy(render, tex, nil, @dest);
+  //SDL_RenderTexture(render, tex, nil, @dest);
   //sdl_destroytexture(tex);
   {if (w > 0) and (h > 0) then
     begin
     if sur.flags = 0 then
     begin
     tempscr := SDL_CreateRGBSurface(sur.flags, w, h, 32, RMask, GMask, BMask, 0);
-    SDL_FillRect(tempscr, nil, colorin);
+    SDL_FillSurfaceRect(tempscr, nil, colorin);
     //SDL_SetAlpha(tempscr, 0, 255 - alpha * 255 div 100);
     dest.x := x;
     dest.y := y;
     //tempscr1 := sdl_displayformatalpha(tempscr);
     SDL_BlitSurface(tempscr, nil, sur, @dest);
-    SDL_FreeSurface(tempscr);
+    SDL_DestroySurface(tempscr);
     end
     else
     begin
@@ -1345,10 +1299,10 @@ begin
     begin
       t := 250 - i * 2;
       SDL_SetRenderDrawColor(render, t, t, t, 255);
-      SDL_RenderDrawPoint(render, x + i, y);
-      SDL_RenderDrawPoint(render, x + d2 - i, y + d2);
-      SDL_RenderDrawPoint(render, x, y + i);
-      SDL_RenderDrawPoint(render, x + d2, y + d2 - i);
+      SDL_RenderPoint(render, x + i, y);
+      SDL_RenderPoint(render, x + d2 - i, y + d2);
+      SDL_RenderPoint(render, x, y + i);
+      SDL_RenderPoint(render, x + d2, y + d2 - i);
     end;
     if TEXT_LAYER = 1 then
       SDL_SetRenderTarget(render, ptex);
@@ -1408,7 +1362,7 @@ begin
   dest.h := h;
   if pic <> nil then
     if SW_SURFACE = 0 then
-      SDL_RenderCopy(render, PSDL_Texture(pic), @dest1, @dest)
+      SDL_RenderTexture(render, PSDL_Texture(pic), @dest1, @dest)
     else
       SDL_BlitSurface(PSDL_Surface(pic), @dest1, screen, @dest);
 end;
@@ -1432,8 +1386,11 @@ var
   tempx, tempy, temp: integer;
   px, py, w, h: integer;
   s: TStretchInfo;
+  xf, yf: single;
 begin
-  SDL_GetMouseState(@tempx, @tempy);
+  SDL_GetMouseState(@xf, @yf);
+  tempx := round(xf);
+  tempy := round(yf);
   if ScreenRotate = 1 then
   begin
     x := round(tempy / RESOLUTIONY * CENTER_X * 2);
@@ -1493,7 +1450,7 @@ begin
     end
     else
     begin
-      SDL_FreeSurface(TextScreen);
+      SDL_DestroySurface(TextScreen);
     end;
   end;
 
@@ -1514,7 +1471,7 @@ begin
     end
     else
     begin
-      TextScreen := SDL_CreateRGBSurface(0, RESOLUTIONX, RESOLUTIONY, 32, RMask, GMask, BMask, AMASK);
+      TextScreen := SDL_CreateSurface(RESOLUTIONX, RESOLUTIONY, SDL_GetPixelFormatForMasks(32, Rmask, Gmask, Bmask, Amask));
       TextScreenTex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, RESOLUTIONX, RESOLUTIONY);
       SDL_SetTextureBlendMode(TextScreenTex, SDL_BLENDMODE_BLEND);
     end;
@@ -1547,13 +1504,13 @@ begin
   end
   else
   begin
-    screen := SDL_CreateRGBSurface(0, CENTER_X * 2, CENTER_Y * 2, 32, RMask, GMask, BMask, AMASK);
-    ImgSGround := SDL_CreateRGBSurface(0, ImageWidth, ImageHeight, 32, RMask, GMask, BMask, AMASK);
+    screen := SDL_CreateSurface(CENTER_X * 2, CENTER_Y * 2, SDL_GetPixelFormatForMasks(32, Rmask, Gmask, Bmask, Amask));
+    ImgSGround := SDL_CreateSurface(ImageWidth, ImageHeight, SDL_GetPixelFormatForMasks(32, Rmask, Gmask, Bmask, Amask));
     //SDL_SetSurfaceBlendMode(ImgSGround, SDL_BLENDMODE_NONE);
-    ImgBGround := SDL_CreateRGBSurface(0, ImageWidth, ImageHeight, 32, RMask, GMask, BMask, AMASK);
-    SimpleState := SDL_CreateRGBSurface(0, 270, 90, 32, RMask, GMask, BMask, AMASK);
+    ImgBGround := SDL_CreateSurface(ImageWidth, ImageHeight, SDL_GetPixelFormatForMasks(32, Rmask, Gmask, Bmask, Amask));
+    SimpleState := SDL_CreateSurface(270, 90, SDL_GetPixelFormatForMasks(32, Rmask, Gmask, Bmask, Amask));
     for i := 0 to 5 do
-      SimpleStatus[i] := SDL_CreateRGBSurface(0, 270, 90, 32, RMask, GMask, BMask, AMASK);
+      SimpleStatus[i] := SDL_CreateSurface(270, 90, SDL_GetPixelFormatForMasks(32, Rmask, Gmask, Bmask, Amask));
     //SDL_SetSurfaceBlendMode(ImgBGround, SDL_BLENDMODE_NONE);
     CurTargetSurface := screen;
 
@@ -1622,8 +1579,8 @@ begin
       else
       begin
         if SimpleText[i] <> nil then
-          SDL_FreeSurface(SimpleText[i]);
-        SimpleText[i] := SDL_CreateRGBSurface(0, w1 + x, y + h1, 32, RMask, GMask, BMask, AMASK);
+          SDL_DestroySurface(SimpleText[i]);
+        SimpleText[i] := SDL_CreateSurface(w1 + x, y + h1, SDL_GetPixelFormatForMasks(32, Rmask, Gmask, Bmask, Amask));
       end;
     end;
   end;
@@ -1688,8 +1645,8 @@ var
   x, y, x1, y1: integer;
 begin
   SDL_GetMouseState(@x, @y);
-  x1 := SDL_JoystickGetAxis(joy, 0);
-  y1 := SDL_JoystickGetAxis(joy, 1);
+  x1 := SDL_GetJoystickAxis(joy, 0);
+  y1 := SDL_GetJoystickAxis(joy, 1);
   if abs(x1) + abs(y1) > 10000 then
   begin
     x := x + x1 div 1000;
@@ -1743,61 +1700,61 @@ var
 
 begin
   //if not ((LoadingTiles) or (LoadingScene)) then
-  SDL_FlushEvent(SDL_MOUSEWHEEL);
-  SDL_FlushEvent(SDL_JOYAXISMOTION);
-  SDL_FlushEvent(SDL_FINGERMOTION);
-  //SDL_FlushEvent(SDL_FINGERDOWN);
-  //SDL_FlushEvent(SDL_FINGERUP);
+  SDL_FlushEvent(SDL_EVENT_MOUSE_WHEEL);
+  SDL_FlushEvent(SDL_EVENT_JOYSTICK_AXIS_MOTION);
+  SDL_FlushEvent(SDL_EVENT_FINGER_MOTION);
+  //SDL_FlushEvent(SDL_EVENT_FINGER_DOWN);
+  //SDL_FlushEvent(SDL_EVENT_FINGER_UP);
   if CellPhone = 1 then
-    SDL_FlushEvent(SDL_MOUSEMOTION);
+    SDL_FlushEvent(SDL_EVENT_MOUSE_MOTION);
   //writeln(inttohex(event.type_, 4));
   //JoyAxisMouse;
   Result := event.type_;
   case event.type_ of
-    SDL_JOYBUTTONUP:
+    SDL_EVENT_JOYSTICK_BUTTON_UP:
     begin
-      event.type_ := SDL_KEYUP;
+      event.type_ := SDL_EVENT_KEY_UP;
       if event.jbutton.button = JOY_ESCAPE then
-        event.key.keysym.sym := SDLK_ESCAPE
+        event.key.key := SDLK_ESCAPE
       else if event.jbutton.button = JOY_RETURN then
-        event.key.keysym.sym := SDLK_RETURN
+        event.key.key := SDLK_RETURN
       else if event.jbutton.button = JOY_MOUSE_LEFT then
       begin
         event.button.button := SDL_BUTTON_LEFT;
-        event.type_ := SDL_MOUSEBUTTONUP;
+        event.type_ := SDL_EVENT_MOUSE_BUTTON_UP;
       end
       else if event.jbutton.button = JOY_UP then
-        event.key.keysym.sym := SDLK_UP
+        event.key.key := SDLK_UP
       else if event.jbutton.button = JOY_DOWN then
-        event.key.keysym.sym := SDLK_DOWN
+        event.key.key := SDLK_DOWN
       else if event.jbutton.button = JOY_LEFT then
-        event.key.keysym.sym := SDLK_LEFT
+        event.key.key := SDLK_LEFT
       else if event.jbutton.button = JOY_RIGHT then
-        event.key.keysym.sym := SDLK_RIGHT;
+        event.key.key := SDLK_RIGHT;
     end;
-    SDL_JOYBUTTONDOWN:
+    SDL_EVENT_JOYSTICK_BUTTON_DOWN:
     begin
-      event.type_ := SDL_KEYDOWN;
+      event.type_ := SDL_EVENT_KEY_DOWN;
       if event.jbutton.button = JOY_UP then
-        event.key.keysym.sym := SDLK_UP
+        event.key.key := SDLK_UP
       else if event.jbutton.button = JOY_DOWN then
-        event.key.keysym.sym := SDLK_DOWN
+        event.key.key := SDLK_DOWN
       else if event.jbutton.button = JOY_LEFT then
-        event.key.keysym.sym := SDLK_LEFT
+        event.key.key := SDLK_LEFT
       else if event.jbutton.button = JOY_RIGHT then
-        event.key.keysym.sym := SDLK_RIGHT;
+        event.key.key := SDLK_RIGHT;
     end;
-    SDL_JOYHATMOTION:
+    SDL_EVENT_JOYSTICK_HAT_MOTION:
     begin
-      event.type_ := SDL_KEYDOWN;
+      event.type_ := SDL_EVENT_KEY_DOWN;
       case event.jhat.Value of
-        SDL_HAT_UP: event.key.keysym.sym := SDLK_UP;
-        SDL_HAT_DOWN: event.key.keysym.sym := SDLK_DOWN;
-        SDL_HAT_LEFT: event.key.keysym.sym := SDLK_LEFT;
-        SDL_HAT_RIGHT: event.key.keysym.sym := SDLK_RIGHT;
+        SDL_HAT_UP: event.key.key := SDLK_UP;
+        SDL_HAT_DOWN: event.key.key := SDLK_DOWN;
+        SDL_HAT_LEFT: event.key.key := SDLK_LEFT;
+        SDL_HAT_RIGHT: event.key.key := SDLK_RIGHT;
       end;
     end;
-    SDL_FINGERMOTION:
+    SDL_EVENT_FINGER_MOTION:
       if CellPhone = 1 then
       begin
         if event.tfinger.fingerId = 1 then
@@ -1812,29 +1769,25 @@ begin
           begin
             FingerCount := FingerCount + 1;
             FingerTick := SDL_GetTicks();
-            event.type_ := SDL_KEYDOWN;
-            event.key.keysym.sym := AngleToDirection(event.tfinger.dy, event.tfinger.dx);
+            event.type_ := SDL_EVENT_KEY_DOWN;
+            event.key.key := AngleToDirection(event.tfinger.dy, event.tfinger.dx);
           end;
         end;
       end;
-    SDL_FINGERUP: ;
-    SDL_MULTIGESTURE: ;
-    SDL_QUITEV: QuitConfirm;
-    SDL_WindowEvent:
+    SDL_EVENT_FINGER_UP: ;
+    SDL_EVENT_QUIT: QuitConfirm;
+    SDL_EVENT_WINDOW_RESIZED:
     begin
-      if event.window.event = SDL_WINDOWEVENT_RESIZED then
-      begin
-        ResizeWindow(event.window.data1, event.window.data2);
-      end;
+      ResizeWindow(event.window.data1, event.window.data2);
     end;
-    SDL_APP_DIDENTERFOREGROUND: PlayMP3(nowmusic, -1, 0);
-    SDL_APP_DIDENTERBACKGROUND: StopMP3(0);
-    {SDL_MOUSEBUTTONDOWN:
+    SDL_EVENT_DID_ENTER_FOREGROUND: PlayMP3(nowmusic, -1, 0);
+    SDL_EVENT_DID_ENTER_BACKGROUND: StopMP3(0);
+    {SDL_EVENT_MOUSE_BUTTON_DOWN:
       if (CellPhone = 1) and (event.button.button = SDL_BUTTON_LEFT) then
       begin
       SDL_GetMouseState(@x, @y);
       end;}
-    SDL_MOUSEMOTION:
+    SDL_EVENT_MOUSE_MOTION:
     begin
       if CellPhone = 1 then
       begin
@@ -1845,7 +1798,7 @@ begin
         inVirtualKey(x, y, VirtualKeyValue);
       end;
     end;
-    SDL_MOUSEBUTTONDOWN:
+    SDL_EVENT_MOUSE_BUTTON_DOWN:
     begin
       if (CellPhone = 1) and (showVirtualKey <> 0) then
       begin
@@ -1853,14 +1806,14 @@ begin
         inVirtualKey(x, y, VirtualKeyValue);
         if VirtualKeyValue <> 0 then
         begin
-          event.type_ := SDL_KEYDOWN;
-          event.key.keysym.sym := VirtualKeyValue;
+          event.type_ := SDL_EVENT_KEY_DOWN;
+          event.key.key := VirtualKeyValue;
         end;
       end;
     end;
-    SDL_KEYUP, SDL_MOUSEBUTTONUP:
+    SDL_EVENT_KEY_UP, SDL_EVENT_MOUSE_BUTTON_UP:
     begin
-      if (CellPhone = 1) and (event.type_ = SDL_MOUSEBUTTONUP) and (event.button.button = SDL_BUTTON_LEFT) then
+      if (CellPhone = 1) and (event.type_ = SDL_EVENT_MOUSE_BUTTON_UP) and (event.button.button = SDL_BUTTON_LEFT) then
       begin
         SDL_GetMouseState2(x, y);
         if inEscape(x, y) then
@@ -1868,31 +1821,31 @@ begin
           //event.button.x := RESOLUTIONX div 2;
           //event.button.y := RESOLUTIONY div 2;
           event.button.button := SDL_BUTTON_RIGHT;
-          event.key.keysym.sym := SDLK_ESCAPE;
+          event.key.key := SDLK_ESCAPE;
           ConsoleLog('Change to escape');
         end
         else if inReturn(x, y) then
         begin
           //event.button.x := RESOLUTIONX div 2;
           //event.button.y := RESOLUTIONY div 2;
-          event.type_ := SDL_KEYUP;
-          event.key.keysym.sym := SDLK_RETURN;
+          event.type_ := SDL_EVENT_KEY_UP;
+          event.key.key := SDLK_RETURN;
           ConsoleLog('Change to return');
         end
         else if inTab(x, y) then
         begin
           //event.button.x := RESOLUTIONX div 2;
           //event.button.y := RESOLUTIONY div 2;
-          event.type_ := SDL_KEYUP;
-          event.key.keysym.sym := SDLK_TAB;
+          event.type_ := SDL_EVENT_KEY_UP;
+          event.key.key := SDLK_TAB;
           ConsoleLog('Change to tab');
         end
         else if (showVirtualKey <> 0) and (inVirtualKey(x, y, VirtualKeyValue) <> 0) then
         begin
           if VirtualKeyValue <> 0 then
           begin
-            event.type_ := SDL_KEYUP;
-            event.key.keysym.sym := VirtualKeyValue;
+            event.type_ := SDL_EVENT_KEY_UP;
+            event.key.key := VirtualKeyValue;
           end;
         end
         else if inSwitchShowVirtualKey(x, y) then
@@ -1901,13 +1854,13 @@ begin
             ShowVirtualKey := 0
           else
             ShowVirtualKey := 1;
-          event.type_ := SDL_RELEASED;
-          event.key.keysym.sym := 0;
+          //event.type_ := SDL_RELEASED;
+          event.key.key := 0;
         end
         else if (showVirtualKey <> 0) and (VirtualKeyValue <> 0) and (inVirtualKey(x, y, VirtualKeyValue) = 0) then
         begin
-          event.type_ := SDL_RELEASED;
-          event.key.keysym.sym := 0;
+          //event.type_ := SDL_RELEASED;
+          event.key.key := 0;
         end
         //手机在战场仅有确认键有用
         else if (where = 2) and (BattleSelecting) then
@@ -1918,7 +1871,7 @@ begin
         if FingerCount >= 1 then
           event.button.button := 0;
       end;
-      if (where = 2) and ((event.key.keysym.sym = SDLK_ESCAPE) or (event.button.button = SDL_BUTTON_RIGHT)) then
+      if (where = 2) and ((event.key.key = SDLK_ESCAPE) or (event.button.button = SDL_BUTTON_RIGHT)) then
       begin
         for i := 0 to BRoleAmount - 1 do
         begin
@@ -1926,8 +1879,8 @@ begin
             Brole[i].Auto := 0;
         end;
       end;
-      if event.key.keysym.sym = SDLK_KP_ENTER then
-        event.key.keysym.sym := SDLK_RETURN;
+      if event.key.key = SDLK_KP_ENTER then
+        event.key.key := SDLK_RETURN;
     end;
   end;
   //CheckRenderTextures;
@@ -2493,6 +2446,7 @@ end;
 function LoadTileFromFile(filename: utf8string; var pt: Pointer; usesur: integer; var w, h: integer): boolean;
 var
   tempscr: PSDL_Surface;
+  wf, hf: single;
 begin
   Result := False;
   pt := nil;
@@ -2505,15 +2459,17 @@ begin
       if pt <> nil then
       begin
         SDL_SetTextureBlendMode(pt, SDL_BLENDMODE_BLEND);
-        SDL_QueryTexture(pt, nil, nil, @w, @h);
+        SDL_GetTextureSize(pt, @wf, @hf);
+        w := round(wf);
+        h := round(hf);
         Result := True;
       end;
     end
     else
     begin
       tempscr := IMG_Load(putf8char(filename));
-      pt := SDL_ConvertSurface(tempscr, screen.format, 0);
-      SDL_FreeSurface(tempscr);
+      pt := SDL_ConvertSurface(tempscr, screen.format);
+      SDL_DestroySurface(tempscr);
       //SDL_SetSurfaceBlendMode(ps^, SDL_BLENDMODE_BlEND);
       if pt <> nil then
       begin
@@ -2531,26 +2487,29 @@ end;
 function LoadTileFromMem(p: putf8char; len: integer; var pt: Pointer; usesur: integer; var w, h: integer): boolean;
 var
   tempscr: PSDL_Surface;
-  tempRWops: PSDL_RWops;
+  tempRWops: PSDL_IOStream;
+  wf, hf: single;
 begin
   Result := False;
-  tempRWops := SDL_RWFromMem(p, len);
+  tempRWops := SDL_IOFromMem(p, len);
   pt := nil;
   if usesur = 0 then
   begin
-    pt := IMG_LoadTextureTyped_RW(render, tempRWops, 0, 'png');
+    pt := IMG_LoadTexture_IO(render, tempRWops, False);
     if pt <> nil then
     begin
       SDL_SetTextureBlendMode(pt, SDL_BLENDMODE_BLEND);
-      SDL_QueryTexture(pt, nil, nil, @w, @h);
+      SDL_GetTextureSize(pt, @wf, @hf);
+      w := round(wf);
+      h := round(hf);
       Result := True;
     end;
   end
   else
   begin
-    tempscr := IMG_LoadTyped_RW(tempRWops, 0, 'png');
-    pt := SDL_ConvertSurface(tempscr, screen.format, 0);
-    SDL_FreeSurface(tempscr);
+    tempscr := IMG_Load_IO(tempRWops, False);
+    pt := SDL_ConvertSurface(tempscr, screen.format);
+    SDL_DestroySurface(tempscr);
     if pt <> nil then
     begin
       tempscr := pt;
@@ -2559,7 +2518,7 @@ begin
       Result := True;
     end;
   end;
-  SDL_FreeRW(tempRWops);
+  SDL_CloseIO(tempRWops);
 
 end;
 
@@ -2656,7 +2615,7 @@ end;
 
 procedure DrawPNGTile(render: PSDL_Renderer; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer); overload;
 var
-  rect: TSDL_Rect;
+  rect: TSDL_FRect;
   tex: PSDL_Texture;
 begin
   if SW_SURFACE <> 0 then
@@ -2677,17 +2636,21 @@ begin
         tex := Pointers[FrameNum mod PNGIndex.Frame];
       SDL_SetTextureAlphaMod(tex, 255);
       SDL_SetTextureColorMod(tex, 255, 255, 255);
-      SDL_RenderCopy(render, tex, nil, @rect);
+      SDL_RenderTexture(render, tex, nil, @rect);
     end;
   end;
 end;
 
 procedure DrawPNGTile(render: PSDL_Renderer; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer; region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer; scalex, scaley, angle: real; center: PSDL_Point); overload;
 var
-  rect: TSDL_Rect;
+  rect: TSDL_FRect;
   r, g, b, a, r1, g1, b1: byte;
   newtex: boolean;
   tex, tex1, ptex: PSDL_Texture;
+  centerf: TSDL_FPoint;
+  pc: PSDL_FPoint = nil;
+  regionf: TSDL_FRect;
+  pr: PSDL_FRect = nil;
 begin
   if SW_SURFACE <> 0 then
   begin
@@ -2765,7 +2728,7 @@ begin
     newtex := True;
     SDL_SetRenderTarget(render, tex);
     SDL_SetTextureBlendMode(tex1, SDL_BLENDMODE_NONE);
-    SDL_RenderCopy(render, tex1, nil, nil);
+    SDL_RenderTexture(render, tex1, nil, nil);
     SDL_SetTextureBlendMode(tex1, SDL_BLENDMODE_BLEND);
     SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_add);
     SDL_SetRenderDrawColor(render, r, g, b, 255 * mixAlpha div 100);
@@ -2778,8 +2741,23 @@ begin
   begin
     SDL_SetTextureAlphaMod(tex, 255 * (100 - alpha) div 100);
   end;
-  SDL_RenderCopyEx(render, tex, region, @rect, angle, center, SDL_FLIP_NONE);
-  //SDL_RenderCopy(render, tex, nil, nil);
+  if center <> nil then
+  begin
+    centerf.x := center.x;
+    centerf.y := center.y;
+    pc := @centerf;
+  end;
+  if region <> nil then
+  begin
+    regionf.x := region.x;
+    regionf.y := region.y;
+    regionf.w := region.w;
+    regionf.h := region.h;
+    pr := @regionf;
+  end;
+
+  SDL_RenderTextureRotated(render, tex, pr, @rect, angle, pc, SDL_FLIP_NONE);
+  //SDL_RenderTexture(render, tex, nil, nil);
   if newtex then
     SDL_DestroyTexture(tex);
 
@@ -2849,21 +2827,21 @@ begin
     end;
     if mixAlpha < 0 then
     begin
-      SDL_GetRGB(mixColor, scr.format, @r, @g, @b);
+      SDL_GetRGB(mixColor, SDL_GetPixelFormatDetails(scr.format), SDL_GetSurfacePalette(scr), @r, @g, @b);
       SDL_SetSurfaceColorMod(sur, r, g, b);
     end;
     if (mixAlpha > 0) and (shadow > 0) then
     begin
       GetRGBA(mixColor, @r, @g, @b);
       sur1 := sur;
-      sur := SDL_ConvertSurface(sur1, screen.format, 0);
-      sur2 := SDL_ConvertSurface(sur1, screen.format, 0);
+      sur := SDL_ConvertSurface(sur1, screen.format);
+      sur2 := SDL_ConvertSurface(sur1, screen.format);
       newsur := True;
       SDL_SetSurfaceColorMod(sur2, r, g, b);
       SDL_SetSurfaceAlphaMod(sur2, 255 * mixAlpha div 100);
       SDL_SetSurfaceBlendMode(sur2, SDL_BLENDMODE_ADD);
       SDL_BlitSurface(sur2, nil, sur, nil);
-      SDL_FreeSurface(sur2);
+      SDL_DestroySurface(sur2);
     end;
     if alpha > 0 then
     begin
@@ -2873,9 +2851,9 @@ begin
     if (rect.w = PNGIndex.w) and (rect.h = PNGIndex.h) then
       SDL_BlitSurface(sur, region, scr, @rect)
     else
-      SDL_UpperBlitScaled(sur, region, scr, @rect);
+      SDL_BlitSurface(sur, region, scr, @rect);
     if newsur then
-      SDL_FreeSurface(sur);
+      SDL_DestroySurface(sur);
   except
     ConsoleLog('Bad PNGINDEX, filenum %d, width %d, height %d', [PNGIndex.FileNum, PNGIndex.w, PNGIndex.h]);
   end;
@@ -2900,7 +2878,7 @@ end;
 function PlayMovie(filename: utf8string): boolean;
 begin
   {$IFDEF windows}
-  PotInputVideo(smallpot, @filename[1]);
+  //PotInputVideo(smallpot, @filename[1]);
   {$ENDIF}
 end;
 
@@ -2989,10 +2967,10 @@ begin
   //ConsoleLog('size is %d and %d', [chnsize, engsize]);
   //{$ifdef android}
   {p := ReadFileToBuffer(nil, putf8char(AppPath + CHINESE_FONT), -1, 1);
-    font := TTF_OpenFontRW(SDL_RWFromMem(p, FileGetlength(putf8char(AppPath + CHINESE_FONT))), 1, chnsize);
+    font := TTF_OpenFontRW(SDL_IOFromMem(p, FileGetlength(putf8char(AppPath + CHINESE_FONT))), 1, chnsize);
     //FreeFileBuffer(p);
     p := ReadFileToBuffer(nil, putf8char(AppPath + CHINESE_FONT), -1, 1);
-    engfont := TTF_OpenFontRW(SDL_RWFromMem(p, FileGetlength(putf8char(AppPath + CHINESE_FONT))), 1, engsize);
+    engfont := TTF_OpenFontRW(SDL_IOFromMem(p, FileGetlength(putf8char(AppPath + CHINESE_FONT))), 1, engsize);
     //FreeFileBuffer(p);}
   //{$else}
   font := TTF_OpenFont(putf8char(AppPath + CHINESE_FONT), chnsize);
@@ -3007,9 +2985,9 @@ begin
     ConsoleLog('Read fonts failed');
 
   //测试中文字体的空格宽度
-  Text := TTF_RenderUNICODE_solid(font, @word[0], tempcolor);
+  Text := TTF_RenderText_solid(font, @word[0], 0, tempcolor);
   CHNFONT_SPACEWIDTH := Text.w;
-  SDL_FreeSurface(Text);
+  SDL_DestroySurface(Text);
   //ConsoleLog('space size is %d', [CHNFONT_SPACEWIDTH]);
   //writeln(chnsize, engsize);
 end;
@@ -3048,11 +3026,11 @@ begin
       begin
         if TEXT_LAYER <> 0 then
         begin
-          SDL_FillRect(SimpleText[i], nil, MapRGBA(255, 255, 255, 0));
+          SDL_FillSurfaceRect(SimpleText[i], nil, MapRGBA(255, 255, 255, 0));
           SDL_SetSurfaceBlendMode(SimpleText[i], SDL_BLENDMODE_NONE);
         end;
         CurTargetSurface := SimpleStatus[i];
-        SDL_FillRect(CurTargetSurface, nil, 0);
+        SDL_FillSurfaceRect(CurTargetSurface, nil, 0);
         ShowSimpleStatus(TeamList[i], 0, 0, i);
         SDL_SetSurfaceBlendMode(SimpleStatus[i], SDL_BLENDMODE_BLEND);
       end;
@@ -3069,6 +3047,7 @@ procedure DrawSimpleStatusByTeam(i, px, py: integer; mixColor: uint32; mixAlpha:
 var
   tempsur: PSDL_Surface;
   dest, dest2, rectcut: TSDL_Rect;
+  destf: TSDL_FRect;
   x, y, w, h: integer;
   r, g, b, r1, g1, b1: byte;
 begin
@@ -3098,7 +3077,8 @@ begin
     begin
       SDL_SetTextureColorMod(SimpleStatusTex[i], 255, 255, 255);
     end;
-    SDL_RenderCopy(render, SimpleStatusTex[i], nil, @dest);
+    destf := rect2f(dest);
+    SDL_RenderTexture(render, SimpleStatusTex[i], nil, @destf);
 
     if (TEXT_LAYER = 1) then
     begin
@@ -3107,7 +3087,8 @@ begin
       else
         SDL_SetTextureColorMod(SimpleTextTex[i], 255, 255, 255);
       SDL_SetRenderTarget(render, TextScreenTex);
-      SDL_RenderCopy(render, SimpleTextTex[i], @rectcut, @dest2);
+      destf := rect2f(dest2);
+      SDL_RenderTexture(render, SimpleTextTex[i], @rectcut, @destf);
       SDL_SetRenderTarget(render, screenTex);
     end;
   end
@@ -3182,6 +3163,7 @@ procedure RecordFreshScreen(x, y, w, h: integer); overload;
 var
   i: integer;
   dest: TSDL_Rect;
+  destf: tsdl_frect;
   tex: PSDL_Texture;
   sur: PSDL_Surface;
 begin
@@ -3193,13 +3175,14 @@ begin
   begin
     tex := SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, w, h);
     SDL_SetRenderTarget(render, tex);
-    SDL_RenderCopy(render, screenTex, @dest, nil);
+    destf := rect2f(dest);
+    SDL_RenderTexture(render, screenTex, @destf, nil);
     SDL_SetRenderTarget(render, screenTex);
     FreshScreen.Add(tex);
   end
   else
   begin
-    sur := SDL_CreateRGBSurface(0, w, h, 32, RMASK, GMASK, BMASK, AMASK);
+    sur := SDL_CreateSurface(w, h, SDL_GetPixelFormatForMasks(32, Rmask, Gmask, Bmask, Amask));
     SDL_BlitSurface(screen, @dest, sur, nil);
     FreshScreen.Add(sur);
   end;
@@ -3217,8 +3200,10 @@ procedure LoadFreshScreen(x, y: integer); overload;
 var
   i: integer;
   dest: TSDL_Rect;
+  destf: TSDL_FRect;
   tex: PSDL_Texture;
   sur: PSDL_Surface;
+  wf, hf: single;
 begin
   i := FreshScreen.Count - 1;
   if i >= 0 then
@@ -3230,9 +3215,12 @@ begin
         tex := PSDL_Texture(FreshScreen[i]);
         dest.x := x;
         dest.y := y;
-        SDL_QueryTexture(tex, nil, nil, @dest.w, @dest.h);
+        SDL_GetTextureSize(tex, @wf, @hf);
+        dest.w := round(wf);
+        dest.h := round(hf);
         CleanTextScreenRect(x, y, dest.w, dest.h);
-        SDL_RenderCopy(render, tex, nil, @dest);
+        destf := rect2f(dest);
+        SDL_RenderTexture(render, tex, nil, @destf);
       end;
     end
     else
@@ -3271,7 +3259,7 @@ begin
     end
     else
     begin
-      SDL_FreeSurface(PSDL_Surface(FreshScreen[i]));
+      SDL_DestroySurface(PSDL_Surface(FreshScreen[i]));
       FreshScreen[i] := nil;
       FreshScreen.Delete(i);
     end;
@@ -3279,7 +3267,7 @@ begin
   {if i > 0 then
     begin
     SDL_SetRenderTarget(render, screenTex);
-    SDL_RenderCopy(render, freshscreenTex[i - 1], nil, nil);
+    SDL_RenderTexture(render, freshscreenTex[i - 1], nil, nil);
     end;}
 end;
 
@@ -3287,11 +3275,13 @@ end;
 procedure UpdateAllScreen;
 var
   src, dest, destfull: TSDL_Rect;
+  destf: TSDL_Frect;
   prect: PSDL_Rect;
+  prectf: PSDL_FRect;
   scr: PSDL_Texture;
   r, g, b: byte;
   degree: float;
-  mid: TSDL_Point;
+  mid: TSDL_fPoint;
 begin
   case ScreenBlendMode of
     0:
@@ -3327,13 +3317,17 @@ begin
       src.w := CENTER_X * 2;
       src.h := CENTER_Y * 2;
       dest := GetRealRect(src, 1);
-      SDL_RenderCopy(render, screenTex, nil, @dest);
+      destf.x := dest.x;
+      destf.y := dest.y;
+      destf.w := dest.w;
+      destf.h := dest.h;
+      SDL_RenderTexture(render, screenTex, nil, @destf);
     end
     else
     begin
       if ScreenRotate = 0 then
       begin
-        SDL_RenderCopy(render, screenTex, nil, nil);
+        SDL_RenderTexture(render, screenTex, nil, nil);
       end
       else
       begin
@@ -3343,7 +3337,8 @@ begin
         dest.h := RESOLUTIONX;
         mid.x := 0;
         mid.y := 0;
-        SDL_RenderCopyEx(render, screenTex, nil, @dest, 90, @mid, 0);
+        destf := rect2f(dest);
+        SDL_RenderTextureRotated(render, screenTex, nil, @destf, 90, @mid, 0);
       end;
     end;
     SDL_SetTextureColorMod(screenTex, 255, 255, 255);
@@ -3354,7 +3349,7 @@ begin
       destfull.w := RESOLUTIONX;
       destfull.h := RESOLUTIONY;
       SDL_SetTextureColorMod(TextScreenTex, r, g, b);
-      SDL_RenderCopy(render, TextScreenTex, nil, @destfull);
+      SDL_RenderTexture(render, TextScreenTex, nil, nil);
       SDL_SetTextureColorMod(TextScreenTex, 255, 255, 255);
     end;
     SDL_RenderPresent(render);
@@ -3380,13 +3375,13 @@ begin
         SDL_UpdateTexture(screenTex, nil, screen.pixels, screen.pitch);
         SDL_RenderClear(render);
         SDL_SetTextureColorMod(screenTex, r, g, b);
-        SDL_RenderCopy(render, screenTex, nil, prect);
+        SDL_RenderTexture(render, screenTex, nil, nil);
         SDL_SetTextureColorMod(screenTex, 255, 255, 255);
         if (TEXT_LAYER = 1) and (HaveText = 1) then
         begin
           SDL_UpdateTexture(TextScreenTex, nil, TextScreen.pixels, TextScreen.pitch);
           SDL_SetTextureColorMod(TextScreenTex, r, g, b);
-          SDL_RenderCopy(render, TextScreenTex, nil, nil);
+          SDL_RenderTexture(render, TextScreenTex, nil, nil);
           SDL_SetTextureColorMod(TextScreenTex, 255, 255, 255);
         end;
         SDL_RenderPresent(render);
@@ -3418,7 +3413,7 @@ begin
     end
     else
     begin
-      SDL_FillRect(TextScreen, nil, MapRGBA(255, 255, 255, 0));
+      SDL_FillSurfaceRect(TextScreen, nil, MapRGBA(255, 255, 255, 0));
     end;
     HaveText := 0;
   end;
@@ -3447,7 +3442,7 @@ begin
       end
       else
       begin
-        SDL_FillRect(TextScreen, @dest, MapRGBA(255, 255, 255, 0));
+        SDL_FillSurfaceRect(TextScreen, @dest, MapRGBA(255, 255, 255, 0));
       end;
     end;
   end;
@@ -3456,7 +3451,7 @@ end;
 //清键值
 procedure CleanKeyValue;
 begin
-  event.key.keysym.sym := 0;
+  event.key.key := 0;
   event.button.button := 0;
 end;
 
@@ -3694,7 +3689,7 @@ begin
   str := format(formatstring, content);
   SDL_Log('%s', [@str[1]]);
   //mythoutput.mythoutput(putf8char(str));
-  {i := fileopen(SDL_AndroidGetExternalStoragePath()+'/pig3_place_game_here',fmopenwrite);
+  {i := fileopen(SDL_GetAndroidExternalStoragePath()+'/pig3_place_game_here',fmopenwrite);
     fileseek(i, 0, 2);
     filewrite(i, str[1], length(str));
     fileclose(i);}
@@ -3716,7 +3711,7 @@ begin
   str := format(formatstring, []);
   SDL_Log('%s', [@str[1]]);
   //mythoutput.mythoutput(putf8char(str));
-  {i := fileopen(SDL_AndroidGetExternalStoragePath()+'/pig3_place_game_here',fmopenwrite);
+  {i := fileopen(SDL_GetAndroidExternalStoragePath()+'/pig3_place_game_here',fmopenwrite);
     fileseek(i, 0, 2);
     filewrite(i, str[1], length(str));
     fileclose(i);}
@@ -3793,6 +3788,14 @@ begin
     setlength(Result, length(Result) + 1);
     Result[length(Result) - 1] := StrToInt(s);
   end;
+end;
+
+function Rect2f(r: tsdl_rect): tsdl_frect;
+begin
+  Result.x := r.x;
+  Result.y := r.y;
+  Result.w := r.w;
+  Result.h := r.h;
 end;
 
 end.

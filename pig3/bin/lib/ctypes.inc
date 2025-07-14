@@ -24,11 +24,6 @@
 type
   DWord = LongWord;
 
-  ppcbool = ^pcbool;
-  pcbool = ^cbool;
-  cbool = LongBool;
-  {$EXTERNALSYM cbool}
-
   ppcint8 = ^pcint8;
   pcint8 = ^cint8;
   cint8 = ShortInt;
@@ -161,17 +156,10 @@ type
     pointer: uintptr_t"
     Source: https://pubs.opengroup.org/onlinepubs/000095399/basedefs/stdint.h.html
     }
-  {$IFNDEF FPC}
-    cuintptr_t = UIntPtr;
-    {$EXTERNALSYM cuintptr_t}
-    cintptr_t = IntPtr;
-    {$EXTERNALSYM cintptr_t}
-  {$ELSE}
-    cuintptr_t = PtrUInt;
-    {$EXTERNALSYM cuintptr_t}
-    cintptr_t = PtrInt;
-    {$EXTERNALSYM cintptr_t}
-  {$ENDIF}
+  cuintptr_t = PtrUInt;
+  {$EXTERNALSYM cuintptr_t}
+  cintptr_t = PtrInt;
+  {$EXTERNALSYM cintptr_t}
 
   {$IFDEF WANT_CWCHAR_T}
     (* wchar_t is the "wide character" type of the C language.

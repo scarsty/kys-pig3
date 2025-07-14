@@ -3,8 +3,8 @@
 interface
 
 uses
-  SDL2,
-  SDL2_ttf,
+  SDL3,
+  SDL3_ttf,
   bass,
   lua52,
   Classes,
@@ -578,8 +578,8 @@ var
   FreshScreen: TList;
   //含义参考上面
 
-  SimpleStatus: array [0 .. 5] of PSDL_Texture; //全队简明状态的表面
-  SimpleText: array [0 .. 5] of PSDL_Texture; //全队简明状态文字的表面
+  SimpleStatus: array [0 .. 5] of PSDL_Surface; //全队简明状态的表面
+  SimpleText: array [0 .. 5] of PSDL_Surface; //全队简明状态文字的表面
 
   SkipTalk: integer = 0;
 

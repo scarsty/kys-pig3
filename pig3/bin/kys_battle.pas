@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils,
-  SDL2,
+  SDL3,
   Math,
   kys_type,
   kys_main;
@@ -420,7 +420,7 @@ begin
       for j := Low(FPNGTile[i]) to High(FPNGTile[i]) do
       begin
       if FPNGTile[i][j] <> nil then
-      SDL_FreeSurface(FPNGTile[i][j]);
+      SDL_DestroySurface(FPNGTile[i][j]);
       end;
       for j := Low(FPNGIndex[i]) to High(FPNGIndex[i]) do
       begin
@@ -596,13 +596,13 @@ begin
   ShowMultiMenu;
   /// /SDL_EnableKeyRepeat(50, 30);
   forall := round(power(2, (max - 1)) - 1);
-  while (SDL_WaitEvent(@event) >= 0) do
+  while (SDL_WaitEvent(@event)) do
   begin
     CheckBasicEvent;
     case event.type_ of
-      SDL_KEYUP:
+      SDL_EVENT_KEY_UP:
       begin
-        if ((event.key.keysym.sym = SDLK_RETURN) or (event.key.keysym.sym = SDLK_SPACE)) and (menu <> max) then
+        if ((event.key.key = SDLK_RETURN) or (event.key.key = SDLK_SPACE)) and (menu <> max) then
         begin
           //选中人物则反转对应bit
           if forceSingle = 0 then
@@ -626,22 +626,22 @@ begin
           end;
           ShowMultiMenu;
         end;
-        if ((event.key.keysym.sym = SDLK_RETURN) or (event.key.keysym.sym = SDLK_SPACE)) and (menu = max) then
+        if ((event.key.key = SDLK_RETURN) or (event.key.key = SDLK_SPACE)) and (menu = max) then
         begin
           if Result <> 0 then
             break;
         end;
       end;
-      SDL_KEYDOWN:
+      SDL_EVENT_KEY_DOWN:
       begin
-        if (event.key.keysym.sym = SDLK_UP) then
+        if (event.key.key = SDLK_UP) then
         begin
           menu := menu - 1;
           if menu < 0 then
             menu := max;
           ShowMultiMenu;
         end;
-        if (event.key.keysym.sym = SDLK_DOWN) then
+        if (event.key.key = SDLK_DOWN) then
         begin
           menu := menu + 1;
           if menu > max then
@@ -649,7 +649,7 @@ begin
           ShowMultiMenu;
         end;
       end;
-      SDL_MOUSEBUTTONUP:
+      SDL_EVENT_MOUSE_BUTTON_UP:
         if MouseInRegion(x, y, 150, (max + 1) * h) then
         begin
           if (event.button.button = SDL_BUTTON_LEFT) and (menu <> max) then
@@ -682,7 +682,7 @@ begin
               break;
           end;
         end;
-      SDL_MOUSEMOTION:
+      SDL_EVENT_MOUSE_MOTION:
       begin
         if MouseInRegion(x, y, 150, (max + 1) * h, xm, ym) then
         begin
@@ -916,7 +916,7 @@ begin
     begin
       Redraw;
       act := 0;
-      while SDL_PollEvent(@event) >= 0 do
+      while SDL_PollEvent(@event) or true do
       begin
         for i := 0 to BRoleAmount - 1 do
         begin
@@ -1479,42 +1479,42 @@ begin
   menu := 0;
   ShowBMenu(MenuStatus, menu, max);
   //SDL_UpdateRect2(screen,0,0,screen.w,screen.h);
-  while (SDL_WaitEvent(@event) >= 0) do
+  while (SDL_WaitEvent(@event)) do
   begin
     CheckBasicEvent;
     case event.type_ of
-      SDL_KEYDOWN:
+      SDL_EVENT_KEY_DOWN:
       begin
-        if (event.key.keysym.sym = SDLK_UP) then
+        if (event.key.key = SDLK_UP) then
         begin
           menu := menu - 1;
           if menu < 0 then
             menu := max;
           ShowBMenu(MenuStatus, menu, max);
         end;
-        if (event.key.keysym.sym = SDLK_DOWN) then
+        if (event.key.key = SDLK_DOWN) then
         begin
           menu := menu + 1;
           if menu > max then
             menu := 0;
           ShowBMenu(MenuStatus, menu, max);
         end;
-        event.key.keysym.sym := 0;
+        event.key.key := 0;
       end;
-      SDL_KEYUP:
+      SDL_EVENT_KEY_UP:
       begin
-        if (event.key.keysym.sym = SDLK_RETURN) or (event.key.keysym.sym = SDLK_SPACE) then
+        if (event.key.key = SDLK_RETURN) or (event.key.key = SDLK_SPACE) then
         begin
-          ConsoleLog('%d/%d/%d', [event.type_, event.key.keysym.sym, menu]);
+          ConsoleLog('%d/%d/%d', [event.type_, event.key.key, menu]);
           break;
         end;
-        if (event.key.keysym.sym = SDLK_ESCAPE) then
+        if (event.key.key = SDLK_ESCAPE) then
         begin
           menu := -1;
           break;
         end;
       end;
-      SDL_MOUSEBUTTONUP:
+      SDL_EVENT_MOUSE_BUTTON_UP:
       begin
         if (event.button.button = SDL_BUTTON_LEFT) and (menu <> -1) and MouseInRegion(x, y, 120, (max + 1) * h, xm, ym) then
           break;
@@ -1524,7 +1524,7 @@ begin
           break;
         end;
       end;
-      SDL_MOUSEMOTION:
+      SDL_EVENT_MOUSE_MOTION:
       begin
         if MouseInRegion(x, y, 120, (max + 1) * h, xm, ym) then
         begin
@@ -1624,7 +1624,7 @@ begin
       end;
     end;
     a := BField[3, Ax, Ay] - 1;
-    while (SDL_PollEvent(@event) >= 0) do
+    while (SDL_PollEvent(@event) or true) do
     begin
       CheckBasicEvent;
       if sign(linebx[a] - Bx) > 0 then
@@ -1676,13 +1676,13 @@ begin
   UpdateAllScreen;
   pAx := Ax;
   pAy := Ay;
-  while (SDL_WaitEvent(@event) >= 0) do
+  while (SDL_WaitEvent(@event)) do
   begin
     CheckBasicEvent;
     case event.type_ of
-      SDL_KEYUP:
+      SDL_EVENT_KEY_UP:
       begin
-        if (event.key.keysym.sym = SDLK_RETURN) or (event.key.keysym.sym = SDLK_SPACE) then
+        if (event.key.key = SDLK_RETURN) or (event.key.key = SDLK_SPACE) then
         begin
           if BField[2, Ax, Ay] >= 0 then
           begin
@@ -1695,32 +1695,32 @@ begin
             UpdateAllScreen;
           end;
         end;
-        if (event.key.keysym.sym = SDLK_ESCAPE) then
+        if (event.key.key = SDLK_ESCAPE) then
         begin
           Result := False;
           break;
         end;
       end;
-      SDL_KEYDOWN:
+      SDL_EVENT_KEY_DOWN:
       begin
-        if (event.key.keysym.sym = SDLK_LEFT) then
+        if (event.key.key = SDLK_LEFT) then
         begin
           Ay := Ay - 1;
         end;
-        if (event.key.keysym.sym = SDLK_RIGHT) then
+        if (event.key.key = SDLK_RIGHT) then
         begin
           Ay := Ay + 1;
         end;
-        if (event.key.keysym.sym = SDLK_DOWN) then
+        if (event.key.key = SDLK_DOWN) then
         begin
           Ax := Ax + 1;
         end;
-        if (event.key.keysym.sym = SDLK_UP) then
+        if (event.key.key = SDLK_UP) then
         begin
           Ax := Ax - 1;
         end;
       end;
-      SDL_MOUSEBUTTONUP:
+      SDL_EVENT_MOUSE_BUTTON_UP:
       begin
         if (event.button.button = SDL_BUTTON_LEFT) then
         begin
@@ -1742,7 +1742,7 @@ begin
           break;
         end;
       end;
-      SDL_MOUSEMOTION:
+      SDL_EVENT_MOUSE_MOTION:
       begin
         GetMousePosition(Ax, Ay, Bx, By);
       end;
@@ -1777,53 +1777,53 @@ begin
   if (BField[2, Ax, Ay] >= 0) then
     ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 150);
   UpdateAllScreen;
-  while (SDL_WaitEvent(@event) >= 0) do
+  while (SDL_WaitEvent(@event)) do
   begin
     CheckBasicEvent;
     case event.type_ of
-      SDL_KEYUP:
+      SDL_EVENT_KEY_UP:
       begin
-        if (event.key.keysym.sym = SDLK_RETURN) or (event.key.keysym.sym = SDLK_SPACE) then
+        if (event.key.key = SDLK_RETURN) or (event.key.key = SDLK_SPACE) then
         begin
           Result := True;
           x50[28927] := 1;
           break;
         end;
-        if (event.key.keysym.sym = SDLK_ESCAPE) then
+        if (event.key.key = SDLK_ESCAPE) then
         begin
           Result := False;
           x50[28927] := 0;
           break;
         end;
       end;
-      SDL_KEYDOWN:
+      SDL_EVENT_KEY_DOWN:
       begin
-        if (event.key.keysym.sym = SDLK_LEFT) then
+        if (event.key.key = SDLK_LEFT) then
         begin
           Ay := Ay - 1;
           if (abs(Ax - Bx) + abs(Ay - By) > step) or (BField[3, Ax, Ay] < 0) then
             Ay := Ay + 1;
         end;
-        if (event.key.keysym.sym = SDLK_RIGHT) then
+        if (event.key.key = SDLK_RIGHT) then
         begin
           Ay := Ay + 1;
           if (abs(Ax - Bx) + abs(Ay - By) > step) or (BField[3, Ax, Ay] < 0) then
             Ay := Ay - 1;
         end;
-        if (event.key.keysym.sym = SDLK_DOWN) then
+        if (event.key.key = SDLK_DOWN) then
         begin
           Ax := Ax + 1;
           if (abs(Ax - Bx) + abs(Ay - By) > step) or (BField[3, Ax, Ay] < 0) then
             Ax := Ax - 1;
         end;
-        if (event.key.keysym.sym = SDLK_UP) then
+        if (event.key.key = SDLK_UP) then
         begin
           Ax := Ax - 1;
           if (abs(Ax - Bx) + abs(Ay - By) > step) or (BField[3, Ax, Ay] < 0) then
             Ax := Ax + 1;
         end;
       end;
-      SDL_MOUSEBUTTONUP:
+      SDL_EVENT_MOUSE_BUTTON_UP:
       begin
         if (event.button.button = SDL_BUTTON_LEFT) then
         begin
@@ -1839,7 +1839,7 @@ begin
           break;
         end;
       end;
-      SDL_MOUSEMOTION:
+      SDL_EVENT_MOUSE_MOTION:
       begin
         GetMousePosition(Axp, Ayp, Bx, By);
         {Axp := (-round(event.button.x / (RealScreen.w / screen.w)) + CENTER_x + 2 *
@@ -1872,24 +1872,24 @@ begin
   BattleSelecting := True;
   DrawBFieldWithCursor(AttAreaType, step, range);
   UpdateAllScreen;
-  while (SDL_WaitEvent(@event) >= 0) do
+  while (SDL_WaitEvent(@event)) do
   begin
     CheckBasicEvent;
     case event.type_ of
-      SDL_KEYUP:
+      SDL_EVENT_KEY_UP:
       begin
-        if (event.key.keysym.sym = SDLK_RETURN) or (event.key.keysym.sym = SDLK_SPACE) then
+        if (event.key.key = SDLK_RETURN) or (event.key.key = SDLK_SPACE) then
         begin
           Result := True;
           break;
         end;
-        if (event.key.keysym.sym = SDLK_ESCAPE) then
+        if (event.key.key = SDLK_ESCAPE) then
         begin
           Result := False;
           break;
         end;
       end;
-      SDL_MOUSEBUTTONUP:
+      SDL_EVENT_MOUSE_BUTTON_UP:
       begin
         if (event.button.button = SDL_BUTTON_LEFT) then
         begin
@@ -1919,46 +1919,46 @@ begin
   if (BField[2, Ax, Ay] >= 0) then
     ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 150);
   UpdateAllScreen;
-  while (SDL_WaitEvent(@event) >= 0) do
+  while (SDL_WaitEvent(@event)) do
   begin
     CheckBasicEvent;
     case event.type_ of
-      SDL_KEYUP:
+      SDL_EVENT_KEY_UP:
       begin
-        if (event.key.keysym.sym = SDLK_RETURN) or (event.key.keysym.sym = SDLK_SPACE) then
+        if (event.key.key = SDLK_RETURN) or (event.key.key = SDLK_SPACE) then
         begin
           Result := True;
           x50[28927] := 1;
           break;
         end;
-        if (event.key.keysym.sym = SDLK_ESCAPE) then
+        if (event.key.key = SDLK_ESCAPE) then
         begin
           Result := False;
           x50[28927] := 0;
           break;
         end;
       end;
-      SDL_KEYDOWN:
+      SDL_EVENT_KEY_DOWN:
       begin
-        if (event.key.keysym.sym = SDLK_LEFT) then
+        if (event.key.key = SDLK_LEFT) then
         begin
           Ay := Ay - 1;
           if (abs(Ax - Bx) + abs(Ay - By) > step) then
             Ay := Ay + 1;
         end;
-        if (event.key.keysym.sym = SDLK_RIGHT) then
+        if (event.key.key = SDLK_RIGHT) then
         begin
           Ay := Ay + 1;
           if (abs(Ax - Bx) + abs(Ay - By) > step) then
             Ay := Ay - 1;
         end;
-        if (event.key.keysym.sym = SDLK_DOWN) then
+        if (event.key.key = SDLK_DOWN) then
         begin
           Ax := Ax + 1;
           if (abs(Ax - Bx) + abs(Ay - By) > step) then
             Ax := Ax - 1;
         end;
-        if (event.key.keysym.sym = SDLK_UP) then
+        if (event.key.key = SDLK_UP) then
         begin
           Ax := Ax - 1;
           if (abs(Ax - Bx) + abs(Ay - By) > step) then
@@ -1969,7 +1969,7 @@ begin
           ShowSimpleStatus(Brole[BField[2, Ax, Ay]].rnum, CENTER_X * 2 - 350, CENTER_Y * 2 - 150);
         UpdateAllScreen;
       end;
-      SDL_MOUSEBUTTONUP:
+      SDL_EVENT_MOUSE_BUTTON_UP:
       begin
         if (event.button.button = SDL_BUTTON_LEFT) then
         begin
@@ -1982,7 +1982,7 @@ begin
           break;
         end;
       end;
-      SDL_MOUSEMOTION:
+      SDL_EVENT_MOUSE_MOTION:
       begin
         GetMousePosition(Axp, Ayp, Bx, By);
         {Axp := (-round(event.button.x / (RealScreen.w / screen.w)) + CENTER_x + 2 *
@@ -2020,28 +2020,28 @@ begin
   BattleSelecting := True;
   DrawBFieldWithCursor(AttAreaType, step, range);
   UpdateAllScreen;
-  while (SDL_WaitEvent(@event) >= 0) do
+  while (SDL_WaitEvent(@event)) do
   begin
     CheckBasicEvent;
     case event.type_ of
-      SDL_KEYUP:
+      SDL_EVENT_KEY_UP:
       begin
-        if (event.key.keysym.sym = SDLK_RETURN) or (event.key.keysym.sym = SDLK_SPACE) then
+        if (event.key.key = SDLK_RETURN) or (event.key.key = SDLK_SPACE) then
         begin
           Result := True;
           x50[28927] := 1;
           break;
         end;
-        if (event.key.keysym.sym = SDLK_ESCAPE) then
+        if (event.key.key = SDLK_ESCAPE) then
         begin
           Result := False;
           x50[28927] := 0;
           break;
         end;
       end;
-      SDL_KEYDOWN:
+      SDL_EVENT_KEY_DOWN:
       begin
-        if (event.key.keysym.sym = SDLK_LEFT) then
+        if (event.key.key = SDLK_LEFT) then
         begin
           Ay := Ay - 1;
           if (abs(Ax - Bx) + abs(Ay - By) > step) then
@@ -2054,7 +2054,7 @@ begin
           DrawBFieldWithCursor(AttAreaType, step, range);
           UpdateAllScreen;
         end;
-        if (event.key.keysym.sym = SDLK_RIGHT) then
+        if (event.key.key = SDLK_RIGHT) then
         begin
           Ay := Ay + 1;
           if (abs(Ax - Bx) + abs(Ay - By) > step) then
@@ -2067,7 +2067,7 @@ begin
           DrawBFieldWithCursor(AttAreaType, step, range);
           UpdateAllScreen;
         end;
-        if (event.key.keysym.sym = SDLK_DOWN) then
+        if (event.key.key = SDLK_DOWN) then
         begin
           Ax := Ax + 1;
           if (abs(Ax - Bx) + abs(Ay - By) > step) then
@@ -2080,7 +2080,7 @@ begin
           DrawBFieldWithCursor(AttAreaType, step, range);
           UpdateAllScreen;
         end;
-        if (event.key.keysym.sym = SDLK_UP) then
+        if (event.key.key = SDLK_UP) then
         begin
           Ax := Ax - 1;
           if (abs(Ax - Bx) + abs(Ay - By) > step) then
@@ -2094,7 +2094,7 @@ begin
           UpdateAllScreen;
         end;
       end;
-      SDL_MOUSEBUTTONUP:
+      SDL_EVENT_MOUSE_BUTTON_UP:
       begin
         if (event.button.button = SDL_BUTTON_LEFT) then
         begin
@@ -2107,7 +2107,7 @@ begin
           break;
         end;
       end;
-      SDL_MOUSEMOTION:
+      SDL_EVENT_MOUSE_MOTION:
       begin
         GetMousePosition(Axp, Ayp, Bx, By);
         {Axp := (-round(event.button.x / (RealScreen.w / screen.w)) + CENTER_x + 2 *
@@ -2141,47 +2141,47 @@ begin
   DrawBFieldWithCursor(AttAreaType, step, range);
   UpdateAllScreen;
   Result := False;
-  while (SDL_WaitEvent(@event) >= 0) do
+  while (SDL_WaitEvent(@event)) do
   begin
     CheckBasicEvent;
     case event.type_ of
-      SDL_KEYUP:
+      SDL_EVENT_KEY_UP:
       begin
-        if (event.key.keysym.sym = SDLK_ESCAPE) then
+        if (event.key.key = SDLK_ESCAPE) then
         begin
           break;
         end;
-        if (event.key.keysym.sym = SDLK_RETURN) or (event.key.keysym.sym = SDLK_SPACE) then
+        if (event.key.key = SDLK_RETURN) or (event.key.key = SDLK_SPACE) then
         begin
           if (Ax <> Bx) or (Ay <> By) then
             Result := True;
           break;
         end;
       end;
-      SDL_KEYDOWN:
+      SDL_EVENT_KEY_DOWN:
       begin
-        if (event.key.keysym.sym = SDLK_LEFT) then
+        if (event.key.key = SDLK_LEFT) then
         begin
           Ay := By - 1;
           Ax := Bx;
           DrawBFieldWithCursor(AttAreaType, step, range);
           UpdateAllScreen;
         end;
-        if (event.key.keysym.sym = SDLK_RIGHT) then
+        if (event.key.key = SDLK_RIGHT) then
         begin
           Ay := By + 1;
           Ax := Bx;
           DrawBFieldWithCursor(AttAreaType, step, range);
           UpdateAllScreen;
         end;
-        if (event.key.keysym.sym = SDLK_DOWN) then
+        if (event.key.key = SDLK_DOWN) then
         begin
           Ax := Bx + 1;
           Ay := By;
           DrawBFieldWithCursor(AttAreaType, step, range);
           UpdateAllScreen;
         end;
-        if (event.key.keysym.sym = SDLK_UP) then
+        if (event.key.key = SDLK_UP) then
         begin
           Ax := Bx - 1;
           Ay := By;
@@ -2189,7 +2189,7 @@ begin
           UpdateAllScreen;
         end;
       end;
-      SDL_MOUSEBUTTONUP:
+      SDL_EVENT_MOUSE_BUTTON_UP:
       begin
         if event.button.button = SDL_BUTTON_RIGHT then
         begin
@@ -2231,7 +2231,7 @@ begin
             end;}
         end;
       end;
-      SDL_MOUSEMOTION:
+      SDL_EVENT_MOUSE_MOTION:
       begin
         if MouseInRegion(0, 0, CENTER_X, CENTER_Y) then
         begin
@@ -2951,7 +2951,7 @@ begin
   DrawTextWithRect(str, CENTER_X - l * 5 - 24, CENTER_Y - 150, 0, color1, color2, 10);
   UpdateAllScreen;
   SDL_Delay(400);
-  event.key.keysym.sym := 0;
+  event.key.key := 0;
   event.button.button := 0;
 
 end;
@@ -3031,32 +3031,32 @@ begin
     exit;
   end;
   ShowMagicMenu(MenuStatus, menu, max);
-  while (SDL_WaitEvent(@event) >= 0) do
+  while (SDL_WaitEvent(@event)) do
   begin
     CheckBasicEvent;
     case event.type_ of
-      SDL_KEYUP:
+      SDL_EVENT_KEY_UP:
       begin
-        if (event.key.keysym.sym = SDLK_RETURN) or (event.key.keysym.sym = SDLK_SPACE) then
+        if (event.key.key = SDLK_RETURN) or (event.key.key = SDLK_SPACE) then
         begin
           break;
         end;
-        if (event.key.keysym.sym = SDLK_ESCAPE) then
+        if (event.key.key = SDLK_ESCAPE) then
         begin
           menu := -1;
           break;
         end;
       end;
-      SDL_KEYDOWN:
+      SDL_EVENT_KEY_DOWN:
       begin
-        if (event.key.keysym.sym = SDLK_UP) then
+        if (event.key.key = SDLK_UP) then
         begin
           menu := menu - 1;
           if menu < 0 then
             menu := max;
           ShowMagicMenu(MenuStatus, menu, max);
         end;
-        if (event.key.keysym.sym = SDLK_DOWN) then
+        if (event.key.key = SDLK_DOWN) then
         begin
           menu := menu + 1;
           if menu > max then
@@ -3064,7 +3064,7 @@ begin
           ShowMagicMenu(MenuStatus, menu, max);
         end;
       end;
-      SDL_MOUSEBUTTONUP:
+      SDL_EVENT_MOUSE_BUTTON_UP:
       begin
         if (event.button.button = SDL_BUTTON_LEFT) and (menu <> -1) then
         begin
@@ -3076,7 +3076,7 @@ begin
           break;
         end;
       end;
-      SDL_MOUSEMOTION:
+      SDL_EVENT_MOUSE_MOTION:
       begin
         if MouseInRegion(100, 50, 190, max * h + 32, xm, ym) then
         begin
@@ -3309,7 +3309,7 @@ begin
   i := 0;
   if endpic > 0 then
   begin
-    while (SDL_PollEvent(@event) >= 0) do
+    while (SDL_PollEvent(@event) or true) do
     begin
       CheckBasicEvent;
       DrawBFieldWithEft(i, beginpic, endpic, min, bnum, aimMode, mode, $FFFFFFFF, enum);
@@ -3321,7 +3321,7 @@ begin
     end;
   end;
   needOffset := 0;
-  event.key.keysym.sym := 0;
+  event.key.key := 0;
   event.button.button := 0;
 end;
 
@@ -3856,7 +3856,7 @@ begin
     Brole[i].ShowNumber := -1;
   end;
   i1 := 0;
-  while SDL_PollEvent(@event) >= 0 do
+  while SDL_PollEvent(@event) or true do
   begin
     CheckBasicEvent;
     Redraw;
@@ -3906,7 +3906,7 @@ begin
     y := (Brole[bnum].X - Bx) * 9 + (Brole[bnum].Y - By) * 9 + CENTER_Y - 40;
     i1 := 0;
     i2 := 5 - sign(up) * 5;
-    while SDL_PollEvent(@event) >= 0 do
+    while SDL_PollEvent(@event) or true do
     begin
       CheckBasicEvent;
       Redraw;
@@ -3968,7 +3968,7 @@ begin
   end;
   //撤退渐变效果
   j := 0;
-  while (SDL_PollEvent(@event) >= 0) and needeffect do
+  while (SDL_PollEvent(@event) or true) and needeffect do
   begin
     CheckBasicEvent;
     for i := 0 to BRoleAmount - 1 do
@@ -4509,7 +4509,7 @@ begin
     //LoadIdxGrp(filename + '.idx', filename + '.grp', FIdx, FPic);
 
     i := beginpic;
-    while (SDL_PollEvent(@event) >= 0) do
+    while (SDL_PollEvent(@event) or true) do
     begin
       CheckBasicEvent;
       DrawBFieldWithAction(bnum, i);
@@ -5094,10 +5094,10 @@ begin
     Rest(bnum);
 
     //检查是否有esc被按下
-    if SDL_PollEvent(@event) >= 0 then
+    if SDL_PollEvent(@event) or true then
     begin
     CheckBasicEvent;
-    if (event.key.keysym.sym = SDLK_ESCAPE) then
+    if (event.key.key = SDLK_ESCAPE) then
     begin
     Brole[bnum].Auto := 0;
     end;
@@ -5954,29 +5954,29 @@ begin
 
   menu := 0;
   ShowTeamModeMenu;
-  while (SDL_WaitEvent(@event) >= 0) do
+  while (SDL_WaitEvent(@event)) do
   begin
     CheckBasicEvent;
     case event.type_ of
-      SDL_KEYUP:
+      SDL_EVENT_KEY_UP:
       begin
-        if (event.key.keysym.sym = SDLK_RETURN) or (event.key.keysym.sym = SDLK_SPACE) then
+        if (event.key.key = SDLK_RETURN) or (event.key.key = SDLK_SPACE) then
         begin
           break;
         end;
-        if (event.key.keysym.sym = SDLK_ESCAPE) then
+        if (event.key.key = SDLK_ESCAPE) then
         begin
           Result := False;
           break;
         end;
-        if (event.key.keysym.sym = SDLK_LEFT) then
+        if (event.key.key = SDLK_LEFT) then
         begin
           Brole[a[menu]].AutoMode := Brole[a[menu]].AutoMode - 1;
           if Brole[a[menu]].AutoMode < 0 then
             Brole[a[menu]].AutoMode := 3;
           ShowTeamModeMenu;
         end;
-        if (event.key.keysym.sym = SDLK_RIGHT) then
+        if (event.key.key = SDLK_RIGHT) then
         begin
           Brole[a[menu]].AutoMode := Brole[a[menu]].AutoMode + 1;
           if Brole[a[menu]].AutoMode > 3 then
@@ -5984,9 +5984,9 @@ begin
           ShowTeamModeMenu;
         end;
       end;
-      SDL_KEYDOWN:
+      SDL_EVENT_KEY_DOWN:
       begin
-        if (event.key.keysym.sym = SDLK_UP) then
+        if (event.key.key = SDLK_UP) then
         begin
           menu := menu - 1;
           if menu = -1 then
@@ -5995,7 +5995,7 @@ begin
             menu := amount - 1;
           ShowTeamModeMenu;
         end;
-        if (event.key.keysym.sym = SDLK_DOWN) then
+        if (event.key.key = SDLK_DOWN) then
         begin
           menu := menu + 1;
           if menu = amount then
@@ -6005,7 +6005,7 @@ begin
           ShowTeamModeMenu;
         end;
       end;
-      SDL_MOUSEBUTTONUP:
+      SDL_EVENT_MOUSE_BUTTON_UP:
       begin
         if (event.button.button = SDL_BUTTON_LEFT) and MouseInRegion(x, y, w, amount * h + 32) then
         begin
@@ -6027,7 +6027,7 @@ begin
           break;
         end;
       end;
-      SDL_MOUSEMOTION:
+      SDL_EVENT_MOUSE_MOTION:
       begin
         if MouseInRegion(x, y, w, amount * h + 32, xm, ym) then
         begin
@@ -6042,7 +6042,7 @@ begin
         end;
       end;
     end;
-    event.key.keysym.sym := 0;
+    event.key.key := 0;
     event.button.button := 0;
   end;
 
