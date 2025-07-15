@@ -29,7 +29,7 @@ uses
 type
   IntegerArray = array of integer;
 
-function EventFilter(p: pointer; e: PSDL_Event): longint; cdecl;
+function EventFilter(p: pointer; e: PSDL_Event): boolean; cdecl;
 procedure SendKeyEvent(keyvalue: integer); stdcall; export;
 
 //音频子程
@@ -188,15 +188,17 @@ implementation
 uses
   kys_draw;
 
-function EventFilter(p: pointer; e: PSDL_Event): longint; cdecl;
+function EventFilter(p: pointer; e: PSDL_Event): boolean; cdecl;
 begin
-  Result := 1;
+  Result := true;
   {or (e.type_ = SDL_EVENT_FINGER_MOTION)}
   case e.type_ of
-    SDL_EVENT_FINGER_UP, SDL_EVENT_FINGER_DOWN, SDL_EVENT_GAMEPAD_AXIS_MOTION, SDL_EVENT_GAMEPAD_BUTTON_DOWN, SDL_EVENT_GAMEPAD_BUTTON_UP: Result := 0;
+    SDL_EVENT_FINGER_UP, SDL_EVENT_FINGER_DOWN, SDL_EVENT_GAMEPAD_AXIS_MOTION, SDL_EVENT_GAMEPAD_BUTTON_DOWN, SDL_EVENT_GAMEPAD_BUTTON_UP: Result := false;
     SDL_EVENT_FINGER_MOTION:
       if CellPhone = 0 then
-        Result := 0;
+        Result := false;
+    SDL_EVENT_DID_ENTER_FOREGROUND: PlayMP3(nowmusic, -1, 0);
+    SDL_EVENT_DID_ENTER_BACKGROUND: StopMP3();
   end;
 end;
 

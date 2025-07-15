@@ -186,6 +186,8 @@ begin
   kyslog('Run for android');
   AppPath := '/sdcard/kys-pig3/game/';
   if not fileexists(AppPath + 'config/kysmod.ini') then
+    AppPath := '/sdcard/kys-pascal/kys-pig3/game/';
+  if not fileexists(AppPath + 'config/kysmod.ini') then
     AppPath := SDL_GetAndroidExternalStoragePath() + '/game/';
   //for i := 1 to 4 do
   //AppPath:= ExtractFileDir(AppPath);
@@ -223,10 +225,14 @@ begin
 
   SDL_Init(SDL_INIT_VIDEO);
 
-  //找渲染器
-
-  if RENDERER = 1 then
-    render_str := 'opengl';
+  //渲染器
+  if (Cellphone = 0) then
+  begin
+    if (RENDERER = 1) then
+      render_str := 'opengl';
+    if (RENDERER = 2) then
+      render_str := 'software';
+  end;
 
   if RENDERER = 2 then
   begin
@@ -257,7 +263,6 @@ begin
     kyslog('Width and height of the window is %d, %d', [RESOLUTIONX, RESOLUTIONY]);
     if (RESOLUTIONY > RESOLUTIONX) then
       ScreenRotate := 0;
-    //SDL_WarpMouseInWindow(window, RESOLUTIONX, RESOLUTIONY);
   end;
 
   if SW_OUTPUT <> 0 then
@@ -308,7 +313,7 @@ begin
   keyright := puint8(keystate + sdl_SCANCODE_right);
 
   kyslog('Set event filter');
-  SDL_SetEventFilter(@EventFilter, nil);
+  SDL_AddEventWatch(@EventFilter, nil);
 
   {if CellPhone = 0 then
   begin
@@ -6249,7 +6254,7 @@ begin
     if SW_SURFACE = 0 then
     begin
       SDL_SetRenderTarget(render, screenTex);
-      destf:=rect2f(dest2);
+      destf := rect2f(dest2);
       SDL_RenderTexture(render, SimpleStateTex, nil, @destf);
     end
     else
