@@ -6110,7 +6110,7 @@ begin
       end;
       SDL_EVENT_MOUSE_MOTION:
       begin
-        menu := -1;
+        //menu := -1;
         if MouseInRegion(x, y, w, l * 5 + 10, xm, ym) then
         begin
           menu := RegionParameter((ym - y - 5) div l, 0, 4);
