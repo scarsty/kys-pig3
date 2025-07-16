@@ -2904,7 +2904,7 @@ begin
               FindWay(Sx, Sy);
               gotoevent := -1;
               //在手机中放宽要求
-              if (CellPhone = 1) and (SData[CurScene, 3, axp, ayp] < 0) then
+              if (CellPhone = 1) and InRegion(axp, 0, 64) and InRegion(ayp, 0, 64) and (SData[CurScene, 3, axp, ayp] < 0) then
               begin
                 for i1 := axp + 1 downto axp do
                   for i2 := ayp + 1 downto ayp do
@@ -2916,7 +2916,7 @@ begin
                     end;
                   end;
               end;
-              if (axp >= 0) and (ayp >= 0) and (SData[CurScene, 3, axp, ayp] >= 0) then
+              if InRegion(axp, 0, 64) and InRegion(ayp, 0, 64) and (SData[CurScene, 3, axp, ayp] >= 0) then
               begin
                 if abs(Axp - Sx) + Abs(Ayp - Sy) = 1 then
                 begin
