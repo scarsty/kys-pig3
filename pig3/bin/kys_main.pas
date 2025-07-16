@@ -200,7 +200,7 @@ begin
   {$ENDIF}
   //versionstr :=  SDL_GetAndroidExternalStoragePath();
   //test;
-  //cellphone := 1;
+  cellphone := 1;
   if ParamCount >= 1 then
   begin
     setlength(AppPath, length(AppPath) - 1);
@@ -313,7 +313,8 @@ begin
   keyright := puint8(keystate + sdl_SCANCODE_right);
 
   kyslog('Set event filter');
-  SDL_AddEventWatch(@EventFilter, nil);
+  SDL_SetEventFilter(@EventFilter, nil);
+  SDL_AddEventWatch(@EventWatch, nil);
 
   {if CellPhone = 0 then
   begin
@@ -682,12 +683,11 @@ begin
     SDL_Delay(20);
     if SDL_PollEvent(@event) or True then
     begin
-      CleanKeyValue;
-      if ((event.key.key = SDLK_ESCAPE) or (event.button.button = SDL_BUTTON_RIGHT)) then
+      CheckBasicEvent;
+      if ((event.type_ = SDL_EVENT_KEY_UP) and (event.key.key = SDLK_ESCAPE)) or ((event.type_ = SDL_EVENT_MOUSE_BUTTON_UP) and (event.button.button = SDL_BUTTON_RIGHT)) then
       begin
         exit;
       end;
-      CheckBasicEvent;
     end;
   end;
 
@@ -721,9 +721,9 @@ begin
     SDL_Delay(20);
     if SDL_PollEvent(@event) or True then
     begin
-      if ((event.key.key = SDLK_ESCAPE) or (event.button.button = SDL_BUTTON_RIGHT)) then
-        exit;
       CheckBasicEvent;
+      if ((event.type_ = SDL_EVENT_KEY_UP) and (event.key.key = SDLK_ESCAPE)) or ((event.type_ = SDL_EVENT_MOUSE_BUTTON_UP) and (event.button.button = SDL_BUTTON_RIGHT)) then
+        exit;
     end;
   end;
   //writeln(x, y);
@@ -746,9 +746,9 @@ begin
     SDL_Delay(20);
     if SDL_PollEvent(@event) or True then
     begin
-      if ((event.key.key = SDLK_ESCAPE) or (event.button.button = SDL_BUTTON_RIGHT)) then
-        exit;
       CheckBasicEvent;
+      if ((event.type_ = SDL_EVENT_KEY_UP) and (event.key.key = SDLK_ESCAPE)) or ((event.type_ = SDL_EVENT_MOUSE_BUTTON_UP) and (event.button.button = SDL_BUTTON_RIGHT)) then
+        exit;
     end;
   end;
 
@@ -765,9 +765,9 @@ begin
     SDL_Delay(20);
     if SDL_PollEvent(@event) or True then
     begin
-      if ((event.key.key = SDLK_ESCAPE) or (event.button.button = SDL_BUTTON_RIGHT)) then
-        exit;
       CheckBasicEvent;
+      if ((event.type_ = SDL_EVENT_KEY_UP) and (event.key.key = SDLK_ESCAPE)) or ((event.type_ = SDL_EVENT_MOUSE_BUTTON_UP) and (event.button.button = SDL_BUTTON_RIGHT)) then
+        exit;
     end;
   end;
 
@@ -783,9 +783,9 @@ begin
     SDL_Delay(20);
     if SDL_PollEvent(@event) or True then
     begin
-      if ((event.key.key = SDLK_ESCAPE) or (event.button.button = SDL_BUTTON_RIGHT)) then
-        exit;
       CheckBasicEvent;
+      if ((event.type_ = SDL_EVENT_KEY_UP) and (event.key.key = SDLK_ESCAPE)) or ((event.type_ = SDL_EVENT_MOUSE_BUTTON_UP) and (event.button.button = SDL_BUTTON_RIGHT)) then
+        exit;
     end;
   end;
   where := 3;

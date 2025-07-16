@@ -30,6 +30,7 @@ type
   IntegerArray = array of integer;
 
 function EventFilter(p: pointer; e: PSDL_Event): boolean; cdecl;
+function EventWatch(p: pointer; e: PSDL_Event): boolean; cdecl;
 procedure SendKeyEvent(keyvalue: integer); stdcall; export;
 
 //音频子程
@@ -197,6 +198,14 @@ begin
     SDL_EVENT_FINGER_MOTION:
       if CellPhone = 0 then
         Result := false;
+  end;
+end;
+
+function EventWatch(p: pointer; e: PSDL_Event): boolean; cdecl;
+begin
+  Result := true;
+  {or (e.type_ = SDL_EVENT_FINGER_MOTION)}
+  case e.type_ of
     SDL_EVENT_DID_ENTER_FOREGROUND: PlayMP3(nowmusic, -1, 0);
     SDL_EVENT_DID_ENTER_BACKGROUND: StopMP3();
   end;
