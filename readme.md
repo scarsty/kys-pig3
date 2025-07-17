@@ -1,9 +1,8 @@
 # Pig3 (金庸水浒传hugebase)
+
 <img src='https://raw.githubusercontent.com/scarsty/kys-pig3/master/logo.png' width='20%'/>
 
 All heros in Kam Yung stories - 108 brothers and sisters
-
-*The final edition*
 
 <img src='https://raw.githubusercontent.com/scarsty/kys-pig3/master/13.png'/>
 

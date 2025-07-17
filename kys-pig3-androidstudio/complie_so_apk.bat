@@ -1,7 +1,7 @@
 
 rem 修改下面4个值
 set path_ct=D:\kys-all\codetyphon\
-set path_project=D:\kys-all\pig3\kys-pig3\pig3\bin\
+set path_project=D:\kys-all\pig3\kys-pig3\bin\
 set project=kys_pig3.lpr
 set output=libkys_pig3.so
 

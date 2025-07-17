@@ -970,7 +970,8 @@ begin
   ReadFileToBuffer(@leavelist[0], AppPath + 'binlist/leave.bin', 200, 0);
   ReadFileToBuffer(@leveluplist[0], AppPath + 'binlist/levelup.bin', 200, 0);
 
-  ReadFileToBuffer(@loverlist[0], AppPath + 'binlist/lover.bin', MAX_LOVER * 5 * 2, 0);
+  //ReadFileToBuffer(@loverlist[0], AppPath + 'binlist/lover.bin', MAX_LOVER * 5 * 2, 0);
+  ReadTxtFileToBuffer(@loverlist[0], AppPath + 'list/lover.txt');
 
   //ReadFileToBuffer(@FightFrame[0], AppPath + 'resource/fight/fightframe.ka', 5 * 500 * 2, 0);
   ReadFileToBuffer(@WarStaList[0], AppPath + 'resource/war.sta', sizeof(TWarData) * length(WarStaList), 0);

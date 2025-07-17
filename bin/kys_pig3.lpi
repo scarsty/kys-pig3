@@ -128,16 +128,9 @@
       <Version Value="2"/>
     </PublishOptions>
     <RunParams>
-      <local>
-        <WorkingDirectory Value="D:\kys-all\pig3\kys-pig3\pig3\bin"/>
-      </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
-        <Mode0 Name="default">
-          <local>
-            <WorkingDirectory Value="D:\kys-all\pig3\kys-pig3\pig3\bin"/>
-          </local>
-        </Mode0>
+        <Mode0 Name="default"/>
       </Modes>
     </RunParams>
     <RequiredPackages Count="1">

@@ -800,8 +800,9 @@ begin
   begin
     m := IFinbattle(loverlist[k, 0]);
     n := IFinbattle(loverlist[k, 1]);
-    if (m >= 0) and (n >= 0) then
+    if (m >= 0) and (n >= 0) and (m <> n) then
     begin
+      if (m = 0) and (n = 0) then break;
       Bx := Brole[n].X;
       By := Brole[n].Y;
       Redraw;

@@ -271,7 +271,7 @@ var
   BEGIN_BATTLE_ROLE_PIC: integer = 2553; //人物起始战斗贴图
   MAX_LEVEL: integer = 60; //最大等级
   MAX_WEAPON_MATCH: integer = 100; //'武功武器配合'组合的数量
-  MAX_LOVER: integer = 23; //情侣加成数量
+  MAX_LOVER: integer = 100; //情侣加成数量
   MAX_LOVER_STATE: integer = 10;
   MIN_KNOWLEDGE: integer = 80; //最低有效武学常识
   MAX_ITEM_AMOUNT: integer = 304; //最大物品数量
@@ -460,7 +460,7 @@ var
 
   Star: array [0 .. 107] of utf8string;
   RoleName: array [0 .. 107] of utf8string;
-  loverlist: array [0 .. 24, 0 .. 4] of smallint;
+  loverlist: array [0 .. 99, 0 .. 4] of integer;
   SceneAmount: integer;
 
   SelectAimMode: integer;

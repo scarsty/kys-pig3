@@ -98,6 +98,7 @@ procedure ReadTiles;
 function LoadPNGTilesThread(Data: pointer): longint; cdecl;
 function ReadFileToBuffer(p: putf8char; filename: utf8string; size, malloc: integer): putf8char; overload;
 function ReadFileToBuffer(p: putf8char; const filename: putf8char; size, malloc: integer): putf8char; overload;
+procedure ReadTxtFileToBuffer(p: putf8char; filename: utf8string);
 function FileGetlength(filename: utf8string): integer;
 procedure FreeFileBuffer(var p: putf8char);
 function LoadIdxGrp(stridx, strgrp: utf8string): TIDXGRP;
@@ -2121,25 +2122,24 @@ begin
   Result := ReadFileToBuffer(p, filename, size, malloc);
 end;
 
+procedure ReadTxtFileToBuffer(p: putf8char; filename: utf8string);
+var
+  i: integer;
+  nums: array of integer;
+begin
+  nums := readnumbersformstring(readFiletostring(filename));
+  move(nums[0], p^, length(nums) * 4);
+end;
+
 function FileGetlength(filename: utf8string): integer;
 begin
-  {$IFDEF android0}
-  filename := StringReplace(filename, AppPath, 'game/', [rfReplaceAll]);
-  Result := Android_FileGetlength(putf8char(filename));
-  {$ELSE}
   Result := 0;
-  {$ENDIF}
 end;
 
 procedure FreeFileBuffer(var p: putf8char);
 begin
-  {$IFDEF android0}
-  if p <> nil then
-    Android_FileFreeBuffer(p);
-  {$ELSE}
   if p <> nil then
     StrDispose(p);
-  {$ENDIF}
   p := nil;
 end;
 
