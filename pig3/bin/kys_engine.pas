@@ -191,19 +191,19 @@ uses
 
 function EventFilter(p: pointer; e: PSDL_Event): boolean; cdecl;
 begin
-  Result := true;
+  Result := True;
   {or (e.type_ = SDL_EVENT_FINGER_MOTION)}
   case e.type_ of
-    SDL_EVENT_FINGER_UP, SDL_EVENT_FINGER_DOWN, SDL_EVENT_GAMEPAD_AXIS_MOTION, SDL_EVENT_GAMEPAD_BUTTON_DOWN, SDL_EVENT_GAMEPAD_BUTTON_UP: Result := false;
+    SDL_EVENT_FINGER_UP, SDL_EVENT_FINGER_DOWN, SDL_EVENT_GAMEPAD_AXIS_MOTION, SDL_EVENT_GAMEPAD_BUTTON_DOWN, SDL_EVENT_GAMEPAD_BUTTON_UP: Result := False;
     SDL_EVENT_FINGER_MOTION:
       if CellPhone = 0 then
-        Result := false;
+        Result := False;
   end;
 end;
 
 function EventWatch(p: pointer; e: PSDL_Event): boolean; cdecl;
 begin
-  Result := true;
+  Result := True;
   {or (e.type_ = SDL_EVENT_FINGER_MOTION)}
   case e.type_ of
     SDL_EVENT_DID_ENTER_FOREGROUND: PlayMP3(nowmusic, -1, 0);
@@ -535,8 +535,11 @@ end;
 //取调色板的颜色, 视频系统是32位色, 但很多时候仍需要原调色板的颜色
 function ColColor(num: integer): uint32;
 begin
-  //result.
-  ColColor := MapRGBA(Acol[num * 3] * 4, Acol[num * 3 + 1] * 4, Acol[num * 3 + 2] * 4);
+  //result.r:=  Acol[num * 3] * 4;
+  //result.g:=  Acol[num * 3+1] * 4;
+  //result.b:=  Acol[num * 3+2] * 4;
+  //result.a:=  255;
+  Result := MapRGBA(Acol[num * 3] * 4, Acol[num * 3 + 1] * 4, Acol[num * 3 + 2] * 4);
 end;
 
 //判断像素是否在屏幕内
@@ -907,7 +910,6 @@ begin
   HaveText := 1;
 end;
 
-
 //显示英文
 procedure DrawEngText(word: utf8string; x_pos, y_pos: integer; color: uint32);
 var
@@ -929,7 +931,7 @@ begin
 
 end;
 
-//显示unicode中文阴影文字, 即将同样内容显示2次, 间隔1像素
+//显示中文阴影文字, 即将同样内容显示2次, 间隔1像素
 procedure DrawShadowText(word: utf8string; x_pos, y_pos: integer; color1, color2: uint32; Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil; realPosition: integer = 0; eng: integer = 0); overload;
 var
   w, h: integer;
@@ -1428,7 +1430,7 @@ var
 begin
   if (RENDERER = 0) and (SW_SURFACE = 0) then
   begin
-    SDL_DestroyTexture(screenTex);
+    {SDL_DestroyTexture(screenTex);
     SDL_DestroyTexture(ImgSGroundTex);
     SDL_DestroyTexture(ImgBGroundTex);
     SDL_DestroyTexture(SimpleStateTex);
@@ -1449,7 +1451,7 @@ begin
     begin
       SDL_DestroyTexture(BlackScreenTex);
       BlackScreenTex := nil;
-    end;
+    end;}
   end;
 
   if TEXT_LAYER = 1 then
@@ -1551,9 +1553,9 @@ begin
 
   if (RENDERER = 0) and (SW_SURFACE = 0) then
   begin
-    CreateMainRenderTextures;
+    {CreateMainRenderTextures;
     if (where = 1) or (where = 2) then
-      ExpandGroundOnImg;
+      ExpandGroundOnImg;}
   end;
 
   CreateAssistantRenderTextures;

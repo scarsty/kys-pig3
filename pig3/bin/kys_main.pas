@@ -163,7 +163,7 @@ var
   a: array of integer;
   logo: PSDL_Texture;
   rect: TSDL_Rect;
-  render_str: putf8char = 'direct3d';
+  render_str: putf8char = '';
   {$IFDEF UNIX}
   filestat: stat;
   {$ENDIF}
@@ -200,7 +200,7 @@ begin
   {$ENDIF}
   //versionstr :=  SDL_GetAndroidExternalStoragePath();
   //test;
-  cellphone := 1;
+  //cellphone := 1;
   if ParamCount >= 1 then
   begin
     setlength(AppPath, length(AppPath) - 1);
