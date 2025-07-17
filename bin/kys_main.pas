@@ -968,10 +968,8 @@ begin
   ReadFileToBuffer(@Buildx[0, 0], AppPath + 'resource/buildy.002', 480 * 480 * 2, 0);
 
   ReadFileToBuffer(@leavelist[0], AppPath + 'binlist/leave.bin', 200, 0);
-  ReadFileToBuffer(@effectlist[0], AppPath + 'binlist/effect.bin', 200, 0);
   ReadFileToBuffer(@leveluplist[0], AppPath + 'binlist/levelup.bin', 200, 0);
 
-  //ReadFileToBuffer(@matchlist[0], AppPath + 'binlist/match.bin', MAX_WEAPON_MATCH * 3 * 2, 0);
   ReadFileToBuffer(@loverlist[0], AppPath + 'binlist/lover.bin', MAX_LOVER * 5 * 2, 0);
 
   //ReadFileToBuffer(@FightFrame[0], AppPath + 'resource/fight/fightframe.ka', 5 * 500 * 2, 0);

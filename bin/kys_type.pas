@@ -324,9 +324,7 @@ var
   WarSta: TWarData;
   //战场数据, 即war.sta文件的映像
   LeaveList: array [0 .. 99] of smallint;
-  EffectList: array [0 .. 199] of smallint;
   LevelUpList: array [0 .. 99] of smallint;
-  //MatchList: array[0..99, 0..2] of smallint;
   //各类列表, 前四个从文件读入
 
   //SDL使用的主要数据

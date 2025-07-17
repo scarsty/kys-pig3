@@ -2096,10 +2096,6 @@ function ReadFileToBuffer(p: putf8char; filename: utf8string; size, malloc: inte
 var
   i: integer;
 begin
-  {$IFDEF android0}
-  filename := StringReplace(filename, AppPath, 'game/', [rfReplaceAll]);
-  Result := Android_ReadFiletoBuffer(p, putf8char(filename), size, malloc);
-  {$ELSE}
   i := FileOpen(filename, fmopenread);
   if i > 0 then
   begin
@@ -2118,7 +2114,6 @@ begin
   end
   else if malloc = 1 then
     Result := nil;
-  {$ENDIF}
 end;
 
 function ReadFileToBuffer(p: putf8char; const filename: putf8char; size, malloc: integer): putf8char; overload;
