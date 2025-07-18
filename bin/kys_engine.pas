@@ -184,6 +184,7 @@ function readFiletostring(filename: utf8string): utf8string; overload;
 function readnumbersformstring(str: utf8string): IntegerArray; overload;
 
 function Rect2f(r: tsdl_rect): tsdl_frect;
+function Rectf2(r: tsdl_frect): tsdl_rect;
 
 implementation
 
@@ -3786,6 +3787,14 @@ begin
   Result.y := r.y;
   Result.w := r.w;
   Result.h := r.h;
+end;
+
+function Rectf2(r: tsdl_frect): tsdl_rect;
+begin
+  Result.x := round(r.x);
+  Result.y := round(r.y);
+  Result.w := round(r.w);
+  Result.h := round(r.h);
 end;
 
 end.

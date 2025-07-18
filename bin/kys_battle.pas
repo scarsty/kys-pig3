@@ -173,6 +173,8 @@ type
     procedure SA2_12(bnum, mnum, mnum2, level: integer);
     procedure SA2_100(bnum, mnum, mnum2, level: integer);
     procedure SA2_101(bnum, mnum, mnum2, level: integer);
+    procedure SA2_102(bnum, mnum, mnum2, level: integer);
+    procedure SA2_103(bnum, mnum, mnum2, level: integer);
   end;
 
   {$M-}
@@ -374,8 +376,8 @@ begin
     for i := 0 to BRoleAmount - 1 do
     begin
       actionnum := Rrole[Brole[i].rnum].ActionNum;
-      if Brole[i].rnum = 0 then
-        actionnum := 0;
+      //if Brole[i].rnum = 0 then
+      //  actionnum := 0;
       if FPNGIndex[actionnum].Loaded = 0 then
       begin
         LoadPNGTiles(formatfloat('resource/fight/fight000', actionnum), FPNGIndex[actionnum].PNGIndexArray, 1, @FPNGIndex[actionnum].FightFrame[0]);
@@ -9278,6 +9280,54 @@ begin
     PlayMagicAmination(bnum, Rmagic[mnum2].AmiNum);
     Rrole[rnum].PhyPower := min(MAX_PHYSICAL_POWER, Rrole[rnum].PhyPower + 20);
     Brole[bnum].StateLevel[14] := Brole[bnum].StateLevel[14] + 50;
+  end;
+end;
+
+procedure TSpecialAbility2.SA2_102(bnum, mnum, mnum2, level: integer);
+begin
+
+end;
+
+procedure TSpecialAbility2.SA2_103(bnum, mnum, mnum2, level: integer);
+var
+  rnum: integer;
+  si: integer;
+begin
+  rnum := Brole[bnum].rnum;
+  if Rrole[rnum].CurrentHP < Rrole[rnum].MaxHP div 3 then
+  begin
+    ShowMagicName(mnum2);
+    FillChar(BField[4, 0, 0], 4096 * 2, 0);
+    BField[4, Brole[bnum].X, Brole[bnum].Y] := 1;
+    PlayMagicAmination(bnum, Rmagic[mnum2].AmiNum);
+    //全部正面状态
+    for si := 0 to 20 do
+    begin
+      //0攻击,1防御,2轻功,4伤害,14乾坤,15灵精,11毒箭,
+      if (si = 0) or (si = 1) or (si = 2) or (si = 4) or (si = 11) or (si = 14) or (si = 15) then
+      begin
+        Brole[bnum].StateLevel[si] := 100;
+        Brole[bnum].StateRound[si] := 2;
+      end
+      //7战神
+      else if si = 7 then
+      begin
+      end
+      //5回血,6回内,20回体
+      else if (si = 5) or (si = 6) or (si = 20) then
+      begin
+        Brole[bnum].StateLevel[si] := 50;
+        Brole[bnum].StateRound[si] := 2;
+      end
+      else
+        //3移动,16奇门,17博采,18聆音,19青翼,8风雷,9孤注,10倾国,12剑芒,13连击
+        //这里博采的概率是1%, 有可能是设置错误
+      begin
+        Brole[bnum].StateLevel[si] := 1;
+        Brole[bnum].StateRound[si] := 2;
+      end;
+    end;
+
   end;
 end;
 

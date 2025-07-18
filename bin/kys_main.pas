@@ -157,7 +157,7 @@ var
   a: array of integer;
   logo: PSDL_Texture;
   rect: TSDL_Rect;
-  render_str: putf8char = '';
+  render_str: putf8char = 'direct3d12';
   {$IFDEF UNIX}
   filestat: stat;
   {$ENDIF}
@@ -1284,7 +1284,6 @@ begin
         begin
           Rrole[0].addnum := 1;
           Rrole[0].AmiFrameNum[0] := 0;
-
         end;
 
         if (input_name = '阮小二') then
@@ -1329,7 +1328,7 @@ begin
 
         if input_name = '獨孤令狐' then
         begin
-          instruct_33(0, $A8, 1);
+          instruct_33(0, 168, 1);
           Ritem[$27].AddAttack := 160;
           Ritem[$65].AddAttack := 8;
           Ritem[$6C].AddAttack := 10;
@@ -1341,6 +1340,38 @@ begin
           //instruct_32($65, 1);
           //instruct_32($6c, 1);
           //instruct_32($a5, 1);
+        end;
+
+        if (input_name = '虛僞帝') then
+        begin
+          Rrole[0] := Rrole[930];
+          Rrole[0].Level := 1;
+          Rrole[0].Attack := 999;
+          Rrole[0].Speed := 999;
+          Rrole[0].Defence := 999;
+        end;
+
+        if (input_name = '無恥帝') then
+        begin
+          Rrole[0] := Rrole[931];
+          Rrole[0].Level := 1;
+          Rrole[0].MaxHP := 327;
+          Rrole[0].CurrentHP := 327;
+          Rrole[0].MaxMP := 655;
+          Rrole[0].CurrentMP := 655;
+        end;
+
+        if (input_name = '智障帝') then
+        begin
+          Rrole[0].AmiFrameNum[0] := 103;
+          Rrole[0].MagLevel[0] := 999;
+        end;
+
+        if (input_name = '光頭強') then
+        begin
+          instruct_33(0, 409, 1);
+          Rrole[0].HeadNum := 455;
+          Rrole[0].ActionNum := 455;
         end;
       end;
     end;
@@ -7464,30 +7495,33 @@ begin
     //保留人物第一个技能的等级
     if mode >= 1 then
     begin
-      Rrole[0] := tempRrole[0];
-      Rrole[0].Level := 1;
-      Rrole[0].Attack := 10;
-      Rrole[0].Defence := 10;
-      //Rrole[0].Speed:=10;
-      Rrole[0].CurrentHP := 0;
-      Rrole[0].CurrentMP := 0;
-      Rrole[0].MaxHP := Rrole[0].MaxHP div 40;
-      Rrole[0].MaxMP := Rrole[0].MaxMP div 40;
-      Rrole[0].Exp := 0;
-      Rrole[0].MagLevel[0] := 800;
-      Rrole[0].Equip[0] := -1;
-      Rrole[0].Equip[1] := -1;
-      Rrole[0].PracticeBook := -1;
-      //清空主角武功
-      for i := 1 to 9 do
+      if Rrole[0].HeadNum = 0 then
       begin
-        Rrole[0].Magic[i] := 0;
-        Rrole[0].MagLevel[i] := 0;
-      end;
-      for i := 0 to 3 do
-      begin
-        Rrole[0].NeiGong[i] := 0;
-        Rrole[0].NGLevel[i] := 0;
+        Rrole[0] := tempRrole[0];
+        Rrole[0].Level := 1;
+        Rrole[0].Attack := 10;
+        Rrole[0].Defence := 10;
+        //Rrole[0].Speed:=10;
+        Rrole[0].CurrentHP := 0;
+        Rrole[0].CurrentMP := 0;
+        Rrole[0].MaxHP := Rrole[0].MaxHP div 40;
+        Rrole[0].MaxMP := Rrole[0].MaxMP div 40;
+        Rrole[0].Exp := 0;
+        Rrole[0].MagLevel[0] := 800;
+        Rrole[0].Equip[0] := -1;
+        Rrole[0].Equip[1] := -1;
+        Rrole[0].PracticeBook := -1;
+        //清空主角武功
+        for i := 1 to 9 do
+        begin
+          Rrole[0].Magic[i] := 0;
+          Rrole[0].MagLevel[i] := 0;
+        end;
+        for i := 0 to 3 do
+        begin
+          Rrole[0].NeiGong[i] := 0;
+          Rrole[0].NGLevel[i] := 0;
+        end;
       end;
       for i := 0 to 107 do
       begin
@@ -7735,7 +7769,6 @@ var
   addvalue, rolelist: array [0 .. 24] of integer;
   str: utf8string;
 begin
-
   word[0] := '增加生命';
   word[1] := '增加生命最大值';
   word[2] := '增加中毒程度';
@@ -8638,6 +8671,7 @@ var
   x, y, i, l, len, w, h, texw, texh, texh0: integer;
   tempscr, tempscr1: PSDL_Surface;
   dest, tempdest, src: TSDL_FRect;
+  src1: TSDL_Rect;
   str: utf8string;
   color1, color2: uint32;
   tex, ptex: PSDL_Texture;
@@ -8758,7 +8792,8 @@ begin
         begin
           SDL_SetRenderTarget(render, screenTex);
         end;
-        DrawTPic(picnum, 0, 0, @src);
+        src1 := rectf2(src);
+        DrawTPic(picnum, 0, 0, @src1);
         dest.x := 0;
         dest.y := 240;
         dest.w := texw;
