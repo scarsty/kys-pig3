@@ -3410,13 +3410,13 @@ var
   strs: array [0 .. 21] of utf8string;
   color1, color2: uint32;
 begin
-  xStar := 120;
+  xStar := 220;
   yStar := 75;
   CurrentStar := 0;
   CurrentTeam := 1;
-  xTeam := 400;
+  xTeam := 500;
   yTeam := 75;
-  xState := 350;
+  xState := 450;
   yState := 300;
   Show := 12;
   h := 28;
@@ -3609,10 +3609,12 @@ begin
           if (event.key.key = SDLK_LEFT) then
           begin
             menuid := 0;
+            refresh := True;
           end;
           if (event.key.key = SDLK_RIGHT) then
           begin
             menuid := 1;
+            refresh := True;
           end;
           if ((event.key.key = SDLK_ESCAPE)) then
           begin
@@ -3654,7 +3656,7 @@ begin
           end;
           if (event.button.button = SDL_BUTTON_LEFT) then
           begin
-            if menuid = 0 then
+            if MouseInRegion(xStar, yStar, 200, Show * h + 32, x1, y1) then
             begin
               if (StateList[numstar] = 1) then
               begin
@@ -3666,7 +3668,7 @@ begin
                 end;
               end;
             end;
-            if menuid = 1 then
+            if MouseInRegion(xTeam, yTeam, 200, 5 * h + 32, x1, y1) then
             begin
               for i := 0 to 99 do
                 if leavelist[i] = TeamList[CurrentTeam] then

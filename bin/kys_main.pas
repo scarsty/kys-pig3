@@ -148,12 +148,6 @@ uses
   kys_battle,
   kys_draw;
 
-{function main(paracount: integer; paras: PPChar): integer;
-  begin
-  Run;
-  result := 0;
-  end;}
-
 //初始化字体, 音效, 视频, 启动游戏
 procedure Run;
 var
@@ -179,7 +173,7 @@ begin
   end;
   AppPath := ExtractFileDir(ExtractFileDir(AppPath)) + '/game/';
   {$ENDIF}
-  {$IFDEF mswindows}
+  {$IFDEF windows}
   AppPath := '../game/';
   {$ENDIF}
   {$IFDEF android}
@@ -200,7 +194,7 @@ begin
   {$ENDIF}
   //versionstr :=  SDL_GetAndroidExternalStoragePath();
   //test;
-  //cellphone := 1;
+
   if ParamCount >= 1 then
   begin
     setlength(AppPath, length(AppPath) - 1);
@@ -851,6 +845,7 @@ begin
   Kys_ini := TIniFile.Create(iniFilename);
   kyslog('Find ini file: %s', [iniFilename]);
   try
+    if (CellPhone = 0) then  CellPhone := Kys_ini.ReadInteger('system', 'CellPhone', 0);    //仅用于测试
     SIMPLE := Kys_ini.ReadInteger('system', 'SIMPLE', 0);
     //FULLSCREEN := Kys_ini.ReadInteger('system', 'FULLSCREEN', 0);
     BATTLE_SPEED := Kys_ini.ReadInteger('system', 'BATTLE_SPEED', 10);

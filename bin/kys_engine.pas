@@ -244,13 +244,7 @@ begin
     if FileExists(putf8char(str)) then
     begin
       try
-        {$IFDEF android0}
-        p := ReadFileToBuffer(nil, putf8char(str), -1, 1);
-        Music[i] := BASS_StreamCreateFile(True, p, 0, FileGetlength(str), 0);
-        FreeFileBuffer(p);
-        {$ELSE}
         Music[i] := BASS_StreamCreateFile(False, putf8char(str), 0, 0, 0);
-        {$ENDIF}
       finally
       end;
     end
@@ -260,13 +254,7 @@ begin
       if FileExists(putf8char(str)) then
       begin
         try
-          {$IFDEF android0}
-          p := ReadFileToBuffer(nil, putf8char(str), -1, 1);
-          Music[i] := BASS_MIDI_StreamCreateFile(True, p, 0, FileGetlength(str), 0, 0);
-          FreeFileBuffer(p);
-          {$ELSE}
           Music[i] := BASS_MIDI_StreamCreateFile(False, putf8char(str), 0, 0, 0, 0);
-          {$ENDIF}
           BASS_MIDI_StreamSetFonts(Music[i], sf, 1);
           //showmessage(inttostr(Music[i]));
         finally
@@ -282,13 +270,7 @@ begin
     str := AppPath + 'sound/e' + IntToStr(i) + '.wav';
     if FileExists(putf8char(str)) then
     begin
-      {$IFDEF android0}
-      p := ReadFileToBuffer(nil, putf8char(str), -1, 1);
-      ESound[i] := BASS_SampleLoad(True, p, 0, FileGetlength(str), 1, Flag);
-      FreeFileBuffer(p);
-      {$ELSE}
       ESound[i] := BASS_SampleLoad(False, putf8char(str), 0, 0, 1, Flag);
-      {$ENDIF}
     end
     else
       ESound[i] := 0;
@@ -299,13 +281,7 @@ begin
     str := AppPath + formatfloat('sound/atk00', i) + '.wav';
     if FileExists(putf8char(str)) then
     begin
-      {$IFDEF android0}
-      p := ReadFileToBuffer(nil, putf8char(str), -1, 1);
-      ASound[i] := BASS_SampleLoad(True, p, 0, FileGetlength(str), 1, Flag);
-      FreeFileBuffer(p);
-      {$ELSE}
       ASound[i] := BASS_SampleLoad(False, putf8char(str), 0, 0, 1, Flag);
-      {$ENDIF}
     end
     else
       ASound[i] := 0;
