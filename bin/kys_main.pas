@@ -6636,9 +6636,9 @@ begin
   for i := 0 to 9 do
   begin
     magicnum := Rrole[rnum].magic[i];
-    x1 := x + 70 + i mod 2 * 180;
+    x1 := x + 70 + i mod 2 * 200;
     y1 := y + 120 + 28 * (i div 2);
-    DrawTextFrame(x1, y1, 12, 20);
+    DrawTextFrame(x1, y1, 14, 20);
     if magicnum > 0 then
     begin
       {case Rmagic[magicnum].HurtType of
@@ -6690,7 +6690,7 @@ begin
         end;}
       DrawShadowText(Rmagic[magicnum].Name, x1 + 19, y1 + 3, 0, $202020);
       str := format('%2d', [Rrole[rnum].MagLevel[i] div 100 + 1]);
-      DrawEngShadowText(str, x1 + 119, y1 + 3, 0, $202020);
+      DrawEngShadowText(str, x1 + 139, y1 + 3, 0, $202020);
     end;
   end;
 
@@ -6701,15 +6701,15 @@ begin
   for i := 0 to 3 do
   begin
     magicnum := Rrole[rnum].neigong[i];
-    x1 := x + 70 + i mod 2 * 180;
+    x1 := x + 70 + i mod 2 * 200;
     y1 := y + 300 + 28 * (i div 2);
-    DrawTextFrame(x1, y1, 12, 20);
+    DrawTextFrame(x1, y1, 14, 20);
     if magicnum > 0 then
     begin
       //str := format('%-10s', [putf8char(@Rmagic[magicnum].Name)]);
       DrawShadowText(Rmagic[magicnum].Name, x1 + 19, y1 + 3, 0, $202020);
       str := format('%2d', [Rrole[rnum].NGLevel[i] div 100 + 1]);
-      DrawEngShadowText(str, x1 + 119, y1 + 3, 0, $202020);
+      DrawEngShadowText(str, x1 + 139, y1 + 3, 0, $202020);
       //DrawEngShadowText(str, x + 210+i mod 2 * 120, y + 256 + 21 * (i div 2), ColColor($64), ColColor($66));
     end;
   end;
