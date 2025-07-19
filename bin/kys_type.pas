@@ -612,6 +612,9 @@ var
   //播放视频
   smallpot: Pointer;
 
+  //简繁转换
+  cct2s: Pointer;
+
   ForceBattleWin: integer = 0;
 
 const

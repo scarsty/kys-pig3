@@ -24,7 +24,8 @@ uses
   potdll,
   {$endif}
   //mythoutput,
-  libzip;
+  libzip,
+  simplecc;
 
 type
   IntegerArray = array of integer;
@@ -60,15 +61,12 @@ function GetPositionOnScreen(x, y, CenterX, CenterY: integer): TPosition;
 //显示文字的子程
 function Big5ToUnicode(str: putf8char): utf8string;
 function GBKToUnicode(str: putf8char): utf8string;
-//function str: putf8char; len: integer = -1: utf8string;
-function UnicodeToBig5(str: putf8char): utf8string;
 function UnicodeToGBK(str: putf8char): utf8string;
 function IsStringUTF8(strtmp: utf8string): boolean;
 procedure DrawText(word: utf8string; x_pos, y_pos: integer; color: uint32; engwidth: integer = -1);
 procedure DrawEngText(word: utf8string; x_pos, y_pos: integer; color: uint32);
 procedure DrawShadowText(word: utf8string; x_pos, y_pos: integer; color1, color2: uint32; Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil; realPosition: integer = 0; eng: integer = 0); overload;
 procedure DrawEngShadowText(word: utf8string; x_pos, y_pos: integer; color1, color2: uint32; Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil);
-//procedure DrawU16ShadowText(word: puint16; x_pos, y_pos: integer; color1, color2: uint32);
 
 function Simplified2Traditional(mSimplified: utf8string): utf8string;
 procedure DrawPartPic(pic: pointer; x, y, w, h, x1, y1: integer);
@@ -575,45 +573,12 @@ begin
   {$ENDIF}
 end;
 
-{function str: putf8char; len: integer = -1: utf8string;
-var
-  strw: widestring;
-begin
-  strw := WideString(pwidechar(str));
-  if len >= 0 then
-  begin
-    if length(strw) > len then
-      setlength(strw, len);
-  end;
-  Result := utf8encode(strw);
-end;}
-
-//unicode转为big5, 仅用于输入姓名
-function UnicodeToBig5(str: putf8char): utf8string;
-var
-  len: integer;
-begin
-  {$IFDEF fpc}
-  Result := UTF8ToCP950((str));
-  {$ELSE}
-  len := WideCharToMultiByte(950, 0, putf8char(str), -1, nil, 0, nil, nil);
-  setlength(Result, len + 1);
-  WideCharToMultiByte(950, 0, putf8char(str), -1, putf8char(Result), len + 1, nil, nil);
-  {$ENDIF}
-end;
-
 //unicode转为GBK, 仅用于输入姓名
 function UnicodeToGBK(str: putf8char): utf8string;
 var
   len: integer;
 begin
-  {$IFDEF fpc}
   Result := UTF8ToCP936((str));
-  {$ELSE}
-  len := WideCharToMultiByte(936, 0, putf8char(str), -1, nil, 0, nil, nil);
-  setlength(Result, len + 1);
-  WideCharToMultiByte(936, 0, putf8char(str), -1, putf8char(Result), len + 1, nil, nil);
-  {$ENDIF}
 end;
 
 //繁体汉字转化成简体汉字
@@ -621,17 +586,7 @@ function Traditional2Simplified(mTraditional: utf8string): utf8string; //返回�
 var
   L: integer;
 begin
-  {$IFDEF windows}
-  mTraditional := UTF8ToCP936(mTraditional);
-  L := Length(mTraditional);
-  SetLength(Result, L + 1);
-  Result[L + 1] := char(0);
-  if L > 0 then
-    LCMapString($0800, $02000000, putf8char(mTraditional), L, @Result[1], L);
-  Result := CP936TOUTF8(Result);
-  {$ELSE}
-  Result := mTraditional;
-  {$ENDIF}
+  Result := simplecc_convert1(cct2s, mTraditional);
 end; {Traditional2Simplified}
 
 //生成或查找已知纹理, 返回其指针, 是否销毁由调用者决定

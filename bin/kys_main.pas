@@ -42,6 +42,7 @@ uses
   //zip,
   //ziputils,
   Generics.Collections,
+  simplecc,
   {$IFDEF windows}
   potdll,
   {$ENDIF}
@@ -1118,6 +1119,10 @@ begin
   end;
 
   CharTex := TDictionary<integer, Pointer>.Create;
+
+  cct2s:=simplecc_create();
+  simplecc_load1(cct2s,AppPath + 'cc/TSCharacters.txt');
+  simplecc_load1(cct2s,AppPath + 'cc/TSPhrases.txt');
 end;
 
 //初始化主角属性
