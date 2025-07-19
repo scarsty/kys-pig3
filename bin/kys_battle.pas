@@ -9284,8 +9284,15 @@ begin
 end;
 
 procedure TSpecialAbility2.SA2_102(bnum, mnum, mnum2, level: integer);
+var
+  rnum: integer;
 begin
-
+  rnum := Brole[bnum].rnum;
+  ShowMagicName(mnum2);
+  FillChar(BField[4, 0, 0], 4096 * 2, 0);
+  BField[4, Brole[bnum].X, Brole[bnum].Y] := 1;
+  PlayMagicAmination(bnum, Rmagic[mnum2].AmiNum);
+  Rrole[rnum].CurrentHP := Rrole[rnum].MaxHP;
 end;
 
 procedure TSpecialAbility2.SA2_103(bnum, mnum, mnum2, level: integer);
