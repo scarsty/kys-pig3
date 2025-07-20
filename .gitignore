@@ -117,3 +117,5 @@ game0/script/event
 *.apk
 */cc
 kys-pig3-androidstudio/app/jni/simplecc/.vs
+kys-pig3-androidstudio/app/jni/simplecc/simplecc/x64
+kys-pig3-androidstudio/app/jni/simplecc/x64

@@ -9,28 +9,28 @@ uses
 
 const
   {$ifdef windows}
-  LIB_NAME = 'simplecc';
+  LIB_NAME = 'simplecc.dll';
   {$else}
   LIB_NAME = 'libsimplecc.so';
-  {$endif}
+{$endif}
 function simplecc_create(): pointer; cdecl; external LIB_NAME;
-function simplecc_load(cc:Pointer;filename: pansichar): integer; cdecl; external LIB_NAME;
-function simplecc_convert(cc:Pointer;src: pansichar): pansichar; cdecl; external LIB_NAME;
-function simplecc_load1(cc:Pointer;filename: utf8string): integer;
-function simplecc_convert1(cc:Pointer;src: utf8string): utf8string;
+function simplecc_load(cc: Pointer; filename: pansichar): integer; cdecl; external LIB_NAME;
+function simplecc_convert(cc: Pointer; src: pansichar): pansichar; cdecl; external LIB_NAME;
+function simplecc_load1(cc: Pointer; filename: utf8string): integer;
+function simplecc_convert1(cc: Pointer; src: utf8string): utf8string;
 
 implementation
 
-function simplecc_load1(cc:Pointer;filename: utf8string): integer;
+function simplecc_load1(cc: Pointer; filename: utf8string): integer;
 begin
-  Result := simplecc_load(cc,Putf8Char(filename));
+  Result := simplecc_load(cc, Putf8Char(filename));
 end;
 
-function simplecc_convert1(cc:Pointer;src: utf8string): utf8string;
+function simplecc_convert1(cc: Pointer; src: utf8string): utf8string;
 var
   res: pansichar;
 begin
-  res := simplecc_convert(cc,Putf8Char(src));
+  res := simplecc_convert(cc, Putf8Char(src));
   if res = nil then
     Result := ''
   else
