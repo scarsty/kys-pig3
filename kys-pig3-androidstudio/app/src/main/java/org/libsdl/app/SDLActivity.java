@@ -47,11 +47,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.FileNotFoundException;
+import android.Manifest;
+import android.os.Environment;
+import android.provider.Settings;
+
 import java.util.ArrayList;
+import java.io.FileNotFoundException;
 import java.util.Hashtable;
 import java.util.Locale;
-
 
 /**
     SDL Activity
@@ -498,6 +501,24 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
             if (filename != null) {
                 Log.v(TAG, "Got filename: " + filename);
                 SDLActivity.onNativeDropFile(filename);
+            }
+        }
+        requestPermissions();
+    }
+
+    private void requestPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (!Environment.isExternalStorageManager()) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                intent.setData(Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, REQUEST_STORAGE_PERMISSION_CODE);
+            }
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        REQUEST_STORAGE_PERMISSION_CODE);
             }
         }
     }
