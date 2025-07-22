@@ -248,13 +248,17 @@ begin
   //RenderFlag := SDL_RENDERER_ACCELERATED or SDL_RENDERER_TARGETTEXTURE;
   //if PRESENT_SYNC <> 0 then
   //  RenderFlag := RenderFlag or SDL_RENDERER_PRESENTVSYNC;
-
   kyslog('Creating window with width and height %d and %d', [RESOLUTIONX, RESOLUTIONY]);
   window := SDL_CreateWindow(putf8char(TitleString), RESOLUTIONX, RESOLUTIONY, WindowFlag);
   SDL_GetWindowSize(window, @RESOLUTIONX, @RESOLUTIONY);
 
   if (CellPhone = 1) then
   begin
+     SDL_GetDisplayBounds(0, @rect);
+    if (1.0 * rect.w / rect.h > 1.0 * CENTER_X / CENTER_Y) then
+    begin
+      //CENTER_X := rect.w * CENTER_Y div rect.h;
+    end;
     kyslog('Width and height of the window is %d, %d', [RESOLUTIONX, RESOLUTIONY]);
     if (RESOLUTIONY > RESOLUTIONX) then
       ScreenRotate := 0;
@@ -837,6 +841,7 @@ var
   cf: char;
   z: pzip_t;
   zfile: pzip_file_t;
+  ratio: real;
 begin
   iniFilename := AppPath + iniFilename;
 
@@ -855,8 +860,8 @@ begin
     WALK_SPEED2 := Kys_ini.ReadInteger('system', 'WALK_SPEED2', WALK_SPEED);
     SMOOTH := Kys_ini.ReadInteger('system', 'SMOOTH', 1);
     RENDERER := Kys_ini.ReadInteger('system', 'RENDERER', 1);
-    //CENTER_X := Kys_ini.ReadInteger('system', 'CENTER_X', 384);
-    //CENTER_Y := Kys_ini.ReadInteger('system', 'CENTER_Y', 240);
+    //CENTER_X := Kys_ini.ReadInteger('system', 'CENTER_X', 480);
+    //CENTER_Y := Kys_ini.ReadInteger('system', 'CENTER_Y', 270);
     RESOLUTIONX := Kys_ini.ReadInteger('system', 'RESOLUTIONX', CENTER_X * 2);
     RESOLUTIONY := Kys_ini.ReadInteger('system', 'RESOLUTIONY', CENTER_Y * 2);
     MMAPAMI := Kys_ini.ReadInteger('system', 'MMAPAMI', 1);
