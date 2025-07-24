@@ -254,7 +254,7 @@ begin
 
   if (CellPhone = 1) then
   begin
-     SDL_GetDisplayBounds(0, @rect);
+    SDL_GetDisplayBounds(0, @rect);
     if (1.0 * rect.w / rect.h > 1.0 * CENTER_X / CENTER_Y) then
     begin
       //CENTER_X := rect.w * CENTER_Y div rect.h;
@@ -1970,30 +1970,15 @@ begin
     SDL_Delay(20);
   end;
   Result := event.key.key;
-
-  if event.button.button = SDL_BUTTON_LEFT then
+  if (event.type_ = SDL_EVENT_MOUSE_BUTTON_UP) then
   begin
-    Result := SDLK_SPACE;
-    if CellPhone = 1 then
+    if event.button.button = SDL_BUTTON_LEFT then
     begin
-      SDL_GetMouseState2(x, y);
-      if (y < 100) then
-        Result := SDLK_UP;
-      if (x < 100) then
-        Result := SDLK_LEFT;
-      if (x > CENTER_X * 2 - 100) then
-        Result := SDLK_RIGHT;
-      if (y > CENTER_Y * 2 - 100) then
-        Result := SDLK_DOWN;
-      if (x < 100) and (y > CENTER_Y * 2 - 100) then
-        Result := SDLK_Y;
-      if (x > CENTER_X * 2 - 100) and (y > CENTER_Y * 2 - 100) then
-        Result := SDLK_RETURN;
+      Result := SDLK_SPACE;
     end;
+    if event.button.button = SDL_BUTTON_RIGHT then
+      Result := SDLK_ESCAPE;
   end;
-  if event.button.button = SDL_BUTTON_RIGHT then
-    Result := SDLK_ESCAPE;
-
   event.key.key := 0;
   event.button.button := 0;
 end;
