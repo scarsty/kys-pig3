@@ -3292,6 +3292,10 @@ begin
   z := -((Ax + Ay) - (Bx + By)) * 9;
 
   PlaySound(enum, 0, x, y, z);
+  if (CellPhone = 1) and (needOffset <> 0) then
+  begin
+    SDL_PlayHapticRumble(haptic, 0.5, 2000);
+  end;
   {for i := 0 to enum - 1 do
     beginpic := beginpic + effectlist[i];
     endpic := beginpic + effectlist[enum] - 1;}

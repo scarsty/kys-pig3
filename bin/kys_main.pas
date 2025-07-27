@@ -159,6 +159,8 @@ var
   logo: PSDL_Texture;
   rect: TSDL_Rect;
   render_str: putf8char = 'direct3d12';
+  haptics: PSDL_HapticID;
+  id: TSDL_HapticID;
   {$IFDEF UNIX}
   filestat: stat;
   {$ENDIF}
@@ -333,6 +335,18 @@ begin
   begin
     kyslog('Ignore joystick in cellphone ');
   end;}
+
+  if CellPhone = 1 then
+  begin
+    SDL_InitSubSystem(SDL_INIT_HAPTIC);
+    haptics := SDL_GetHaptics(nil);
+    if (haptics <> nil) then
+    begin
+      haptic := SDL_OpenHaptic(haptics^);
+      kyslog('Initial haptic %p', [haptic]);
+      SDL_InitHapticRumble(haptic);
+    end;
+  end;
 
   kyslog('Initial ended, start game');
   {$IFDEF windows}

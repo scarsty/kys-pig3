@@ -617,6 +617,9 @@ var
 
   ForceBattleWin: integer = 0;
 
+  //手机触摸屏的震动
+  haptic: PSDL_Haptic = nil;
+
 const
   //色值蒙版, 注意透明蒙版在创建表面时需设为0而不应用此值
   RMask: uint32 = $FF0000;
