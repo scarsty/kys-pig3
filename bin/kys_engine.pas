@@ -68,9 +68,9 @@ procedure DrawEngText(word: utf8string; x_pos, y_pos: integer; color: uint32);
 procedure DrawShadowText(word: utf8string; x_pos, y_pos: integer; color1, color2: uint32; Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil; realPosition: integer = 0; eng: integer = 0); overload;
 procedure DrawEngShadowText(word: utf8string; x_pos, y_pos: integer; color1, color2: uint32; Tex: PSDL_Texture = nil; Sur: PSDL_Surface = nil);
 
-function Simplified2Traditional(mSimplified: utf8string): utf8string;
+function Simplified2Traditional(str: utf8string): utf8string;
 procedure DrawPartPic(pic: pointer; x, y, w, h, x1, y1: integer);
-function Traditional2Simplified(mTraditional: utf8string): utf8string;
+function Traditional2Simplified(str: utf8string): utf8string;
 procedure PlayBeginningMovie;
 
 procedure SDL_UpdateRect2(scr1: PSDL_Surface; x, y, w, h: integer);
@@ -575,19 +575,15 @@ end;
 
 //unicode转为GBK, 仅用于输入姓名
 function UnicodeToGBK(str: putf8char): utf8string;
-var
-  len: integer;
 begin
-  Result := UTF8ToCP936((str));
+  Result := UTF8ToCP936(str);
 end;
 
 //繁体汉字转化成简体汉字
-function Traditional2Simplified(mTraditional: utf8string): utf8string; //返回繁体字符串
-var
-  L: integer;
+function Traditional2Simplified(str: utf8string): utf8string;
 begin
-  Result := simplecc_convert1(cct2s, mTraditional);
-end; {Traditional2Simplified}
+  Result := simplecc_convert1(cct2s, str);
+end;
 
 //生成或查找已知纹理, 返回其指针, 是否销毁由调用者决定
 function CreateFontTile(num: integer; usesur: integer; var w, h: integer): pointer;
@@ -1277,23 +1273,10 @@ end;
 
 
 //简体汉字转化成繁体汉字
-function Simplified2Traditional(mSimplified: utf8string): utf8string; //返回繁体字符串
-var
-  L: integer;
+function Simplified2Traditional(str: utf8string): utf8string;
 begin
-  {$IFDEF windows}
-  mSimplified := UTF8ToCP936(mSimplified);
-  L := Length(mSimplified);
-  SetLength(Result, L + 1);
-  Result[L + 1] := char(0);
-  if L > 0 then
-    LCMapString(GetUserDefaultLCID, $04000000, putf8char(mSimplified), L, @Result[1], L);
-  //writeln(L,mSimplified,',',result,GetUserDefaultLCID);
-  Result := CP936TOUTF8(Result);
-  {$ELSE}
-  Result := mSimplified;
-  {$ENDIF}
-end; {Simplified2Traditional}
+  Result := simplecc_convert1(ccs2t, str);
+end;
 
 procedure DrawPartPic(pic: pointer; x, y, w, h, x1, y1: integer);
 var
@@ -3591,23 +3574,6 @@ begin
   Result := (x >= x1) and (x <= x2);
 end;
 
-{$IFDEF mswindows}
-
-procedure tic;
-begin
-  QueryPerformanceFrequency(tttt);
-  QueryPerformanceCounter(cccc1);
-  //tttt := SDL_GetTicks;
-end;
-
-procedure toc;
-begin
-  QueryPerformanceCounter(cccc2);
-  kyslog(' %3.2f us', [(cccc2 - cccc1) / tttt * 1E6]);
-end;
-
-{$ELSE}
-
 procedure tic;
 begin
   tttt := SDL_GetTicks;
@@ -3617,8 +3583,6 @@ procedure toc;
 begin
   kyslog(' %d ms', [SDL_GetTicks - tttt]);
 end;
-
-{$ENDIF}
 
 procedure kyslog(formatstring: utf8string; content: array of const; cr: boolean = True); overload; inline;
 var

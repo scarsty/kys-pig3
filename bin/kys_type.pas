@@ -586,7 +586,6 @@ var
 
   //其他
   //显示数字: 0-红色负, 1-紫色负, 2-绿色正, 3-黄色正, 4-蓝色负
-  tttt, cccc1, cccc2: int64;
 
   //手柄控制相关
   joy: PSDL_Joystick;
@@ -609,11 +608,14 @@ var
   VIrtualKeySize: integer = 60;
   VirtualKeySpace: integer = 25;
 
+  //临时计时
+  tttt: uint64;
+
   //播放视频
   smallpot: Pointer;
 
   //简繁转换
-  cct2s: Pointer;
+  cct2s, ccs2t: Pointer;
 
   ForceBattleWin: integer = 0;
 

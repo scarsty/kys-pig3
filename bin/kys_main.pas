@@ -1142,6 +1142,9 @@ begin
   cct2s := simplecc_create();
   simplecc_load1(cct2s, AppPath + 'cc/TSCharacters.txt');
   simplecc_load1(cct2s, AppPath + 'cc/TSPhrases.txt');
+  ccs2t := simplecc_create();
+  simplecc_load1(ccs2t, AppPath + 'cc/STCharacters.txt');
+  simplecc_load1(ccs2t, AppPath + 'cc/STPhrases.txt');
 end;
 
 //初始化主角属性
