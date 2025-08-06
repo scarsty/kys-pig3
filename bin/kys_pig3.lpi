@@ -139,7 +139,7 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="9">
+    <Units Count="8">
       <Unit0>
         <Filename Value="kys_pig3.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -172,10 +172,6 @@
         <Filename Value="kys_type.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit7>
-      <Unit8>
-        <Filename Value="simplecc.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit8>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
