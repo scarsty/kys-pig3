@@ -42,13 +42,10 @@ uses
   //zip,
   //ziputils,
   Generics.Collections,
-  simplecc,
   {$IFDEF windows}
   potdll,
   {$ENDIF}
-  winpeimagereader, {need this for reading exe info}
-  elfreader, {needed for reading ELF executables}
-  machoreader; {needed for reading MACH-O executables}
+  simplecc;
 
 //程序重要子程
 procedure Run;

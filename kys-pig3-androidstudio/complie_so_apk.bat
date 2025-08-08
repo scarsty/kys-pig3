@@ -15,4 +15,4 @@ call gradlew.bat assembleRelease
 
 copy .\app\build\outputs\apk\release\*.apk . /y
 
-choice /t 60 /d y /n
+rem choice /t 60 /d y /n
