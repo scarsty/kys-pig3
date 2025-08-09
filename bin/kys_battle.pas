@@ -1064,7 +1064,7 @@ begin
                     if Brole[bnum].Team <> Brole[i].Team then
                     begin
                       pnum := Rmagic[neinum].addmp[0] + (Rmagic[neinum].addmp[1] - Rmagic[neinum].addmp[0]) * neilevel div 10;
-                      if pnum > Rrole[Brole[bnum].rnum].DefPoi + Brole[bnum].StateLevel[3] then
+                      if pnum > Rrole[Brole[bnum].rnum].DefPoi + Brole[bnum].LoverLevel[3] then
                       begin
                         Rrole[Brole[bnum].rnum].Poison := Rrole[Brole[bnum].rnum].Poison + pnum;
                         ShowStringOnBrole(putf8char(@Rmagic[neinum].Name) + '·群毒', i, 2);
@@ -3534,14 +3534,14 @@ begin
           Rrole[rnum].CurrentMP := Rrole[rnum].MaxMP;
       end;
       //中毒
-      addpoi := Rrole[rnum].AttPoi div 5 + Rmagic[mnum].Poison * level div 2 - Rrole[Brole[i].rnum].DefPoi - Brole[i].StateLevel[3];
+      addpoi := Rrole[rnum].AttPoi div 5 + Rmagic[mnum].Poison * level div 2 - Rrole[Brole[i].rnum].DefPoi - Brole[i].LoverLevel[3];
       if (Rmagic[mnum].AttAreaType = 6) and (Brole[bnum].StateLevel[11] > 0) then
         addpoi := addpoi + Brole[bnum].StateLevel[11]; //毒箭状态
       if addpoi + Rrole[Brole[i].rnum].Poison > 99 then
         addpoi := 99 - Rrole[Brole[i].rnum].Poison;
       if addpoi < 0 then
         addpoi := 0;
-      if Rrole[Brole[i].rnum].DefPoi + Brole[i].StateLevel[3] >= 99 then
+      if Rrole[Brole[i].rnum].DefPoi + Brole[i].LoverLevel[3] >= 99 then
         addpoi := 0;
       Rrole[Brole[i].rnum].Poison := Rrole[Brole[i].rnum].Poison + addpoi;
     end;
@@ -4556,10 +4556,10 @@ begin
     begin
       if (Brole[i].Dead = 0) and (Brole[i].Team <> Brole[bnum].Team) then
       begin
-        if (Rrole[Brole[i].rnum].DefPoi <= minDefPoi) and (Rrole[Brole[i].rnum].Poison + Brole[i].StateLevel[3] < 100) and (BField[3, Brole[i].X, Brole[i].Y] >= 0) then
+        if (Rrole[Brole[i].rnum].DefPoi <= minDefPoi) and (Rrole[Brole[i].rnum].Poison < 100) and (BField[3, Brole[i].X, Brole[i].Y] >= 0) then
         begin
           //bnum1 := i;
-          minDefPoi := Rrole[Brole[i].rnum].DefPoi + Brole[i].StateLevel[3];
+          minDefPoi := Rrole[Brole[i].rnum].DefPoi + Brole[i].LoverLevel[3];
           //showmessage(inttostr(mindefpoi));
           Select := True;
           Ax := Brole[i].X;
@@ -4576,7 +4576,7 @@ begin
     if Brole[bnum1].Team <> Brole[bnum].Team then
     begin
       rnum1 := Brole[bnum1].rnum;
-      addpoi := Rrole[rnum].UsePoi div 3 - (Rrole[rnum1].DefPoi + Brole[bnum1].StateLevel[3]) div 4;
+      addpoi := Rrole[rnum].UsePoi div 3 - (Rrole[rnum1].DefPoi + Brole[bnum1].LoverLevel[3]) div 4;
 
       //14 反伤, 反弹
       //自身如有反伤状态，取决于谁的强度大
@@ -4793,7 +4793,7 @@ begin
           //Brole[bnum1].ShowNumber := hurt;
           //Brole[bnum1].ExpGot := Brole[bnum1].ExpGot + hurt;
           //Rrole[rnum1].Hurt := min(Rrole[rnum1].Hurt + hurt div LIFE_HURT, 99);
-          Rrole[rnum1].Poison := min(Rrole[rnum1].Poison + Ritem[inum].AddPoi * (100 - Rrole[rnum1].DefPoi - Brole[bnum1].StateLevel[3]) div 100, 99);
+          Rrole[rnum1].Poison := min(Rrole[rnum1].Poison + Ritem[inum].AddPoi * (100 - Rrole[rnum1].DefPoi - Brole[bnum1].LoverLevel[3]) div 100, 99);
           SetAminationPosition(0, 0, 0);
           str := putf8char(@Ritem[inum].Name);
           ShowMagicName(inum, str);
@@ -7387,18 +7387,19 @@ end;
 //13特技, 含沙射影, 全体下毒
 procedure TSpecialAbility.SA_13(bnum, mnum, level: integer);
 var
-  i, curenum, rnum: integer;
+  i, curenum, rnum, Value: integer;
 begin
   ShowMagicName(mnum);
   instruct_67(Rmagic[mnum].SoundNum);
   PlayActionAmination(bnum, Rmagic[mnum].MagicType);
   rnum := Brole[bnum].rnum;
   //curenum := MAX_PHYSICAL_POWER * 3 * level div 100;
+  Value := LinearInsert(level, 1, 10, RMagic[mnum].Attack[0], RMagic[mnum].Attack[1]);
   for i := 0 to BRoleAmount - 1 do
   begin
     if (Brole[i].Team <> Brole[bnum].Team) and (Brole[i].Dead = 0) then
     begin
-      curenum := MAX_PHYSICAL_POWER * 3 * level div 100 + random(3) - Rrole[Brole[i].rnum].DefPoi - Brole[i].StateLevel[3];
+      curenum := Value + random(3) - Rrole[Brole[i].rnum].DefPoi - Brole[i].LoverLevel[3];
       curenum := max(0, curenum);
       Rrole[Brole[i].rnum].Poison := Rrole[Brole[i].rnum].Poison + curenum;
       Brole[i].ShowNumber := curenum;
@@ -8760,7 +8761,7 @@ begin
   rnum := Brole[bnum].rnum;
   for i := 0 to BRoleAmount - 1 do
   begin
-    if Brole[i].Team <> Brole[bnum].team then
+    if (Brole[i].Team <> Brole[bnum].team) and (Brole[i].Dead = 0) then
     begin
       Brole[i].ShowNumber := Rrole[Brole[i].rnum].CurrentHP - 50;
       Rrole[Brole[i].rnum].CurrentHP := 50;

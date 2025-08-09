@@ -4485,8 +4485,8 @@ var
             color1 := ColColor($64);
             color2 := ColColor($66);
           end;
-          DrawShadowText(words3[i], 68 + i1 mod 4 * w + xp, ((len2 + l1) div l + i1 div l) * 28 + 78 + dt + yp, ColColor($50), ColColor($4E));
-          DrawShadowText(str, 108 + i1 mod 4 * w + xp, ((len2 + l1) div l + i1 div l) * 28 + 78 + dt + yp, color1, color2);
+          DrawShadowText(words3[i], 68 + i1 mod l * w + xp, ((len2 + l1) div l + i1 div l) * 28 + 78 + dt + yp, ColColor($50), ColColor($4E));
+          DrawShadowText(str, 108 + i1 mod l * w + xp, ((len2 + l1) div l + i1 div l) * 28 + 78 + dt + yp, color1, color2);
           i1 := i1 + 1;
         end;
       end;
@@ -5527,7 +5527,8 @@ begin
     begin
       if MouseInRegion(ui_x, ui_y, 250, 480, xm, ym) then
       begin
-        menu := min(max, (ym - ui_y) div 80);
+        if VirtualKeyValue <= 0 then
+          menu := min(max, (ym - ui_y) div 80);
       end;
       if MouseInRegion(item1x, item1y, d, d) then
       begin
@@ -6513,7 +6514,7 @@ begin
     if (event.type_ = SDL_EVENT_MOUSE_MOTION) then
     begin
       if MouseInRegion(ui_x, ui_y, 250, 480, xm, ym) then
-        menu := (ym - ui_y) div 80;
+        if VirtualKeyValue <= 0 then menu := (ym - ui_y) div 80;
       if menu > max then
         menu := max;
       mouseactive := 0;
