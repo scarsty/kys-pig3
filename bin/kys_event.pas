@@ -4931,7 +4931,6 @@ begin
           DrawPartPic(WoodPic, 96, 192, 48, 48, (x1 div 2) * 48 + x, (y1 div 2) * 30 - 15 + y);
       end;
       if ((position div 10) * 2 = x1) and ((position mod 10) * 2 = y1) then
-
         DrawPartPic(WoodPic, 0, 192 + 18, 48, 30, (position div 10) * 48 + x, (position mod 10) * 30 + y);
       if (woodmansta.Exitx = x1) and (woodmansta.Exity = y1) then
       begin
@@ -5262,7 +5261,6 @@ begin
     end;
     UpdateAllScreen;
   end;
-
 end;
 
 procedure ShowManWalk(face, Eface1, Eface2: integer);

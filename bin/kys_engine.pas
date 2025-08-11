@@ -1281,6 +1281,7 @@ end;
 procedure DrawPartPic(pic: pointer; x, y, w, h, x1, y1: integer);
 var
   dest1, dest: TSDL_Rect;
+  dest1f, destf: TSDL_FRect;
 begin
   dest1.x := x;
   dest1.y := y;
@@ -1292,7 +1293,11 @@ begin
   dest.h := h;
   if pic <> nil then
     if SW_SURFACE = 0 then
-      SDL_RenderTexture(render, PSDL_Texture(pic), @dest1, @dest)
+    begin
+      dest1f := rect2f(dest1);
+      destf := rect2f(dest);
+      SDL_RenderTexture(render, PSDL_Texture(pic), @dest1f, @destf)
+    end
     else
       SDL_BlitSurface(PSDL_Surface(pic), @dest1, screen, @dest);
 end;
