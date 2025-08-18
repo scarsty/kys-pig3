@@ -1252,12 +1252,12 @@ end;
 
 procedure instruct_52;
 begin
-  ShowRolePro(0, (pointer(@Rrole[0].Ethics) - pointer(@Rrole[0])) div 2, '你的品德指數為：');
+  ShowRolePro(0, (pointer(@Rrole[0].Ethics) - pointer(@Rrole[0])) div 4, '你的品德指數為：');
 end;
 
 procedure instruct_53;
 begin
-  ShowRolePro(0, (pointer(@Rrole[0].Repute) - pointer(@Rrole[0])) div 2, '你的聲望指數為：');
+  ShowRolePro(0, (pointer(@Rrole[0].Repute) - pointer(@Rrole[0])) div 4, '你的聲望指數為：');
 end;
 
 //Open all scenes.
