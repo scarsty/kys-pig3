@@ -9,22 +9,155 @@
 {*
  * # CategoryTimer
  *
- * SDL time management routines.
+ * SDL provides time management functionality. It is useful for dealing with
+ * (usually) small durations of time.
+ *
+ * This is not to be confused with _calendar time_ management, which is
+ * provided by [CategoryTime](CategoryTime).
+ *
+ * This category covers measuring time elapsed (SDL_GetTicks(),
+ * SDL_GetPerformanceCounter()), putting a thread to sleep for a certain
+ * amount of time (SDL_Delay(), SDL_DelayNS(), SDL_DelayPrecise()), and firing
+ * a callback function after a certain amount of time has elasped
+ * (SDL_AddTimer(), etc).
+ *
+ * There are also useful macros to convert between time units, like
+ * SDL_SECONDS_TO_NS() and such.
   }
 
 { SDL time constants  }
 
 const
+  {*
+   * Number of milliseconds in a second.
+   *
+   * This is always 1000.
+   *
+   * \since This const is available since SDL 3.2.0.
+   *}
   SDL_MS_PER_SECOND = 1000;
+
+  {*
+   * Number of microseconds in a second.
+   *
+   * This is always 1000000.
+   *
+   * \since This const is available since SDL 3.2.0.
+   *}
   SDL_US_PER_SECOND = 1000000;
+
+  {*
+   * Number of nanoseconds in a second.
+   *
+   * This is always 1000000000.
+   *
+   * \since This const is available since SDL 3.2.0.
+   *}
   SDL_NS_PER_SECOND = 1000000000;
+
+  {*
+   * Number of nanoseconds in a millisecond.
+   *
+   * This is always 1000000.
+   *
+   * \since This macro is available since SDL 3.2.0.
+   *}
   SDL_NS_PER_MS = 1000000;
+
+  {*
+   * Number of nanoseconds in a microsecond.
+   *
+   * This is always 1000.
+   *
+   * \since This macro is available since SDL 3.2.0.
+   *}
   SDL_NS_PER_US = 1000;
+
+{*
+ * Convert seconds to nanoseconds.
+ *
+ * This only converts whole numbers, not fractional seconds.
+ *
+ * \param S the number of seconds to convert.
+ * \returns S, expressed in nanoseconds.
+ *
+ * \threadsafety It is safe to call this macro from any thread.
+ *
+ * \since This macro is available since SDL 3.2.0.
+ *}
 function SDL_SECONDS_TO_NS(S: Integer): Integer;
+
+{*
+ * Convert nanoseconds to seconds.
+ *
+ * This performs a division, so the results can be dramatically different if
+ * `NS` is an integer or floating point value.
+ *
+ * \param NS the number of nanoseconds to convert.
+ * \returns NS, expressed in seconds.
+ *
+ * \threadsafety It is safe to call this macro from any thread.
+ *
+ * \since This macro is available since SDL 3.2.0.
+ *}
 function SDL_NS_TO_SECONDS(NS: Integer): Integer;
+
+{*
+ * Convert milliseconds to nanoseconds.
+ *
+ * This only converts whole numbers, not fractional milliseconds.
+ *
+ * \param MS the number of milliseconds to convert.
+ * \returns MS, expressed in nanoseconds.
+ *
+ * \threadsafety It is safe to call this macro from any thread.
+ *
+ * \since This macro is available since SDL 3.2.0.
+ *}
 function SDL_MS_TO_NS(MS: Integer): Integer;
+
+{*
+ * Convert nanoseconds to milliseconds.
+ *
+ * This performs a division, so the results can be dramatically different if
+ * `NS` is an integer or floating point value.
+ *
+ * \param NS the number of nanoseconds to convert.
+ * \returns NS, expressed in milliseconds.
+ *
+ * \threadsafety It is safe to call this macro from any thread.
+ *
+ * \since This macro is available since SDL 3.2.0.
+ *}
 function SDL_NS_TO_MS(NS: Integer): Integer;
+
+{*
+ * Convert microseconds to nanoseconds.
+ *
+ * This only converts whole numbers, not fractional microseconds.
+ *
+ * \param US the number of microseconds to convert.
+ * \returns US, expressed in nanoseconds.
+ *
+ * \threadsafety It is safe to call this macro from any thread.
+ *
+ * \since This macro is available since SDL 3.2.0.
+ *}
 function SDL_US_TO_NS(US: Integer): Integer;
+
+{*
+ * Convert nanoseconds to microseconds.
+ *
+ * This performs a division, so the results can be dramatically different if
+ * `NS` is an integer or floating point value.
+ *
+ * \param NS the number of nanoseconds to convert.
+ * \returns NS, expressed in microseconds.
+ *
+ * \threadsafety It is safe to call this macro from any thread.
+ *
+ * \since This macro is available since SDL 3.2.0.
+ *}
 function SDL_NS_TO_US(NS: Integer): Integer;
 
 {*
@@ -35,7 +168,7 @@ function SDL_NS_TO_US(NS: Integer): Integer;
  *
  * \threadsafety It is safe to call this function from any thread.
  *
- * \since This function is available since SDL 3.1.3.
+ * \since This function is available since SDL 3.2.0.
   }
 function SDL_GetTicks: cuint64; cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_GetTicks' {$ENDIF} {$ENDIF};
@@ -48,7 +181,7 @@ function SDL_GetTicks: cuint64; cdecl;
  *
  * \threadsafety It is safe to call this function from any thread.
  *
- * \since This function is available since SDL 3.1.3.
+ * \since This function is available since SDL 3.2.0.
   }
 function SDL_GetTicksNS: cuint64; cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_GetTicksNS' {$ENDIF} {$ENDIF};
@@ -66,7 +199,7 @@ function SDL_GetTicksNS: cuint64; cdecl;
  *
  * \threadsafety It is safe to call this function from any thread.
  *
- * \since This function is available since SDL 3.1.3.
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetPerformanceFrequency
   }
@@ -80,7 +213,7 @@ function SDL_GetPerformanceCounter: cuint64; cdecl;
  *
  * \threadsafety It is safe to call this function from any thread.
  *
- * \since This function is available since SDL 3.1.3.
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetPerformanceCounter
   }
@@ -98,7 +231,10 @@ function SDL_GetPerformanceFrequency: cuint64; cdecl;
  *
  * \threadsafety It is safe to call this function from any thread.
  *
- * \since This function is available since SDL 3.1.3.
+ * \since This function is available since SDL 3.2.0.
+ *
+ * \sa SDL_DelayNS
+ * \sa SDL_DelayPrecise
   }
 procedure SDL_Delay(ms: cuint32); cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_Delay' {$ENDIF} {$ENDIF};
@@ -114,7 +250,10 @@ procedure SDL_Delay(ms: cuint32); cdecl;
  *
  * \threadsafety It is safe to call this function from any thread.
  *
- * \since This function is available since SDL 3.1.3.
+ * \since This function is available since SDL 3.2.0.
+ *
+ * \sa SDL_Delay
+ * \sa SDL_DelayPrecise
   }
 procedure SDL_DelayNS(ns: cuint64); cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_DelayNS' {$ENDIF} {$ENDIF};
@@ -131,6 +270,9 @@ procedure SDL_DelayNS(ns: cuint64); cdecl;
  * \threadsafety It is safe to call this function from any thread.
  *
  * \since This function is available since SDL 3.2.0.
+ *
+ * \sa SDL_Delay
+ * \sa SDL_DelayNS
   }
 procedure SDL_DelayPrecise(ns: cuint64); cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_DelayPrecise' {$ENDIF} {$ENDIF};
@@ -138,7 +280,7 @@ procedure SDL_DelayPrecise(ns: cuint64); cdecl;
 {*
  * Definition of the timer ID type.
  *
- * \since This datatype is available since SDL 3.1.3.
+ * \since This datatype is available since SDL 3.2.0.
   }
 type
   PPSDL_TimerID = ^PSDL_TimerID;
@@ -165,7 +307,7 @@ type
  *               thread; the application is responsible for locking resources
  *               the callback touches that need to be protected.
  *
- * \since This datatype is available since SDL 3.1.3.
+ * \since This datatype is available since SDL 3.2.0.
  *
  * \sa SDL_AddTimer
   }
@@ -201,7 +343,7 @@ type
  *
  * \threadsafety It is safe to call this function from any thread.
  *
- * \since This function is available since SDL 3.1.3.
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_AddTimerNS
  * \sa SDL_RemoveTimer
@@ -229,7 +371,7 @@ function SDL_AddTimer(interval: cuint32; callback: TSDL_TimerCallback; userdata:
  *               thread; the application is responsible for locking resources
  *               the callback touches that need to be protected.
  *
- * \since This datatype is available since SDL 3.1.3.
+ * \since This datatype is available since SDL 3.2.0.
  *
  * \sa SDL_AddTimerNS
   }
@@ -265,7 +407,7 @@ type
  *
  * \threadsafety It is safe to call this function from any thread.
  *
- * \since This function is available since SDL 3.1.3.
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_AddTimer
  * \sa SDL_RemoveTimer
@@ -282,7 +424,7 @@ function SDL_AddTimerNS(interval: cuint64; callback: TSDL_NSTimerCallback; userd
  *
  * \threadsafety It is safe to call this function from any thread.
  *
- * \since This function is available since SDL 3.1.3.
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_AddTimer
   }

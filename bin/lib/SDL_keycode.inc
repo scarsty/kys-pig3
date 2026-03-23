@@ -10,6 +10,11 @@
  * # CategoryKeycode
  *
  * Defines constants which identify keyboard keys and modifiers.
+ *
+ * Please refer to the Best Keyboard Practices document for details on what
+ * this information means and how best to use it.
+ *
+ * https://wiki.libsdl.org/SDL3/BestKeyboardPractices
   }
 
 {*
@@ -23,7 +28,10 @@
  * A special exception is the number keys at the top of the keyboard which map
  * to SDLK_0...SDLK_9 on AZERTY layouts.
  *
- * \since This datatype is available since SDL 3.1.3.
+ * Keys with the `SDLK_EXTENDED_MASK` bit set do not map to a scancode or
+ * unicode code point.
+ *
+ * \since This datatype is available since SDL 3.2.0.
   }
 type
   PPSDL_Keycode = ^PSDL_Keycode;
@@ -31,6 +39,7 @@ type
   TSDL_Keycode = type cuint32;
 
 const
+  SDLK_EXTENDED_MASK = 1 shl 29;
   SDLK_SCANCODE_MASK = 1 shl 30;
 function SDL_SCANCODE_TO_KEYCODE(X: TSDL_Scancode): TSDL_Keycode; {SDL3-for-Pascal: C Macro}
 const
@@ -283,11 +292,18 @@ const
   SDLK_SOFTRIGHT  = TSDL_Keycode($40000120);                     {*< SDL_SCANCODE_TO_KEYCODE(SDL_SCANCODE_SOFTRIGHT)  }
   SDLK_CALL  = TSDL_Keycode($40000121);                          {*< SDL_SCANCODE_TO_KEYCODE(SDL_SCANCODE_CALL)  }
   SDLK_ENDCALL  = TSDL_Keycode($40000122);                       {*< SDL_SCANCODE_TO_KEYCODE(SDL_SCANCODE_ENDCALL)  }
+  SDLK_LEFT_TAB = TSDL_Keycode($20000001);                       {*< Extended key Left Tab }
+  SDLK_LEVEL5_SHIFT = TSDL_Keycode($20000002);                   {*< Extended key Level 5 Shift }
+  SDLK_MULTI_KEY_COMPOSE = TSDL_Keycode($20000003);              {*< Extended key Multi-key Compose }
+  SDLK_LMETA = TSDL_Keycode($20000004);                          {*< Extended key Left Meta }
+  SDLK_RMETA = TSDL_Keycode($20000005);                          {*< Extended key Right Meta }
+  SDLK_LHYPER = TSDL_Keycode($20000006);                         {*< Extended key Left Hyper }
+  SDLK_RHYPER = TSDL_Keycode($20000007);                         {*< Extended key Right Hyper }
 
 {*
  * Valid key modifiers (possibly OR'd together).
  *
- * \since This datatype is available since SDL 3.1.3.
+ * \since This datatype is available since SDL 3.2.0.
   }
 type
   PPSDL_Keymod = ^PSDL_Keymod;
@@ -298,6 +314,7 @@ const
   SDL_KMOD_NONE  = TSDL_Keymod($0000);                               {*< no modifier is applicable.  }
   SDL_KMOD_LSHIFT  = TSDL_Keymod($0001);                             {*< the left Shift key is down.  }
   SDL_KMOD_RSHIFT  = TSDL_Keymod($0002);                             {*< the right Shift key is down.  }
+  SDL_KMOD_LEVEL5  = TSDL_Keymod($0004);                             {*< the Level 5 Shift key is down. }
   SDL_KMOD_LCTRL  = TSDL_Keymod($0040);                              {*< the left Ctrl (Control) key is down.  }
   SDL_KMOD_RCTRL  = TSDL_Keymod($0080);                              {*< the right Ctrl (Control) key is down.  }
   SDL_KMOD_LALT  = TSDL_Keymod($0100);                               {*< the left Alt key is down.  }

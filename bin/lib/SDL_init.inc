@@ -41,7 +41,7 @@
  * These are the flags which may be passed to SDL_Init(). You should specify
  * the subsystems which you will be using in your application.
  *
- * \since This datatype is available since SDL 3.1.3.
+ * \since This datatype is available since SDL 3.2.0.
  *
  * \sa SDL_Init
  * \sa SDL_Quit
@@ -56,8 +56,8 @@ type
 
 const
   SDL_INIT_AUDIO = TSDL_InitFlags($00000010);    { `SDL_INIT_AUDIO` implies `SDL_INIT_EVENTS`  }
-  SDL_INIT_VIDEO = TSDL_InitFlags($00000020);    { `SDL_INIT_VIDEO` implies `SDL_INIT_EVENTS`  }
-  SDL_INIT_JOYSTICK = TSDL_InitFlags($00000200); { `SDL_INIT_JOYSTICK` implies `SDL_INIT_EVENTS`, should be initialized on the same thread as SDL_INIT_VIDEO on Windows if you don't set SDL_HINT_JOYSTICK_THREAD  }
+  SDL_INIT_VIDEO = TSDL_InitFlags($00000020);    { `SDL_INIT_VIDEO` implies `SDL_INIT_EVENTS`, should be initialized on the main thread  }
+  SDL_INIT_JOYSTICK = TSDL_InitFlags($00000200); { `SDL_INIT_JOYSTICK` implies `SDL_INIT_EVENTS`  }
   SDL_INIT_HAPTIC = TSDL_InitFlags($00001000);
   SDL_INIT_GAMEPAD = TSDL_InitFlags($00002000);  { `SDL_INIT_GAMEPAD` implies `SDL_INIT_JOYSTICK`  }
   SDL_INIT_EVENTS = TSDL_InitFlags($00004000);
@@ -82,7 +82,7 @@ const
  * [Main callbacks in SDL3](https://wiki.libsdl.org/SDL3/README/main-functions#main-callbacks-in-sdl3)
  * for complete details.
  *
- * \since This enum is available since SDL 3.1.3.
+ * \since This enum is available since SDL 3.2.0.
   }
 type
   PPSDL_AppResult = ^PSDL_AppResult;
@@ -94,9 +94,68 @@ const
   SDL_APP_FAILURE = 2;                    {*< Value that requests termination with error from the main callbacks.  }
 
 type
+{*
+ * Function pointer typedef for SDL_AppInit.
+ *
+ * These are used by SDL_EnterAppMainCallbacks. This mechanism operates behind
+ * the scenes for apps using the optional main callbacks. Apps that want to
+ * use this should just implement SDL_AppInit directly.
+ *
+ * \param appstate a place where the app can optionally store a pointer for
+ *                 future use.
+ * \param argc the standard ANSI C main's argc; number of elements in `argv`.
+ * \param argv the standard ANSI C main's argv; array of command line
+ *             arguments.
+ * \returns SDL_APP_FAILURE to terminate with an error, SDL_APP_SUCCESS to
+ *          terminate with success, SDL_APP_CONTINUE to continue.
+ *
+ * \since This datatype is available since SDL 3.2.0.
+ *}
   TSDL_AppInit_func = function(appstate: PPointer; argc: cint; argv: PPAnsiChar): TSDL_AppResult; cdecl;
+
+{**
+ * Function pointer typedef for SDL_AppIterate.
+ *
+ * These are used by SDL_EnterAppMainCallbacks. This mechanism operates behind
+ * the scenes for apps using the optional main callbacks. Apps that want to
+ * use this should just implement SDL_AppIterate directly.
+ *
+ * \param appstate an optional pointer, provided by the app in SDL_AppInit.
+ * \returns SDL_APP_FAILURE to terminate with an error, SDL_APP_SUCCESS to
+ *          terminate with success, SDL_APP_CONTINUE to continue.
+ *
+ * \since This datatype is available since SDL 3.2.0.
+ *}
   TSDL_AppIterate_func = function(appstate: Pointer): TSDL_AppResult; cdecl;
-  //TSDL_AppEvent_func = function(appstate: Pointer; event: PSDL_Event): TSDL_AppResult; cdecl;   // uncomment after EVENT translation
+
+{**
+ * Function pointer typedef for SDL_AppEvent.
+ *
+ * These are used by SDL_EnterAppMainCallbacks. This mechanism operates behind
+ * the scenes for apps using the optional main callbacks. Apps that want to
+ * use this should just implement SDL_AppEvent directly.
+ *
+ * \param appstate an optional pointer, provided by the app in SDL_AppInit.
+ * \param event the new event for the app to examine.
+ * \returns SDL_APP_FAILURE to terminate with an error, SDL_APP_SUCCESS to
+ *          terminate with success, SDL_APP_CONTINUE to continue.
+ *
+ * \since This datatype is available since SDL 3.2.0.
+ *}
+  TSDL_AppEvent_func = function(appstate: Pointer; event: PSDL_Event): TSDL_AppResult; cdecl;
+
+{**
+ * Function pointer typedef for SDL_AppQuit.
+ *
+ * These are used by SDL_EnterAppMainCallbacks. This mechanism operates behind
+ * the scenes for apps using the optional main callbacks. Apps that want to
+ * use this should just implement SDL_AppEvent directly.
+ *
+ * \param appstate an optional pointer, provided by the app in SDL_AppInit.
+ * \param result the result code that terminated the app (success or failure).
+ *
+ * \since This datatype is available since SDL 3.2.0.
+ *}
   TSDL_AppQuit_func = procedure(appstate: Pointer; result: TSDL_AppResult); cdecl;
 
 {*
@@ -120,7 +179,7 @@ type
  * - `SDL_INIT_AUDIO`: audio subsystem; automatically initializes the events
  *   subsystem
  * - `SDL_INIT_VIDEO`: video subsystem; automatically initializes the events
- *   subsystem
+ *   subsystem, should be initialized on the main thread.
  * - `SDL_INIT_JOYSTICK`: joystick subsystem; automatically initializes the
  *   events subsystem
  * - `SDL_INIT_HAPTIC`: haptic (force feedback) subsystem
@@ -145,7 +204,7 @@ type
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_SetAppMetadata
  * \sa SDL_SetAppMetadataProperty
@@ -167,7 +226,7 @@ function SDL_Init(flags: TSDL_InitFlags): Boolean; cdecl;
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_Init
  * \sa SDL_Quit
@@ -184,7 +243,7 @@ function SDL_InitSubSystem(flags: TSDL_InitFlags): Boolean; cdecl;
  *
  * \param flags any of the flags used by SDL_Init(); see SDL_Init for details.
  *
- * \since This function is available since SDL 3.1.3.
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_InitSubSystem
  * \sa SDL_Quit
@@ -199,7 +258,7 @@ procedure SDL_QuitSubSystem(flags: TSDL_InitFlags); cdecl;
  * \returns a mask of all initialized subsystems if `flags` is 0, otherwise it
  *          returns the initialization status of the specified subsystems.
  *
- * \since This function is available since SDL 3.1.3.
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_Init
  * \sa SDL_InitSubSystem
@@ -225,6 +284,73 @@ function SDL_WasInit(flags: TSDL_InitFlags): TSDL_InitFlags; cdecl;
   }
 procedure SDL_Quit; cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_Quit' {$ENDIF} {$ENDIF};
+
+{**
+ * Return whether this is the main thread.
+ *
+ * On Apple platforms, the main thread is the thread that runs your program's
+ * main() entry point. On other platforms, the main thread is the one that
+ * calls SDL_Init(SDL_INIT_VIDEO), which should usually be the one that runs
+ * your program's main() entry point. If you are using the main callbacks,
+ * SDL_AppInit(), SDL_AppIterate(), and SDL_AppQuit() are all called on the
+ * main thread.
+ *
+ * \returns true if this thread is the main thread, or false otherwise.
+ *
+ * \threadsafety It is safe to call this function from any thread.
+ *
+ * \since This function is available since SDL 3.2.0.
+ *
+ * \sa SDL_RunOnMainThread
+ *}
+function SDL_IsMainThread(): Boolean; cdecl;
+  external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_IsMainThread' {$ENDIF} {$ENDIF};
+
+type
+  PPSDL_MainThreadCallback = ^PSDL_MainThreadCallback;
+  PSDL_MainThreadCallback = ^TSDL_MainThreadCallback;
+
+  {**
+   * Callback run on the main thread.
+   *
+   * \param userdata an app-controlled pointer that is passed to the callback.
+   *
+   * \since This datatype is available since SDL 3.2.0.
+   *
+   * \sa SDL_RunOnMainThread
+   *}
+  TSDL_MainThreadCallback = procedure(userdata: Pointer); cdecl;
+
+{**
+ * Call a function on the main thread during event processing.
+ *
+ * If this is called on the main thread, the callback is executed immediately.
+ * If this is called on another thread, this callback is queued for execution
+ * on the main thread during event processing.
+ *
+ * Be careful of deadlocks when using this functionality. You should not have
+ * the main thread wait for the current thread while this function is being
+ * called with `wait_complete` true.
+ *
+ * \param callback the callback to call on the main thread.
+ * \param userdata a pointer that is passed to `callback`.
+ * \param wait_complete true to wait for the callback to complete, false to
+ *                      return immediately.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
+ *
+ * \threadsafety It is safe to call this function from any thread.
+ *
+ * \since This function is available since SDL 3.2.0.
+ *
+ * \sa SDL_IsMainThread
+ *}
+function SDL_RunOnMainThread(
+    callback: TSDL_MainThreadCallback;
+    userdata: Pointer;
+    wait_complete: Boolean
+): Boolean; cdecl;
+  external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_RunOnMainThread' {$ENDIF} {$ENDIF};
 
 {*
  * Specify basic metadata about your app.
@@ -258,7 +384,7 @@ procedure SDL_Quit; cdecl;
  *
  * \threadsafety It is safe to call this function from any thread.
  *
- * \since This function is available since SDL 3.1.3.
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_SetAppMetadataProperty
   }
@@ -280,7 +406,7 @@ function SDL_SetAppMetadata(appname: PAnsiChar; appversion: PAnsiChar; appidenti
  * Multiple calls to this function are allowed, but various state might not
  * change once it has been set up with a previous call to this function.
  *
- * Once set, this metadata can be read using SDL_GetMetadataProperty().
+ * Once set, this metadata can be read using SDL_GetAppMetadataProperty().
  *
  * These are the supported properties:
  *
@@ -321,7 +447,7 @@ function SDL_SetAppMetadata(appname: PAnsiChar; appversion: PAnsiChar; appidenti
  *
  * \threadsafety It is safe to call this function from any thread.
  *
- * \since This function is available since SDL 3.1.3.
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetAppMetadataProperty
  * \sa SDL_SetAppMetadata
@@ -354,7 +480,7 @@ const
  *               freed if you call SDL_SetAppMetadataProperty() to set that
  *               property from another thread.
  *
- * \since This function is available since SDL 3.1.3.
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_SetAppMetadata
  * \sa SDL_SetAppMetadataProperty

@@ -3521,7 +3521,7 @@ begin
       begin
         hurt := Rmagic[mnum].HurtMP[level - 1] + random(5) - random(5);
         if Rmagic[mnum].HurtType <> 6 then
-          Brole[i].ShowNumber := Brole[bnum1].ShowNumber + hurt;
+          Brole[i].ShowNumber := Brole[i].ShowNumber + hurt;
         Rrole[Brole[i].rnum].CurrentMP := Rrole[Brole[i].rnum].CurrentMP - hurt;
         if Rrole[Brole[i].rnum].CurrentMP <= 0 then
           Rrole[Brole[i].rnum].CurrentMP := 0;

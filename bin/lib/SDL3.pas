@@ -69,13 +69,13 @@ const
     {$ENDIF}
   {$ENDIF}
 
+{$DEFINE WANT_CWCHAR_T}                   // want wchar_t type in this unit
 {$I ctypes.inc}                           // C data types
 
 { The include file translates
   corresponding C header file.
                                           Inc file was updated against
   SDL_init.inc --> SDL_init.h             this version of the header file: }
-{$I SDL_init.inc}                         // 3.1.6-prev
 {$I SDL_log.inc}                          // 3.1.6-prev
 {$I SDL_version.inc}                      // 3.1.6-prev
 {$I SDL_revision.inc}                     // 3.1.6-prev
@@ -92,24 +92,25 @@ const
 {$I SDL_blendmode.inc}                    // 3.1.6-prev
 {$I SDL_iostream.inc}                     // 3.2.0
 {$I SDL_asyncio.inc}                      // 3.2.0
-{$I SDL_surface.inc}                      // 3.1.6-prev
-{$I SDL_video.inc}                        // 3.1.6-prev
-{$I SDL_timer.inc}                        // 3.1.6-prev
+{$I SDL_surface.inc}                      // 3.2.20
+{$I SDL_video.inc}                        // 3.2.20
+{$I SDL_timer.inc}                        // 3.2.20
 {$I SDL_error.inc}                        // 3.1.6-prev
 {$I SDL_power.inc}                        // 3.1.6-prev
 {$I SDL_audio.inc}                        // 3.1.6-prev
 {$I SDL_sensor.inc}                       // 3.1.6-prev
 {$I SDL_scancode.inc}                     // 3.1.6-prev
-{$I SDL_keycode.inc}                      // 3.1.6-prev
+{$I SDL_keycode.inc}                      // 3.2.20
 {$I SDL_mouse.inc}                        // 3.1.6-prev
 {$I SDL_keyboard.inc}                     // 3.1.6-prev
 {$I SDL_joystick.inc}                     // 3.1.6-prev
 {$I SDL_gamepad.inc}                      // 3.2.0
 {$I SDL_haptic.inc}                       // 3.2.0
-{$I SDL_pen.inc}                          // 3.1.6-prev
 {$I SDL_touch.inc}                        // 3.1.6-prev
+{$I SDL_pen.inc}                          // 3.2.20
 {$I SDL_camera.inc}                       // 3.1.6-prev
-{$I SDL_events.inc}                       // 3.1.6-prev
+{$I SDL_events.inc}                       // 3.2.20
+{$I SDL_init.inc}                         // 3.2.20
 {$I SDL_render.inc}                       // 3.1.6-prev
 {$I SDL_gpu.inc}                          // 3.2.0
 {$I SDL_clipboard.inc}                    // 3.2.0
@@ -310,10 +311,16 @@ begin
   Result:=X or SDLK_SCANCODE_MASK;
 end;
 
+{ Macros from SDL_surface.h }
+function SDL_MUSTLOCK(Const S: PSDL_Surface): Boolean;
+begin
+  Result:=(S^.flags and SDL_SURFACE_LOCK_NEEDED)=SDL_SURFACE_LOCK_NEEDED;
+end;
+
 { Macros from SDL_video.h }
 function SDL_WINDOWPOS_UNDEFINED_DISPLAY(X: Integer): Integer;
 begin
-  Result := (SDL_WINDOWPOS_CENTERED_MASK or X);
+  Result := (SDL_WINDOWPOS_UNDEFINED_MASK or X);
 end;
 
 function SDL_WINDOWPOS_ISUNDEFINED(X: Integer): Boolean;

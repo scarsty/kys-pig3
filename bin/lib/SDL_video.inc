@@ -40,7 +40,7 @@
  *
  * The value 0 is an invalid ID.
  *
- * \since This datatype is available since SDL 3.1.3.
+ * \since This datatype is available since SDL 3.2.0.
   }
 type
   PPSDL_DisplayID = ^PSDL_DisplayID;
@@ -52,7 +52,7 @@ type
  *
  * The value 0 is an invalid ID.
  *
- * \since This datatype is available since SDL 3.1.3.
+ * \since This datatype is available since SDL 3.2.0.
   }
   PPSDL_WindowID = ^PSDL_WindowID;
   PSDL_WindowID = ^TSDL_WindowID;
@@ -80,7 +80,7 @@ const
 {*
  * System theme.
  *
- * \since This enum is available since SDL 3.1.3.
+ * \since This enum is available since SDL 3.2.0.
   }
 type
   PPSDL_SystemTheme = ^PSDL_SystemTheme;
@@ -91,15 +91,23 @@ const
   SDL_SYSTEM_THEME_LIGHT = TSDL_SystemTheme(1);    {*< Light colored system theme  }
   SDL_SYSTEM_THEME_DARK = TSDL_SystemTheme(2);     {*< Dark colored system theme  }
 
-{ Internal display mode data  }
 type
   PPSDL_DisplayModeData = ^PSDL_DisplayModeData;
+  {**
+   * Internal display mode data.
+   *
+   * This lives as a field in SDL_DisplayMode, as opaque data.
+   *
+   * \since This struct is available since SDL 3.2.0.
+   *
+   * \sa SDL_DisplayMode
+   *}
   PSDL_DisplayModeData = type Pointer;
 
 {*
  * The structure that defines a display mode.
  *
- * \since This struct is available since SDL 3.1.3.
+ * \since This struct is available since SDL 3.2.0.
  *
  * \sa SDL_GetFullscreenDisplayModes
  * \sa SDL_GetDesktopDisplayMode
@@ -125,7 +133,7 @@ type
 {*
  * Display orientation values; the way a display is rotated.
  *
- * \since This enum is available since SDL 3.1.3.
+ * \since This enum is available since SDL 3.2.0.
   }
   PPSDL_DisplayOrientation = ^PSDL_DisplayOrientation;
   PSDL_DisplayOrientation = ^TSDL_DisplayOrientation;
@@ -140,7 +148,7 @@ const
 {*
  * The struct used as an opaque handle to a window.
  *
- * \since This struct is available since SDL 3.1.3.
+ * \since This struct is available since SDL 3.2.0.
  *
  * \sa SDL_CreateWindow
   }
@@ -156,7 +164,7 @@ type
  * changed on existing windows by the app, and some of it might be altered by
  * the user or system outside of the app's control.
  *
- * \since This datatype is available since SDL 3.1.3.
+ * \since This datatype is available since SDL 3.2.0.
  *
  * \sa SDL_GetWindowFlags
   }
@@ -193,29 +201,89 @@ const
   SDL_WINDOW_NOT_FOCUSABLE = TSDL_WindowFlags($0000000080000000);           {*< window should not be focusable  }
 
 {*
- * Used to indicate that you don't care what the window position is.
+ * A magic value used with SDL_WINDOWPOS_UNDEFINED.
  *
- * \since This macro is available since SDL 3.1.3.
+ * Generally this macro isn't used directly, but rather through
+ * SDL_WINDOWPOS_UNDEFINED or SDL_WINDOWPOS_UNDEFINED_DISPLAY.
+ *
+ * \since This macro is available since SDL 3.2.0.
   }
 const SDL_WINDOWPOS_UNDEFINED_MASK = $1FFF0000;
+
+{*
+ * Used to indicate that you don't care what the window position is.
+ *
+ * If you _really_ don't care, SDL_WINDOWPOS_UNDEFINED is the same, but always
+ * uses the primary display instead of specifying one.
+ *
+ * \param X the SDL_DisplayID of the display to use.
+ *
+ * \since This macro is available since SDL 3.2.0.
+ *}
 function SDL_WINDOWPOS_UNDEFINED_DISPLAY(X: Integer): Integer;
+
+{*
+ * Used to indicate that you don't care what the window position/display is.
+ *
+ * This always uses the primary display.
+ *
+ * \since This macro is available since SDL 3.2.0.
+ *}
 const SDL_WINDOWPOS_UNDEFINED = SDL_WINDOWPOS_UNDEFINED_MASK or 0;  // SDL3 for Pascal: No function call SDL_WINDOWPOS_UNDEFINED_DISPLAY(0) for performance
+
+{*
+ * A macro to test if the window position is marked as "undefined."
+ *
+ * \param X the window position value.
+ *
+ * \since This macro is available since SDL 3.2.0.
+ *}
 function SDL_WINDOWPOS_ISUNDEFINED(X: Integer): Boolean;
+
+{*
+ * A magic value used with SDL_WINDOWPOS_CENTERED.
+ *
+ * Generally this macro isn't used directly, but rather through
+ * SDL_WINDOWPOS_CENTERED or SDL_WINDOWPOS_CENTERED_DISPLAY.
+ *
+ * \since This macro is available since SDL 3.2.0.
+ *}
+const SDL_WINDOWPOS_CENTERED_MASK = $2FFF0000;
 
 {*
  * Used to indicate that the window position should be centered.
  *
- * \since This macro is available since SDL 3.1.3.
-  }
-const SDL_WINDOWPOS_CENTERED_MASK = $2FFF0000;
+ * SDL_WINDOWPOS_CENTERED is the same, but always uses the primary display
+ * instead of specifying one.
+ *
+ * \param X the SDL_DisplayID of the display to use.
+ *
+ * \since This macro is available since SDL 3.2.0.
+ *}
 function SDL_WINDOWPOS_CENTERED_DISPLAY(X: Integer): Integer;
+
+{*
+ * Used to indicate that the window position should be centered.
+ *
+ * This always uses the primary display.
+ *
+ * \since This macro is available since SDL 3.2.0.
+ *}
 const SDL_WINDOWPOS_CENTERED = SDL_WINDOWPOS_CENTERED_MASK or 0;   // SDL3 for Pascal: No function call SDL_WINDOWPOS_CENTERED_DISPLAY(0) for performance
+
+{*
+ * A macro to test if the window position is marked as "centered."
+ *
+ * \param X the window position value.
+ *
+ * \since This macro is available since SDL 3.2.0.
+ *}
 function SDL_WINDOWPOS_ISCENTERED(X: Integer): Boolean;
 
 {*
  * Window flash operation.
  *
- * \since This enum is available since SDL 3.1.3.
+ * \since This enum is available since SDL 3.2.0.
   }
 
 type
@@ -227,41 +295,61 @@ type
     SDL_FLASH_BRIEFLY = TSDL_FlashOperation(1);             {*< Flash the window briefly to get attention  }
     SDL_FLASH_UNTIL_FOCUSED = TSDL_FlashOperation(2);       {*< Flash the window until it gets focus  }
 
-{*
- * An opaque handle to an OpenGL context.
- *
- * \since This datatype is available since SDL 3.1.3.
- *
- * \sa SDL_GL_CreateContext
-  }
 type
   PPSDL_GLContext = ^PSDL_GLContext;
   PSDL_GLContext = ^TSDL_GLContext;
+  {*
+   * An opaque handle to an OpenGL context.
+   *
+   * \since This datatype is available since SDL 3.2.0.
+   *
+   * \sa SDL_GL_CreateContext
+   *}
   TSDL_GLContext = type Pointer;
 
-{*
- * Opaque EGL types.
- *
- * \since This datatype is available since SDL 3.1.3.
-  }
   PPSDL_EGLDisplay = ^PSDL_EGLDisplay;
   PSDL_EGLDisplay = ^TSDL_EGLDisplay;
+  {*
+   * Opaque type for an EGL display.
+   *
+   * \since This datatype is available since SDL 3.2.0.
+   *}
   TSDL_EGLDisplay = type Pointer;
 
   PPSDL_EGLConfig = ^PSDL_EGLConfig;
   PSDL_EGLConfig = ^TSDL_EGLConfig;
+  {*
+   * Opaque type for an EGL config.
+   *
+   * \since This datatype is available since SDL 3.2.0.
+   *}
   TSDL_EGLConfig = type Pointer;
 
   PPSDL_EGLSurface = ^PSDL_EGLSurface;
   PSDL_EGLSurface = ^TSDL_EGLSurface;
+  {*
+   * Opaque type for an EGL surface.
+   *
+   * \since This datatype is available since SDL 3.2.0.
+   *}
   TSDL_EGLSurface = type Pointer;
 
   PPSDL_EGLAttrib = ^PSDL_EGLAttrib;
   PSDL_EGLAttrib = ^TSDL_EGLAttrib;
+  {*
+   * An EGL attribute, used when creating an EGL context.
+   *
+   * \since This datatype is available since SDL 3.2.0.
+   *}
   TSDL_EGLAttrib = type cintptr_t;
 
   PPSDL_EGLint = ^PSDL_EGLint;
   PSDL_EGLint = ^TSDL_EGLint;
+  {*
+   * An EGL integer attribute, used when creating an EGL surface.
+   *
+   * \since This datatype is available since SDL 3.2.0.
+   *}
   TSDL_EGLint = type cint;
 
 {*
@@ -283,7 +371,7 @@ type
  * \param userdata an app-controlled Pointer that is passed to the callback.
  * \returns a newly-allocated array of attributes, terminated with `EGL_NONE`.
  *
- * \since This datatype is available since SDL 3.1.3.
+ * \since This datatype is available since SDL 3.2.0.
  *
  * \sa SDL_EGL_SetAttributeCallbacks
   }
@@ -317,7 +405,7 @@ type
  * \param config the EGL config to be used.
  * \returns a newly-allocated array of attributes, terminated with `EGL_NONE`.
  *
- * \since This datatype is available since SDL 3.1.3.
+ * \since This datatype is available since SDL 3.2.0.
  *
  * \sa SDL_EGL_SetAttributeCallbacks
   }
@@ -340,16 +428,16 @@ type
  * fail if the GL can't provide your requested attributes at a minimum, but
  * you should check to see exactly what you got.
  *
- * \since This enum is available since SDL 3.1.3.
+ * \since This enum is available since SDL 3.2.0.
   }
   PPSDL_GLAttr = ^PSDL_GLAttr;
   PSDL_GLAttr = ^TSDL_GLAttr;
   TSDL_GLAttr =  Integer;
 const
-  SDL_GL_RED_SIZE = TSDL_GLAttr(0);                        {*< the minimum number of bits for the red channel of the color buffer; defaults to 3.  }
-  SDL_GL_GREEN_SIZE = TSDL_GLAttr(1);                      {*< the minimum number of bits for the green channel of the color buffer; defaults to 3.  }
-  SDL_GL_BLUE_SIZE = TSDL_GLAttr(2);                       {*< the minimum number of bits for the blue channel of the color buffer; defaults to 2.  }
-  SDL_GL_ALPHA_SIZE = TSDL_GLAttr(3);                      {*< the minimum number of bits for the alpha channel of the color buffer; defaults to 0.  }
+  SDL_GL_RED_SIZE = TSDL_GLAttr(0);                        {*< the minimum number of bits for the red channel of the color buffer; defaults to 8.  }
+  SDL_GL_GREEN_SIZE = TSDL_GLAttr(1);                      {*< the minimum number of bits for the green channel of the color buffer; defaults to 8.  }
+  SDL_GL_BLUE_SIZE = TSDL_GLAttr(2);                       {*< the minimum number of bits for the blue channel of the color buffer; defaults to 8.  }
+  SDL_GL_ALPHA_SIZE = TSDL_GLAttr(3);                      {*< the minimum number of bits for the alpha channel of the color buffer; defaults to 8.  }
   SDL_GL_BUFFER_SIZE = TSDL_GLAttr(4);                     {*< the minimum number of bits for frame buffer size; defaults to 0.  }
   SDL_GL_DOUBLEBUFFER = TSDL_GLAttr(5);                    {*< whether the output is single or double buffered; defaults to double buffering on.  }
   SDL_GL_DEPTH_SIZE = TSDL_GLAttr(6);                      {*< the minimum number of bits in the depth buffer; defaults to 16.  }
@@ -378,7 +466,7 @@ const
 {*
  * Possible values to be set for the SDL_GL_CONTEXT_PROFILE_MASK attribute.
  *
- * \since This datatype is available since SDL 3.1.3.
+ * \since This datatype is available since SDL 3.2.0.
   }
 type
   PPSDL_GLProfile = ^PSDL_GLProfile;
@@ -393,7 +481,7 @@ const
 {*
  * Possible flags to be set for the SDL_GL_CONTEXT_FLAGS attribute.
  *
- * \since This datatype is available since SDL 3.1.3.
+ * \since This datatype is available since SDL 3.2.0.
   }
 type
   PPSDL_GLContextFlag = ^PSDL_GLContextFlag;
@@ -409,7 +497,7 @@ const
  * Possible values to be set for the SDL_GL_CONTEXT_RELEASE_BEHAVIOR
  * attribute.
  *
- * \since This datatype is available since SDL 3.1.3.
+ * \since This datatype is available since SDL 3.2.0.
   }
 type
   PPSDL_GLContextReleaseFlag = ^PSDL_GLContextReleaseFlag;
@@ -423,7 +511,7 @@ const
 {*
  * Possible values to be set SDL_GL_CONTEXT_RESET_NOTIFICATION attribute.
  *
- * \since This datatype is available since SDL 3.1.3.
+ * \since This datatype is available since SDL 3.2.0.
   }
 type
   PPSDL_GLContextResetNotification = ^PSDL_GLContextResetNotification;
@@ -441,7 +529,9 @@ const
  *
  * \returns the number of built in video drivers.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetVideoDriver
   }
@@ -461,7 +551,9 @@ function SDL_GetNumVideoDrivers: cint; cdecl;
  * \param index the index of a video driver.
  * \returns the name of the video driver with the given **index**.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetNumVideoDrivers
   }
@@ -478,7 +570,9 @@ function SDL_GetVideoDriver(index: cint): PAnsiChar; cdecl;
  * \returns the name of the current video driver or nil if no driver has been
  *          initialized.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetNumVideoDrivers
  * \sa SDL_GetVideoDriver
@@ -491,7 +585,9 @@ function SDL_GetCurrentVideoDriver: PAnsiChar; cdecl;
  *
  * \returns the current system theme, light, dark, or unknown.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
   }
 function SDL_GetSystemTheme: TSDL_SystemTheme; cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_GetSystemTheme' {$ENDIF} {$ENDIF};
@@ -505,7 +601,9 @@ function SDL_GetSystemTheme: TSDL_SystemTheme; cdecl;
  *          call SDL_GetError() for more information. This should be freed
  *          with SDL_free() when it is no longer needed.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
   }
 function SDL_GetDisplays(count: pcint): PSDL_DisplayID; cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_GetDisplays' {$ENDIF} {$ENDIF};
@@ -516,7 +614,9 @@ function SDL_GetDisplays(count: pcint): PSDL_DisplayID; cdecl;
  * \returns the instance ID of the primary display on success or 0 on failure;
  *          call SDL_GetError() for more information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetDisplays
   }
@@ -545,7 +645,9 @@ function SDL_GetPrimaryDisplay: TSDL_DisplayID; cdecl;
  * \returns a valid property ID on success or 0 on failure; call
  *          SDL_GetError() for more information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
   }
 function SDL_GetDisplayProperties(displayID: TSDL_DisplayID): TSDL_PropertiesID; cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_GetDisplayProperties' {$ENDIF} {$ENDIF};
@@ -561,7 +663,9 @@ const
  * \returns the name of a display or nil on failure; call SDL_GetError() for
  *          more information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetDisplays
   }
@@ -571,14 +675,17 @@ function SDL_GetDisplayName(displayID: TSDL_DisplayID): PAnsiChar; cdecl;
 {*
  * Get the desktop area represented by a display.
  *
- * The primary display is always located at (0,0).
+ * The primary display is often located at (0,0), but may be placed at a
+ * different location depending on monitor layout.
  *
  * \param displayID the instance ID of the display to query.
  * \param rect the SDL_Rect structure filled in with the display bounds.
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetDisplayUsableBounds
  * \sa SDL_GetDisplays
@@ -603,7 +710,9 @@ function SDL_GetDisplayBounds(displayID: TSDL_DisplayID; rect: PSDL_Rect): Boole
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetDisplayBounds
  * \sa SDL_GetDisplays
@@ -618,7 +727,9 @@ function SDL_GetDisplayUsableBounds(displayID: TSDL_DisplayID; rect: PSDL_Rect):
  * \returns the SDL_DisplayOrientation enum value of the display, or
  *          `SDL_ORIENTATION_UNKNOWN` if it isn't available.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetDisplays
   }
@@ -632,7 +743,9 @@ function SDL_GetNaturalDisplayOrientation(displayID: TSDL_DisplayID): TSDL_Displ
  * \returns the SDL_DisplayOrientation enum value of the display, or
  *          `SDL_ORIENTATION_UNKNOWN` if it isn't available.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetDisplays
   }
@@ -647,12 +760,21 @@ function SDL_GetCurrentDisplayOrientation(displayID: TSDL_DisplayID): TSDL_Displ
  * display scale, which means that the user expects UI elements to be twice as
  * big on this display, to aid in readability.
  *
+ * After window creation, SDL_GetWindowDisplayScale() should be used to query
+ * the content scale factor for individual windows instead of querying the
+ * display for a window and calling this function, as the per-window content
+ * scale factor may differ from the base value of the display it is on,
+ * particularly on high-DPI and/or multi-monitor desktop configurations.
+ *
  * \param displayID the instance ID of the display to query.
  * \returns the content scale of the display, or 0.0f on failure; call
  *          SDL_GetError() for more information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
  *
+ * \since This function is available since SDL 3.2.0.
+ *
+ * \sa SDL_GetWindowDisplayScale
  * \sa SDL_GetDisplays
   }
 function SDL_GetDisplayContentScale(displayID: TSDL_DisplayID): cfloat; cdecl;
@@ -678,7 +800,9 @@ function SDL_GetDisplayContentScale(displayID: TSDL_DisplayID): cfloat; cdecl;
  *          single allocation that should be freed with SDL_free() when it is
  *          no longer needed.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetDisplays
   }
@@ -702,17 +826,19 @@ function SDL_GetFullscreenDisplayModes(displayID: TSDL_DisplayID; count: pcint):
  *                     for the desktop refresh rate.
  * \param include_high_density_modes boolean to include high density modes in
  *                                   the search.
- * \param mode a Pointer filled in with the closest display mode equal to or
- *             larger than the desired mode.
+ * \param closest a Pointer filled in with the closest display mode equal to
+ *                or larger than the desired mode.
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetDisplays
  * \sa SDL_GetFullscreenDisplayModes
   }
-function SDL_GetClosestFullscreenDisplayMode(displayID: TSDL_DisplayID; w: cint; h: cint; refresh_rate: cfloat; include_high_density_modes: Boolean; mode: PSDL_DisplayMode): Boolean; cdecl;
+function SDL_GetClosestFullscreenDisplayMode(displayID: TSDL_DisplayID; w: cint; h: cint; refresh_rate: cfloat; include_high_density_modes: Boolean; closest: PSDL_DisplayMode): Boolean; cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_GetClosestFullscreenDisplayMode' {$ENDIF} {$ENDIF};
 
 {*
@@ -727,7 +853,9 @@ function SDL_GetClosestFullscreenDisplayMode(displayID: TSDL_DisplayID; w: cint;
  * \returns a Pointer to the desktop display mode or nil on failure; call
  *          SDL_GetError() for more information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetCurrentDisplayMode
  * \sa SDL_GetDisplays
@@ -747,7 +875,9 @@ function SDL_GetDesktopDisplayMode(displayID: TSDL_DisplayID): PSDL_DisplayMode;
  * \returns a Pointer to the desktop display mode or nil on failure; call
  *          SDL_GetError() for more information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetDesktopDisplayMode
  * \sa SDL_GetDisplays
@@ -762,7 +892,9 @@ function SDL_GetCurrentDisplayMode(displayID: TSDL_DisplayID): PSDL_DisplayMode;
  * \returns the instance ID of the display containing the point or 0 on
  *          failure; call SDL_GetError() for more information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetDisplayBounds
  * \sa SDL_GetDisplays
@@ -778,7 +910,9 @@ function SDL_GetDisplayForPoint(point: PSDL_Point): TSDL_DisplayID; cdecl;
  *          closest to the center of the rect on success or 0 on failure; call
  *          SDL_GetError() for more information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetDisplayBounds
  * \sa SDL_GetDisplays
@@ -794,7 +928,9 @@ function SDL_GetDisplayForRect(rect: PSDL_Rect): TSDL_DisplayID; cdecl;
  *          on success or 0 on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetDisplayBounds
  * \sa SDL_GetDisplays
@@ -813,7 +949,9 @@ function SDL_GetDisplayForWindow(window: PSDL_Window): TSDL_DisplayID; cdecl;
  * \returns the pixel density or 0.0f on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetWindowDisplayScale
   }
@@ -838,7 +976,9 @@ function SDL_GetWindowPixelDensity(window: PSDL_Window): cfloat; cdecl;
  * \returns the display scale, or 0.0f on failure; call SDL_GetError() for
  *          more information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
   }
 function SDL_GetWindowDisplayScale(window: PSDL_Window): cfloat; cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_GetWindowDisplayScale' {$ENDIF} {$ENDIF};
@@ -868,7 +1008,9 @@ function SDL_GetWindowDisplayScale(window: PSDL_Window): cfloat; cdecl;
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetWindowFullscreenMode
  * \sa SDL_SetWindowFullscreen
@@ -884,7 +1026,9 @@ function SDL_SetWindowFullscreenMode(window: PSDL_Window; mode: PSDL_DisplayMode
  * \returns a Pointer to the exclusive fullscreen mode to use or nil for
  *          borderless fullscreen desktop mode.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_SetWindowFullscreenMode
  * \sa SDL_SetWindowFullscreen
@@ -901,7 +1045,9 @@ function SDL_GetWindowFullscreenMode(window: PSDL_Window): PSDL_DisplayMode; cde
  *          SDL_GetError() for more information. This should be freed with
  *          SDL_free() when it is no longer needed.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
   }
 function SDL_GetWindowICCProfile(window: PSDL_Window; size: pcsize_t): Pointer; cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_GetWindowICCProfile' {$ENDIF} {$ENDIF};
@@ -914,7 +1060,9 @@ function SDL_GetWindowICCProfile(window: PSDL_Window; size: pcsize_t): Pointer; 
  *          SDL_PIXELFORMAT_UNKNOWN on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
   }
 function SDL_GetWindowPixelFormat(window: PSDL_Window): TSDL_PixelFormat; cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_GetWindowPixelFormat' {$ENDIF} {$ENDIF};
@@ -929,13 +1077,19 @@ function SDL_GetWindowPixelFormat(window: PSDL_Window): TSDL_PixelFormat; cdecl;
  *          allocation that should be freed with SDL_free() when it is no
  *          longer needed.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
   }
 function SDL_GetWindows(count: pcint): PPSDL_Window; cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_GetWindows' {$ENDIF} {$ENDIF};
 
 {*
  * Create a window with the specified dimensions and flags.
+ *
+ * The window size is a request and may be different than expected based on
+ * the desktop layout and window manager policies. Your application should be
+ * prepared to handle a window of any size.
  *
  * `flags` may be any of the following OR'd together:
  *
@@ -1009,7 +1163,9 @@ function SDL_GetWindows(count: pcint): PPSDL_Window; cdecl;
  * \returns the window that was created or nil on failure; call
  *          SDL_GetError() for more information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_CreateWindowAndRenderer
  * \sa SDL_CreatePopupWindow
@@ -1021,6 +1177,10 @@ function SDL_CreateWindow(title: PAnsiChar; w: cint; h: cint; flags: TSDL_Window
 
 {*
  * Create a child popup window of the specified parent window.
+ *
+ * The window size is a request and may be different than expected based on
+ * the desktop layout and window manager policies. Your application should be
+ * prepared to handle a window of any size.
  *
  * The flags parameter **must** contain at least one of the following:
  *
@@ -1054,6 +1214,15 @@ function SDL_CreateWindow(title: PAnsiChar; w: cint; h: cint; flags: TSDL_Window
  * Popup windows implicitly do not have a border/decorations and do not appear
  * on the taskbar/dock or in lists of windows such as alt-tab menus.
  *
+ * By default, popup window positions will automatically be constrained to keep
+ * the entire window within display bounds. This can be overridden with the
+ * `SDL_PROP_WINDOW_CREATE_CONSTRAIN_POPUP_BOOLEAN` property.
+ *
+ * By default, popup menus will automatically grab keyboard focus from the parent
+ * when shown. This behavior can be overridden by setting the `SDL_WINDOW_NOT_FOCUSABLE`
+ * flag, setting the `SDL_PROP_WINDOW_CREATE_FOCUSABLE_BOOLEAN` property to false, or
+ * toggling it after creation via the `SDL_SetWindowFocusable()` function.
+ *
  * If a parent window is hidden or destroyed, any child popup windows will be
  * recursively hidden or destroyed as well. Child popup windows not explicitly
  * hidden will be restored when the parent is shown.
@@ -1070,7 +1239,9 @@ function SDL_CreateWindow(title: PAnsiChar; w: cint; h: cint; flags: TSDL_Window
  * \returns the window that was created or nil on failure; call
  *          SDL_GetError() for more information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_CreateWindow
  * \sa SDL_CreateWindowWithProperties
@@ -1083,12 +1254,19 @@ function SDL_CreatePopupWindow(parent: PSDL_Window; offset_x: cint; offset_y: ci
 {*
  * Create a window with the specified properties.
  *
+ * The window size is a request and may be different than expected based on
+ * the desktop layout and window manager policies. Your application should be
+ * prepared to handle a window of any size.
+ *
  * These are the supported properties:
  *
  * - `SDL_PROP_WINDOW_CREATE_ALWAYS_ON_TOP_BOOLEAN`: true if the window should
  *   be always on top
  * - `SDL_PROP_WINDOW_CREATE_BORDERLESS_BOOLEAN`: true if the window has no
  *   window decoration
+ * - `SDL_PROP_WINDOW_CREATE_CONSTRAIN_POPUP_BOOLEAN`: true if the "tooltip" and
+ *   "menu" window types should be automatically constrained to be entirely within
+ *   display bounds (default), false if no constraints on the position are desired.
  * - `SDL_PROP_WINDOW_CREATE_EXTERNAL_GRAPHICS_CONTEXT_BOOLEAN`: true if the
  *   window will be used with an
   externally managed graphics context.
@@ -1131,10 +1309,12 @@ function SDL_CreatePopupWindow(parent: PSDL_Window; offset_x: cint; offset_y: ci
  * - `SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER`: the width of the window
  * - `SDL_PROP_WINDOW_CREATE_X_NUMBER`: the x position of the window, or
  *   `SDL_WINDOWPOS_CENTERED`, defaults to `SDL_WINDOWPOS_UNDEFINED`. This is
- *   relative to the parent for windows with the "parent" property set.
+ *   relative to the parent for windows with the "tooltip" or "menu" property
+ *   set.
  * - `SDL_PROP_WINDOW_CREATE_Y_NUMBER`: the y position of the window, or
  *   `SDL_WINDOWPOS_CENTERED`, defaults to `SDL_WINDOWPOS_UNDEFINED`. This is
- *   relative to the parent for windows with the "parent" property set.
+ *   relative to the parent for windows with the "tooltip" or "menu" property
+ *   set.
  *
  * These are additional supported properties on macOS:
  *
@@ -1190,7 +1370,9 @@ function SDL_CreatePopupWindow(parent: PSDL_Window; offset_x: cint; offset_y: ci
  * \returns the window that was created or nil on failure; call
  *          SDL_GetError() for more information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_CreateProperties
  * \sa SDL_CreateWindow
@@ -1202,6 +1384,7 @@ function SDL_CreateWindowWithProperties(props: TSDL_PropertiesID): PSDL_Window; 
 const
   SDL_PROP_WINDOW_CREATE_ALWAYS_ON_TOP_BOOLEAN = 'SDL.window.create.always_on_top';
   SDL_PROP_WINDOW_CREATE_BORDERLESS_BOOLEAN = 'SDL.window.create.borderless';
+  SDL_PROP_WINDOW_CREATE_CONSTRAIN_POPUP_BOOLEAN = 'SDL.window.create.constrain_popup';
   SDL_PROP_WINDOW_CREATE_FOCUSABLE_BOOLEAN = 'SDL.window.create.focusable';
   SDL_PROP_WINDOW_CREATE_EXTERNAL_GRAPHICS_CONTEXT_BOOLEAN = 'SDL.window.create.external_graphics_context';
   SDL_PROP_WINDOW_CREATE_FLAGS_NUMBER = 'SDL.window.create.flags';
@@ -1245,7 +1428,9 @@ const
  * \returns the ID of the window on success or 0 on failure; call
  *          SDL_GetError() for more information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetWindowFromID
   }
@@ -1262,7 +1447,9 @@ function SDL_GetWindowID(window: PSDL_Window): TSDL_WindowID; cdecl;
  * \returns the window associated with `id` or nil if it doesn't exist; call
  *          SDL_GetError() for more information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetWindowID
   }
@@ -1276,7 +1463,9 @@ function SDL_GetWindowFromID(id: TSDL_WindowID): PSDL_Window; cdecl;
  * \returns the parent of the window on success or nil if the window has no
  *          parent.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_CreatePopupWindow
   }
@@ -1371,6 +1560,8 @@ function SDL_GetWindowParent(window: PSDL_Window): PSDL_Window; cdecl;
  *   the window
  * - `SDL_PROP_WINDOW_WAYLAND_SURFACE_POINTER`: the wl_surface associated with
  *   the window
+ * - `SDL_PROP_WINDOW_WAYLAND_VIEWPORT_POINTER`: the wp_viewport associated
+ *   with the window
  * - `SDL_PROP_WINDOW_WAYLAND_EGL_WINDOW_POINTER`: the wl_egl_window
  *   associated with the window
  * - `SDL_PROP_WINDOW_WAYLAND_XDG_SURFACE_POINTER`: the xdg_surface associated
@@ -1397,7 +1588,9 @@ function SDL_GetWindowParent(window: PSDL_Window): PSDL_Window; cdecl;
  * \returns a valid property ID on success or 0 on failure; call
  *          SDL_GetError() for more information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
   }
 function SDL_GetWindowProperties(window: PSDL_Window): TSDL_PropertiesID; cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_GetWindowProperties' {$ENDIF} {$ENDIF};
@@ -1428,6 +1621,7 @@ const
   SDL_PROP_WINDOW_WIN32_INSTANCE_POINTER = 'SDL.window.win32.instance';
   SDL_PROP_WINDOW_WAYLAND_DISPLAY_POINTER = 'SDL.window.wayland.display';
   SDL_PROP_WINDOW_WAYLAND_SURFACE_POINTER = 'SDL.window.wayland.surface';
+  SDL_PROP_WINDOW_WAYLAND_VIEWPORT_POINTER = 'SDL.window.wayland.viewport';
   SDL_PROP_WINDOW_WAYLAND_EGL_WINDOW_POINTER = 'SDL.window.wayland.egl_window';
   SDL_PROP_WINDOW_WAYLAND_XDG_SURFACE_POINTER = 'SDL.window.wayland.xdg_surface';
   SDL_PROP_WINDOW_WAYLAND_XDG_TOPLEVEL_POINTER = 'SDL.window.wayland.xdg_toplevel';
@@ -1444,7 +1638,9 @@ const
  * \param window the window to query.
  * \returns a mask of the SDL_WindowFlags associated with `window`.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_CreateWindow
  * \sa SDL_HideWindow
@@ -1467,7 +1663,9 @@ function SDL_GetWindowFlags(window: PSDL_Window): TSDL_WindowFlags; cdecl;
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetWindowTitle
   }
@@ -1481,7 +1679,9 @@ function SDL_SetWindowTitle(window: PSDL_Window; title: PAnsiChar): Boolean; cde
  * \returns the title of the window in UTF-8 format or "" if there is no
  *          title.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_SetWindowTitle
   }
@@ -1506,7 +1706,9 @@ function SDL_GetWindowTitle(window: PSDL_Window): PAnsiChar; cdecl;
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
   }
 function SDL_SetWindowIcon(window: PSDL_Window; icon: PSDL_Surface): Boolean; cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_SetWindowIcon' {$ENDIF} {$ENDIF};
@@ -1514,13 +1716,12 @@ function SDL_SetWindowIcon(window: PSDL_Window; icon: PSDL_Surface): Boolean; cd
 {*
  * Request that the window's position be set.
  *
- * If, at the time of this request, the window is in a fixed-size state such
- * as maximized, this request may be deferred until the window returns to a
- * resizable state.
+ * If the window is in an exclusive fullscreen or maximized state, this
+ * request has no effect.
  *
  * This can be used to reposition fullscreen-desktop windows onto a different
- * display, however, exclusive fullscreen windows are locked to a specific
- * display and can only be repositioned programmatically via
+ * display, however, as exclusive fullscreen windows are locked to a specific
+ * display, they can only be repositioned programmatically via
  * SDL_SetWindowFullscreenMode().
  *
  * On some windowing systems this request is asynchronous and the new
@@ -1544,7 +1745,9 @@ function SDL_SetWindowIcon(window: PSDL_Window; icon: PSDL_Surface): Boolean; cd
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetWindowPosition
  * \sa SDL_SyncWindow
@@ -1569,7 +1772,9 @@ function SDL_SetWindowPosition(window: PSDL_Window; x: cint; y: cint): Boolean; 
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_SetWindowPosition
   }
@@ -1579,12 +1784,11 @@ function SDL_GetWindowPosition(window: PSDL_Window; x: pcint; y: pcint): Boolean
 {*
  * Request that the size of a window's client area be set.
  *
- * If, at the time of this request, the window in a fixed-size state, such as
- * maximized or fullscreen, the request will be deferred until the window
- * exits this state and becomes resizable again.
+ * If the window is in a fullscreen or maximized state, this request has no
+ * effect.
  *
- * To change the fullscreen mode of a window, use
- * SDL_SetWindowFullscreenMode()
+ * To change the exclusive fullscreen mode of a window, use
+ * SDL_SetWindowFullscreenMode().
  *
  * On some windowing systems, this request is asynchronous and the new window
  * size may not have have been applied immediately upon the return of this
@@ -1604,7 +1808,9 @@ function SDL_GetWindowPosition(window: PSDL_Window; x: pcint; y: pcint): Boolean
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetWindowSize
  * \sa SDL_SetWindowFullscreenMode
@@ -1626,7 +1832,9 @@ function SDL_SetWindowSize(window: PSDL_Window; w: cint; h: cint): Boolean; cdec
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetRenderOutputSize
  * \sa SDL_GetWindowSizeInPixels
@@ -1651,7 +1859,9 @@ function SDL_GetWindowSize(window: PSDL_Window; w: pcint; h: pcint): Boolean; cd
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
   }
 function SDL_GetWindowSafeArea(window: PSDL_Window; rect: PSDL_Rect): Boolean; cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_GetWindowSafeArea' {$ENDIF} {$ENDIF};
@@ -1688,7 +1898,9 @@ function SDL_GetWindowSafeArea(window: PSDL_Window; rect: PSDL_Rect): Boolean; c
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetWindowAspectRatio
  * \sa SDL_SyncWindow
@@ -1707,7 +1919,9 @@ function SDL_SetWindowAspectRatio(window: PSDL_Window; min_aspect: cfloat; max_a
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_SetWindowAspectRatio
   }
@@ -1743,7 +1957,9 @@ function SDL_GetWindowAspectRatio(window: PSDL_Window; min_aspect: pcfloat; max_
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetWindowSize
   }
@@ -1761,7 +1977,9 @@ function SDL_GetWindowBordersSize(window: PSDL_Window; top: pcint; left: pcint; 
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_CreateWindow
  * \sa SDL_GetWindowSize
@@ -1778,7 +1996,9 @@ function SDL_GetWindowSizeInPixels(window: PSDL_Window; w: pcint; h: pcint): Boo
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetWindowMinimumSize
  * \sa SDL_SetWindowMaximumSize
@@ -1797,7 +2017,9 @@ function SDL_SetWindowMinimumSize(window: PSDL_Window; min_w: cint; min_h: cint)
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetWindowMaximumSize
  * \sa SDL_SetWindowMinimumSize
@@ -1814,7 +2036,9 @@ function SDL_GetWindowMinimumSize(window: PSDL_Window; w: pcint; h: pcint): Bool
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetWindowMaximumSize
  * \sa SDL_SetWindowMinimumSize
@@ -1833,7 +2057,9 @@ function SDL_SetWindowMaximumSize(window: PSDL_Window; max_w: cint; max_h: cint)
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetWindowMinimumSize
  * \sa SDL_SetWindowMaximumSize
@@ -1855,7 +2081,9 @@ function SDL_GetWindowMaximumSize(window: PSDL_Window; w: pcint; h: pcint): Bool
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetWindowFlags
   }
@@ -1876,7 +2104,9 @@ function SDL_SetWindowBordered(window: PSDL_Window; bordered: Boolean): Boolean;
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetWindowFlags
   }
@@ -1894,7 +2124,9 @@ function SDL_SetWindowResizable(window: PSDL_Window; resizable: Boolean): Boolea
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetWindowFlags
   }
@@ -1908,7 +2140,9 @@ function SDL_SetWindowAlwaysOnTop(window: PSDL_Window; on_top: Boolean): Boolean
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_HideWindow
  * \sa SDL_RaiseWindow
@@ -1923,9 +2157,12 @@ function SDL_ShowWindow(window: PSDL_Window): Boolean; cdecl;
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_ShowWindow
+ * \sa SDL_WINDOW_HIDDEN
   }
 function SDL_HideWindow(window: PSDL_Window): Boolean; cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_HideWindow' {$ENDIF} {$ENDIF};
@@ -1944,7 +2181,9 @@ function SDL_HideWindow(window: PSDL_Window): Boolean; cdecl;
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
   }
 function SDL_RaiseWindow(window: PSDL_Window): Boolean; cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_RaiseWindow' {$ENDIF} {$ENDIF};
@@ -1973,7 +2212,9 @@ function SDL_RaiseWindow(window: PSDL_Window): Boolean; cdecl;
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_MinimizeWindow
  * \sa SDL_RestoreWindow
@@ -1984,6 +2225,9 @@ function SDL_MaximizeWindow(window: PSDL_Window): Boolean; cdecl;
 
 {*
  * Request that the window be minimized to an iconic representation.
+ *
+ * If the window is in a fullscreen state, this request has no direct effect.
+ * It may alter the state the window is returned to when leaving fullscreen.
  *
  * On some windowing systems this request is asynchronous and the new window
  * state may not have been applied immediately upon the return of this
@@ -1998,7 +2242,9 @@ function SDL_MaximizeWindow(window: PSDL_Window): Boolean; cdecl;
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_MaximizeWindow
  * \sa SDL_RestoreWindow
@@ -2010,6 +2256,9 @@ function SDL_MinimizeWindow(window: PSDL_Window): Boolean; cdecl;
 {*
  * Request that the size and position of a minimized or maximized window be
  * restored.
+ *
+ * If the window is in a fullscreen state, this request has no direct effect.
+ * It may alter the state the window is returned to when leaving fullscreen.
  *
  * On some windowing systems this request is asynchronous and the new window
  * state may not have have been applied immediately upon the return of this
@@ -2024,7 +2273,9 @@ function SDL_MinimizeWindow(window: PSDL_Window): Boolean; cdecl;
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_MaximizeWindow
  * \sa SDL_MinimizeWindow
@@ -2054,11 +2305,14 @@ function SDL_RestoreWindow(window: PSDL_Window): Boolean; cdecl;
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetWindowFullscreenMode
  * \sa SDL_SetWindowFullscreenMode
  * \sa SDL_SyncWindow
+ * \sa SDL_WINDOW_FULLSCREEN
   }
 function SDL_SetWindowFullscreen(window: PSDL_Window; fullscreen: Boolean): Boolean; cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_SetWindowFullscreen' {$ENDIF} {$ENDIF};
@@ -2080,7 +2334,9 @@ function SDL_SetWindowFullscreen(window: PSDL_Window; fullscreen: Boolean): Bool
  * \returns true on success or false if the operation timed out before the
  *          window was in the requested state.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_SetWindowSize
  * \sa SDL_SetWindowPosition
@@ -2100,7 +2356,9 @@ function SDL_SyncWindow(window: PSDL_Window): Boolean; cdecl;
  * \returns true if there is a surface associated with the window, or false
  *          otherwise.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetWindowSurface
   }
@@ -2125,7 +2383,9 @@ function SDL_WindowHasSurface(window: PSDL_Window): Boolean; cdecl;
  * \returns the surface associated with the window, or nil on failure; call
  *          SDL_GetError() for more information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_DestroyWindowSurface
  * \sa SDL_WindowHasSurface
@@ -2153,7 +2413,9 @@ function SDL_GetWindowSurface(window: PSDL_Window): PSDL_Surface; cdecl;
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetWindowSurfaceVSync
   }
@@ -2173,7 +2435,9 @@ function SDL_SetWindowSurfaceVSync(window: PSDL_Window; vsync: cint): Boolean; c
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_SetWindowSurfaceVSync
   }
@@ -2192,7 +2456,9 @@ function SDL_GetWindowSurfaceVSync(window: PSDL_Window; vsync: pcint): Boolean; 
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetWindowSurface
  * \sa SDL_UpdateWindowSurfaceRects
@@ -2220,7 +2486,9 @@ function SDL_UpdateWindowSurface(window: PSDL_Window): Boolean; cdecl;
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetWindowSurface
  * \sa SDL_UpdateWindowSurface
@@ -2235,7 +2503,9 @@ function SDL_UpdateWindowSurfaceRects(window: PSDL_Window; rects: PSDL_Rect; num
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetWindowSurface
  * \sa SDL_WindowHasSurface
@@ -2267,7 +2537,9 @@ function SDL_DestroyWindowSurface(window: PSDL_Window): Boolean; cdecl;
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetWindowKeyboardGrab
  * \sa SDL_SetWindowMouseGrab
@@ -2285,9 +2557,14 @@ function SDL_SetWindowKeyboardGrab(window: PSDL_Window; grabbed: Boolean): Boole
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
  *
  * \sa SDL_GetWindowMouseGrab
+ * \since This function is available since SDL 3.2.0.
+ *
+ * \sa SDL_GetWindowMouseGrab
+ * \sa SDL_GetWindowMouseRect
+ * \sa SDL_SetWindowMouseRect
  * \sa SDL_SetWindowKeyboardGrab
   }
 function SDL_SetWindowMouseGrab(window: PSDL_Window; grabbed: Boolean): Boolean; cdecl;
@@ -2299,7 +2576,9 @@ function SDL_SetWindowMouseGrab(window: PSDL_Window; grabbed: Boolean): Boolean;
  * \param window the window to query.
  * \returns true if keyboard is grabbed, and false otherwise.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_SetWindowKeyboardGrab
   }
@@ -2312,8 +2591,13 @@ function SDL_GetWindowKeyboardGrab(window: PSDL_Window): Boolean; cdecl;
  * \param window the window to query.
  * \returns true if mouse is grabbed, and false otherwise.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
  *
+ * \since This function is available since SDL 3.2.0.
+ *
+ * \sa SDL_GetWindowMouseRect
+ * \sa SDL_SetWindowMouseRect
+ * \sa SDL_SetWindowMouseGrab
  * \sa SDL_SetWindowKeyboardGrab
   }
 function SDL_GetWindowMouseGrab(window: PSDL_Window): Boolean; cdecl;
@@ -2324,7 +2608,9 @@ function SDL_GetWindowMouseGrab(window: PSDL_Window): Boolean; cdecl;
  *
  * \returns the window if input is grabbed or nil otherwise.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_SetWindowMouseGrab
  * \sa SDL_SetWindowKeyboardGrab
@@ -2344,9 +2630,12 @@ function SDL_GetGrabbedWindow: PSDL_Window; cdecl;
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetWindowMouseRect
+ * \sa SDL_GetWindowMouseGrab
  * \sa SDL_SetWindowMouseGrab
   }
 function SDL_SetWindowMouseRect(window: PSDL_Window; rect: PSDL_Rect): Boolean; cdecl;
@@ -2359,9 +2648,13 @@ function SDL_SetWindowMouseRect(window: PSDL_Window; rect: PSDL_Rect): Boolean; 
  * \returns a Pointer to the mouse confinement rectangle of a window, or nil
  *          if there isn't one.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_SetWindowMouseRect
+ * \sa SDL_GetWindowMouseGrab
+ * \sa SDL_SetWindowMouseGrab
   }
 function SDL_GetWindowMouseRect(window: PSDL_Window): PSDL_Rect; cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_GetWindowMouseRect' {$ENDIF} {$ENDIF};
@@ -2379,7 +2672,9 @@ function SDL_GetWindowMouseRect(window: PSDL_Window): PSDL_Rect; cdecl;
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GetWindowOpacity
   }
@@ -2396,7 +2691,9 @@ function SDL_SetWindowOpacity(window: PSDL_Window; opacity: cfloat): Boolean; cd
  * \returns the opacity, (0.0f - transparent, 1.0f - opaque), or -1.0f on
  *          failure; call SDL_GetError() for more information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_SetWindowOpacity
   }
@@ -2429,7 +2726,9 @@ function SDL_GetWindowOpacity(window: PSDL_Window): cfloat; cdecl;
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_SetWindowModal
   }
@@ -2447,9 +2746,12 @@ function SDL_SetWindowParent(window: PSDL_Window; parent: PSDL_Window): Boolean;
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_SetWindowParent
+ * \sa SDL_WINDOW_MODAL
   }
 function SDL_SetWindowModal(window: PSDL_Window; modal: Boolean): Boolean; cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_SetWindowModal' {$ENDIF} {$ENDIF};
@@ -2462,7 +2764,9 @@ function SDL_SetWindowModal(window: PSDL_Window; modal: Boolean): Boolean; cdecl
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
   }
 function SDL_SetWindowFocusable(window: PSDL_Window; focusable: Boolean): Boolean; cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_SetWindowFocusable' {$ENDIF} {$ENDIF};
@@ -2486,7 +2790,9 @@ function SDL_SetWindowFocusable(window: PSDL_Window; focusable: Boolean): Boolea
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
   }
 function SDL_ShowWindowSystemMenu(window: PSDL_Window; x: cint; y: cint): Boolean; cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_ShowWindowSystemMenu' {$ENDIF} {$ENDIF};
@@ -2494,7 +2800,7 @@ function SDL_ShowWindowSystemMenu(window: PSDL_Window; x: cint; y: cint): Boolea
 {*
  * Possible return values from the SDL_HitTest callback.
  *
- * \since This enum is available since SDL 3.1.3.
+ * \since This enum is available since SDL 3.2.0.
  *
  * \sa SDL_HitTest
   }
@@ -2565,7 +2871,9 @@ type
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
   }
 function SDL_SetWindowHitTest(window: PSDL_Window; callback: TSDL_HitTest; callback_data: Pointer): Boolean; cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_SetWindowHitTest' {$ENDIF} {$ENDIF};
@@ -2592,7 +2900,9 @@ function SDL_SetWindowHitTest(window: PSDL_Window; callback: TSDL_HitTest; callb
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
   }
 function SDL_SetWindowShape(window: PSDL_Window; shape: PSDL_Surface): Boolean; cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_SetWindowShape' {$ENDIF} {$ENDIF};
@@ -2605,7 +2915,9 @@ function SDL_SetWindowShape(window: PSDL_Window; shape: PSDL_Surface): Boolean; 
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
   }
 function SDL_FlashWindow(window: PSDL_Window; operation: TSDL_FlashOperation): Boolean; cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_FlashWindow' {$ENDIF} {$ENDIF};
@@ -2616,9 +2928,15 @@ function SDL_FlashWindow(window: PSDL_Window; operation: TSDL_FlashOperation): B
  * Any child windows owned by the window will be recursively destroyed as
  * well.
  *
+ * Note that on some platforms, the visible window may not actually be removed
+ * from the screen until the SDL event loop is pumped again, even though the
+ * SDL_Window is no longer valid after this call.
+ *
  * \param window the window to destroy.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_CreatePopupWindow
  * \sa SDL_CreateWindow
@@ -2636,7 +2954,9 @@ procedure SDL_DestroyWindow(window: PSDL_Window); cdecl;
  *
  * \returns true if the screensaver is enabled, false if it is disabled.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_DisableScreenSaver
  * \sa SDL_EnableScreenSaver
@@ -2650,7 +2970,9 @@ function SDL_ScreenSaverEnabled: Boolean; cdecl;
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_DisableScreenSaver
  * \sa SDL_ScreenSaverEnabled
@@ -2670,7 +2992,9 @@ function SDL_EnableScreenSaver: Boolean; cdecl;
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_EnableScreenSaver
  * \sa SDL_ScreenSaverEnabled
@@ -2697,7 +3021,9 @@ function SDL_DisableScreenSaver: Boolean; cdecl;
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GL_GetProcAddress
  * \sa SDL_GL_UnloadLibrary
@@ -2750,7 +3076,9 @@ function SDL_GL_LoadLibrary(path: PAnsiChar): Boolean; cdecl;
  * \returns a Pointer to the named OpenGL function. The returned Pointer
  *          should be cast to the appropriate function signature.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GL_ExtensionSupported
  * \sa SDL_GL_LoadLibrary
@@ -2770,7 +3098,9 @@ function SDL_GL_GetProcAddress(proc: PAnsiChar): TSDL_FunctionPointer; cdecl;
  * \returns a Pointer to the named EGL function. The returned Pointer should
  *          be cast to the appropriate function signature.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_EGL_GetCurrentDisplay
   }
@@ -2780,7 +3110,9 @@ function SDL_EGL_GetProcAddress(proc: PAnsiChar): TSDL_FunctionPointer; cdecl;
 {*
  * Unload the OpenGL library previously loaded by SDL_GL_LoadLibrary().
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GL_LoadLibrary
   }
@@ -2804,7 +3136,9 @@ procedure SDL_GL_UnloadLibrary; cdecl;
  * \param extension the name of the extension to check.
  * \returns true if the extension is supported, false otherwise.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
   }
 function SDL_GL_ExtensionSupported(extension: PAnsiChar): Boolean; cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_GL_ExtensionSupported' {$ENDIF} {$ENDIF};
@@ -2812,7 +3146,9 @@ function SDL_GL_ExtensionSupported(extension: PAnsiChar): Boolean; cdecl;
 {*
  * Reset all previously set OpenGL context attributes to their default values.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GL_GetAttribute
  * \sa SDL_GL_SetAttribute
@@ -2834,7 +3170,9 @@ procedure SDL_GL_ResetAttributes; cdecl;
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GL_GetAttribute
  * \sa SDL_GL_ResetAttributes
@@ -2851,7 +3189,9 @@ function SDL_GL_SetAttribute(attr: TSDL_GLAttr; value: cint): Boolean; cdecl;
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GL_ResetAttributes
  * \sa SDL_GL_SetAttribute
@@ -2874,7 +3214,9 @@ function SDL_GL_GetAttribute(attr: TSDL_GLAttr; value: pcint): Boolean; cdecl;
  * \returns the OpenGL context associated with `window` or nil on failure;
  *          call SDL_GetError() for more information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GL_DestroyContext
  * \sa SDL_GL_MakeCurrent
@@ -2892,7 +3234,9 @@ function SDL_GL_CreateContext(window: PSDL_Window): TSDL_GLContext; cdecl;
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GL_CreateContext
   }
@@ -2905,7 +3249,9 @@ function SDL_GL_MakeCurrent(window: PSDL_Window; context: TSDL_GLContext): Boole
  * \returns the currently active OpenGL window on success or nil on failure;
  *          call SDL_GetError() for more information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
   }
 function SDL_GL_GetCurrentWindow: PSDL_Window; cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_GL_GetCurrentWindow' {$ENDIF} {$ENDIF};
@@ -2916,7 +3262,9 @@ function SDL_GL_GetCurrentWindow: PSDL_Window; cdecl;
  * \returns the currently active OpenGL context or nil on failure; call
  *          SDL_GetError() for more information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GL_MakeCurrent
   }
@@ -2929,7 +3277,9 @@ function SDL_GL_GetCurrentContext: TSDL_GLContext; cdecl;
  * \returns the currently active EGL display or nil on failure; call
  *          SDL_GetError() for more information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
   }
 function SDL_EGL_GetCurrentDisplay: TSDL_EGLDisplay; cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_EGL_GetCurrentDisplay' {$ENDIF} {$ENDIF};
@@ -2940,7 +3290,9 @@ function SDL_EGL_GetCurrentDisplay: TSDL_EGLDisplay; cdecl;
  * \returns the currently active EGL config or nil on failure; call
  *          SDL_GetError() for more information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
   }
 function SDL_EGL_GetCurrentConfig: TSDL_EGLConfig; cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_EGL_GetCurrentConfig' {$ENDIF} {$ENDIF};
@@ -2952,7 +3304,9 @@ function SDL_EGL_GetCurrentConfig: TSDL_EGLConfig; cdecl;
  * \returns the EGLSurface Pointer associated with the window, or nil on
  *          failure.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
   }
 function SDL_EGL_GetWindowSurface(window: PSDL_Window): TSDL_EGLSurface; cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_EGL_GetWindowSurface' {$ENDIF} {$ENDIF};
@@ -2973,7 +3327,9 @@ function SDL_EGL_GetWindowSurface(window: PSDL_Window): TSDL_EGLSurface; cdecl;
  *                              eglCreateContext. May be nil.
  * \param userdata a Pointer that is passed to the callbacks.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
   }
 procedure SDL_EGL_SetAttributeCallbacks(platformAttribCallback: TSDL_EGLAttribArrayCallback; surfaceAttribCallback: TSDL_EGLIntArrayCallback; contextAttribCallback: TSDL_EGLIntArrayCallback; userdata: Pointer); cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_EGL_SetAttributeCallbacks' {$ENDIF} {$ENDIF};
@@ -3001,7 +3357,9 @@ procedure SDL_EGL_SetAttributeCallbacks(platformAttribCallback: TSDL_EGLAttribAr
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GL_GetSwapInterval
   }
@@ -3021,7 +3379,9 @@ function SDL_GL_SetSwapInterval(interval: cint): Boolean; cdecl;
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GL_SetSwapInterval
   }
@@ -3042,7 +3402,9 @@ function SDL_GL_GetSwapInterval(interval: pcint): Boolean; cdecl;
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
   }
 function SDL_GL_SwapWindow(window: PSDL_Window): Boolean; cdecl;
   external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_GL_SwapWindow' {$ENDIF} {$ENDIF};
@@ -3054,7 +3416,9 @@ function SDL_GL_SwapWindow(window: PSDL_Window): Boolean; cdecl;
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL 3.1.3.
+ * \threadsafety This function should only be called on the main thread.
+ *
+ * \since This function is available since SDL 3.2.0.
  *
  * \sa SDL_GL_CreateContext
   }

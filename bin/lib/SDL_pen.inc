@@ -32,18 +32,34 @@
  * consistent as long as SDL can recognize a tool to be the same pen; but if a
  * pen physically leaves the area and returns, it might get a new ID.
  *
- * \since This datatype is available since SDL 3.1.3.
+ * \since This datatype is available since SDL 3.2.0.
   }
 type
   PPSDL_PenID = ^PSDL_PenID;
   PSDL_PenID = ^TSDL_PenID;
   TSDL_PenID = cuint32;
 
+const
+  {*
+   * The SDL_MouseID for mouse events simulated with pen input.
+   *
+   * \since This macro is available since SDL 3.2.0.
+   *}
+  SDL_PEN_MOUSEID = TSDL_MouseID(-2);
+
+  {*
+   * The SDL_TouchID for touch events simulated with pen input.
+   *
+   * \since This macro is available since SDL 3.2.0.
+   *}
+  SDL_PEN_TOUCHID = TSDL_TouchID(-2);
+
 {*
  * Pen input flags, as reported by various pen events' `pen_state` field.
  *
- * \since This datatype is available since SDL 3.1.3.
+ * \since This datatype is available since SDL 3.2.0.
   }
+type
   PPSDL_PenInputFlags = ^PSDL_PenInputFlags;
   PSDL_PenInputFlags = ^TSDL_PenInputFlags;
   TSDL_PenInputFlags = cuint32;
@@ -70,7 +86,7 @@ const
  *
  * `SDL_sinf(xtilt * SDL_PI_F / 180.0)`.
  *
- * \since This enum is available since SDL 3.1.3
+ * \since This enum is available since SDL 3.2.0.
   }
 type
   PPSDL_PenAxis = ^PSDL_PenAxis;
