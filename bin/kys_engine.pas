@@ -13,12 +13,10 @@ uses
   Classes,
   SysUtils,
   SDL3_ttf,
-  SDL3_image,
   SDL3,
+  SDL3_mixer,
   kys_type,
   kys_main,
-  bassmidi,
-  bass,
   Math,
   {$IFDEF windows}
   potdll,
@@ -189,6 +187,52 @@ implementation
 uses
   kys_draw;
 
+var
+  gMixer: MIX_Mixer = nil;
+  MusicTrack: MIX_Track = nil;
+  SfxTracks: array [0 .. 9] of MIX_Track;
+  SfxNextTrack: integer = 0;
+
+function EnsureMixerCreated: boolean;
+var
+  spec: TSDL_AudioSpec;
+begin
+  Result := False;
+  if gMixer <> nil then
+    Exit(True);
+  if not MIX_Init() then
+    Exit(False);
+  spec.freq := 22500;
+  spec.format := SDL_AUDIO_S16;
+  spec.channels := 2;
+  gMixer := MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, @spec);
+  Result := gMixer <> nil;
+end;
+
+function EnsureTrackForAudio(var track: MIX_Track; audio: MIX_Audio): boolean;
+begin
+  Result := MIX_SetTrackAudio(track, audio);
+end;
+
+function AcquireSfxTrack(audio: MIX_Audio): MIX_Track;
+var
+  idx: integer;
+begin
+  Result := nil;
+  if audio = nil then
+    Exit;
+
+  idx := SfxNextTrack;
+  Inc(SfxNextTrack);
+  if SfxNextTrack > High(SfxTracks) then
+    SfxNextTrack := Low(SfxTracks);
+
+  if not EnsureTrackForAudio(SfxTracks[idx], audio) then
+    Exit;
+
+  Result := SfxTracks[idx];
+end;
+
 function EventFilter(p: pointer; e: PSDL_Event): boolean; cdecl;
 begin
   Result := True;
@@ -224,88 +268,138 @@ procedure InitialMusic;
 var
   i: integer;
   str: utf8string;
-  sf: BASS_MIDI_FONT;
-  Flag: longword;
-  p: putf8char;
+
+  function LoadMid(filename: string): Mix_Audio;
+  var
+    id: SDL_PropertiesID;
+    io: PSDL_IOStream;
+  begin
+    id := SDL_CreateProperties();
+    io := SDL_IOFromFile(PChar(filename), 'rb');
+    SDL_SetPointerProperty(id, MIX_PROP_AUDIO_LOAD_IOSTREAM_POINTER, io);
+    SDL_SetStringProperty(id, MIX_PROP_AUDIO_DECODER_STRING, 'fluidsynth');
+    SDL_SetStringProperty(id, 'SDL_mixer.decoder.fluidsynth.soundfont_path', 'music/mid.sf2');
+    Result := MIX_LoadAudioWithProperties(id);
+    SDL_CloseIO(io);
+    SDL_DestroyProperties(id);
+  end;
 begin
-  BASS_Set3DFactors(1, 0, 0);
-  sf.font := BASS_MIDI_FontInit(putf8char(AppPath + 'music/mid.sf2'), 0);
-  BASS_MIDI_StreamSetFonts(0, sf, 1);
-  sf.preset := -1; //use all presets
-  sf.bank := 0;
-  Flag := 0;
-  if SOUND3D = 1 then
-    Flag := BASS_SAMPLE_3D or BASS_SAMPLE_MONO or Flag;
+  if not EnsureMixerCreated then
+    Exit;
+
+  if MusicTrack = nil then
+    MusicTrack := MIX_CreateTrack(gMixer);
+
+  for i := Low(SfxTracks) to High(SfxTracks) do
+  begin
+    if SfxTracks[i] = nil then
+      SfxTracks[i] := MIX_CreateTrack(gMixer);
+  end;
+  SfxNextTrack := Low(SfxTracks);
 
   for i := 0 to high(Music) do
   begin
+    if Music[i] <> nil then
+    begin
+      MIX_DestroyAudio(Music[i]);
+      Music[i] := nil;
+    end;
+
     str := AppPath + 'music/' + IntToStr(i) + '.mp3';
     if FileExists(putf8char(str)) then
-    begin
-      try
-        Music[i] := BASS_StreamCreateFile(False, putf8char(str), 0, 0, 0);
-      finally
-      end;
-    end
+      Music[i] := MIX_LoadAudio(nil, putf8char(str), False)
     else
     begin
       str := AppPath + 'music/' + IntToStr(i) + '.mid';
       if FileExists(putf8char(str)) then
-      begin
-        try
-          Music[i] := BASS_MIDI_StreamCreateFile(False, putf8char(str), 0, 0, 0, 0);
-          BASS_MIDI_StreamSetFonts(Music[i], sf, 1);
-          //showmessage(inttostr(Music[i]));
-        finally
-        end;
-      end
+        Music[i] := LoadMid(putf8char(str))
       else
-        Music[i] := 0;
+        Music[i] := nil;
     end;
   end;
 
   for i := 0 to high(Esound) do
   begin
+    if ESound[i] <> nil then
+    begin
+      MIX_DestroyAudio(ESound[i]);
+      ESound[i] := nil;
+    end;
+
     str := AppPath + 'sound/e' + IntToStr(i) + '.wav';
     if FileExists(putf8char(str)) then
-    begin
-      ESound[i] := BASS_SampleLoad(False, putf8char(str), 0, 0, 1, Flag);
-    end
+      ESound[i] := MIX_LoadAudio(nil, putf8char(str), False)
     else
-      ESound[i] := 0;
+      ESound[i] := nil;
     //showmessage(inttostr(esound[i]));
   end;
   for i := 0 to high(Asound) do
   begin
+    if ASound[i] <> nil then
+    begin
+      MIX_DestroyAudio(ASound[i]);
+      ASound[i] := nil;
+    end;
+
     str := AppPath + formatfloat('sound/atk00', i) + '.wav';
     if FileExists(putf8char(str)) then
-    begin
-      ASound[i] := BASS_SampleLoad(False, putf8char(str), 0, 0, 1, Flag);
-    end
+      ASound[i] := MIX_LoadAudio(nil, putf8char(str), False)
     else
-      ASound[i] := 0;
+      ASound[i] := nil;
   end;
-  //BASS_MIDI_FontFree(sf.font);
 end;
 
 procedure FreeAllMusic;
 var
   i: integer;
 begin
+  if MusicTrack <> nil then
+  begin
+    MIX_StopTrack(MusicTrack, 0);
+    MIX_DestroyTrack(MusicTrack);
+    MusicTrack := nil;
+  end;
+
+  for i := Low(SfxTracks) to High(SfxTracks) do
+  begin
+    if SfxTracks[i] <> nil then
+    begin
+      MIX_StopTrack(SfxTracks[i], 0);
+      MIX_DestroyTrack(SfxTracks[i]);
+      SfxTracks[i] := nil;
+    end;
+  end;
+
   for i := 0 to high(Music) do
   begin
-    if Music[i] <> 0 then
-      BASS_StreamFree(Music[i]);
+    if Music[i] <> nil then
+    begin
+      MIX_DestroyAudio(Music[i]);
+      Music[i] := nil;
+    end;
   end;
   for i := 0 to high(Asound) do
   begin
-    if Asound[i] <> 0 then
-      BASS_SampleFree(Asound[i]);
+    if Asound[i] <> nil then
+    begin
+      MIX_DestroyAudio(Asound[i]);
+      Asound[i] := nil;
+    end;
   end;
   for i := 0 to high(Esound) do
   begin
-    if Esound[i] <> 0 then
-      BASS_SampleFree(Esound[i]);
+    if Esound[i] <> nil then
+    begin
+      MIX_DestroyAudio(Esound[i]);
+      Esound[i] := nil;
+    end;
+  end;
+
+  if gMixer <> nil then
+  begin
+    MIX_DestroyMixer(gMixer);
+    gMixer := nil;
+    MIX_Quit();
   end;
 end;
 
@@ -313,32 +407,25 @@ end;
 //播放mp3音乐
 procedure PlayMP3(MusicNum, times: integer; frombeginning: integer = 1); overload;
 var
-  repeatable: boolean;
+  loops: integer;
 begin
+  if not EnsureMixerCreated then
+    Exit;
   if times = -1 then
-    repeatable := True
+    loops := -1
   else
-    repeatable := False;
+    loops := 0;
   try
     if (MusicNum in [low(Music) .. high(Music)]) and (VOLUME > 0) then
-      if Music[MusicNum] <> 0 then
+      if Music[MusicNum] <> nil then
       begin
-        //BASS_ChannelSlideAttribute(Music[nowmusic], BASS_ATTRIB_VOL, 0, 1000);
-        BASS_ChannelStop(Music[nowmusic]);
+        MIX_StopTrack(MusicTrack, 0);
+        MIX_SetTrackAudio(MusicTrack, Music[MusicNum]);
         if frombeginning = 1 then
-          BASS_ChannelSetPosition(Music[nowmusic], 0, BASS_POS_BYTE);
-        BASS_ChannelSetAttribute(Music[MusicNum], BASS_ATTRIB_VOL, VOLUME / 100.0);
-        if SOUND3D = 1 then
-        begin
-          //BASS_SetEAXParameters(EAX_ENVIRONMENT_UNDERWATER, -1, 0, 0);
-          BASS_Apply3D();
-        end;
-
-        if repeatable then
-          BASS_ChannelFlags(Music[MusicNum], BASS_SAMPLE_LOOP, BASS_SAMPLE_LOOP)
-        else
-          BASS_ChannelFlags(Music[MusicNum], 0, BASS_SAMPLE_LOOP);
-        BASS_ChannelPlay(Music[MusicNum], False);
+          MIX_SetTrackPlaybackPosition(MusicTrack, 0);
+        MIX_SetTrackGain(MusicTrack, VOLUME / 100.0);
+        MIX_SetTrackLoops(MusicTrack, loops);
+        MIX_PlayTrack(MusicTrack, 0);
         nowmusic := musicnum;
       end;
   finally
@@ -361,114 +448,88 @@ end;
 //停止当前播放的音乐
 procedure StopMP3(frombeginning: integer = 1);
 begin
-  BASS_ChannelStop(Music[nowmusic]);
-  if frombeginning = 1 then
-    BASS_ChannelSetPosition(Music[nowmusic], 0, BASS_POS_BYTE);
+  if MusicTrack <> nil then
+  begin
+    MIX_StopTrack(MusicTrack, 0);
+    if frombeginning = 1 then
+      MIX_SetTrackPlaybackPosition(MusicTrack, 0);
+  end;
 
 end;
 
 //播放wav音效
 procedure PlaySound(SoundNum, times: integer); overload;
 var
-  ch: HCHANNEL;
-  repeatable: boolean;
+  loops: integer;
+  track: MIX_Track;
 begin
   if times = -1 then
-    repeatable := True
+    loops := -1
   else
-    repeatable := False;
+    loops := 0;
   if (SoundNum in [low(Esound) .. high(Esound)]) and (VOLUMEWAV > 0) then
-    if Esound[SoundNum] <> 0 then
+    if Esound[SoundNum] <> nil then
     begin
-      //Mix_VolumeChunk(Esound[SoundNum], Volume);
-      //Mix_PlayChannel(-1, Esound[SoundNum], 0);
-      BASS_SampleStop(Esound[soundnum]);
-      ch := BASS_SampleGetChannel(Esound[soundnum], False);
-      BASS_ChannelSetAttribute(ch, BASS_ATTRIB_VOL, VOLUMEWAV / 100.0);
-      if repeatable then
-        BASS_ChannelFlags(ch, BASS_SAMPLE_LOOP, BASS_SAMPLE_LOOP)
-      else
-        BASS_ChannelFlags(ch, 0, BASS_SAMPLE_LOOP);
-      BASS_ChannelPlay(ch, repeatable);
+      track := AcquireSfxTrack(Esound[SoundNum]);
+      if track = nil then
+        Exit;
+      MIX_SetTrackGain(track, VOLUMEWAV / 100.0);
+      MIX_SetTrackLoops(track, loops);
+      MIX_PlayTrack(track, 0);
     end;
 
 end;
 
 procedure PlaySound(SoundNum, times, x, y, z: integer); overload;
 var
-  ch: HCHANNEL;
-  repeatable: boolean;
-  pos, posvec, posvel: BASS_3DVECTOR;
-  //音源的位置, 向量, 速度
-  //p: PSource;
+  loops: integer;
+  pos: MIX_Point3D;
+  track: MIX_Track;
 begin
   if times = -1 then
-    repeatable := True
+    loops := -1
   else
-    repeatable := False;
+    loops := 0;
 
   if (SoundNum in [low(Esound) .. high(Esound)]) and (VOLUMEWAV > 0) then
-    if Esound[SoundNum] <> 0 then
+    if Esound[SoundNum] <> nil then
     begin
-      //Mix_VolumeChunk(Esound[SoundNum], Volume);
-      //Mix_PlayChannel(-1, Esound[SoundNum], 0);
-      BASS_SampleStop(Esound[soundnum]);
-      ch := BASS_SampleGetChannel(Esound[soundnum], False);
-      //BASS_ChannelSet3DAttributes(ch, BASS_3DMODE_RELATIVE, -1, -1, -1, -1, -1);
+      track := AcquireSfxTrack(Esound[SoundNum]);
+      if track = nil then
+        Exit;
 
       if SOUND3D = 1 then
       begin
-        pos.x := x / 50.0;
-        pos.y := y / 50.0;
-        pos.z := z / 50.0;
-        //posvec.x := x;
-        //posvec.y := y;
-        //posvec.z := z;
-        //posvel.x := -x / 50.0;
-        //posvel.y := -y / 50.0;
-        //posvel.z := -z / 50.0;
-        if (x = 0) and (y = 0) and (z = 0) then
-        begin
-          pos.z := 0.1;
-          //posvel.z := -0.2;
-        end;
-
-        BASS_ChannelSet3DPosition(ch, pos, posvec, posvel);
-        BASS_Apply3D();
+        pos.x := x * 100;
+        pos.y := y * 100;
+        pos.z := z * 100;
+        MIX_SetTrack3DPosition(track, @pos);
       end;
-      BASS_ChannelSetAttribute(ch, BASS_ATTRIB_VOL, VOLUMEWAV / 100.0);
-      if repeatable then
-        BASS_ChannelFlags(ch, BASS_SAMPLE_LOOP, BASS_SAMPLE_LOOP)
-      else
-        BASS_ChannelFlags(ch, 0, BASS_SAMPLE_LOOP);
-      BASS_ChannelPlay(ch, repeatable);
-      //BASS_Apply3D();
+      MIX_SetTrackGain(track, VOLUMEWAV / 100.0);
+      MIX_SetTrackLoops(track, loops);
+      MIX_PlayTrack(track, 0);
     end;
 
 end;
 
 procedure PlaySoundA(SoundNum, times: integer); overload;
 var
-  ch: HCHANNEL;
-  repeatable: boolean;
+  loops: integer;
+  track: MIX_Track;
 begin
   if times = -1 then
-    repeatable := True
+    loops := -1
   else
-    repeatable := False;
+    loops := 0;
   if (SoundNum in [low(Asound) .. high(Asound)]) and (VOLUMEWAV > 0) then
-    if Asound[SoundNum] <> 0 then
+    if Asound[SoundNum] <> nil then
     begin
-      //Mix_VolumeChunk(Esound[SoundNum], Volume);
-      //Mix_PlayChannel(-1, Esound[SoundNum], 0);
-      BASS_SampleStop(Asound[soundnum]);
-      ch := BASS_SampleGetChannel(Asound[soundnum], False);
-      BASS_ChannelSetAttribute(ch, BASS_ATTRIB_VOL, VOLUMEWAV / 100.0);
-      if repeatable then
-        BASS_ChannelFlags(ch, BASS_SAMPLE_LOOP, BASS_SAMPLE_LOOP)
-      else
-        BASS_ChannelFlags(ch, 0, BASS_SAMPLE_LOOP);
-      BASS_ChannelPlay(ch, repeatable);
+      track := AcquireSfxTrack(Asound[SoundNum]);
+      if track = nil then
+        Exit;
+      MIX_SetTrackGain(track, VOLUMEWAV / 100.0);
+      MIX_SetTrackLoops(track, loops);
+      MIX_PlayTrack(track, 0);
     end;
 
 end;
@@ -2384,7 +2445,9 @@ begin
     Result := True;
     if usesur = 0 then
     begin
-      pt := IMG_LoadTexture(render, putf8char(filename));
+      tempscr := SDL_LoadPNG(putf8char(filename));
+      pt := SDL_CreateTextureFromSurface(render, tempscr);
+      SDL_DestroySurface(tempscr);
       if pt <> nil then
       begin
         SDL_SetTextureBlendMode(pt, SDL_BLENDMODE_BLEND);
@@ -2396,7 +2459,7 @@ begin
     end
     else
     begin
-      tempscr := IMG_Load(putf8char(filename));
+      tempscr := SDL_LoadPNG(putf8char(filename));
       pt := SDL_ConvertSurface(tempscr, screen.format);
       SDL_DestroySurface(tempscr);
       //SDL_SetSurfaceBlendMode(ps^, SDL_BLENDMODE_BlEND);
@@ -2424,7 +2487,9 @@ begin
   pt := nil;
   if usesur = 0 then
   begin
-    pt := IMG_LoadTexture_IO(render, tempRWops, False);
+    tempscr := SDL_LoadPNG_IO(tempRWops, False);
+    pt := SDL_CreateTextureFromSurface(render, tempscr);
+    SDL_DestroySurface(tempscr);
     if pt <> nil then
     begin
       SDL_SetTextureBlendMode(pt, SDL_BLENDMODE_BLEND);
@@ -2436,7 +2501,7 @@ begin
   end
   else
   begin
-    tempscr := IMG_Load_IO(tempRWops, False);
+    tempscr := SDL_LoadPNG_IO(tempRWops, False);
     pt := SDL_ConvertSurface(tempscr, screen.format);
     SDL_DestroySurface(tempscr);
     if pt <> nil then

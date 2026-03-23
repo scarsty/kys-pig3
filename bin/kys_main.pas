@@ -31,10 +31,9 @@ uses
   SysUtils,
   SDL3_TTF,
   SDL3,
-  SDL3_image,
+  SDL3_mixer,
   Math,
   iniFiles,
-  bass,
   kys_type,
   Classes,
   fileinfo,
@@ -208,11 +207,7 @@ begin
 
   //初始化音频系统
   SDL_Init(SDL_INIT_AUDIO);
-  //Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 16384);
-  SoundFlag := 0;
-  if SOUND3D = 1 then
-    SoundFlag := BASS_DEVICE_3D or SoundFlag;
-  BASS_Init(-1, 22050, SoundFlag, 0, nil);
+  MIX_Init();
 
   //初始化视频系统
   Randomize;
@@ -269,7 +264,7 @@ begin
   kyslog('Creating renderer');
   render := SDL_CreateRenderer(window, render_str);
 
-  logo := img_loadtexture(render, putf8char(AppPath + 'resource/logo.png'));
+  //logo := img_loadtexture(render, putf8char(AppPath + 'resource/logo.png'));
 
   rect.w := 294;
   rect.h := 284;
@@ -368,7 +363,6 @@ begin
   SDL_DestroyMutex(mutex);
   SDL_Quit;
   FreeAllMusic;
-  BASS_Free();
   halt(1);
   exit;
 
@@ -1153,7 +1147,7 @@ var
   str, str1, input_name: utf8string;
   str3: utf8string;
   p0, p1: putf8char;
-  named: bool;
+  named: boolean;
   fullname, surname, givenname: utf8string;
 begin
   LoadR(0);
