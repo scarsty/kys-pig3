@@ -401,13 +401,10 @@ end;
 procedure PlayMP3(MusicNum, times: integer; frombeginning: integer = 1); overload;
 var
   loops: integer;
+  id: SDL_PropertiesID;
 begin
   if not EnsureMixerCreated then
     Exit;
-  if times = -1 then
-    loops := -1
-  else
-    loops := 0;
   try
     if (MusicNum in [low(Music) .. high(Music)]) and (VOLUME > 0) then
       if Music[MusicNum] <> nil then
@@ -417,8 +414,12 @@ begin
         if frombeginning = 1 then
           MIX_SetTrackPlaybackPosition(MusicTrack, 0);
         MIX_SetTrackGain(MusicTrack, VOLUME / 100.0);
-        MIX_SetTrackLoops(MusicTrack, loops);
-        MIX_PlayTrack(MusicTrack, 0);
+        MIX_SetTrackLoops(MusicTrack, -1);
+        id := SDL_CreateProperties();
+        SDL_SetNumberProperty(id, MIX_PROP_PLAY_FADE_IN_MILLISECONDS_NUMBER, 50);
+        SDL_SetNumberProperty(id, MIX_PROP_PLAY_LOOPS_NUMBER, -1);
+        MIX_PlayTrack(MusicTrack, id);
+        SDL_DestroyProperties(id);
         nowmusic := musicnum;
       end;
   finally
