@@ -41,9 +41,9 @@ uses
   //zip,
   //ziputils,
   Generics.Collections,
-  {$IFDEF windows}
+  //{$IFDEF windows}
   potdll,
-  {$ENDIF}
+  //{$ENDIF}
   simplecc;
 
 //程序重要子程
@@ -341,9 +341,9 @@ begin
   end;
 
   kyslog('Initial ended, start game');
-  {$IFDEF windows}
+  //{$IFDEF windows}
   smallpot := PotCreateFromWindow(window);
-  {$ENDIF}
+  //{$ENDIF}
   Start;
   Quit;
 end;

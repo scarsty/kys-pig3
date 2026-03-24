@@ -32,11 +32,6 @@ android {
             signingConfig signingConfigs.debug
         }
     }
-    packaging {
-        jniLibs {
-            excludes += ['**/libsmallpot.so', '**/libpotshim.so']
-        }
-    }
     applicationVariants.all { variant ->
         variant.outputs.all {
             outputFileName = "kys-pig3-${variant.buildType.name}.apk"

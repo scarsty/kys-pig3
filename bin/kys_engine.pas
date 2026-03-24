@@ -8,8 +8,8 @@ uses
   {$ENDIF}
   {$IFDEF mswindows}
   Windows,
-  potdll,
   {$ENDIF}
+  potdll,
   Classes,
   SysUtils,
   SDL3_ttf,
@@ -2828,9 +2828,9 @@ end;
 
 function PlayMovie(filename: utf8string): boolean;
 begin
-  {$IFDEF windows}
+  //{$IFDEF windows}
   PotPlayVideo(smallpot, @filename[1], VOLUME / 100.0);
-  {$ENDIF}
+  //{$ENDIF}
 end;
 
 function DrawLength(str: utf8string): integer; overload;
