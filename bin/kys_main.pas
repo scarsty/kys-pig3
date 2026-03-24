@@ -41,9 +41,9 @@ uses
   //zip,
   //ziputils,
   Generics.Collections,
-  {$IFDEF windows}
+  //{$IFDEF windows}
   potdll,
-  {$ENDIF}
+  //{$ENDIF}
   simplecc;
 
 //程序重要子程
@@ -341,9 +341,9 @@ begin
   end;
 
   kyslog('Initial ended, start game');
-  {$IFDEF windows}
+  //{$IFDEF windows}
   smallpot := PotCreateFromWindow(window);
-  {$ENDIF}
+  //{$ENDIF}
   Start;
   Quit;
 end;
@@ -362,7 +362,7 @@ begin
   SDL_DestroyWindow(window);
   SDL_DestroyMutex(mutex);
   SDL_Quit;
-  FreeAllMusic;
+  //FreeAllMusic;
   halt(1);
   exit;
 
@@ -8638,9 +8638,11 @@ begin
   words.Add('致謝以下開源項目');
   words.Add('JEDI-SDL');
   words.Add('kys-pascal');
+  words.Add('kys-cpp');
+  words.Add('smallpot / smallpot-lite');
   words.Add('UltraStar Deluxe');
   words.Add('Open Chinese Convert');
-  words.Add('smallpot');
+  words.Add('Pascal Game Development');
   words.Add('');
 
   words.Add('致謝以下MOD項目');

@@ -13,6 +13,7 @@ android {
         targetSdkVersion 34
         versionCode 1
         versionName "1.0"
+        ndkVersion "29.0.14206865"  // 替换为实际版本号
         externalNativeBuild {
             cmake {
                 arguments "-DANDROID_PLATFORM=android-29", "-DANDROID_STL=c++_shared"

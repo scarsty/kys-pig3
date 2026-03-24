@@ -8,7 +8,6 @@ uses
   {$ENDIF}
   {$IFDEF mswindows}
   Windows,
-  //xVideo,
   {$ENDIF}
   Classes,
   SysUtils,
@@ -18,10 +17,7 @@ uses
   kys_type,
   kys_main,
   Math,
-  {$IFDEF windows}
   potdll,
-  {$endif}
-  //mythoutput,
   libzip,
   simplecc;
 
@@ -69,9 +65,7 @@ procedure DrawEngShadowText(word: utf8string; x_pos, y_pos: integer; color1, col
 function Simplified2Traditional(str: utf8string): utf8string;
 procedure DrawPartPic(pic: pointer; x, y, w, h, x1, y1: integer);
 function Traditional2Simplified(str: utf8string): utf8string;
-procedure PlayBeginningMovie;
 
-procedure SDL_UpdateRect2(scr1: PSDL_Surface; x, y, w, h: integer);
 procedure SDL_GetMouseState2(var x, y: integer);
 procedure DestroyRenderTextures;
 procedure CreateAssistantRenderTextures;
@@ -113,8 +107,6 @@ procedure DestroyFontTextures();
 procedure DrawPNGTile(render: PSDL_Renderer; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer); overload;
 procedure DrawPNGTile(render: PSDL_Renderer; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer; region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer; scalex, scaley, angle: real; center: PSDL_Point); overload;
 procedure DrawPNGTileS(scr: PSDL_Surface; PNGIndex: TPNGIndex; FrameNum: integer; px, py: integer; region: PSDL_Rect; shadow, alpha: integer; mixColor: uint32; mixAlpha: integer; scalex, scaley, angle: real); overload;
-
-function CopyIndexSurface(PNGIndexArray: TPNGIndexArray; i: integer): PSDL_Surface;
 
 function PlayMovie(filename: utf8string): boolean;
 
@@ -278,11 +270,12 @@ var
     io := SDL_IOFromFile(PChar(filename), 'rb');
     SDL_SetPointerProperty(id, MIX_PROP_AUDIO_LOAD_IOSTREAM_POINTER, io);
     SDL_SetStringProperty(id, MIX_PROP_AUDIO_DECODER_STRING, 'fluidsynth');
-    SDL_SetStringProperty(id, 'SDL_mixer.decoder.fluidsynth.soundfont_path', 'music/mid.sf2');
+    SDL_SetStringProperty(id, 'SDL_mixer.decoder.fluidsynth.soundfont_path', putf8char(AppPath + 'music/mid.sf2'));
     Result := MIX_LoadAudioWithProperties(id);
     SDL_CloseIO(io);
     SDL_DestroyProperties(id);
   end;
+
 begin
   if not EnsureMixerCreated then
     Exit;
@@ -436,13 +429,6 @@ end;
 
 procedure PlayMP3(filename: putf8char; times: integer); overload;
 begin
-  //if fileexists(filename) then
-  //begin
-  //Music := Mix_LoadMUS(filename);
-  //Mix_volumemusic(MIX_MAX_VOLUME div 3);
-  //Mix_PlayMusic(music, times);
-  //end;
-
 end;
 
 //停止当前播放的音乐
@@ -1357,24 +1343,10 @@ begin
     begin
       dest1f := rect2f(dest1);
       destf := rect2f(dest);
-      SDL_RenderTexture(render, PSDL_Texture(pic), @dest1f, @destf)
+      SDL_RenderTexture(render, PSDL_Texture(pic), @dest1f, @destf);
     end
     else
       SDL_BlitSurface(PSDL_Surface(pic), @dest1, screen, @dest);
-end;
-
-procedure PlayBeginningMovie;
-var
-  i, GRP, IDX, len: integer;
-  MOV: PSDL_Surface;
-  MOVpic: array of byte;
-  MOVidx: array of integer;
-begin
-end;
-
-procedure SDL_UpdateRect2(scr1: PSDL_Surface; x, y, w, h: integer);
-begin
-
 end;
 
 procedure SDL_GetMouseState2(var x, y: integer);
@@ -2853,27 +2825,11 @@ begin
   end;
 end;
 
-//复制Index的表面, 如为空返回一很小的表面, 避免Blit出错
-function CopyIndexSurface(PNGIndexArray: TPNGIndexArray; i: integer): PSDL_Surface;
-var
-  PNGIndex: TPNGIndex;
-begin
-  {Result := nil;
-    if (i >= 0) and (i <= high(PNGIndexArray)) then
-    begin
-    PNGIndex := PNGIndexArray[i];
-    //if (PNGIndex.Loaded = 1) and (PNGIndex.Frame > 0) then
-    //Result := SDL_DisplayFormatAlpha(PNGIndex.CurPointer^);
-    end;
-    if Result = nil then
-    Result := SDL_CreateRGBSurface(ScreenFlag, 1, 1, 32, RMask, GMask, BMask, 0);}
-end;
-
 function PlayMovie(filename: utf8string): boolean;
 begin
-  {$IFDEF windows}
+  //{$IFDEF windows}
   PotPlayVideo(smallpot, @filename[1], VOLUME / 100.0);
-  {$ENDIF}
+  //{$ENDIF}
 end;
 
 function DrawLength(str: utf8string): integer; overload;

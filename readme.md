@@ -9,7 +9,9 @@ All heros in Kam Yung stories - 108 brothers and sisters
 The codes can be complied with free pascal with lazarus or CodeTyphon for Windows, MacOSX, linux and Android. 
 Another project kys-cpp <https://github.com/scarsty/kys-cpp> is much more strongly recommended.
 
-The external libraries are SDL/SDL-ttf/SDL-image, BASS, FFmpeg, Lua.
+The external libraries are SDL/SDL-ttf/SDL-mixer, FFmpeg, Lua.
+
+SDL-image and BASS have been removed since they are not used in the game. So the comerical limitation of BASS is not a problem anymore.
 
 Special thanks to JEDI-SDL, UltraStar Deluxe, Open Chinese Convert, and DuanGeXing SoundFonts.
 

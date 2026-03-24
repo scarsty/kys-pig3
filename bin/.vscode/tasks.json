@@ -1,0 +1,60 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build Debug",
+      "type": "shell",
+      "command": "C:\\lazarus\\lazbuild.exe",
+      "args": [
+        "--build-mode=Debug",
+        "${workspaceFolder}\\kys_pig3.lpi"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": {
+        "owner": "pascal",
+        "fileLocation": ["absolute"],
+        "pattern": {
+          "regexp": "^(.+\\.pas)\\((\\d+),(\\d+)\\)\\s+(Error|Fatal|Warning|Note|Hint):\\s+(.+)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        }
+      }
+    },
+    {
+      "label": "Build Release",
+      "type": "shell",
+      "command": "C:\\lazarus\\lazbuild.exe",
+      "args": [
+        "--build-mode=Release",
+        "${workspaceFolder}\\kys_pig3.lpi"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": {
+        "owner": "pascal",
+        "fileLocation": ["absolute"],
+        "pattern": {
+          "regexp": "^(.+\\.pas)\\((\\d+),(\\d+)\\)\\s+(Error|Fatal|Warning|Note|Hint):\\s+(.+)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        }
+      }
+    }
+  ]
+}
