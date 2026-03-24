@@ -119,3 +119,8 @@ game0/script/event
 tools/simplecc/simplecc/x64
 tools/simplecc/x64
 tools/simplecc/.vs
+kys-pig3-androidstudio/.build
+kys-pig3-androidstudio/.tmp_fluidsynth
+kys-pig3-androidstudio/.tmp_sdl_mixer
+kys-pig3-androidstudio/.tmp_sdl_ttf
+kys-pig3-androidstudio/.tmp_sdl_upstream

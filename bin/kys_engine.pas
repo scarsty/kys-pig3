@@ -8,6 +8,7 @@ uses
   {$ENDIF}
   {$IFDEF mswindows}
   Windows,
+  potdll,
   {$ENDIF}
   Classes,
   SysUtils,
@@ -17,7 +18,6 @@ uses
   kys_type,
   kys_main,
   Math,
-  potdll,
   libzip,
   simplecc;
 
@@ -2827,9 +2827,9 @@ end;
 
 function PlayMovie(filename: utf8string): boolean;
 begin
-  //{$IFDEF windows}
+  {$IFDEF windows}
   PotPlayVideo(smallpot, @filename[1], VOLUME / 100.0);
-  //{$ENDIF}
+  {$ENDIF}
 end;
 
 function DrawLength(str: utf8string): integer; overload;
