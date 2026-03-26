@@ -2151,6 +2151,36 @@ var
   zf: pzip_file_t;
   len: ptruint;
   nums: array of integer;
+  indexText: utf8string;
+
+  procedure FillOffsetsFromNumbers(constref values: array of integer);
+  var
+    idx, maxIndex: integer;
+  begin
+    maxIndex := -1;
+    for idx := 0 to length(values) div 3 - 1 do
+      if values[idx * 3] > maxIndex then
+        maxIndex := values[idx * 3];
+
+    if maxIndex < 0 then
+    begin
+      Result := 0;
+      setlength(offset, 0);
+      Exit;
+    end;
+
+    Result := maxIndex + 1;
+    setlength(offset, Result * 2);
+    fillchar(offset[0], length(offset) * SizeOf(offset[0]), 0);
+    for idx := 0 to length(values) div 3 - 1 do
+    begin
+      if (values[idx * 3] >= 0) and (values[idx * 3] < Result) then
+      begin
+        offset[values[idx * 3] * 2] := values[idx * 3 + 1];
+        offset[values[idx * 3] * 2 + 1] := values[idx * 3 + 2];
+      end;
+    end;
+  end;
 begin
   //载入偏移值文件, 计算贴图的最大数量
   size := 0;
@@ -2163,15 +2193,21 @@ begin
     z := zip_open(PChar(AppPath + path + '.zip'), ZIP_RDONLY, nil);
     if z <> nil then
     begin
-      //zf:=zip_fopen(z, 'index.ka', 8);
-      //len:=zip_getsize(z, 'index.ka');
-      //setlength(offset, len div 2 + 2);
-      //zip_fread(zf, @offset[0], len);
-      //zip_fclose(zf);
-      buf := zip_express(z, 'index.ka');
-      setlength(offset, length(buf) div 2 + 2);
-      move(buf[1], offset[0], length(buf));
-      Result := length(buf) div 4;
+      indexText := zip_express(z, 'index.txt');
+      if indexText <> '' then
+      begin
+        indexText := StringReplace(indexText, ':', ',', [rfReplaceAll]);
+        nums := readnumbersformstring(indexText);
+        FillOffsetsFromNumbers(nums);
+      end
+      else
+      begin
+        buf := zip_express(z, 'index.ka');
+        setlength(offset, length(buf) div 2 + 2);
+        if length(buf) > 0 then
+          move(buf[1], offset[0], length(buf));
+        Result := length(buf) div 4;
+      end;
 
       if (frame <> nil) then
       begin
@@ -2182,15 +2218,16 @@ begin
         end;
       end;
 
-      for i := length(buf) div 4 downto 0 do
+      for i := max(max(Result - 1, 0), maxCount) downto 0 do
       begin
         if (zip_name_locate(z, PChar(IntToStr(i) + '.png')) >= 0) or (zip_name_locate(z, PChar(IntToStr(i) + '_0.png')) >= 0) then
         begin
-          Result := i + 1;
+          if i + 1 > Result then
+            Result := i + 1;
           break;
         end;
       end;
-
+      setlength(offset, Result * 2);
       //初始化贴图索引, 并计算全部帧数和
       setlength(PNGIndexArray, Result);
       Count := 0;
@@ -2236,7 +2273,7 @@ begin
 
   if (PNG_TILE = 1) or (z = nil) then
   begin
-    kyslog('Searching index of png files %s/index.ka', [path]);
+    kyslog('Searching index of png files %s/index.txt', [path]);
     path := path + '/';
     if (frame <> nil) then
     begin
@@ -2247,22 +2284,37 @@ begin
         (frame +nums[i * 2])^ := nums[i * 2 + 1];
       end;
     end;
-    p := ReadFileToBuffer(nil, AppPath + path + '/index.ka', -1, 1);
-    size := StrBufSize(p);
-    setlength(offset, size div 2 + 2);
-    move(p^, offset[0], size);
-    FreeFileBuffer(p);
+    if FileExists(AppPath + path + 'index.txt') then
+    begin
+      indexText := readFiletostring(AppPath + path + 'index.txt');
+      indexText := StringReplace(indexText, ':', ',', [rfReplaceAll]);
+      nums := readnumbersformstring(indexText);
+      FillOffsetsFromNumbers(nums);
+    end
+    else
+    begin
+      kyslog('index.txt not found, fallback to %s/index.ka', [path]);
+      p := ReadFileToBuffer(nil, AppPath + path + 'index.ka', -1, 1);
+      size := StrBufSize(p);
+      setlength(offset, size div 2 + 2);
+      if size > 0 then
+        move(p^, offset[0], size);
+      FreeFileBuffer(p);
+    end;
 
-    for i := size div 4 downto 0 do
+    for i := maxCount downto 0 do
     begin
       if FileExists(AppPath + path + IntToStr(i) + '.png') or FileExists(AppPath + path + IntToStr(i) + '_0.png') then
       begin
-        Result := i + 1;
+        if i + 1 > Result then
+          Result := i + 1;
         break;
       end;
     end;
     //贴图的数量是有文件存在的最大数量
     setlength(PNGIndexArray, Result);
+    setlength(offset, Result * 2);
+    FillChar(offset, 0, Result * 4);
     //计算合法贴图文件的总数, 同时指定每个图的索引数据
     Count := 0;
     for i := 0 to Result - 1 do
