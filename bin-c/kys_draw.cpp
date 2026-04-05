@@ -1,4 +1,4 @@
-﻿// kys_draw.cpp - 绘制实现
+// kys_draw.cpp - 绘制实现
 // 对应 kys_draw.pas
 
 #include "kys_draw.h"
@@ -477,9 +477,9 @@ void ExpandGroundOnImg()
 void InitialScene(int Visible)
 {
     // 设置场景角色贴图
-    int rnum = Rscene[CurScene + 1].EntranceX;
+    int rnum = Rscene[CurScene].EntranceX;
     if (rnum >= 0 && rnum < 1000)
-        CurSceneRolePic = Rrole[rnum + 1].Data[14];  // WalkPic
+        CurSceneRolePic = Rrole[rnum].Data[14];  // WalkPic
     else
         CurSceneRolePic = BEGIN_WALKPIC;
 
@@ -527,8 +527,13 @@ void CalPosOnImage(int i1, int i2, int& x, int& y)
 
 void CalLTPosOnImageByCenter(int i1, int i2, int& x, int& y)
 {
-    x = -(i1) * 18 + (i2) * 18;
-    y = (i1) * 9 + (i2) * 9;
+    x = -(i1) * 18 + (i2) * 18 + ImageWidth / 2 - CENTER_X;
+    y = (i1) * 9 + (i2) * 9 + 9;
+    if (needOffset != 0)
+    {
+        x += offsetX;
+        y += offsetY;
+    }
 }
 
 //----------------------------------------------------------------------
@@ -569,7 +574,7 @@ void DrawBField()
                             picnum = Brole[num].Pic;
                         else
                             picnum = Brole[num].StaticPic[Brole[num].Face];
-                        DrawFPic(picnum, pos.x, pos.y, Rrole[Brole[num].rnum + 1].ActionNum,
+                        DrawFPic(picnum, pos.x, pos.y, Rrole[Brole[num].rnum].ActionNum,
                             Brole[num].shadow, Brole[num].alpha, Brole[num].mixColor, Brole[num].mixAlpha);
                     }
                 }
@@ -698,7 +703,7 @@ void DrawBFieldWithCursor(int AttAreaType, int step, int range)
                 int ma = 0, sh = 0;
                 if (highlight) { ma = 20; sh = 1; }
                 DrawFPic(Brole[bnum].StaticPic[Brole[bnum].Face], pos.x, pos.y,
-                    Rrole[Brole[bnum].rnum + 1].ActionNum, sh, 0, mc, ma);
+                    Rrole[Brole[bnum].rnum].ActionNum, sh, 0, mc, ma);
             }
         }
     DrawVirtualKey();
@@ -743,11 +748,11 @@ void DrawBFieldWithEft(int Epicnum, int beginpic, int endpic, int curlevel, int 
                 if (k >= beginpic && k <= endpic)
                 {
                     shadow = 0;
-                    switch (Rrole[rnum + 1].MPType)
+                    switch (Rrole[rnum].MPType)
                     {
                     case 2:
                         MixColor2 = 0xFFFFFFFF;
-                        MixAlpha2 = (rand() % 2) * 20 * Rrole[rnum + 1].CurrentMP / MAX_MP;
+                        MixAlpha2 = (rand() % 2) * 20 * Rrole[rnum].CurrentMP / MAX_MP;
                         shadow = 1;
                         break;
                     case 3:
@@ -759,9 +764,9 @@ void DrawBFieldWithEft(int Epicnum, int beginpic, int endpic, int curlevel, int 
                         MixAlpha2 = 0;
                         break;
                     }
-                    if (Rrole[rnum + 1].AttPoi > 0)
+                    if (Rrole[rnum].AttPoi > 0)
                     {
-                        MixColor2 = MapRGBA(255 - Rrole[rnum + 1].AttPoi * 2, 255, 255 - Rrole[rnum + 1].AttPoi * 2);
+                        MixColor2 = MapRGBA(255 - Rrole[rnum].AttPoi * 2, 255, 255 - Rrole[rnum].AttPoi * 2);
                         MixAlpha2 = -1 * (rand() % 2);
                     }
                     if (SW_SURFACE == 0)
@@ -832,7 +837,7 @@ void DrawProgress()
         for (int i = 0; i < BRoleAmount; i++)
             if (Brole[rangeArr[i]].Dead == 0)
             {
-                DrawHeadPic(Rrole[Brole[rangeArr[i]].rnum + 1].HeadNum, p[i] + x, y, 0, 0, 0, 0, 0.25f, 0.25f);
+                DrawHeadPic(Rrole[Brole[rangeArr[i]].rnum].HeadNum, p[i] + x, y, 0, 0, 0, 0, 0.25f, 0.25f);
             }
     }
 }

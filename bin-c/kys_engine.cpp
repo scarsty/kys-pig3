@@ -1900,12 +1900,12 @@ int DrawLength(const std::string& str)
         unsigned char c = (unsigned char)str[i];
         if (c < 128)
         {
-            len += ENGLISH_FONT_REALSIZE / 2;
+            len += 1;
             i++;
         }
         else
         {
-            len += CHINESE_FONT_REALSIZE;
+            len += 2;
             i += utf8follow(str[i]);
         }
     }

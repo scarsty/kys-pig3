@@ -12,7 +12,7 @@ int16_t BuildY[480][480] = {};
 int16_t Entrance[480][480] = {};
 
 // 角色/物品/场景/武功/商店
-// 使用偏移1来模拟Pascal的[-1..1000]
+// Pascal的[-1..1000]中[-1]为缓冲, 数据从[0]开始
 TRole Rrole[1002] = {}, Rrole0[1002] = {};
 TItem Ritem[1002] = {}, Ritem0[1002] = {};
 TScene Rscene[1002] = {}, Rscene0[1002] = {};

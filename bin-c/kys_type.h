@@ -337,7 +337,7 @@ inline int TeamList[6] = {};
 inline std::vector<TItemList> RItemList;
 
 // 角色/物品/场景/武功/商店 (extern - 大数组)
-extern TRole Rrole[1002], Rrole0[1002];    // [-1..1000] => 用偏移1访问
+extern TRole Rrole[1002], Rrole0[1002];    // [-1..1000] => [0]起始, [-1]为缓冲
 extern TItem Ritem[1002], Ritem0[1002];
 extern TScene Rscene[1002], Rscene0[1002];
 extern TMagic Rmagic[1002], Rmagic0[1002];
