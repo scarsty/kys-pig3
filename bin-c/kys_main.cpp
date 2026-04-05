@@ -645,7 +645,64 @@ void NewStartAmi()
             return;
     }
 
+    SDL_Rect src;
+    src.x = 0;
+    src.y = 0;
+    src.w = TitlePNGIndex[12].w;
+    src.h = TitlePNGIndex[12].h;
+    for (int i = 0; i <= 89; i++)
+    {
+        Redraw();
+        src.w = i * 5 + 50;
+        if (src.w > 490) break;
+        DrawTPic(12, x + 2, y + 10, &src);
+        DrawTPic(10, x, y);
+        DrawTPic(10, x + i * 5 + 34, y);
+        UpdateAllScreen();
+        SDL_Delay(20);
+        SDL_PollEvent(&event);
+        CheckBasicEvent();
+        if ((event.type == SDL_EVENT_KEY_UP && event.key.key == SDLK_ESCAPE) ||
+            (event.type == SDL_EVENT_MOUSE_BUTTON_UP && event.button.button == SDL_BUTTON_RIGHT))
+            return;
+    }
+
+    x = CENTER_X - 80;
     Where = 3;
+    for (int i = 0; i <= 2; i++)
+    {
+        Redraw();
+        DrawTPic(14 + i, x - 40, CENTER_Y - 30, nullptr, 0, 75);
+        DrawTPic(14 + i, x - 40, CENTER_Y - 30 + 50, nullptr, 0, 50);
+        DrawTPic(14 + i, x - 40, CENTER_Y - 30 + 100, nullptr, 0, 25);
+        DrawTPic(14 + i, x - 40, CENTER_Y - 30 + 150, nullptr, 0, 0);
+        UpdateAllScreen();
+        SDL_Delay(20);
+        SDL_PollEvent(&event);
+        CheckBasicEvent();
+        if ((event.type == SDL_EVENT_KEY_UP && event.key.key == SDLK_ESCAPE) ||
+            (event.type == SDL_EVENT_MOUSE_BUTTON_UP && event.button.button == SDL_BUTTON_RIGHT))
+            return;
+    }
+
+    for (int i = 0; i <= 20; i++)
+    {
+        Redraw();
+        for (int j = 0; j <= 3; j++)
+        {
+            DrawTPic(16, x - 40, CENTER_Y - 30 + j * 50, nullptr, 0, 25);
+            DrawTPic(3 + j, x, CENTER_Y - 30 + j * 50, nullptr, 0, 100 - i * 5, 0, 0);
+        }
+        UpdateAllScreen();
+        SDL_Delay(20);
+        SDL_PollEvent(&event);
+        CheckBasicEvent();
+        if ((event.type == SDL_EVENT_KEY_UP && event.key.key == SDLK_ESCAPE) ||
+            (event.type == SDL_EVENT_MOUSE_BUTTON_UP && event.button.button == SDL_BUTTON_RIGHT))
+            return;
+    }
+    Where = 3;
+    kyslog("begin end");
 }
 
 void StartAmi()
@@ -1949,7 +2006,7 @@ bool MenuItem()
                         if (Ritem[item].User >= 0)
                         {
                             int len2 = DrawLength(std::string((char*)Ritem[item].Introduction));
-                            std::string suse = "使用"; // 使用
+                            std::string suse = "使用";
                             int namelen = DrawLength(std::string((char*)Rrole[Ritem[item].User].Name));
                             DrawShadowText(suse, 18 + namelen * 10 + len2 * 10 + xp, 47 + dt + yp, ColColor(0x64), ColColor(0x66));
                             DrawShadowText(std::string((char*)Rrole[Ritem[item].User].Name), 18 + len2 * 10 + xp, 47 + dt + yp, ColColor(0x64), ColColor(0x66));
@@ -1980,12 +2037,12 @@ bool MenuItem()
                     }
                     if (len2 > 0)
                     {
-                        std::string s = "功效："; // 功效：
+                        std::string s = "功效：";
                         DrawShadowText(s, 8 + xp, 78 + dt + yp, ColColor(0x21), ColColor(0x23));
                     }
                     if (len3 > 0)
                     {
-                        std::string s = "需求："; // 需求：
+                        std::string s = "需求：";
                         DrawShadowText(s, 8 + xp, 78 + dt + (len2 + l1) / l * 28 + yp, ColColor(0x21), ColColor(0x23));
                     }
                     char buf[32];
@@ -2044,7 +2101,7 @@ bool MenuItem()
                         DrawSimpleStatusByTeam(i, ui_x, ui_y + i * 80, 0, 50);
                     if (curitem >= 0 && TeamList[i] == Ritem[curitem].User)
                     {
-                        std::string s = "使用中"; // 使用中
+                        std::string s = "使用中";
                         DrawTextWithRect(s, ui_x + 15, ui_y + i * 80 + 50, 0, ColColor(0x64), ColColor(0x66), 50, 0);
                     }
                     if (Ritem[curitem].Magic > 0)
@@ -2302,7 +2359,7 @@ void UseItem(int inum, int teammate)
             TransBlackScreen();
             UpdateAllScreen();
             std::string menuString[2] = { "取消", "繼續" }; // 取消, 繼續
-            std::string str = "此物品正有人裝備，是否繼續？"; // 此物品正有人裝備，是否繼續？
+            std::string str = "此物品正有人裝備，是否繼續？";
             DrawTextWithRect(str, CENTER_X - 142, CENTER_Y - 40, 285, 0, 0x202020);
             menu = CommonMenu2(CENTER_X - 45, CENTER_Y, 45, menuString);
         }
@@ -2312,7 +2369,7 @@ void UseItem(int inum, int teammate)
             {
                 TransBlackScreen();
                 UpdateAllScreen();
-                std::string str = "誰要裝備"; // 誰要裝備
+                std::string str = "誰要裝備";
                 std::string str1((char*)&Ritem[inum].Name[0]);
                 int off = DrawTextFrame(CENTER_X - 275, CENTER_Y - 193, 8 + DrawLength(str1));
                 DrawShadowText(str, CENTER_X - 275 + off, CENTER_Y - 193 + 3, 0, 0x202020);
@@ -2342,7 +2399,7 @@ void UseItem(int inum, int teammate)
                 }
                 else
                 {
-                    std::string str = "此人不適合裝備此物品"; // 此人不適合裝備此物品
+                    std::string str = "此人不適合裝備此物品";
                     DrawTextWithRect(str, CENTER_X - 100, CENTER_Y + 40, 205, ColColor(0x64), ColColor(0x66));
                     WaitAnyKey();
                     Redraw();
@@ -2359,7 +2416,7 @@ void UseItem(int inum, int teammate)
             TransBlackScreen();
             UpdateAllScreen();
             std::string menuString[2] = { "取消", "繼續" }; // 取消, 繼續
-            std::string str = "此秘笈正有人修煉，是否繼續？"; // 此秘笈正有人修煉，是否繼續？
+            std::string str = "此秘笈正有人修煉，是否繼續？";
             DrawTextWithRect(str, CENTER_X - 142, CENTER_Y - 40, 285, 0, 0x202020);
             menu = CommonMenu2(CENTER_X - 45, CENTER_Y, 45, menuString);
         }
@@ -2369,7 +2426,7 @@ void UseItem(int inum, int teammate)
             {
                 TransBlackScreen();
                 UpdateAllScreen();
-                std::string str = "誰要修煉"; // 誰要修煉
+                std::string str = "誰要修煉";
                 std::string str1((char*)&Ritem[inum].Name[0]);
                 int off = DrawTextFrame(CENTER_X - 275, CENTER_Y - 193, 8 + DrawLength(str1));
                 DrawShadowText(str, CENTER_X - 275 + off, CENTER_Y - 193 + 3, 0, 0x202020);
@@ -2403,7 +2460,7 @@ void UseItem(int inum, int teammate)
                 }
                 else
                 {
-                    std::string str = "此人不適合修煉此秘笈"; // 此人不適合修煉此秘笈
+                    std::string str = "此人不適合修煉此秘笈";
                     DrawTextWithRect(str, CENTER_X - 100, CENTER_Y + 40, 205, ColColor(0x64), ColColor(0x66));
                     WaitAnyKey();
                     Redraw();
@@ -2420,7 +2477,7 @@ void UseItem(int inum, int teammate)
         {
             if (teammate == -1)
             {
-                std::string str = "誰要服用"; // 誰要服用
+                std::string str = "誰要服用";
                 std::string str1((char*)&Ritem[inum].Name[0]);
                 DrawTextWithRect(str, CENTER_X - 275, CENTER_Y - 193, DrawLength(str1) * 10 + 80, 0, 0x202020);
                 DrawShadowText(str1, CENTER_X - 275 + 99, CENTER_Y - 193 + 2, ColColor(0x64), ColColor(0x66));
@@ -2506,7 +2563,7 @@ bool CanEquip(int rnum, int inum, int use)
             TransBlackScreen();
             UpdateAllScreen();
             std::string menuString[2] = { "取消", "繼續" }; // 取消, 繼續
-            std::string str = "是否要自宮？"; // 是否要自宮？
+            std::string str = "是否要自宮？";
             DrawTextWithRect(str, CENTER_X - 63, CENTER_Y, 0, 0, 0x202020);
             if (CommonMenu2(CENTER_X - 49, CENTER_Y + 40, 48, menuString) == 1)
                 Rrole[rnum].Sexual = 2;
@@ -3413,7 +3470,7 @@ int MenuLoad()
         else
             filename = AppPath + "save/" + std::to_string(i + 1) + ".zip";
         if (filefunc::fileExist(filename))
-            menuEngString[i] = "---"; // 存档存在
+            menuEngString[i] = "---";
         else
             menuEngString[i] = "-------------------";
     }
@@ -4256,6 +4313,41 @@ void ScrollTextAmi(std::vector<std::string>& words, int chnsize, int engsize, in
             {
                 SDL_Rect dr = { (int)dest.x, (int)dest.y, (int)dest.w, (int)dest.h };
                 SDL_BlitSurface(sur, &dr, target, nullptr);
+            }
+        }
+        else
+        {
+            if (picnum <= (int)TitlePNGIndex.size() - 1)
+            {
+                int w = TitlePNGIndex[picnum].w;
+                int h = TitlePNGIndex[picnum].h;
+                SDL_FRect src;
+                src.x = (float)(i * (w - CENTER_X * 2) / std::max(1, texh - CENTER_Y * 2) + w - CENTER_X * 2);
+                src.y = 0;
+                src.w = (float)(CENTER_X * 2);
+                src.h = (float)h;
+                if (SW_SURFACE == 0)
+                    SDL_SetRenderTarget(render, screenTex);
+                SDL_Rect src1 = Rectf2(src);
+                DrawTPic(picnum, 0, 0, &src1);
+                SDL_FRect destpic = { 0, 240, (float)texw, (float)(texh0 - 240) };
+                SDL_FRect tempdest = { 0, (float)(-i + texh0 / 2), (float)texw, (float)(texh0 / 2) };
+                if (SW_SURFACE == 0)
+                {
+                    if (TEXT_LAYER != 0)
+                        SDL_SetRenderTarget(render, TextScreenTex);
+                    else
+                        SDL_SetTextureAlphaMod(tex, 255);
+                    SDL_RenderTexture(render, tex, &tempdest, &destpic);
+                }
+                else
+                {
+                    if (TEXT_LAYER == 0)
+                        SDL_SetSurfaceAlphaMod(sur, 255);
+                    SDL_Rect td = Rectf2(tempdest);
+                    SDL_Rect dp = Rectf2(destpic);
+                    SDL_BlitSurface(sur, &td, target, &dp);
+                }
             }
         }
         UpdateAllScreen();

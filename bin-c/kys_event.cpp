@@ -70,10 +70,10 @@ void instruct_2(int inum, int amount)
     DrawEngShadowText(word, x + 40 + 20 + l1 * 10, 3 + y, 0, 0x202020);
     std::string w2;
     if (amount >= 0)
-        w2 = "得到"; // 得到
+        w2 = "得到";
     else
     {
-        w2 = "失去"; // 失去
+        w2 = "失去";
         amount = -amount;
     }
     DrawShadowText(w2.c_str(), x, 3 + y, 0, 0x202020);
@@ -204,7 +204,7 @@ int instruct_4(int inum, int jump1, int jump2)
 int instruct_5(int jump1, int jump2)
 {
     std::string menuString[2] = {"取消", "戰鬥"}; // 取消, 戰鬥
-    std::string str = "是否與之戰鬥？"; // 是否與之戰鬥？
+    std::string str = "是否與之戰鬥？";
     DrawTextWithRect(str.c_str(), CENTER_X - 75, CENTER_Y - 85, 0, 0, 0x202020);
     std::vector<std::string> ms(menuString, menuString + 2);
     int menu = CommonMenu2(CENTER_X - 49, CENTER_Y - 50, 48, ms);
@@ -233,7 +233,7 @@ void instruct_8(int musicnum)
 int instruct_9(int jump1, int jump2)
 {
     std::string menuString[2] = {"取消", "要求"}; // 取消, 要求
-    std::string str = "是否要求加入？"; // 是否要求加入？
+    std::string str = "是否要求加入？";
     DrawTextWithRect(str.c_str(), CENTER_X - 75, CENTER_Y - 85, 0, 0, 0x202020);
     std::vector<std::string> ms(menuString, menuString + 2);
     int menu = CommonMenu2(CENTER_X - 49, CENTER_Y - 50, 48, ms);
@@ -274,15 +274,15 @@ int instruct_11(int jump1, int jump2)
     std::string str;
     if (MODVersion == 31 || MODVersion == 12)
     {
-        menuString[0] = "N-否"; // N-否
-        menuString[1] = "Y-是"; // Y-是
-        str = "請作出您的選擇"; // 請作出您的選擇
+        menuString[0] = "N-否";
+        menuString[1] = "Y-是";
+        str = "請作出您的選擇";
     }
     else
     {
-        menuString[0] = "取消"; // 取消
-        menuString[1] = "住宿"; // 住宿
-        str = "是否需要住宿？"; // 是否需要住宿？
+        menuString[0] = "取消";
+        menuString[1] = "住宿";
+        str = "是否需要住宿？";
     }
     DrawTextWithRect(str.c_str(), CENTER_X - 75, CENTER_Y - 85, 0, 0, 0x202020);
     std::vector<std::string> ms(menuString, menuString + 2);
@@ -337,9 +337,9 @@ void instruct_15()
     Where = 3;
     Redraw();
     DrawRectangleWithoutFrame(0, 0, CENTER_X * 2, CENTER_Y * 2, MapRGBA(196, 25, 16), 60);
-    std::string str1 = " 小村的傳說失敗了…"; // 小村的傳說失敗了…
+    std::string str1 = " 小村的傳說失敗了…";
     DrawShadowText(str1.c_str(), CENTER_X - 120, CENTER_Y - 25, ColColor(255), ColColor(255));
-    std::string str2 = "但是遊戲是可以重來的！"; // 但是遊戲是可以重來的！
+    std::string str2 = "但是遊戲是可以重來的！";
     DrawShadowText(str2.c_str(), CENTER_X - 120, CENTER_Y, ColColor(255), ColColor(255));
     UpdateAllScreen();
     WaitAnyKey();
@@ -679,7 +679,7 @@ void instruct_33(int rnum, int mnum, int dismode)
     }
     if (dismode == 0)
     {
-        std::string word = "學會"; // 學會
+        std::string word = "學會";
         Show3HintString(Rrole[rnum].Name, word, Rmagic[mnum].Name);
     }
 }
@@ -696,7 +696,7 @@ void instruct_34(int rnum, int iq)
     }
     if (iq > 0)
     {
-        std::string word = "資質增加"; // 資質增加
+        std::string word = "資質增加";
         char buf[16];
         snprintf(buf, sizeof(buf), "%3d", iq);
         Show3HintString(Rrole[rnum].Name, word, buf);
@@ -1887,7 +1887,7 @@ void StudyMagic(int rnum, int magicnum, int newmagicnum, int level, int dismode)
     if (dismode == 0)
     {
         DrawRectangle(CENTER_X - 75, 98, 145, 76, 0, ColColor(255), 30);
-        std::string word = "學會"; // 學會
+        std::string word = "學會";
         DrawShadowText(word.c_str(), CENTER_X - 90, 125, ColColor(5), ColColor(7));
         DrawShadowText(Rrole[rnum].Name, CENTER_X - 90, 100, ColColor(0x21), ColColor(0x23));
         DrawShadowText(Rmagic[newmagicnum].Name, CENTER_X - 90, 150, ColColor(0x64), ColColor(0x66));
@@ -3358,7 +3358,7 @@ void NewShop(int shop_num)
 
     int x = CENTER_X - 190, y = 200;
     DrawRectangleWithoutFrame(0, 20, CENTER_X * 2, 120, 0, 40);
-    std::string shopStr = "需要買什麼？"; // 需要買什麽？
+    std::string shopStr = "需要買什麼？";
     DrawShadowText(shopStr.c_str(), CENTER_X - 70, 55, ColColor(0xFF), ColColor(0x0));
 
     int menu = 0, select = 0, lr = 0;

@@ -133,6 +133,7 @@ void QuickSortB(TBuildInfo* a, int l, int r);
 void GetRealRect(int& x, int& y, int& w, int& h, int force = 0);
 TStretchInfo KeepRatioScale(int w0, int h0, int w1, int h1);
 SDL_FRect rect2f(const SDL_Rect& r);
+SDL_Rect Rectf2(SDL_FRect r);
 
 int LinearInsert(double x, double x1, double x2, int y1, int y2);
 
