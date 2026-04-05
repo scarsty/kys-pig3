@@ -2,11 +2,11 @@
 // 对应 kys_draw.pas
 
 #include "kys_draw.h"
-#include "kys_type.h"
-#include "kys_main.h"
+#include "kys_battle.h"
 #include "kys_engine.h"
 #include "kys_event.h"
-#include "kys_battle.h"
+#include "kys_main.h"
+#include "kys_type.h"
 
 #include <SDL3/SDL.h>
 #include <algorithm>
@@ -18,18 +18,46 @@
 //----------------------------------------------------------------------
 void DrawPic(SDL_Surface* sur, int Pictype, int num, int px, int py, int shadow, int alpha, uint32 mixColor, int mixAlpha)
 {
-    if (num < 0) return;
+    if (num < 0)
+    {
+        return;
+    }
     if (PNG_TILE > 0)
     {
         TPNGIndex* pIndex = nullptr;
         int maxNum = 0;
         switch (Pictype)
         {
-        case 0: if (num < (int)MPNGIndex.size()) pIndex = &MPNGIndex[num]; break;
-        case 1: if (num < (int)SPNGIndex.size()) pIndex = &SPNGIndex[num]; break;
-        case 3: if (num < (int)TitlePNGIndex.size()) pIndex = &TitlePNGIndex[num]; break;
-        case 4: if (num < (int)HPNGIndex.size()) pIndex = &HPNGIndex[num]; break;
-        case 6: if (num < (int)CPNGIndex.size()) pIndex = &CPNGIndex[num]; break;
+        case 0:
+            if (num < (int)MPNGIndex.size())
+            {
+                pIndex = &MPNGIndex[num];
+            }
+            break;
+        case 1:
+            if (num < (int)SPNGIndex.size())
+            {
+                pIndex = &SPNGIndex[num];
+            }
+            break;
+        case 3:
+            if (num < (int)TitlePNGIndex.size())
+            {
+                pIndex = &TitlePNGIndex[num];
+            }
+            break;
+        case 4:
+            if (num < (int)HPNGIndex.size())
+            {
+                pIndex = &HPNGIndex[num];
+            }
+            break;
+        case 6:
+            if (num < (int)CPNGIndex.size())
+            {
+                pIndex = &CPNGIndex[num];
+            }
+            break;
         }
     }
 }
@@ -42,7 +70,9 @@ void DrawTPic(int imgnum, int px, int py, SDL_Rect* region, int shadow, int Alph
     if (PNG_TILE > 0)
     {
         if (imgnum >= 0 && imgnum < (int)TitlePNGIndex.size())
+        {
             DrawPNGTile(render, TitlePNGIndex[imgnum], 0, px, py, region, shadow, Alpha, mixColor, mixAlpha, scalex, scaley, angle, nullptr);
+        }
     }
 }
 
@@ -55,11 +85,18 @@ void DrawMPic(int num, int px, int py, int Framenum, int shadow, int alpha, uint
     {
         if (PNG_TILE > 0)
         {
-            if (Framenum == -1) Framenum = SDL_GetTicks() / 200 + rand() % 3;
+            if (Framenum == -1)
+            {
+                Framenum = SDL_GetTicks() / 200 + rand() % 3;
+            }
             if (num == 1377 || num == 1388 || num == 1404 || num == 1417)
+            {
                 Framenum = SDL_GetTicks() / 200;
+            }
             if (PNG_LOAD_ALL == 0 && MPNGIndex[num].Loaded == 0)
+            {
                 LoadOnePNGTexture("resource/mmap/", pMPic, MPNGIndex[num]);
+            }
             DrawPNGTile(render, MPNGIndex[num], Framenum, px, py, nullptr, shadow, alpha, mixColor, mixAlpha, scalex, scaley, angle, nullptr);
         }
     }
@@ -75,7 +112,9 @@ void DrawSPic(int num, int px, int py)
         if (PNG_TILE > 0)
         {
             if (PNG_LOAD_ALL == 0 && SPNGIndex[num].Loaded == 0)
+            {
                 LoadOnePNGTexture("resource/smap/", pSPic, SPNGIndex[num]);
+            }
             int f = SDL_GetTicks() / 300 + rand() % 3;
             DrawPNGTile(render, SPNGIndex[num], f, px, py);
         }
@@ -86,11 +125,17 @@ void DrawSPic(int num, int px, int py, SDL_Rect* region, int shadow, int alpha, 
 {
     if (num >= 0 && num < SPicAmount)
     {
-        if (num == 1941) { num = 0; py -= 50; }
+        if (num == 1941)
+        {
+            num = 0;
+            py -= 50;
+        }
         if (PNG_TILE > 0)
         {
             if (PNG_LOAD_ALL == 0 && SPNGIndex[num].Loaded == 0)
+            {
                 LoadOnePNGTexture("resource/smap/", pSPic, SPNGIndex[num]);
+            }
             DrawPNGTile(render, SPNGIndex[num], 0, px, py, region, shadow, alpha, mixColor, mixAlpha, 1, 1, 0, nullptr);
         }
     }
@@ -106,7 +151,9 @@ void DrawHeadPic(int num, int px, int py, int shadow, int alpha, uint32 mixColor
         if (PNG_TILE > 0)
         {
             if (PNG_LOAD_ALL == 0 && HPNGIndex[num].Loaded == 0)
+            {
                 LoadOnePNGTexture("resource/head", pHPic, HPNGIndex[num]);
+            }
             DrawPNGTile(render, HPNGIndex[num], 0, px, py, nullptr, shadow, alpha, mixColor, mixAlpha, scalex, scaley, 0, nullptr);
         }
     }
@@ -127,7 +174,9 @@ void DrawEPic(int num, int px, int py, int shadow, int alpha, uint32 mixColor, i
         if (num < EPNGIndex[eNum].Amount)
         {
             if (PNG_TILE > 0)
+            {
                 DrawPNGTile(render, EPNGIndex[eNum].PNGIndexArray[num], 0, px, py, nullptr, shadow, alpha, mixColor, mixAlpha, scalex, scaley, angle, center);
+            }
         }
     }
 }
@@ -154,7 +203,9 @@ void DrawFPic(int num, int px, int py, int index, int shadow, int alpha, uint32 
                 FPNGIndex[index].Loaded = 1;
             }
             if (num >= 0 && num < (int)FPNGIndex[index].PNGIndexArray.size())
+            {
                 DrawPNGTile(render, FPNGIndex[index].PNGIndexArray[num], 0, px, py, nullptr, shadow, alpha, mixColor, mixAlpha, 1, 1, 0, nullptr);
+            }
         }
     }
 }
@@ -165,7 +216,9 @@ void DrawFPic(int num, int px, int py, int index, int shadow, int alpha, uint32 
 void DrawCPic(int num, int px, int py, int shadow, int alpha, uint32 mixColor, int mixAlpha)
 {
     if (PNG_TILE > 0 && num >= 0 && num < (int)CPNGIndex.size())
+    {
         DrawPNGTile(render, CPNGIndex[num], 0, px, py, nullptr, shadow, alpha, mixColor, mixAlpha, 1, 1, 0, nullptr);
+    }
 }
 
 //----------------------------------------------------------------------
@@ -178,7 +231,9 @@ void DrawIPic(int num, int px, int py, int shadow, int alpha, uint32 mixColor, i
         if (PNG_TILE > 0)
         {
             if (PNG_LOAD_ALL == 0 && IPNGIndex[num].Loaded == 0)
+            {
                 LoadOnePNGTexture("resource/item/", pIPic, IPNGIndex[num]);
+            }
             DrawPNGTile(render, IPNGIndex[num], 0, px, py, nullptr, shadow, alpha, mixColor, mixAlpha, 1, 1, 0, nullptr);
         }
     }
@@ -239,7 +294,10 @@ void DrawMMap()
     {
         for (int i = -widthregion; i <= widthregion; i++)
         {
-            if (k >= 2000) break;
+            if (k >= 2000)
+            {
+                break;
+            }
             int i1 = Mx + i + sum / 2;
             int i2 = My - i + (sum - sum / 2);
             TPosition pos = GetPositionOnScreen(i1, i2, Mx, My);
@@ -250,7 +308,9 @@ void DrawMMap()
                 {
                     DrawMPic(Earth[i1][i2] / 2, pos.x, pos.y);
                     if (Surface[i1][i2] > 0)
+                    {
                         DrawMPic(Surface[i1][i2] / 2, pos.x, pos.y);
+                    }
                 }
 
                 int num = Building[i1][i2] / 2;
@@ -260,17 +320,27 @@ void DrawMMap()
                     if (InShip == 0)
                     {
                         if (Still == 0)
+                        {
                             num = BEGIN_WALKPIC + MFace * 7 + MStep;
+                        }
                         else
+                        {
                             num = BEGIN_WALKPIC + 27 + MFace * 6 + MStep;
+                        }
                     }
                     else
+                    {
                         num = 3715 + MFace * 4 + (MStep + 1) / 2;
+                    }
                 }
                 // 空船位置
                 if (MODVersion == 13 && CellPhone == 0)
+                {
                     if (i1 == ShipY && i2 == ShipX && InShip == 0)
+                    {
                         num = 3715 + ShipFace * 4;
+                    }
+                }
 
                 if (num > 0 && num < MPicAmount)
                 {
@@ -289,7 +359,9 @@ void DrawMMap()
                 }
             }
             else
+            {
                 DrawMPic(0, pos.x, pos.y);
+            }
         }
     }
 
@@ -301,7 +373,10 @@ void DrawMMap()
     }
 
     DrawClouds();
-    if (HaveText == 1) CleanTextScreen();
+    if (HaveText == 1)
+    {
+        CleanTextScreen();
+    }
     DrawVirtualKey();
 }
 
@@ -311,8 +386,16 @@ void DrawMMap()
 void DrawScene()
 {
     int Cx1, Cy1;
-    if (CurEvent < 0) { Cx1 = Sx; Cy1 = Sy; }
-    else { Cx1 = Cx; Cy1 = Cy; }
+    if (CurEvent < 0)
+    {
+        Cx1 = Sx;
+        Cy1 = Sy;
+    }
+    else
+    {
+        Cx1 = Cx;
+        Cy1 = Cy;
+    }
 
     int widthregion = CENTER_X / 36 + 3;
     int sumregion = CENTER_Y / 9;
@@ -326,6 +409,7 @@ void DrawScene()
 
     // 地面动画帧
     for (int sum = -sumregion; sum <= sumregion + 2; sum++)
+    {
         for (int i = -widthregion; i <= widthregion; i++)
         {
             int i1 = Cx1 + i + sum / 2;
@@ -340,9 +424,11 @@ void DrawScene()
                 }
             }
         }
+    }
 
     // 建筑和事件层
     for (int sum = -sumregion; sum <= sumregion + 15; sum++)
+    {
         for (int i = -widthregion; i <= widthregion; i++)
         {
             int i1 = Cx1 + i + sum / 2;
@@ -354,7 +440,10 @@ void DrawScene()
                 if (SData[CurScene][4][i1][i2] > 0)
                 {
                     int num = SData[CurScene][0][i1][i2] / 2;
-                    if (num > 0) DrawSPic(num, pos.x, pos.y);
+                    if (num > 0)
+                    {
+                        DrawSPic(num, pos.x, pos.y);
+                    }
                 }
                 if (SData[CurScene][1][i1][i2] > 0)
                 {
@@ -362,7 +451,9 @@ void DrawScene()
                     DrawSPic(num, pos.x, pos.y - SData[CurScene][4][i1][i2]);
                 }
                 if (ShowMR && i1 == Sx && i2 == Sy)
+                {
                     DrawSPic(CurSceneRolePic, pos.x, pos.y - SData[CurScene][4][i1][i2]);
+                }
                 if (SData[CurScene][2][i1][i2] > 0)
                 {
                     int num = SData[CurScene][2][i1][i2] / 2;
@@ -372,21 +463,36 @@ void DrawScene()
                 {
                     int num = DData[CurScene][SData[CurScene][3][i1][i2]][5] / 2;
                     if (num > 0)
+                    {
                         DrawSPic(num, pos.x, pos.y - SData[CurScene][4][i1][i2]);
+                    }
                 }
             }
         }
+    }
 
-    if (showBlackScreen) DrawBlackScreen();
-    if (HaveText == 1) CleanTextScreen();
+    if (showBlackScreen)
+    {
+        DrawBlackScreen();
+    }
+    if (HaveText == 1)
+    {
+        CleanTextScreen();
+    }
 }
 
 void DrawSceneWithoutRole(int x, int y)
 {
     int x1, y1;
     CalLTPosOnImageByCenter(x, y, x1, y1);
-    if (showBlackScreen) DrawBlackScreen();
-    if (HaveText == 1) CleanTextScreen();
+    if (showBlackScreen)
+    {
+        DrawBlackScreen();
+    }
+    if (HaveText == 1)
+    {
+        CleanTextScreen();
+    }
 }
 
 void DrawRoleOnScene(int x, int y)
@@ -403,6 +509,7 @@ void ExpandGroundOnImg()
     int16_t Ex[192][192];
     memset(Ex, -1, sizeof(Ex));
     for (int i1 = 0; i1 < 64; i1++)
+    {
         for (int i2 = 0; i2 < 64; i2++)
         {
             switch (Where)
@@ -411,32 +518,49 @@ void ExpandGroundOnImg()
             case 2: Ex[i1 + 64][i2 + 64] = BField[0][i1][i2]; break;
             }
         }
+    }
     if (EXPAND_GROUND != 0 && (MODVersion != 13 || (CurScene != 81 && CurScene != 72)))
     {
         for (int i1 = 95; i1 >= 0; i1--)
+        {
             for (int i2 = 0; i2 < 64; i2++)
             {
                 if (Ex[i1][i2 + 64] <= 0)
+                {
                     Ex[i1][i2 + 64] = Ex[i1 + 1][i2 + 64];
+                }
             }
+        }
         for (int i1 = 96; i1 < 192; i1++)
+        {
             for (int i2 = 0; i2 < 64; i2++)
             {
                 if (Ex[i1][i2 + 64] <= 0)
+                {
                     Ex[i1][i2 + 64] = Ex[i1 - 1][i2 + 64];
+                }
             }
+        }
         for (int i1 = 0; i1 < 192; i1++)
+        {
             for (int i2 = 95; i2 >= 0; i2--)
             {
                 if (Ex[i1][i2] <= 0)
+                {
                     Ex[i1][i2] = Ex[i1][i2 + 1];
+                }
             }
+        }
         for (int i1 = 0; i1 < 192; i1++)
+        {
             for (int i2 = 96; i2 < 192; i2++)
             {
                 if (Ex[i1][i2] <= 0)
+                {
                     Ex[i1][i2] = Ex[i1][i2 - 1];
+                }
             }
+        }
     }
     if (SW_SURFACE == 0)
     {
@@ -457,14 +581,18 @@ void ExpandGroundOnImg()
     SDL_SetRenderDrawColor(render, 0, 0, 0, 0);
     SDL_RenderClear(render);
     for (int i1 = 0; i1 < 192; i1++)
+    {
         for (int i2 = 0; i2 < 192; i2++)
         {
             int x, y;
             CalPosOnImage(i1 - 64, i2 - 64, x, y);
             int num = Ex[i1][i2] / 2;
             if (num > 0)
+            {
                 DrawSPic(num, x, y);
+            }
         }
+    }
     SDL_SetRenderTarget(render, screenTex);
     CurTargetSurface = screen;
     switch (Where)
@@ -479,17 +607,25 @@ void InitialScene(int Visible)
     // 设置场景角色贴图
     int rnum = Rscene[CurScene].EntranceX;
     if (rnum >= 0 && rnum < 1000)
-        CurSceneRolePic = Rrole[rnum].Data[14];  // WalkPic
+    {
+        CurSceneRolePic = Rrole[rnum].Data[14];    // WalkPic
+    }
     else
+    {
         CurSceneRolePic = BEGIN_WALKPIC;
+    }
 
     // 初始化ExGroundS (扩展地面数据)
     memset(ExGroundS, 0, sizeof(ExGroundS));
 
     // 从SData复制地面数据
     for (int i1 = 0; i1 < 64; i1++)
+    {
         for (int i2 = 0; i2 < 64; i2++)
+        {
             ExGroundS[i1 + 64][i2 + 64] = (int16_t)SData[CurScene][0][i1][i2];
+        }
+    }
 
     // 扩展地面 - 周围复制
     if (EXPAND_GROUND == 1)
@@ -547,6 +683,7 @@ void DrawBField()
 
     LoadGroundTex(Bx1, By1);
     for (int sum = -sumregion; sum <= sumregion + 15; sum++)
+    {
         for (int i = -widthregion; i <= widthregion; i++)
         {
             int i1 = Bx1 + i + sum / 2;
@@ -558,28 +695,37 @@ void DrawBField()
 
                 // 重画闪烁的地面贴图
                 if (num > 0 && SPNGIndex[num].Frame > 1)
+                {
                     DrawSPic(num, pos.x, pos.y);
+                }
 
                 // 建筑和人物
                 if (i1 >= 0 && i1 < 64 && i2 >= 0 && i2 < 64)
                 {
                     num = BField[1][i1][i2] / 2;
                     if (num > 0)
+                    {
                         DrawSPic(num, pos.x, pos.y);
+                    }
                     num = BField[2][i1][i2];
                     if (num >= 0)
                     {
                         int picnum;
                         if (Brole[num].Pic > 0)
+                        {
                             picnum = Brole[num].Pic;
+                        }
                         else
+                        {
                             picnum = Brole[num].StaticPic[Brole[num].Face];
+                        }
                         DrawFPic(picnum, pos.x, pos.y, Rrole[Brole[num].rnum].ActionNum,
                             Brole[num].shadow, Brole[num].alpha, Brole[num].mixColor, Brole[num].mixAlpha);
                     }
                 }
             }
         }
+    }
 
     DrawProgress();
     CleanTextScreen();
@@ -599,15 +745,19 @@ void DrawRoleOnBfield(int x, int y, uint32 mixColor, int mixAlpha, int Alpha)
 void InitialBFieldImage(int layer)
 {
     for (int i1 = 0; i1 < 64; i1++)
+    {
         for (int i2 = 0; i2 < 64; i2++)
         {
             for (int j = 0; j <= 2; j++)
             {
                 int num = BField[j][i1][i2] / 2;
                 if (num > 0 && num < SPicAmount)
+                {
                     LoadOnePNGTexture("resource/smap", pSPic, SPNGIndex[num]);
+                }
             }
         }
+    }
     ExpandGroundOnImg();
 }
 
@@ -615,16 +765,25 @@ void DrawBFieldWithCursor(int AttAreaType, int step, int range)
 {
     CleanTextScreen();
     if (SW_SURFACE == 0)
+    {
         SDL_SetTextureColorMod(ImgBGroundTex, 128, 128, 128);
+    }
     else
+    {
         SDL_SetSurfaceColorMod(ImgBGround, 128, 128, 128);
+    }
     LoadGroundTex(Bx, By);
     if (SW_SURFACE == 0)
+    {
         SDL_SetTextureColorMod(ImgBGroundTex, 255, 255, 255);
+    }
     else
+    {
         SDL_SetSurfaceColorMod(ImgBGround, 255, 255, 255);
+    }
     SetAminationPosition(AttAreaType, step, range);
     for (int i1 = 0; i1 < 64; i1++)
+    {
         for (int i2 = 0; i2 < 64; i2++)
         {
             if (BField[0][i1][i2] > 0)
@@ -634,56 +793,124 @@ void DrawBFieldWithCursor(int AttAreaType, int step, int range)
                 switch (AttAreaType)
                 {
                 case 0:
-                    if (BField[4][i1][i2] > 0) shadow = 1;
-                    else if ((abs(i1 - Bx) + abs(i2 - By) <= step) && BField[3][i1][i2] >= 0) shadow = 0;
-                    else shadow = -1;
+                    if (BField[4][i1][i2] > 0)
+                    {
+                        shadow = 1;
+                    }
+                    else if ((abs(i1 - Bx) + abs(i2 - By) <= step) && BField[3][i1][i2] >= 0)
+                    {
+                        shadow = 0;
+                    }
+                    else
+                    {
+                        shadow = -1;
+                    }
                     break;
                 case 1:
-                    if (BField[4][i1][i2] > 0) shadow = 1;
-                    else if ((i1 == Bx && abs(i2 - By) <= step) || (i2 == By && abs(i1 - Bx) <= step)) shadow = 0;
-                    else shadow = -1;
+                    if (BField[4][i1][i2] > 0)
+                    {
+                        shadow = 1;
+                    }
+                    else if ((i1 == Bx && abs(i2 - By) <= step) || (i2 == By && abs(i1 - Bx) <= step))
+                    {
+                        shadow = 0;
+                    }
+                    else
+                    {
+                        shadow = -1;
+                    }
                     break;
                 case 2:
-                    if (BField[4][i1][i2] > 0) shadow = 1;
-                    else shadow = -1;
+                    if (BField[4][i1][i2] > 0)
+                    {
+                        shadow = 1;
+                    }
+                    else
+                    {
+                        shadow = -1;
+                    }
                     break;
                 case 3:
-                    if (BField[4][i1][i2] > 0) shadow = 1;
-                    else if ((abs(i1 - Bx) + abs(i2 - By) <= step) && BField[0][i1][i2] >= 0) shadow = 0;
-                    else shadow = -1;
+                    if (BField[4][i1][i2] > 0)
+                    {
+                        shadow = 1;
+                    }
+                    else if ((abs(i1 - Bx) + abs(i2 - By) <= step) && BField[0][i1][i2] >= 0)
+                    {
+                        shadow = 0;
+                    }
+                    else
+                    {
+                        shadow = -1;
+                    }
                     break;
                 case 4:
-                    if (BField[4][i1][i2] > 0) shadow = 1;
-                    else if ((abs(i1 - Bx) + abs(i2 - By) <= step) && abs(i1 - Bx) != abs(i2 - By)) shadow = 0;
-                    else shadow = -1;
+                    if (BField[4][i1][i2] > 0)
+                    {
+                        shadow = 1;
+                    }
+                    else if ((abs(i1 - Bx) + abs(i2 - By) <= step) && abs(i1 - Bx) != abs(i2 - By))
+                    {
+                        shadow = 0;
+                    }
+                    else
+                    {
+                        shadow = -1;
+                    }
                     break;
                 case 5:
-                    if (BField[4][i1][i2] > 0) shadow = 1;
-                    else if ((abs(i1 - Bx) <= step) && (abs(i2 - By) <= step) && abs(i1 - Bx) != abs(i2 - By)) shadow = 0;
-                    else shadow = -1;
+                    if (BField[4][i1][i2] > 0)
+                    {
+                        shadow = 1;
+                    }
+                    else if ((abs(i1 - Bx) <= step) && (abs(i2 - By) <= step) && abs(i1 - Bx) != abs(i2 - By))
+                    {
+                        shadow = 0;
+                    }
+                    else
+                    {
+                        shadow = -1;
+                    }
                     break;
                 case 6:
                 {
                     int minstep = 3;
-                    if (BField[4][i1][i2] > 0) shadow = 1;
-                    else if ((abs(i1 - Bx) + abs(i2 - By) <= step) && (abs(i1 - Bx) + abs(i2 - By) > minstep) && BField[3][i1][i2] >= 0) shadow = 0;
-                    else shadow = -1;
+                    if (BField[4][i1][i2] > 0)
+                    {
+                        shadow = 1;
+                    }
+                    else if ((abs(i1 - Bx) + abs(i2 - By) <= step) && (abs(i1 - Bx) + abs(i2 - By) > minstep) && BField[3][i1][i2] >= 0)
+                    {
+                        shadow = 0;
+                    }
+                    else
+                    {
+                        shadow = -1;
+                    }
                     break;
                 }
                 }
                 if (shadow == 0)
+                {
                     DrawSPic(BField[0][i1][i2] / 2, pos.x, pos.y, nullptr, shadow, 0, 0, 0);
+                }
                 if (shadow > 0)
+                {
                     DrawSPic(BField[0][i1][i2] / 2, pos.x, pos.y, nullptr, shadow, 0, 0, 0);
+                }
             }
         }
+    }
 
     for (int i1 = 0; i1 < 64; i1++)
+    {
         for (int i2 = 0; i2 < 64; i2++)
         {
             TPosition pos = GetPositionOnScreen(i1, i2, Bx, By);
             if (BField[1][i1][i2] > 0)
+            {
                 DrawSPic(BField[1][i1][i2] / 2, pos.x, pos.y, nullptr, 0, 30, 0, 0);
+            }
             int bnum = BField[2][i1][i2];
             if (bnum >= 0 && Brole[bnum].Dead == 0)
             {
@@ -701,11 +928,16 @@ void DrawBFieldWithCursor(int AttAreaType, int step, int range)
                 }
                 uint32 mc = 0xFFFFFFFF;
                 int ma = 0, sh = 0;
-                if (highlight) { ma = 20; sh = 1; }
+                if (highlight)
+                {
+                    ma = 20;
+                    sh = 1;
+                }
                 DrawFPic(Brole[bnum].StaticPic[Brole[bnum].Face], pos.x, pos.y,
                     Rrole[Brole[bnum].rnum].ActionNum, sh, 0, mc, ma);
             }
         }
+    }
     DrawVirtualKey();
 }
 
@@ -727,8 +959,12 @@ void DrawBFieldWithEft(int Epicnum, int beginpic, int endpic, int curlevel, int 
     {
         int t = 0;
         if (BField[4][Brole[i].X][Brole[i].Y] > 0)
+        {
             if (CanSelectAim(bnum, i, -1, SelectAimMode))
+            {
                 t = 1;
+            }
+        }
         if (t == 1)
         {
             Brole[i].shadow = 1;
@@ -739,6 +975,7 @@ void DrawBFieldWithEft(int Epicnum, int beginpic, int endpic, int curlevel, int 
 
     DrawBField();
     for (int i1 = 0; i1 < 64; i1++)
+    {
         for (int i2 = 0; i2 < 64; i2++)
         {
             if (BField[4][i1][i2] > 0)
@@ -770,12 +1007,17 @@ void DrawBFieldWithEft(int Epicnum, int beginpic, int endpic, int curlevel, int 
                         MixAlpha2 = -1 * (rand() % 2);
                     }
                     if (SW_SURFACE == 0)
+                    {
                         DrawEPic(k, pos.x, pos.y, shadow, 25, MixColor2, MixAlpha2, index);
+                    }
                     else
+                    {
                         DrawEPic(k, pos.x, pos.y, 0, 0, 0, 0, index);
+                    }
                 }
             }
         }
+    }
     for (int i = 0; i < BRoleAmount; i++)
     {
         Brole[i].shadow = 0;
@@ -797,7 +1039,10 @@ void DrawBFieldWithAction(int bnum, int Apicnum)
 //----------------------------------------------------------------------
 void DrawClouds()
 {
-    if (Where != 0) return;
+    if (Where != 0)
+    {
+        return;
+    }
     for (int i = 0; i < (int)Cloud.size(); i++)
     {
         DrawCPic(Cloud[i].Picnum, Cloud[i].Positionx, Cloud[i].Positiony,
@@ -805,7 +1050,9 @@ void DrawClouds()
         Cloud[i].Positionx += Cloud[i].Speedx;
         Cloud[i].Positiony += Cloud[i].Speedy;
         if (Cloud[i].Positionx > CENTER_X * 2 + 200)
+        {
             CloudCreateOnSide(i);
+        }
     }
 }
 
@@ -826,6 +1073,7 @@ void DrawProgress()
         }
         // 按进度排序
         for (int i = 0; i < BRoleAmount - 1; i++)
+        {
             for (int j = i + 1; j < BRoleAmount; j++)
             {
                 if (p[i] <= p[j])
@@ -834,11 +1082,14 @@ void DrawProgress()
                     std::swap(rangeArr[i], rangeArr[j]);
                 }
             }
+        }
         for (int i = 0; i < BRoleAmount; i++)
+        {
             if (Brole[rangeArr[i]].Dead == 0)
             {
                 DrawHeadPic(Rrole[Brole[rangeArr[i]].rnum].HeadNum, p[i] + x, y, 0, 0, 0, 0, 0.25f, 0.25f);
             }
+        }
     }
 }
 
@@ -882,12 +1133,18 @@ void DrawTextWithRect(const std::string& word, int x, int y, int w, uint32 color
     len = std::max((w + 9) / 10, len);
     DrawTextFrame(x, y, len, alpha);
     DrawShadowText(word, x + 19, y + 3, color1, color2);
-    if (Refresh != 0) UpdateAllScreen();
+    if (Refresh != 0)
+    {
+        UpdateAllScreen();
+    }
 }
 
 void DrawVirtualKey()
 {
-    if (CellPhone == 0 || ShowVirtualKey == 0) return;
+    if (CellPhone == 0 || ShowVirtualKey == 0)
+    {
+        return;
+    }
     int u = 50, d = 50, l = 50, r = 50;
     switch (VirtualKeyValue)
     {
