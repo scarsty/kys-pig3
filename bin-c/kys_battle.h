@@ -131,15 +131,15 @@ void ModifyRange(int bnum, int mnum, int& step, int& range);
 // 魔法/武功
 void ShowMagicName(int mnum, const std::string& str = "");
 int SelectMagic(int rnum);
-void SetAminationPosition(int mode, int step, int range, int aimMode);
-void SetAminationPosition(int bx, int by, int ax, int ay, int mode, int step, int range, int aimMode);
+void SetAminationPosition(int mode, int step, int range, int aimMode = 0);
+void SetAminationPosition(int bx, int by, int ax, int ay, int mode, int step, int range, int aimMode = 0);
 void PlayMagicAmination(int bnum, int eNum, int aimMode = 0, int mode = 0);
 void PlayActionAmination(int bnum, int mode);
 
 // 伤害计算
-void CalHurtRole(int bnum, int mnum, int level, int mode);
+void CalHurtRole(int bnum, int mnum, int level, int mode = 0);
 int CalHurtValue(int bnum1, int bnum2, int mnum, int level, int mode);
-int CalHurtValue2(int bnum1, int bnum2, int mnum, int level, int mode);
+int CalHurtValue2(int bnum1, int bnum2, int mnum, int level, int mode = 0);
 void SelectColor(int mode, uint32& color1, uint32& color2, std::string& formatstr);
 void ShowHurtValue(int mode, int team = 0, const std::string& fstr = "");
 void ShowStringOnBrole(const std::string& str, int bnum, int mode = 0, int up = 0);

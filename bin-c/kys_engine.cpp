@@ -9,6 +9,7 @@
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3_mixer/SDL_mixer.h>
+#include <SDL3_image/SDL_image.h>
 
 #include "filefunc.h"
 #include "strfunc.h"
@@ -191,7 +192,7 @@ void PlayMP3(int MusicNum, int times, int frombeginning)
     }
 }
 
-void PlayMP3(const char* filename, int times) { /* TODO */ }
+void PlayMP3(const char* filename, int times) { /* stub - Pascal也是空实现 */ }
 
 void StopMP3(int frombeginning)
 {
@@ -259,7 +260,7 @@ void PlaySoundA(int SoundNum, int times)
 }
 
 void PlaySound(int SoundNum) { PlaySound(SoundNum, 0); }
-void PlaySound(const char* filename, int times) { /* TODO */ }
+void PlaySound(const char* filename, int times) { /* stub - Pascal也是空实现 */ }
 
 //----------------------------------------------------------------------
 // 基本绘图
@@ -373,6 +374,101 @@ int utf8follow(char c1)
     return 4;
 }
 
+void* CreateFontTile(int num, int usesur, int& w, int& h)
+{
+    int size0, size;
+    TTF_Font* pfont;
+    uint8_t word[5] = { 32, 0, 0, 0, 0 };
+    SDL_Rect src;
+    const char* pt;
+
+    if (num >= 128)
+    {
+        size0 = CHINESE_FONT_SIZE;
+        size = CHINESE_FONT_REALSIZE;
+        pfont = Font;
+        src.x = CHNFONT_SPACEWIDTH;
+        src.y = 0;
+        word[0] = 32;
+        word[1] = (uint8_t)(num & 0xFF);
+        word[2] = (uint8_t)((num >> 8) & 0xFF);
+        word[3] = (uint8_t)((num >> 16) & 0xFF);
+        pt = (const char*)&word[1];
+    }
+    else
+    {
+        size0 = ENGLISH_FONT_SIZE;
+        size = ENGLISH_FONT_REALSIZE;
+        pfont = EngFont;
+        src.x = 0;
+        src.y = 0;
+        word[0] = (uint8_t)num;
+        word[1] = 0;
+        pt = (const char*)&word[0];
+    }
+
+    int key = (size << 24) | num;
+
+    auto it = CharTex.find(key);
+    if (it != CharTex.end())
+    {
+        if (usesur == 0)
+        {
+            SDL_Texture* tex = (SDL_Texture*)it->second;
+            float wf, hf;
+            SDL_GetTextureSize(tex, &wf, &hf);
+            w = (int)wf;
+            h = (int)hf;
+            return tex;
+        }
+        else
+        {
+            SDL_Surface* sur = (SDL_Surface*)it->second;
+            w = sur->w;
+            h = sur->h;
+            return sur;
+        }
+    }
+
+    SDL_Color whitecolor = { 255, 255, 255, 255 };
+    SDL_Surface* tempsur = TTF_RenderText_Blended(pfont, (const char*)word, 0, whitecolor);
+    if (tempsur)
+    {
+        src.w = tempsur->w - src.x;
+        src.h = tempsur->h;
+    }
+    else
+    {
+        src.w = 0;
+        src.h = 0;
+    }
+    SDL_Rect dst = { 0, 0, src.w, src.h };
+    w = src.w;
+    h = src.h;
+
+    SDL_Surface* sur = SDL_CreateSurface(dst.w, dst.h,
+        SDL_GetPixelFormatForMasks(32, RMask, GMask, BMask, AMask));
+    if (tempsur)
+    {
+        SDL_SetSurfaceBlendMode(tempsur, SDL_BLENDMODE_NONE);
+        SDL_BlitSurface(tempsur, &src, sur, &dst);
+        SDL_DestroySurface(tempsur);
+    }
+
+    if (usesur == 0)
+    {
+        SDL_Texture* tex = SDL_CreateTextureFromSurface(render, sur);
+        SDL_DestroySurface(sur);
+        CharTex[key] = tex;
+        return tex;
+    }
+    else
+    {
+        CharTex[key] = sur;
+        return sur;
+    }
+}
+
 void DrawText(const std::string& word, int x_pos, int y_pos, uint32 color, int engwidth)
 {
     if (word.empty()) return;
@@ -409,8 +505,27 @@ void DrawText(const std::string& word, int x_pos, int y_pos, uint32 color, int e
             i += len;
         }
 
-        // TODO: CreateFontTile 渲染单个字符
-        // 简化处理, 直接使用TTF渲染
+        // 使用CreateFontTile渲染单个字符
+        int cw, charh;
+        void* tile = CreateFontTile(k, SW_SURFACE, cw, charh);
+        if (tile)
+        {
+            if (SW_SURFACE == 0)
+            {
+                SDL_Texture* tex = (SDL_Texture*)tile;
+                SDL_SetTextureColorMod(tex, r, g, b);
+                dest.w = (float)cw;
+                dest.h = (float)charh;
+                SDL_RenderTexture(render, tex, nullptr, &dest);
+            }
+            else
+            {
+                SDL_Surface* sur = (SDL_Surface*)tile;
+                SDL_SetSurfaceColorMod(sur, r, g, b);
+                SDL_Rect destrect = { (int)dest.x, (int)dest.y, cw, charh };
+                SDL_BlitSurface(sur, nullptr, screen, &destrect);
+            }
+        }
         if (k >= 128)
             dest.x += CHINESE_FONT_REALSIZE;
         else
@@ -891,7 +1006,26 @@ uint32 CheckBasicEvent()
         {
             int x, y;
             SDL_GetMouseState2(x, y);
-            // TODO: 虚拟按键检测
+            auto inVirtualKey = [&](int mx, int my, uint32& key) -> uint32 {
+                key = 0;
+                if (InRegion(mx, my, VirtualKeyX, VirtualKeyY, VirtualKeySize, VirtualKeySize))
+                    key = SDLK_UP;
+                if (InRegion(mx, my, VirtualKeyX - VirtualKeySize - VirtualKeySpace, VirtualKeyY + VirtualKeySize + VirtualKeySpace, VirtualKeySize, VirtualKeySize))
+                    key = SDLK_LEFT;
+                if (InRegion(mx, my, VirtualKeyX, VirtualKeyY + VirtualKeySize * 2 + VirtualKeySpace * 2, VirtualKeySize, VirtualKeySize))
+                    key = SDLK_DOWN;
+                if (InRegion(mx, my, VirtualKeyX + VirtualKeySize + VirtualKeySpace, VirtualKeyY + VirtualKeySize, VirtualKeySize + VirtualKeySpace, VirtualKeySize))
+                    key = SDLK_RIGHT;
+                return key;
+            };
+            uint32 vk = 0;
+            inVirtualKey(x, y, vk);
+            VirtualKeyValue = vk;
+            if (VirtualKeyValue != 0)
+            {
+                event.type = SDL_EVENT_KEY_DOWN;
+                event.key.key = VirtualKeyValue;
+            }
         }
         break;
     case SDL_EVENT_KEY_UP:
@@ -900,7 +1034,71 @@ uint32 CheckBasicEvent()
         {
             int x, y;
             SDL_GetMouseState2(x, y);
-            // TODO: 触屏按钮转换
+            auto inEscape = [](int mx, int my) -> bool {
+                return InRegion(mx, my, CENTER_X * 2 - 100, CENTER_Y * 2 - 200, 100, 100)
+                    || InRegion(mx, my, CENTER_X + 50, CENTER_Y * 2 - 70, 60, 60);
+            };
+            auto inReturn = [](int mx, int my) -> bool {
+                return InRegion(mx, my, CENTER_X * 2 - 200, CENTER_Y * 2 - 100, 100, 100);
+            };
+            auto inTab = [](int mx, int my) -> bool {
+                return InRegion(mx, my, CENTER_X - 120, CENTER_Y * 2 - 70, 60, 60);
+            };
+            auto inSwitchShowVirtualKey = [](int mx, int my) -> bool {
+                return (mx < 100) && (my > CENTER_Y * 2 - 100);
+            };
+            auto inVirtualKey = [&](int mx, int my, uint32& key) -> uint32 {
+                key = 0;
+                if (InRegion(mx, my, VirtualKeyX, VirtualKeyY, VirtualKeySize, VirtualKeySize))
+                    key = SDLK_UP;
+                if (InRegion(mx, my, VirtualKeyX - VirtualKeySize - VirtualKeySpace, VirtualKeyY + VirtualKeySize + VirtualKeySpace, VirtualKeySize, VirtualKeySize))
+                    key = SDLK_LEFT;
+                if (InRegion(mx, my, VirtualKeyX, VirtualKeyY + VirtualKeySize * 2 + VirtualKeySpace * 2, VirtualKeySize, VirtualKeySize))
+                    key = SDLK_DOWN;
+                if (InRegion(mx, my, VirtualKeyX + VirtualKeySize + VirtualKeySpace, VirtualKeyY + VirtualKeySize, VirtualKeySize + VirtualKeySpace, VirtualKeySize))
+                    key = SDLK_RIGHT;
+                return key;
+            };
+            if (inEscape(x, y))
+            {
+                event.button.button = SDL_BUTTON_RIGHT;
+                event.key.key = SDLK_ESCAPE;
+            }
+            else if (inReturn(x, y))
+            {
+                event.type = SDL_EVENT_KEY_UP;
+                event.key.key = SDLK_RETURN;
+            }
+            else if (inTab(x, y))
+            {
+                event.type = SDL_EVENT_KEY_UP;
+                event.key.key = SDLK_TAB;
+            }
+            else if (ShowVirtualKey != 0)
+            {
+                uint32 vk = 0;
+                inVirtualKey(x, y, vk);
+                if (vk != 0)
+                {
+                    event.type = SDL_EVENT_KEY_UP;
+                    event.key.key = vk;
+                }
+                else if (VirtualKeyValue != 0)
+                {
+                    event.key.key = 0;
+                }
+            }
+            else if (inSwitchShowVirtualKey(x, y))
+            {
+                ShowVirtualKey = (ShowVirtualKey != 0) ? 0 : 1;
+                event.key.key = 0;
+            }
+            else if (Where == 2 && BattleSelecting)
+            {
+                event.button.button = 0;
+            }
+            if (FingerCount >= 1)
+                event.button.button = 0;
         }
         if (Where == 2 && (event.key.key == SDLK_ESCAPE || event.button.button == SDL_BUTTON_RIGHT))
         {
@@ -972,6 +1170,29 @@ void ChangeCol()
 //----------------------------------------------------------------------
 // IO / 贴图
 //----------------------------------------------------------------------
+
+// 从zip中读取文件内容（返回string）
+std::string zip_express(zip_t* z, const std::string& filename)
+{
+    std::string result;
+    if (!z) return result;
+    zip_file_t* zf = zip_fopen(z, filename.c_str(), ZIP_FL_UNCHANGED);
+    if (!zf) return result;
+    zip_stat_t zs;
+    zip_stat_init(&zs);
+    if (zip_stat(z, filename.c_str(), ZIP_FL_UNCHANGED, &zs) != 0)
+    {
+        zip_fclose(zf);
+        return result;
+    }
+    int len = (int)zs.size;
+    result.resize(len);
+    zip_int64_t bytes_read = zip_fread(zf, &result[0], len);
+    if (bytes_read < 0) result.clear();
+    zip_fclose(zf);
+    return result;
+}
+
 void InitialPicArrays()
 {
     if (PNG_TILE > 0)
@@ -985,7 +1206,10 @@ void InitialPicArrays()
 
         if (PNG_TILE == 2 && PNG_LOAD_ALL == 0)
         {
-            // TODO: zip_open for tiles
+            pMPic = zip_open((AppPath + "resource/mmap.zip").c_str(), ZIP_RDONLY, nullptr);
+            pSPic = zip_open((AppPath + "resource/smap.zip").c_str(), ZIP_RDONLY, nullptr);
+            pHPic = zip_open((AppPath + "resource/head.zip").c_str(), ZIP_RDONLY, nullptr);
+            pIPic = zip_open((AppPath + "resource/item.zip").c_str(), ZIP_RDONLY, nullptr);
         }
         ReadTiles();
     }
@@ -1005,7 +1229,13 @@ void ReadTiles()
 
 int LoadPNGTilesThread(void* Data)
 {
-    // TODO: 多线程加载贴图
+    TLoadTileData* d = (TLoadTileData*)Data;
+    TPNGIndex* pIndex = d->beginIndex;
+    for (int i = 0; i < d->amount; i++)
+    {
+        LoadOnePNGTexture(d->path, d->filemem, *pIndex);
+        pIndex++;
+    }
     return 0;
 }
 
@@ -1065,71 +1295,362 @@ TIDXGRP LoadIdxGrp(const std::string& stridx, const std::string& strgrp)
 
 int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int LoadPic, int16_t* frame)
 {
-    // TODO: 完整的PNG贴图索引加载
+    const int maxCount = 9999;
     int result = 0;
+    std::vector<int16_t> offset;
+    zip_t* z = nullptr;
+    std::string localpath = path;
+
+    // 从index文本/二进制中解析偏移，返回最大索引+1
+    auto FillOffsetsFromNumbers = [&](const std::vector<int>& values) {
+        int maxIndex = -1;
+        for (size_t idx = 0; idx < values.size() / 3; idx++)
+            if (values[idx * 3] > maxIndex)
+                maxIndex = values[idx * 3];
+        if (maxIndex < 0) { result = 0; offset.clear(); return; }
+        result = maxIndex + 1;
+        offset.assign(result * 2, 0);
+        for (size_t idx = 0; idx < values.size() / 3; idx++)
+        {
+            int id = values[idx * 3];
+            if (id >= 0 && id < result)
+            {
+                offset[id * 2] = (int16_t)values[idx * 3 + 1];
+                offset[id * 2 + 1] = (int16_t)values[idx * 3 + 2];
+            }
+        }
+    };
 
     // 尝试从zip加载
     if (PNG_TILE == 2)
     {
-        // TODO: zip加载
-    }
-
-    // 从文件夹加载
-    if (PNG_TILE == 1 || result == 0)
-    {
-        std::string fullpath = AppPath + path + "/";
-        std::string indexFile = fullpath + "index.ka";
-        if (filefunc::fileExist(indexFile))
+        kyslog("Searching file %s.zip", (path).c_str());
+        z = zip_open((AppPath + path + ".zip").c_str(), ZIP_RDONLY, nullptr);
+        if (z)
         {
-            std::string data = filefunc::readFileToString(indexFile);
-            result = (int)(data.size() / 4);
-            std::vector<int16_t> offset(result * 2 + 2, 0);
-            if (!data.empty())
-                memcpy(offset.data(), data.data(), std::min(data.size(), offset.size() * 2));
+            // 先尝试 index.txt，再 fallback index.ka
+            std::string indexText = zip_express(z, "index.txt");
+            if (!indexText.empty())
+            {
+                std::replace(indexText.begin(), indexText.end(), ':', ',');
+                auto nums = strfunc::findNumbers<int>(indexText);
+                FillOffsetsFromNumbers(nums);
+            }
+            else
+            {
+                std::string buf = zip_express(z, "index.ka");
+                offset.resize(buf.size() / 2 + 2, 0);
+                if (!buf.empty())
+                    memcpy(offset.data(), buf.data(), buf.size());
+                result = (int)(buf.size() / 4);
+            }
 
+            // fightframe.txt
+            if (frame)
+            {
+                auto nums = strfunc::findNumbers<int>(zip_express(z, "fightframe.txt"));
+                for (size_t i = 0; i < nums.size() / 2; i++)
+                    frame[nums[i * 2]] = (int16_t)nums[i * 2 + 1];
+            }
+
+            // 扫描zip中最大文件编号
+            for (int i = std::max(std::max(result - 1, 0), maxCount); i >= 0; i--)
+            {
+                if (zip_name_locate(z, (std::to_string(i) + ".png").c_str(), 0) >= 0 ||
+                    zip_name_locate(z, (std::to_string(i) + "_0.png").c_str(), 0) >= 0)
+                {
+                    if (i + 1 > result) result = i + 1;
+                    break;
+                }
+            }
+            offset.resize(result * 2, 0);
+
+            // 初始化贴图索引, 计算全部帧数和
             PNGIndexArray.resize(result);
             int count = 0;
             for (int i = 0; i < result; i++)
             {
-                PNGIndexArray[i].FileNum = i;
-                PNGIndexArray[i].PointerNum = count;
-                PNGIndexArray[i].Frame = 1;
-                PNGIndexArray[i].x = offset[i * 2];
-                PNGIndexArray[i].y = offset[i * 2 + 1];
-                PNGIndexArray[i].Loaded = 0;
-                PNGIndexArray[i].UseGRP = 0;
-                PNGIndexArray[i].Pointers.resize(1, nullptr);
-                count++;
+                auto& idx = PNGIndexArray[i];
+                idx.FileNum = i;
+                idx.PointerNum = 1;
+                idx.Frame = 1;
+                if (zip_name_locate(z, (std::to_string(i) + ".png").c_str(), 0) >= 0)
+                {
+                    idx.PointerNum = count;
+                    idx.Frame = 1;
+                    count++;
+                }
+                else
+                {
+                    int k = 0;
+                    while (zip_name_locate(z, (std::to_string(i) + "_" + std::to_string(k) + ".png").c_str(), 0) >= 0)
+                    {
+                        k++;
+                        if (k == 1) idx.PointerNum = count;
+                        count++;
+                    }
+                    idx.Frame = k;
+                }
+                idx.x = offset[i * 2];
+                idx.y = offset[i * 2 + 1];
+                idx.Loaded = 0;
+                idx.UseGRP = 0;
+                idx.Pointers.assign(idx.Frame, nullptr);
             }
         }
+        else
+        {
+            kyslog("Can't find zip file");
+        }
     }
+
+    // 从文件夹加载 (PNG_TILE==1 或 zip打开失败)
+    if (PNG_TILE == 1 || z == nullptr)
+    {
+        kyslog("Searching index of png files %s/index.txt", (path).c_str());
+        localpath = path + "/";
+
+        // fightframe.txt
+        if (frame)
+        {
+            memset(frame, 0, 10);
+            auto nums = strfunc::findNumbers<int>(filefunc::readFileToString(AppPath + localpath + "fightframe.txt"));
+            for (size_t i = 0; i < nums.size() / 2; i++)
+                frame[nums[i * 2]] = (int16_t)nums[i * 2 + 1];
+        }
+
+        // 先尝试 index.txt，再 fallback index.ka
+        if (filefunc::fileExist(AppPath + localpath + "index.txt"))
+        {
+            std::string indexText = filefunc::readFileToString(AppPath + localpath + "index.txt");
+            std::replace(indexText.begin(), indexText.end(), ':', ',');
+            auto nums = strfunc::findNumbers<int>(indexText);
+            FillOffsetsFromNumbers(nums);
+        }
+        else
+        {
+            kyslog("index.txt not found, fallback to %s/index.ka", (path).c_str());
+            std::string data = filefunc::readFileToString(AppPath + localpath + "index.ka");
+            offset.resize(data.size() / 2 + 2, 0);
+            if (!data.empty())
+                memcpy(offset.data(), data.data(), data.size());
+            result = (int)(data.size() / 4);
+        }
+
+        // 扫描文件夹中最大文件编号
+        for (int i = maxCount; i >= 0; i--)
+        {
+            if (filefunc::fileExist(AppPath + localpath + std::to_string(i) + ".png") ||
+                filefunc::fileExist(AppPath + localpath + std::to_string(i) + "_0.png"))
+            {
+                if (i + 1 > result) result = i + 1;
+                break;
+            }
+        }
+
+        PNGIndexArray.resize(result);
+        offset.resize(result * 2, 0);
+
+        // 计算合法贴图文件总数, 并指定索引数据
+        int count = 0;
+        for (int i = 0; i < result; i++)
+        {
+            auto& idx = PNGIndexArray[i];
+            idx.FileNum = i;
+            idx.PointerNum = -1;
+            idx.Frame = 0;
+            if (filefunc::fileExist(AppPath + localpath + std::to_string(i) + ".png"))
+            {
+                idx.PointerNum = count;
+                idx.Frame = 1;
+                count++;
+            }
+            else
+            {
+                int k = 0;
+                while (filefunc::fileExist(AppPath + localpath + std::to_string(i) + "_" + std::to_string(k) + ".png"))
+                {
+                    k++;
+                    if (k == 1) idx.PointerNum = count;
+                    count++;
+                }
+                idx.Frame = k;
+            }
+            idx.x = offset[i * 2];
+            idx.y = offset[i * 2 + 1];
+            idx.Loaded = 0;
+            idx.UseGRP = 0;
+            idx.Pointers.assign(idx.Frame, nullptr);
+        }
+    }
+
+    kyslog("%d index, %d real tiles", result, (int)PNGIndexArray.size());
+
+    if (LoadPic == 1)
+    {
+        kyslog("Now loading...");
+        for (int i = 0; i < result; i++)
+            LoadOnePNGTexture(localpath, z, PNGIndexArray[i], 1);
+        kyslog("end");
+    }
+    if (z) zip_close(z);
     return result;
 }
 
+// 前置声明
+bool LoadTileFromFile(const std::string& filename, void*& pt, int usesur, int& w, int& h);
+bool LoadTileFromMem(const char* p, int len, void*& pt, int usesur, int& w, int& h);
+
 void LoadOnePNGTexture(const std::string& path, void* z, TPNGIndex& PNGIndex, int forceLoad)
 {
-    // TODO: 从文件/zip载入一张PNG贴图
     if (PNGIndex.Loaded != 0 && forceLoad == 0) return;
-    // 加载逻辑
-    PNGIndex.Loaded = 1;
+    bool frommem = (PNG_TILE == 2) && (z != nullptr);
+    std::string localpath = path;
+    if (!frommem) localpath = path;  // path already includes trailing '/'
+
+    auto& idx = PNGIndex;
+    if ((idx.Loaded == 0 || forceLoad == 1) && idx.PointerNum >= 0 && idx.Frame > 0)
+    {
+        idx.Loaded = 1;
+        idx.w = 0;
+        idx.h = 0;
+
+        if (frommem)
+        {
+            idx.Frame = 1;
+            std::string buf = zip_express((zip_t*)z, std::to_string(idx.FileNum) + ".png");
+            if (!buf.empty())
+            {
+                LoadTileFromMem(buf.data(), (int)buf.size(), idx.Pointers[0], SW_SURFACE, idx.w, idx.h);
+            }
+            else
+            {
+                idx.Pointers.resize(10, nullptr);
+                for (int i = 0; i < 10; i++)
+                {
+                    buf = zip_express((zip_t*)z, std::to_string(idx.FileNum) + "_" + std::to_string(i) + ".png");
+                    if (!buf.empty())
+                    {
+                        LoadTileFromMem(buf.data(), (int)buf.size(), idx.Pointers[i], SW_SURFACE, idx.w, idx.h);
+                    }
+                    else
+                    {
+                        idx.Frame = i;
+                        idx.PointerNum = 0;
+                        break;
+                    }
+                }
+                idx.Pointers.resize(idx.Frame);
+            }
+        }
+        else
+        {
+            if (idx.Frame == 1)
+            {
+                if (!LoadTileFromFile(AppPath + localpath + std::to_string(idx.FileNum) + ".png",
+                    idx.Pointers[0], SW_SURFACE, idx.w, idx.h))
+                {
+                    LoadTileFromFile(AppPath + localpath + std::to_string(idx.FileNum) + "_0.png",
+                        idx.Pointers[0], SW_SURFACE, idx.w, idx.h);
+                }
+            }
+            if (idx.Frame > 1)
+            {
+                int w1, h1;
+                for (int j = 0; j < idx.Frame; j++)
+                {
+                    LoadTileFromFile(AppPath + localpath + std::to_string(idx.FileNum) + "_" + std::to_string(j) + ".png",
+                        idx.Pointers[j], SW_SURFACE, w1, h1);
+                    if (j == 0) { idx.w = w1; idx.h = h1; }
+                }
+            }
+        }
+    }
+    idx.Loaded = 1;
 }
 
 bool LoadTileFromFile(const std::string& filename, void*& pt, int usesur, int& w, int& h)
 {
-    // TODO: 从文件加载贴图
+    pt = nullptr;
+    if (!filefunc::fileExist(filename)) return false;
+    if (usesur == 0)
+    {
+        SDL_Surface* tempscr = IMG_Load(filename.c_str());
+        if (!tempscr) return false;
+        pt = SDL_CreateTextureFromSurface(render, tempscr);
+        SDL_DestroySurface(tempscr);
+        if (pt)
+        {
+            SDL_SetTextureBlendMode((SDL_Texture*)pt, SDL_BLENDMODE_BLEND);
+            float wf, hf;
+            SDL_GetTextureSize((SDL_Texture*)pt, &wf, &hf);
+            w = (int)wf;
+            h = (int)hf;
+            return true;
+        }
+    }
+    else
+    {
+        SDL_Surface* tempscr = IMG_Load(filename.c_str());
+        if (!tempscr) return false;
+        pt = SDL_ConvertSurface(tempscr, screen->format);
+        SDL_DestroySurface(tempscr);
+        if (pt)
+        {
+            w = ((SDL_Surface*)pt)->w;
+            h = ((SDL_Surface*)pt)->h;
+            return true;
+        }
+    }
     return false;
 }
 
 bool LoadTileFromMem(const char* p, int len, void*& pt, int usesur, int& w, int& h)
 {
-    // TODO: 从内存加载贴图
+    pt = nullptr;
+    SDL_IOStream* rwops = SDL_IOFromMem((void*)p, len);
+    if (!rwops) return false;
+    if (usesur == 0)
+    {
+        SDL_Surface* tempscr = IMG_Load_IO(rwops, false);
+        if (!tempscr) { SDL_CloseIO(rwops); return false; }
+        pt = SDL_CreateTextureFromSurface(render, tempscr);
+        SDL_DestroySurface(tempscr);
+        if (pt)
+        {
+            SDL_SetTextureBlendMode((SDL_Texture*)pt, SDL_BLENDMODE_BLEND);
+            float wf, hf;
+            SDL_GetTextureSize((SDL_Texture*)pt, &wf, &hf);
+            w = (int)wf;
+            h = (int)hf;
+            SDL_CloseIO(rwops);
+            return true;
+        }
+    }
+    else
+    {
+        SDL_Surface* tempscr = IMG_Load_IO(rwops, false);
+        if (!tempscr) { SDL_CloseIO(rwops); return false; }
+        pt = SDL_ConvertSurface(tempscr, screen->format);
+        SDL_DestroySurface(tempscr);
+        if (pt)
+        {
+            w = ((SDL_Surface*)pt)->w;
+            h = ((SDL_Surface*)pt)->h;
+            SDL_CloseIO(rwops);
+            return true;
+        }
+    }
+    SDL_CloseIO(rwops);
     return false;
 }
 
 std::string LoadStringFromIMZMEM(const std::string& path, const char* p, int num)
 {
-    // TODO
-    return "";
+    int off = *(int*)(p + 4 + num * 4) + 8;
+    int index = *(int*)(p + off);
+    int len = *(int*)(p + off + 4);
+    return std::string(p + index, len);
 }
 
 void DestroyAllTextures(int all)
@@ -1203,12 +1724,79 @@ void DrawPNGTileS(SDL_Surface* scr, TPNGIndex& PNGIndex, int FrameNum, int px, i
     SDL_Rect* region, int shadow, int alpha, uint32 mixColor, int mixAlpha,
     double scalex, double scaley, double angle)
 {
-    // TODO: Surface模式的贴图绘制
+    if (PNGIndex.Frame == 0) return;
+    SDL_Surface* sur = (SDL_Surface*)PNGIndex.Pointers[0];
+    if (PNGIndex.Frame > 1)
+        sur = (SDL_Surface*)PNGIndex.Pointers[FrameNum % PNGIndex.Frame];
+    if (!sur) return;
+
+    SDL_Rect rect;
+    rect.x = px - PNGIndex.x;
+    rect.y = py - PNGIndex.y;
+    if (region == nullptr) { rect.w = PNGIndex.w; rect.h = PNGIndex.h; }
+    else { rect.w = region->w; rect.h = region->h; }
+    if (scalex != 1 || scaley != 1)
+    {
+        rect.w = (int)(rect.w * scalex);
+        rect.h = (int)(rect.h * scaley);
+    }
+
+    bool newsur = false;
+
+    if (shadow < 0 && mixAlpha == 0)
+    {
+        mixColor = 0;
+        mixAlpha = -25 * shadow;
+    }
+    if (shadow > 0 && mixAlpha == 0)
+    {
+        mixColor = 0xFFFFFFFF;
+        mixAlpha = shadow * 25;
+    }
+
+    SDL_SetSurfaceColorMod(sur, 255, 255, 255);
+    SDL_SetSurfaceAlphaMod(sur, 255);
+
+    uint8_t r, g, b;
+    if (mixAlpha > 0 && shadow <= 0)
+    {
+        GetRGBA(mixColor, &r, &g, &b);
+        uint8_t r1 = (uint8_t)std::max(0, 255 - (255 + (int)g + (int)b) * mixAlpha / 100);
+        uint8_t g1 = (uint8_t)std::max(0, 255 - (255 + (int)r + (int)b) * mixAlpha / 100);
+        uint8_t b1 = (uint8_t)std::max(0, 255 - (255 + (int)r + (int)g) * mixAlpha / 100);
+        SDL_SetSurfaceColorMod(sur, r1, g1, b1);
+    }
+    if (mixAlpha < 0)
+    {
+        SDL_GetRGB(mixColor, SDL_GetPixelFormatDetails(scr->format), SDL_GetSurfacePalette(scr), &r, &g, &b);
+        SDL_SetSurfaceColorMod(sur, r, g, b);
+    }
+    if (mixAlpha > 0 && shadow > 0)
+    {
+        GetRGBA(mixColor, &r, &g, &b);
+        SDL_Surface* sur1 = sur;
+        sur = SDL_ConvertSurface(sur1, screen->format);
+        SDL_Surface* sur2 = SDL_ConvertSurface(sur1, screen->format);
+        newsur = true;
+        SDL_SetSurfaceColorMod(sur2, r, g, b);
+        SDL_SetSurfaceAlphaMod(sur2, (uint8_t)(255 * mixAlpha / 100));
+        SDL_SetSurfaceBlendMode(sur2, SDL_BLENDMODE_ADD);
+        SDL_BlitSurface(sur2, nullptr, sur, nullptr);
+        SDL_DestroySurface(sur2);
+    }
+    if (alpha > 0)
+    {
+        SDL_SetSurfaceAlphaMod(sur, (uint8_t)(255 * (100 - alpha) / 100));
+    }
+
+    SDL_BlitSurface(sur, region, scr, &rect);
+    if (newsur) SDL_DestroySurface(sur);
 }
 
 bool PlayMovie(const std::string& filename)
 {
-    // TODO: 使用potdll播放视频
+    // PotPlayVideo is from potdll, requires runtime DLL loading
+    // Pascal implementation also just calls PotPlayVideo(smallpot, filename, volume)
     return false;
 }
 
@@ -1307,7 +1895,58 @@ void LoadTeamSimpleStatus(int& max)
 
 void DrawSimpleStatusByTeam(int i, int px, int py, uint32 mixColor, int mixAlpha)
 {
-    // TODO
+    int x = 0, y = 0, w = 270, h = 90;
+    SDL_Rect dest = { px, py, w, h };
+    SDL_Rect rectcut = { x, y, w, h };
+    GetRealRect(rectcut.x, rectcut.y, rectcut.w, rectcut.h);
+    SDL_Rect dest2 = dest;
+    GetRealRect(dest2.x, dest2.y, dest2.w, dest2.h);
+
+    uint8_t r, g, b, r1, g1, b1;
+    GetRGBA(mixColor, &r, &g, &b);
+    r1 = (uint8_t)std::max(0, 255 - (255 + (int)g + (int)b) * mixAlpha / 100);
+    g1 = (uint8_t)std::max(0, 255 - (255 + (int)r + (int)b) * mixAlpha / 100);
+    b1 = (uint8_t)std::max(0, 255 - (255 + (int)r + (int)g) * mixAlpha / 100);
+
+    if (SW_SURFACE == 0)
+    {
+        if (mixAlpha > 0)
+            SDL_SetTextureColorMod(SimpleStatusTex[i], r1, g1, b1);
+        else
+            SDL_SetTextureColorMod(SimpleStatusTex[i], 255, 255, 255);
+        SDL_FRect destf = rect2f(dest);
+        SDL_RenderTexture(render, SimpleStatusTex[i], nullptr, &destf);
+
+        if (TEXT_LAYER == 1)
+        {
+            if (mixAlpha > 0)
+                SDL_SetTextureColorMod(SimpleTextTex[i], r1, g1, b1);
+            else
+                SDL_SetTextureColorMod(SimpleTextTex[i], 255, 255, 255);
+            SDL_SetRenderTarget(render, TextScreenTex);
+            SDL_FRect destf2 = rect2f(dest2);
+            SDL_FRect rectcutf = rect2f(rectcut);
+            SDL_RenderTexture(render, SimpleTextTex[i], &rectcutf, &destf2);
+            SDL_SetRenderTarget(render, screenTex);
+        }
+    }
+    else
+    {
+        if (mixAlpha > 0)
+            SDL_SetSurfaceColorMod(SimpleStatus[i], r1, g1, b1);
+        else
+            SDL_SetSurfaceColorMod(SimpleStatus[i], 255, 255, 255);
+        SDL_BlitSurface(SimpleStatus[i], nullptr, screen, &dest);
+
+        if (TEXT_LAYER == 1)
+        {
+            if (mixAlpha > 0)
+                SDL_SetSurfaceColorMod(SimpleText[i], r1, g1, b1);
+            else
+                SDL_SetSurfaceColorMod(SimpleText[i], 255, 255, 255);
+            SDL_BlitSurface(SimpleText[i], &rectcut, TextScreen, &dest2);
+        }
+    }
 }
 
 void FreeTeamSimpleStatus(SDL_Surface** SimpleStatusArr, int count)

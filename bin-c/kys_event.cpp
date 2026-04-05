@@ -13,6 +13,7 @@
 #include <cmath>
 #include <algorithm>
 #include <cstdio>
+#include "filefunc.h"
 
 // ---- 事件指令 ----
 
@@ -1150,10 +1151,32 @@ void TextAmi(const std::string& filename)
 // 结局动画
 void EndAmi()
 {
-    // 简化版：读取end.txt并滚动显示
+    std::string content = filefunc::readFileToString(AppPath + "txt/end.txt");
+    std::vector<std::string> words;
+    std::string line;
+    for (auto& ch : content)
+    {
+        if (ch == '\n') { words.push_back(line); line.clear(); }
+        else if (ch != '\r') { line += ch; }
+    }
+    if (!line.empty()) words.push_back(line);
+
     PlayMP3(StartMusic, -1);
-    // TODO: ScrollTextAmi + title pic animation
-    SDL_Delay(3000);
+    ScrollTextAmi(words, 22, 21, 25, 1, 40, 0, 30, -1, 0);
+
+    // title pic animation: scroll up from bottom
+    if (1 < (int)TitlePNGIndex.size())
+    {
+        int h = TitlePNGIndex[1].h;
+        for (int i = CENTER_Y * 2 - h; i <= 0; i++)
+        {
+            CheckBasicEvent();
+            DrawTPic(1, CENTER_X - 320, i);
+            UpdateAllScreen();
+            SDL_Delay(6);
+        }
+    }
+    SDL_Delay(1000);
     Maker();
 }
 
@@ -2337,9 +2360,103 @@ void MissionList(int mode)
 
 int Digging(int beginPic, int goal, int shovel, int restrict_val)
 {
-    // TODO: 完整的挖掘小游戏
-    // 简化：随机结果
-    return rand() % (goal + 1);
+    int position = 0;
+    int x = 80, y = 90;
+    int blankpic = beginPic + 2;
+    int holepic = blankpic + 2;
+    int goldpic = holepic + 2;
+    int moneypic = goldpic + 2;
+    int boompic = moneypic + 2;
+    int result = 0;
+    int Surface[81], outcome[81];
+    for (int i = 0; i < 81; i++) { Surface[i] = blankpic; outcome[i] = holepic; }
+    // 放置10个金子
+    int cnt = 0;
+    while (cnt < 10) { int n = rand() % 81; if (outcome[n] == holepic) { outcome[n] = goldpic; cnt++; } }
+    cnt = 0;
+    while (cnt < 10) { int n = rand() % 81; if (outcome[n] == holepic) { outcome[n] = boompic; cnt++; } }
+    cnt = 0;
+    while (cnt < 10) { int n = rand() % 81; if (outcome[n] == holepic) { outcome[n] = moneypic; cnt++; } }
+
+    DrawRectangle(x, y, 200, 200, 0, ColColor(0xFF), 40);
+    DrawRectangle(x, y - 30, 120, 30, 0, ColColor(0xFF), 40);
+    DrawRectangle(x - 32, y - 30, 32, 230, 0, ColColor(0xFF), 40);
+    for (int i = 0; i < 81; i++)
+    {
+        DrawSPic(blankpic / 2, (i % 9) * 20 + 10 + x, (i / 9) * 20 + 10 + y);
+        DrawSPic(outcome[i] / 2, (i % 9) * 20 + 10 + x, (i / 9) * 20 + 10 + y);
+    }
+    UpdateAllScreen();
+    SDL_Delay(3000);
+    Redraw();
+
+    std::vector<int> surfaceVec(Surface, Surface + 81);
+    ShowSurface(x, y, blankpic, surfaceVec);
+    DrawSPic(shovel / 2, (position % 9) * 20 + 10 + x, (position / 9) * 20 + 5 + y);
+    char goalstr[16]; snprintf(goalstr, sizeof(goalstr), "%d", goal);
+    DrawShadowText("\xe7\x9b\xae\xe6\xa8\x99:  X", x - 5, y - 25, ColColor(0x21), ColColor(0x23));
+    DrawSPic(goldpic / 2, 55 + x, y - 25);
+    DrawShadowText(goalstr, x + 85, y - 25, ColColor(0x21), ColColor(0x23));
+    for (int i = 0; i < restrict_val; i++)
+        DrawSPic(shovel / 2, x - 27, y - 29 + (10 - i) * 20);
+    UpdateAllScreen();
+
+    while (SDL_WaitEvent(&event))
+    {
+        CheckBasicEvent();
+        if (event.type == SDL_EVENT_KEY_UP)
+        {
+            if (event.key.key == SDLK_RETURN || event.key.key == SDLK_SPACE)
+            {
+                if (Surface[position] == blankpic)
+                {
+                    Surface[position] = outcome[position];
+                    restrict_val--;
+                    if (outcome[position] == boompic) restrict_val--;
+                    else if (outcome[position] == goldpic) result++;
+                    else if (outcome[position] == moneypic) instruct_2(MONEY_ID, 5);
+                }
+            }
+            else if (event.key.key == SDLK_RIGHT) position++;
+            else if (event.key.key == SDLK_LEFT) position--;
+            else if (event.key.key == SDLK_UP) position -= 9;
+            else if (event.key.key == SDLK_DOWN) position += 9;
+            if (position > 80) position -= 81;
+            if (position < 0) position += 81;
+        }
+        if (event.type == SDL_EVENT_MOUSE_BUTTON_UP)
+        {
+            int x1, y1;
+            if (MouseInRegion(x + 10, y + 10, 180, 180, x1, y1))
+            {
+                int p1 = position;
+                position = (x1 - 10 - x) / 20 + ((y1 - 10 - y) / 20) * 9;
+                if (position == p1)
+                {
+                    if (Surface[position] == blankpic)
+                    {
+                        Surface[position] = outcome[position];
+                        restrict_val--;
+                        if (outcome[position] == boompic) restrict_val--;
+                        else if (outcome[position] == goldpic) result++;
+                        else if (outcome[position] == moneypic) instruct_2(MONEY_ID, 5);
+                    }
+                }
+            }
+        }
+        Redraw();
+        surfaceVec.assign(Surface, Surface + 81);
+        ShowSurface(x, y, blankpic, surfaceVec);
+        DrawSPic(shovel / 2, (position % 9) * 20 + 10 + x, (position / 9) * 20 + 5 + y);
+        DrawShadowText("\xe7\x9b\xae\xe6\xa8\x99:  X", x - 5, y - 25, ColColor(0x21), ColColor(0x23));
+        DrawSPic(goldpic / 2, 55 + x, y - 25);
+        DrawShadowText(goalstr, x + 85, y - 25, ColColor(0x21), ColColor(0x23));
+        for (int i = 0; i < restrict_val; i++)
+            DrawSPic(shovel / 2, x - 27, y - 29 + (10 - i) * 20);
+        UpdateAllScreen();
+        if (restrict_val <= 0) { SDL_Delay(2000); WaitAnyKey(); break; }
+    }
+    return result;
 }
 
 void ShowSurface(int x, int y, int blank, const std::vector<int>& surface)
@@ -2354,14 +2471,192 @@ void ShowSurface(int x, int y, int blank, const std::vector<int>& surface)
 
 bool Lamp(int c, int beginpic, int whitecount, int chance)
 {
-    // TODO: 完整的点灯小游戏
-    return false;
+    int r = c;
+    int x = (CENTER_X * 2 - (c * 50)) / 2;
+    int y = (CENTER_Y * 2 - (r * 50)) / 2;
+    int pic2 = beginpic + 1;
+    int pic3 = beginpic + 2;
+    int menu = 0;
+    int total = c * r;
+    gamearray.resize(1);
+    gamearray[0].resize(total);
+    for (int i = 0; i < total; i++) gamearray[0][i] = beginpic;
+    for (int i = 0; i < whitecount; i++)
+    {
+        int t = rand() % total;
+        while (t == beginpic) t = rand() % total;
+        gamearray[0][t] = pic2;
+    }
+
+    auto toggleLamp = [&](int pos)
+    {
+        gamearray[0][pos] = (gamearray[0][pos] == beginpic) ? pic2 : beginpic;
+        if (pos % c > 0) gamearray[0][pos - 1] = (gamearray[0][pos - 1] == beginpic) ? pic2 : beginpic;
+        if (pos % c < c - 1) gamearray[0][pos + 1] = (gamearray[0][pos + 1] == beginpic) ? pic2 : beginpic;
+        if (pos / c > 0) gamearray[0][pos - c] = (gamearray[0][pos - c] == beginpic) ? pic2 : beginpic;
+        if (pos / c < r - 1) gamearray[0][pos + c] = (gamearray[0][pos + c] == beginpic) ? pic2 : beginpic;
+    };
+
+    auto drawAll = [&]()
+    {
+        DrawRectangleWithoutFrame(x - 10, y - 10, c * 50 + 20, r * 50 + 20, 0, 60);
+        for (int i = 0; i < total; i++)
+        {
+            DrawSPic(gamearray[0][i], x + (i % c) * 50, y + (i / c) * 50);
+            if (menu == i) DrawSPic(pic3, x + (menu % c) * 50, y + (menu / c) * 50);
+        }
+        UpdateAllScreen();
+    };
+    drawAll();
+    bool result = false;
+    while (SDL_WaitEvent(&event))
+    {
+        CheckBasicEvent();
+        int x1, y1;
+        if (event.type == SDL_EVENT_MOUSE_MOTION)
+        {
+            if (MouseInRegion(x, y, 50 * c, 50 * r, x1, y1))
+                menu = (x1 - x) / 50 + (y1 - y) / 50 * c;
+        }
+        if (event.type == SDL_EVENT_MOUSE_BUTTON_UP)
+        {
+            if (event.button.button == SDL_BUTTON_RIGHT) { result = false; break; }
+            if (event.button.button == SDL_BUTTON_LEFT)
+            {
+                if (MouseInRegion(x, y, 50 * c, 50 * r, x1, y1))
+                    menu = (x1 - x) / 50 + (y1 - y) / 50 * c;
+                toggleLamp(menu);
+            }
+        }
+        if (event.type == SDL_EVENT_KEY_UP)
+        {
+            if (event.key.key == SDLK_ESCAPE) { result = false; break; }
+            if (event.key.key == SDLK_UP) menu -= c;
+            if (event.key.key == SDLK_DOWN) menu += c;
+            if (event.key.key == SDLK_LEFT) menu--;
+            if (event.key.key == SDLK_RIGHT) menu++;
+            if (menu < 0) menu += total;
+            if (menu > total - 1) menu -= total;
+            if (event.key.key == SDLK_RETURN || event.key.key == SDLK_SPACE)
+                toggleLamp(menu);
+        }
+        drawAll();
+        result = true;
+        for (int i = 0; i < total; i++) { if (gamearray[0][i] == pic2) { result = false; break; } }
+        if (result) { SDL_Delay(1000); break; }
+    }
+    gamearray.clear();
+    return result;
 }
 
 bool SpellPicture(int num, int chance)
 {
-    // TODO: 完整的拼图小游戏
-    return false;
+    gamearray.resize(1);
+    gamearray[0].resize(25);
+    int menu = 0, menu2 = -1;
+    int x = 120, y = 20, w = 410, h = 440;
+    int right = 0;
+    int picnum = 4700 + num;
+    if (picnum >= SPicAmount) return false;
+    LoadOnePNGTexture("resource/smap", pSPic, SPNGIndex[picnum]);
+    void* pic = SPNGIndex[picnum].Pointers[0];
+    if (!pic) return false;
+
+    for (int i = 0; i < 25; i++) gamearray[0][i] = -1;
+    for (int i = 0; i < 25; i++)
+    {
+        while (true)
+        {
+            int r = rand() % 25;
+            if (gamearray[0][r] == -1 && i != r) { gamearray[0][r] = i; break; }
+        }
+    }
+
+    Redraw();
+    RecordFreshScreen(x - 5, y - 5, w + 1, h + 1);
+    // 先显示正确图 2 秒
+    DrawRectangle(x - 5, y - 5, w, h, 0, ColColor(255), 50);
+    for (int i = 0; i < 25; i++)
+        DrawPartPic(pic, ((24 - i) % 5) * 80, ((24 - i) / 5) * 80, 80, 80, (i % 5) * 80 + x, (i / 5) * 80 + y + 30);
+    UpdateAllScreen();
+    SDL_Delay(2000);
+
+    bool result = false;
+    auto drawPuzzle = [&]()
+    {
+        LoadFreshScreen(x - 5, y - 5);
+        DrawRectangle(x - 5, y - 5, w, h, 0, ColColor(255), 50);
+        for (int i = 0; i < 25; i++)
+            DrawPartPic(pic, ((24 - gamearray[0][i]) % 5) * 80, ((24 - gamearray[0][i]) / 5) * 80, 80, 80, (i % 5) * 80 + x, (i / 5) * 80 + y + 30);
+        if (menu2 > -1)
+            DrawRectangle((menu2 % 5) * 80 + x, (menu2 / 5) * 80 + y + 30, 80, 80, 0, ColColor(0x64), 0);
+        if (menu > -1)
+            DrawRectangle((menu % 5) * 80 + x, (menu / 5) * 80 + y + 30, 80, 80, 0, ColColor(0xFF), 0);
+        char word[32], word1[32];
+        snprintf(word, sizeof(word), "\xe6\xa9\x9f\xe6\x9c\x83%d", chance);
+        snprintf(word1, sizeof(word1), "\xe5\x91\xbd\xe4\xb8\xad%d", right);
+        DrawShadowText(word, x + 25, y + 5, ColColor(5), ColColor(7));
+        DrawShadowText(word1, x + 220, y + 5, ColColor(5), ColColor(7));
+        UpdateAllScreen();
+    };
+    drawPuzzle();
+
+    while (SDL_WaitEvent(&event))
+    {
+        CheckBasicEvent();
+        int xm, ym;
+        if (event.type == SDL_EVENT_KEY_UP)
+        {
+            int menu1 = menu;
+            if (event.key.key == SDLK_ESCAPE)
+            {
+                if (menu2 > -1) menu2 = -1;
+                else { result = false; break; }
+            }
+            if (event.key.key == SDLK_UP) menu -= 5;
+            if (event.key.key == SDLK_DOWN) menu += 5;
+            if (event.key.key == SDLK_LEFT) menu--;
+            if (event.key.key == SDLK_RIGHT) menu++;
+            if (menu > 24) menu -= 25;
+            if (menu < 0) menu += 25;
+            if (event.key.key == SDLK_RETURN || event.key.key == SDLK_SPACE)
+            {
+                if (menu2 > -1) { ExchangePic(menu, menu2); menu2 = -1; chance--; }
+                else if (menu > -1) menu2 = menu;
+            }
+        }
+        if (event.type == SDL_EVENT_MOUSE_MOTION)
+        {
+            if (MouseInRegion(x, y, w - 5, h - 5, xm, ym))
+            {
+                int oldm = menu;
+                menu = (xm - x) / 80 + (ym - y - 30) / 80 * 5;
+                if (menu > 24) menu = -1;
+            }
+        }
+        if (event.type == SDL_EVENT_MOUSE_BUTTON_UP)
+        {
+            if (event.button.button == SDL_BUTTON_RIGHT)
+            {
+                if (menu2 > -1) menu2 = -1;
+                else { result = false; break; }
+            }
+            if (event.button.button == SDL_BUTTON_LEFT)
+            {
+                if (menu2 > -1) { ExchangePic(menu, menu2); menu2 = -1; chance--; }
+                else if (menu > -1) menu2 = menu;
+            }
+        }
+        right = 0;
+        for (int i = 0; i < 25; i++) { if (gamearray[0][i] == i) right++; }
+        drawPuzzle();
+        result = (right == 25);
+        if (result) { SDL_Delay(700); break; }
+        else if (chance == 0) { SDL_Delay(700); break; }
+    }
+    gamearray.clear();
+    FreeFreshScreen();
+    return result;
 }
 
 void ExchangePic(int p1, int p2)
@@ -2372,24 +2667,341 @@ void ExchangePic(int p1, int p2)
 
 bool WoodMan(int Chamber)
 {
-    // TODO: 完整的木人巷小游戏
-    return false;
+    Redraw();
+    bool result = true;
+    int x = 80, y = 90;
+    int eface1 = 0, eface2 = 0, roleface = 0, position = 0;
+    int picnum = 4714;
+    // 读取木人巷数据
+    int sz = sizeof(TWoodMan);
+    int offset = Chamber * sz;
+    char* p = ReadFileToBuffer(nullptr, AppPath + "binlist/woodman.bin", -1, 1);
+    memcpy(&WoodManSta, p + offset, sz);
+    FreeFileBuffer(p);
+    LoadOnePNGTexture("resource/smap", pSPic, SPNGIndex[picnum]);
+    WoodPic = SPNGIndex[picnum].Pointers[0];
+    if (!WoodPic) return true;
+
+    auto drawScene = [&]()
+    {
+        for (int i = 0; i < 100; i++)
+        {
+            int x1 = i / 10, y1 = i % 10;
+            if ((x1 + y1) % 2 == 0) DrawPartPic(WoodPic, 0, 450, 48, 30, x1 * 48 + x, y1 * 30 + y);
+            else DrawPartPic(WoodPic, 48, 450, 48, 30, x1 * 48 + x, y1 * 30 + y);
+        }
+        for (int y1 = 0; y1 <= 18; y1++)
+        {
+            for (int x1 = 0; x1 <= 18; x1++)
+            {
+                int idx = x1 * 19 + y1;
+                if (WoodManSta.GameData[idx] == 1)
+                {
+                    if (y1 % 2 == 0) DrawPartPic(WoodPic, 48, 192, 48, 48, (x1 / 2) * 48 + 23 + x, (y1 / 2) * 30 - 18 + y);
+                    if (x1 % 2 == 0) DrawPartPic(WoodPic, 96, 192, 48, 48, (x1 / 2) * 48 + x, (y1 / 2) * 30 - 15 + y);
+                }
+                if ((position / 10) * 2 == x1 && (position % 10) * 2 == y1)
+                    DrawPartPic(WoodPic, 0, 192 + 18, 48, 30, (position / 10) * 48 + x, (position % 10) * 30 + y);
+                if (WoodManSta.ExitX == x1 && WoodManSta.ExitY == y1)
+                    DrawPartPic(WoodPic, 96, 450, 48, 30, (x1 / 2) * 48 + x, (y1 / 2) * 30 + y);
+                if (WoodManSta.Exy[0][0] == x1 && WoodManSta.Exy[0][1] == y1)
+                    DrawPartPic(WoodPic, 0, 48 * eface1, 48, 48, (x1 / 2) * 48 + x, (y1 / 2) * 30 - 25 + y);
+                if (WoodManSta.Exy[1][0] == x1 && WoodManSta.Exy[1][1] == y1)
+                    DrawPartPic(WoodPic, 0, 48 * eface1, 48, 48, (x1 / 2) * 48 + x, (y1 / 2) * 30 - 25 + y);
+                if (WoodManSta.Rx == x1 && WoodManSta.Ry == y1)
+                    DrawPartPic(WoodPic, 0, 240 + 48 * roleface, 48, 48, (x1 / 2) * 48 + x, (y1 / 2) * 30 - 25 + y);
+            }
+        }
+        UpdateAllScreen();
+    };
+
+    auto doEnemyMove = [&]() -> bool
+    {
+        for (int i3 = 0; i3 < 2; i3++)
+        {
+            if (WoodManSta.Exy[i3][0] != 255 && WoodManSta.Exy[i3][1] != 255)
+            {
+                for (int i2 = 0; i2 < 2; i2++)
+                {
+                    if (i3 == 0)
+                    {
+                        if (WoodManSta.Exy[i3][0] < WoodManSta.Rx && WoodManSta.GameData[(WoodManSta.Exy[i3][0] + 1) * 19 + WoodManSta.Exy[i3][1]] == 0)
+                        { eface1 = 3; ShowWoodManWalk(i3, eface1, eface2, roleface); }
+                        else if (WoodManSta.Exy[i3][0] > WoodManSta.Rx && WoodManSta.GameData[(WoodManSta.Exy[i3][0] - 1) * 19 + WoodManSta.Exy[i3][1]] == 0)
+                        { eface1 = 2; ShowWoodManWalk(i3, eface1, eface2, roleface); }
+                        else if (WoodManSta.Exy[i3][1] > WoodManSta.Ry && WoodManSta.GameData[WoodManSta.Exy[i3][0] * 19 + WoodManSta.Exy[i3][1] - 1] == 0)
+                        { eface1 = 1; ShowWoodManWalk(i3, eface1, eface2, roleface); }
+                        else if (WoodManSta.Exy[i3][1] < WoodManSta.Ry && WoodManSta.GameData[WoodManSta.Exy[i3][0] * 19 + WoodManSta.Exy[i3][1] + 1] == 0)
+                        { eface1 = 0; ShowWoodManWalk(i3, eface1, eface2, roleface); }
+                    }
+                    else
+                    {
+                        if (WoodManSta.Exy[i3][1] > WoodManSta.Ry && WoodManSta.GameData[WoodManSta.Exy[i3][0] * 19 + WoodManSta.Exy[i3][1] + 1] == 0)
+                        { eface1 = 1; ShowWoodManWalk(i3, eface1, eface2, roleface); }
+                        else if (WoodManSta.Exy[i3][1] < WoodManSta.Ry && WoodManSta.GameData[WoodManSta.Exy[i3][0] * 19 + WoodManSta.Exy[i3][1] - 1] == 0)
+                        { eface1 = 0; ShowWoodManWalk(i3, eface1, eface2, roleface); }
+                        else if (WoodManSta.Exy[i3][0] < WoodManSta.Rx && WoodManSta.GameData[(WoodManSta.Exy[i3][0] - 1) * 19 + WoodManSta.Exy[i3][1]] == 0)
+                        { eface1 = 3; ShowWoodManWalk(i3, eface1, eface2, roleface); }
+                        else if (WoodManSta.Exy[i3][0] > WoodManSta.Rx && WoodManSta.GameData[(WoodManSta.Exy[i3][0] + 1) * 19 + WoodManSta.Exy[i3][1]] == 0)
+                        { eface1 = 2; ShowWoodManWalk(i3, eface1, eface2, roleface); }
+                    }
+                }
+            }
+            if (WoodManSta.Exy[i3][0] == WoodManSta.Rx && WoodManSta.Exy[i3][1] == WoodManSta.Ry)
+            {
+                SDL_Delay(1000);
+                Redraw(); UpdateAllScreen();
+                return false; // caught
+            }
+        }
+        return true; // ok
+    };
+
+    drawScene();
+    while (SDL_WaitEvent(&event))
+    {
+        drawScene();
+        CheckBasicEvent();
+        int x1 = WoodManSta.Rx, y1 = WoodManSta.Ry;
+        bool canWalk = false, stay = false;
+        int xm, ym;
+        if (event.type == SDL_EVENT_MOUSE_MOTION)
+        {
+            if (MouseInRegion(x, y, 480, 300, xm, ym))
+                position = (xm - x) / 48 * 10 + (ym - y) / 30;
+        }
+        if (event.type == SDL_EVENT_KEY_UP)
+        {
+            if (event.key.key == SDLK_ESCAPE) { result = false; Redraw(); UpdateAllScreen(); break; }
+            x1 = WoodManSta.Rx; y1 = WoodManSta.Ry;
+            if (event.key.key == SDLK_UP) y1 = WoodManSta.Ry - 2;
+            if (event.key.key == SDLK_DOWN) y1 = WoodManSta.Ry + 2;
+            if (event.key.key == SDLK_LEFT) x1 = WoodManSta.Rx - 2;
+            if (event.key.key == SDLK_RIGHT) x1 = WoodManSta.Rx + 2;
+            if (event.key.key == SDLK_RETURN || event.key.key == SDLK_SPACE) { canWalk = true; stay = true; }
+            if (y1 - WoodManSta.Ry == 2 && WoodManSta.GameData[WoodManSta.Rx * 19 + WoodManSta.Ry + 1] == 0) { canWalk = true; roleface = 0; }
+            if (y1 - WoodManSta.Ry == -2 && WoodManSta.GameData[WoodManSta.Rx * 19 + WoodManSta.Ry - 1] == 0) { canWalk = true; roleface = 1; }
+            if (x1 - WoodManSta.Rx == -2 && WoodManSta.GameData[(WoodManSta.Rx - 1) * 19 + WoodManSta.Ry] == 0) { canWalk = true; roleface = 2; }
+            if (x1 - WoodManSta.Rx == 2 && WoodManSta.GameData[(WoodManSta.Rx + 1) * 19 + WoodManSta.Ry] == 0) { canWalk = true; roleface = 3; }
+            if (canWalk)
+            {
+                if (!stay) ShowManWalk(roleface, eface1, eface2);
+                if (WoodManSta.Rx == WoodManSta.ExitX && WoodManSta.Ry == WoodManSta.ExitY)
+                { result = true; SDL_Delay(1000); Redraw(); UpdateAllScreen(); break; }
+                if (!doEnemyMove()) { result = false; return result; }
+            }
+        }
+        if (event.type == SDL_EVENT_MOUSE_BUTTON_UP)
+        {
+            if (event.button.button == SDL_BUTTON_RIGHT) { result = false; Redraw(); UpdateAllScreen(); break; }
+            x1 = (position / 10) * 2; y1 = (position % 10) * 2;
+            canWalk = false; stay = false;
+            if (y1 - WoodManSta.Ry == 2 && WoodManSta.GameData[WoodManSta.Rx * 19 + WoodManSta.Ry + 1] == 0) { canWalk = true; roleface = 0; }
+            if (y1 - WoodManSta.Ry == -2 && WoodManSta.GameData[WoodManSta.Rx * 19 + WoodManSta.Ry - 1] == 0) { canWalk = true; roleface = 1; }
+            if (x1 - WoodManSta.Rx == -2 && WoodManSta.GameData[(WoodManSta.Rx - 1) * 19 + WoodManSta.Ry] == 0) { canWalk = true; roleface = 2; }
+            if (x1 - WoodManSta.Rx == 2 && WoodManSta.GameData[(WoodManSta.Rx + 1) * 19 + WoodManSta.Ry] == 0) { canWalk = true; roleface = 3; }
+            if (x1 == WoodManSta.Rx && y1 == WoodManSta.Ry) { canWalk = true; stay = true; }
+            if (canWalk)
+            {
+                if (!stay) ShowManWalk(roleface, eface1, eface2);
+                if (WoodManSta.Rx == WoodManSta.ExitX && WoodManSta.Ry == WoodManSta.ExitY)
+                { result = true; SDL_Delay(1000); Redraw(); UpdateAllScreen(); return result; }
+                if (!doEnemyMove()) { result = false; return result; }
+            }
+        }
+    }
+    return result;
 }
 
 void ShowManWalk(int face, int Eface1, int Eface2)
 {
-    // TODO: 木人巷行走动画
+    int x = 80, y = 90;
+    int x2 = 0, y2 = 0;
+    if (face == 0) y2 = 10;
+    if (face == 1) y2 = -10;
+    if (face == 2) x2 = -16;
+    if (face == 3) x2 = 16;
+    for (int i1 = 0; i1 < 3; i1++)
+    {
+        for (int i = 0; i < 100; i++)
+        {
+            int x1 = i / 10, y1 = i % 10;
+            if ((x1 + y1) % 2 == 0)
+                DrawPartPic(WoodPic, 0, 450, 48, 30, x1 * 48 + x, y1 * 30 + y);
+            else
+                DrawPartPic(WoodPic, 48, 450, 48, 30, x1 * 48 + x, y1 * 30 + y);
+        }
+        for (int y1 = 0; y1 <= 18; y1++)
+        {
+            for (int x1 = 0; x1 <= 18; x1++)
+            {
+                int idx = x1 * 19 + y1;
+                if (WoodManSta.GameData[idx] == 1)
+                {
+                    if (y1 % 2 == 0)
+                        DrawPartPic(WoodPic, 48, 192, 48, 48, (x1 / 2) * 48 + 23 + x, (y1 / 2) * 30 - 18 + y);
+                    if (x1 % 2 == 0)
+                        DrawPartPic(WoodPic, 96, 192, 48, 48, (x1 / 2) * 48 + x, (y1 / 2) * 30 - 15 + y);
+                }
+                if (WoodManSta.ExitX == x1 && WoodManSta.ExitY == y1)
+                    DrawPartPic(WoodPic, 96, 450, 48, 30, (x1 / 2) * 48 + x, (y1 / 2) * 30 + y);
+                if (WoodManSta.Exy[0][0] == x1 && WoodManSta.Exy[0][1] == y1)
+                    DrawPartPic(WoodPic, 0, 48 * Eface1, 48, 48, (x1 / 2) * 48 + x, (y1 / 2) * 30 - 25 + y);
+                if (WoodManSta.Exy[1][0] == x1 && WoodManSta.Exy[1][1] == y1)
+                    DrawPartPic(WoodPic, 0, 48 * Eface1, 48, 48, (x1 / 2) * 48 + x, (y1 / 2) * 30 - 25 + y);
+                if (WoodManSta.Rx == x1 && WoodManSta.Ry == y1)
+                {
+                    if (i1 == 2)
+                    {
+                        int tx = WoodManSta.Rx, ty = WoodManSta.Ry;
+                        if (face == 0) ty = WoodManSta.Ry + 2;
+                        if (face == 1) ty = WoodManSta.Ry - 2;
+                        if (face == 2) tx = WoodManSta.Rx - 2;
+                        if (face == 3) tx = WoodManSta.Rx + 2;
+                        DrawPartPic(WoodPic, 0, 240 + 48 * face, 48, 48, (tx / 2) * 48 + x, (ty / 2) * 30 - 25 + y);
+                    }
+                    else
+                        DrawPartPic(WoodPic, 48 * (i1 + 1), 240 + 48 * face, 48, 48,
+                            (x1 / 2) * 48 + x + ((i1 + 1) * x2), (y1 / 2) * 30 - 25 + y + ((i1 + 1) * y2));
+                }
+            }
+        }
+        UpdateAllScreen();
+        SDL_Delay(100);
+    }
+    if (face == 0) WoodManSta.Ry += 2;
+    if (face == 1) WoodManSta.Ry -= 2;
+    if (face == 2) WoodManSta.Rx -= 2;
+    if (face == 3) WoodManSta.Rx += 2;
 }
 
 void ShowWoodManWalk(int num, int Eface1, int Eface2, int RoleFace)
 {
-    // TODO: 木人巷木人行走动画
+    int x = 80, y = 90;
+    uint8_t* Ex1 = &WoodManSta.Exy[num][0];
+    uint8_t* Ey1 = &WoodManSta.Exy[num][1];
+    uint8_t* Ex2 = &WoodManSta.Exy[abs(num - 1)][0];
+    uint8_t* Ey2 = &WoodManSta.Exy[abs(num - 1)][1];
+    int* Ef1; int* Ef2;
+    if (num == 0) { Ef1 = &Eface1; Ef2 = &Eface2; }
+    else { Ef2 = &Eface1; Ef1 = &Eface2; }
+    int x2 = 0, y2 = 0;
+    if (*Ef1 == 0) y2 = 10;
+    if (*Ef1 == 1) y2 = -10;
+    if (*Ef1 == 2) x2 = -16;
+    if (*Ef1 == 3) x2 = 16;
+    for (int i1 = 0; i1 < 3; i1++)
+    {
+        for (int i = 0; i < 100; i++)
+        {
+            int x1 = i / 10, y1 = i % 10;
+            if ((x1 + y1) % 2 == 0)
+                DrawPartPic(WoodPic, 0, 450, 48, 30, x1 * 48 + x, y1 * 30 + y);
+            else
+                DrawPartPic(WoodPic, 48, 450, 48, 30, x1 * 48 + x, y1 * 30 + y);
+        }
+        for (int y1 = 0; y1 <= 18; y1++)
+        {
+            for (int x1 = 0; x1 <= 18; x1++)
+            {
+                int idx = x1 * 19 + y1;
+                if (WoodManSta.GameData[idx] == 1)
+                {
+                    if (y1 % 2 == 0) DrawPartPic(WoodPic, 48, 192, 48, 48, (x1 / 2) * 48 + 23 + x, (y1 / 2) * 30 - 18 + y);
+                    if (x1 % 2 == 0) DrawPartPic(WoodPic, 96, 192, 48, 48, (x1 / 2) * 48 + x, (y1 / 2) * 30 - 15 + y);
+                }
+                if (WoodManSta.ExitX == x1 && WoodManSta.ExitY == y1)
+                    DrawPartPic(WoodPic, 96, 450, 48, 30, (x1 / 2) * 48 + x, (y1 / 2) * 30 + y);
+                if (*Ex1 == x1 && *Ey1 == y1)
+                {
+                    if (i1 == 2)
+                    {
+                        int tx = *Ex1, ty = *Ey1;
+                        if (*Ef1 == 0) ty = *Ey1 + 2;
+                        if (*Ef1 == 1) ty = *Ey1 - 2;
+                        if (*Ef1 == 2) tx = *Ex1 - 2;
+                        if (*Ef1 == 3) tx = *Ex1 + 2;
+                        DrawPartPic(WoodPic, 0, 48 * (*Ef1), 48, 48, (tx / 2) * 48 + x, (ty / 2) * 30 - 25 + y);
+                    }
+                    else
+                        DrawPartPic(WoodPic, 48 * (i1 + 1), 48 * (*Ef1), 48, 48,
+                            (x1 / 2) * 48 + x + (i1 + 1) * x2, (y1 / 2) * 30 - 25 + y + (i1 + 1) * y2);
+                }
+                if (*Ex2 == x1 && *Ey2 == y1)
+                    DrawPartPic(WoodPic, 0, 48 * (*Ef2), 48, 48, (x1 / 2) * 48 + x, (y1 / 2) * 30 - 25 + y);
+                if (WoodManSta.Rx == x1 && WoodManSta.Ry == y1)
+                    DrawPartPic(WoodPic, 0, 240 + 48 * RoleFace, 48, 48, (x1 / 2) * 48 + x, (y1 / 2) * 30 - 25 + y);
+            }
+        }
+        UpdateAllScreen();
+        SDL_Delay(100);
+    }
+    if (*Ef1 == 0) *Ey1 += 2;
+    if (*Ef1 == 1) *Ey1 -= 2;
+    if (*Ef1 == 2) *Ex1 -= 2;
+    if (*Ef1 == 3) *Ex1 += 2;
 }
 
 int DancerAfter90S()
 {
-    // TODO: 劲舞团小游戏
-    return 0;
+    Redraw();
+    int DanceNum = 0;
+    int DanceLong = 8;
+    uint32_t ori_time = SDL_GetTicks();
+    uint32_t demand_time = 10000;
+    bool iskey = true;
+    int16_t DanceList[10];
+    DrawRectangle((320 - 43 * (DanceLong / 2)) - 5, 120 - 62, (DanceLong + 1) * 43 + 5, 45, ColColor(0), ColColor(0xFF), 25);
+    DrawRectangle(0, 420, 640, 14, ColColor(47), ColColor(0xFF), 0);
+    UpdateAllScreen();
+    for (int i = 0; i <= DanceLong; i++)
+    {
+        int tmp = rand() % 4;
+        DanceList[i] = tmp;
+        DrawSPic(4678 + DanceList[i], 320 - 43 * (DanceLong / 2) + i * 43, 120 - 62);
+    }
+    int result = 0;
+    while (SDL_PollEvent(&event) || true)
+    {
+        uint32_t now = SDL_GetTicks();
+        uint32_t elapsed = now - ori_time;
+        if (elapsed < (uint32_t)(demand_time * 0.7))
+            DrawRectangle(0, 420, 640 * elapsed / demand_time, 14, ColColor(47), ColColor(0xFF), 100);
+        else if (elapsed <= demand_time)
+            DrawRectangle(0, 420, 640 * elapsed / demand_time, 14, ColColor(70), ColColor(0xFF), 100);
+        else { WaitAnyKey(); result = 0; break; }
+        UpdateAllScreen();
+        if (event.type == SDL_EVENT_KEY_DOWN)
+        {
+            if (DanceNum != DanceLong + 1)
+            {
+                if ((int)(event.key.key - 273) == DanceList[DanceNum] && iskey)
+                {
+                    DrawSPic(4682 + DanceList[DanceNum], 320 - 43 * (DanceLong / 2) + DanceNum * 43, 120);
+                    DanceNum++;
+                    iskey = false;
+                }
+                else if (iskey)
+                {
+                    for (int i = 0; i <= DanceNum; i++)
+                        DrawSPic(4678 + DanceList[i], 320 - 43 * (DanceLong / 2) + i * 43, 120 - 62);
+                    DanceNum = 0;
+                    iskey = false;
+                }
+            }
+            else if (event.key.key == SDLK_SPACE && iskey)
+            {
+                result = 1; break;
+            }
+        }
+        if (event.type == SDL_EVENT_KEY_UP)
+        {
+            iskey = true;
+            if (event.key.key == SDLK_ESCAPE) { result = 0; break; }
+        }
+        event.key.key = 0;
+    }
+    return result;
 }
 
 void RoleEnding(int starnum, int headnum, int talknum)
@@ -2828,11 +3440,124 @@ void NewShop(int shop_num)
 
 void ShowMap()
 {
-    // TODO: 完整的地图显示
-    // 简化版：等待按键退出
+    event.key.key = 0;
+    event.button.button = 0;
+    int n = 0, p = 0;
+    int xp = CENTER_X - 320, yp = 10;
     Redraw();
-    UpdateAllScreen();
-    WaitAnyKey();
+    double a11 = 1.2762, a12 = -0.7717, a21 = 0.1185, a22 = 1.6291;
+    double x0 = 121.9534, y0 = -194.0342;
+    int picnum = 4699;
+    if (picnum >= SPicAmount) return;
+    if (SPNGIndex[picnum].Loaded == 0)
+        LoadOnePNGTexture("resource/smap", pSPic, SPNGIndex[picnum]);
+    SPNGIndex[picnum].x = 0;
+    SPNGIndex[picnum].y = 0;
+
+    // 收集可显示的场景
+    std::vector<int> scenex, sceney, scenenum;
+    std::vector<std::string> str2, str3;
+    int l = SceneAmount;
+    for (int i = 0; i < l; i++)
+    {
+        if ((Rscene[i].MainEntranceY1 == 0 && Rscene[i].MainEntranceX1 == 0 &&
+            Rscene[i].MainEntranceX2 == 0 && Rscene[i].MainEntranceY2 == 0) || Rscene[i].EnCondition != 0)
+            continue;
+        scenex.push_back(Rscene[i].MainEntranceX1);
+        sceney.push_back(Rscene[i].MainEntranceY1);
+        scenenum.push_back(i);
+        str2.push_back((char*)Rscene[i].Name);
+        char buf[32]; snprintf(buf, sizeof(buf), "%3d, %3d", Rscene[i].MainEntranceY1, Rscene[i].MainEntranceX1);
+        str3.push_back(buf);
+    }
+    int u = (int)scenex.size();
+    if (u == 0) { WaitAnyKey(); return; }
+
+    auto TransCoord = [&](int& tx, int& ty)
+    {
+        double xt = a11 * tx + a12 * ty + x0;
+        double yt = a21 * tx + a22 * ty + y0;
+        tx = (int)round(xt) + xp;
+        ty = std::max((int)round(yt), 53) + yp;
+    };
+
+    while (SDL_PollEvent(&event) || true)
+    {
+        if (n % 10 == 0)
+        {
+            SDL_Rect dest1;
+            dest1.x = 0; dest1.y = 30; dest1.w = 640; dest1.h = 380;
+            DrawSPic(picnum, xp, yp + 30, &dest1, 0, 0, 0, 0);
+            for (int i = 0; i < u; i++)
+            {
+                int tx = 313 + ((sceney[i] - scenex[i]) * 5) / 8;
+                int ty = 63 + ((sceney[i] + scenex[i]) * 5) / 16;
+                TransCoord(tx, ty);
+                dest1.x = 15; dest1.y = 0; dest1.w = 15; dest1.h = 15;
+                DrawSPic(picnum, tx, ty, &dest1, 0, 0, 0, 0);
+                if (MouseInRegion(tx, ty, 15, 15)) p = i;
+            }
+            // 选中场景标记
+            int tx = 313 + ((sceney[p] - scenex[p]) * 5) / 8;
+            int ty = 63 + ((sceney[p] + scenex[p]) * 5) / 16;
+            TransCoord(tx, ty);
+            dest1.x = 30; dest1.y = 0; dest1.w = 15; dest1.h = 15;
+            DrawSPic(picnum, tx, ty, &dest1, 0, 0, 0, 0);
+            // 船
+            tx = 313 + ((ShipX - ShipY) * 5) / 8;
+            ty = 63 + ((ShipX + ShipY) * 5) / 16;
+            TransCoord(tx, ty);
+            dest1.x = 45; dest1.y = 0; dest1.w = 15; dest1.h = 15;
+            DrawSPic(picnum, tx, ty, &dest1, 0, 0, 0, 0);
+            CleanTextScreen();
+            DrawShadowText(str2[p].c_str(), 37 + xp, 80 + yp, ColColor(21), ColColor(25));
+            DrawEngShadowText(str3[p], 37 + xp, 100 + yp, ColColor(255), ColColor(254));
+            DrawShadowText("\xe4\xbd\xa0\xe7\x9a\x84\xe4\xbd\x8d\xe7\xbd\xae", 37 + xp, 275 + yp, ColColor(21), ColColor(25));
+            char buf[32]; snprintf(buf, sizeof(buf), "%3d, %3d", My, Mx);
+            DrawEngShadowText(buf, 37 + xp, 295 + yp, ColColor(255), ColColor(254));
+            DrawShadowText("\xe8\x88\xb9\xe7\x9a\x84\xe4\xbd\x8d\xe7\xbd\xae", 37 + xp, 325 + yp, ColColor(21), ColColor(25));
+            snprintf(buf, sizeof(buf), "%3d, %3d", ShipX, ShipY);
+            DrawEngShadowText(buf, 37 + xp, 345 + yp, ColColor(255), ColColor(254));
+        }
+        if (n % 20 == 1)
+        {
+            int tx = 313 + ((My - Mx) * 5) / 8;
+            int ty = 63 + ((My + Mx) * 5) / 16;
+            TransCoord(tx, ty);
+            SDL_Rect dest1;
+            dest1.x = 0; dest1.y = 0; dest1.w = 15; dest1.h = 15;
+            DrawSPic(picnum, tx, ty, &dest1, 0, 0, 0, 0);
+        }
+        UpdateAllScreen();
+        SDL_Delay(20);
+        n++;
+        if (n == 1000) n = 0;
+        CheckBasicEvent();
+        if (event.type == SDL_EVENT_KEY_UP)
+        {
+            if (event.key.key == SDLK_ESCAPE || event.key.key == SDLK_RETURN || event.key.key == SDLK_SPACE) break;
+            if (event.key.key == SDLK_LEFT || event.key.key == SDLK_UP)
+            {
+                if (u != 0) { p--; if (p <= -1) p = u - 1; }
+            }
+            if (event.key.key == SDLK_RIGHT || event.key.key == SDLK_DOWN)
+            {
+                if (u != 0) { p++; if (p >= u) p = 0; }
+            }
+            event.key.key = 0;
+        }
+        if (event.type == SDL_EVENT_MOUSE_BUTTON_UP && event.button.button == SDL_BUTTON_RIGHT) break;
+        if (event.type == SDL_EVENT_MOUSE_MOTION)
+        {
+            for (int i = 0; i < u; i++)
+            {
+                int tx = 313 + ((sceney[i] - scenex[i]) * 5) / 8;
+                int ty = 63 + ((sceney[i] + scenex[i]) * 5) / 16;
+                TransCoord(tx, ty);
+                if (MouseInRegion(tx, ty, 15, 15)) p = i;
+            }
+        }
+    }
 }
 
 int16_t EnterNumber(int MinValue, int MaxValue, int x, int y, int Default)

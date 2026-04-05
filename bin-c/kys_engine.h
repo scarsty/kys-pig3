@@ -52,6 +52,7 @@ void DrawEngShadowText(const std::string& word, int x_pos, int y_pos, uint32 col
     SDL_Texture* Tex = nullptr, SDL_Surface* Sur = nullptr);
 int DrawLength(const std::string& str);
 void SetFontSize(int Chnsize, int engsize, int initial = 0);
+void ResetFontSize();
 
 // 矩形绘制
 void DrawRectangle(int x, int y, int w, int h, uint32 colorin, uint32 colorframe, int alpha, int trans = 1);
@@ -83,6 +84,10 @@ void DrawPNGTile(SDL_Renderer* r, TPNGIndex& PNGIndex, int FrameNum, int px, int
 void DrawPNGTileS(SDL_Surface* scr, TPNGIndex& PNGIndex, int FrameNum, int px, int py,
     SDL_Rect* region, int shadow, int alpha, uint32 mixColor, int mixAlpha,
     double scalex, double scaley, double angle);
+void DrawSimpleStatusByTeam(int i, int px, int py, uint32 mixColor = 0, int mixAlpha = 0);
+
+// 内存压缩读取
+std::string LoadStringFromIMZMEM(const std::string& path, const char* p, int num);
 
 // 屏幕管理
 void ResizeWindow(int w, int h);
@@ -94,6 +99,7 @@ void SwitchFullscreen();
 void UpdateAllScreen();
 void UpdateScreen(int x = 0, int y = 0, int w = 0, int h = 0);
 void CleanTextScreen();
+void CleanTextScreenRect(int x, int y, int w, int h);
 void CleanKeyValue();
 void LoadFreshScreen();
 void LoadFreshScreen(int x, int y);

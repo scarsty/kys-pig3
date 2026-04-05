@@ -381,9 +381,98 @@ void DrawScene()
     if (HaveText == 1) CleanTextScreen();
 }
 
-void DrawSceneWithoutRole(int x, int y) { /* TODO */ }
-void DrawRoleOnScene(int x, int y) { /* TODO */ }
-void ExpandGroundOnImg() { /* TODO */ }
+void DrawSceneWithoutRole(int x, int y)
+{
+    int x1, y1;
+    CalLTPosOnImageByCenter(x, y, x1, y1);
+    if (showBlackScreen) DrawBlackScreen();
+    if (HaveText == 1) CleanTextScreen();
+}
+
+void DrawRoleOnScene(int x, int y)
+{
+    if (ShowMR)
+    {
+        TPosition pos = GetPositionOnScreen(Sx, Sy, x, y);
+        // 场景角色绘制(简化 - Pascal中也是注释掉的)
+    }
+}
+
+void ExpandGroundOnImg()
+{
+    int16_t Ex[192][192];
+    memset(Ex, -1, sizeof(Ex));
+    for (int i1 = 0; i1 < 64; i1++)
+        for (int i2 = 0; i2 < 64; i2++)
+        {
+            switch (Where)
+            {
+            case 1: Ex[i1 + 64][i2 + 64] = SData[CurScene][0][i1][i2]; break;
+            case 2: Ex[i1 + 64][i2 + 64] = BField[0][i1][i2]; break;
+            }
+        }
+    if (EXPAND_GROUND != 0 && (MODVersion != 13 || (CurScene != 81 && CurScene != 72)))
+    {
+        for (int i1 = 95; i1 >= 0; i1--)
+            for (int i2 = 0; i2 < 64; i2++)
+            {
+                if (Ex[i1][i2 + 64] <= 0)
+                    Ex[i1][i2 + 64] = Ex[i1 + 1][i2 + 64];
+            }
+        for (int i1 = 96; i1 < 192; i1++)
+            for (int i2 = 0; i2 < 64; i2++)
+            {
+                if (Ex[i1][i2 + 64] <= 0)
+                    Ex[i1][i2 + 64] = Ex[i1 - 1][i2 + 64];
+            }
+        for (int i1 = 0; i1 < 192; i1++)
+            for (int i2 = 95; i2 >= 0; i2--)
+            {
+                if (Ex[i1][i2] <= 0)
+                    Ex[i1][i2] = Ex[i1][i2 + 1];
+            }
+        for (int i1 = 0; i1 < 192; i1++)
+            for (int i2 = 96; i2 < 192; i2++)
+            {
+                if (Ex[i1][i2] <= 0)
+                    Ex[i1][i2] = Ex[i1][i2 - 1];
+            }
+    }
+    if (SW_SURFACE == 0)
+    {
+        switch (Where)
+        {
+        case 1: SDL_SetRenderTarget(render, ImgSGroundTex); break;
+        case 2: SDL_SetRenderTarget(render, ImgBGroundTex); break;
+        }
+    }
+    else
+    {
+        switch (Where)
+        {
+        case 1: CurTargetSurface = ImgSGround; break;
+        case 2: CurTargetSurface = ImgBGround; break;
+        }
+    }
+    SDL_SetRenderDrawColor(render, 0, 0, 0, 0);
+    SDL_RenderClear(render);
+    for (int i1 = 0; i1 < 192; i1++)
+        for (int i2 = 0; i2 < 192; i2++)
+        {
+            int x, y;
+            CalPosOnImage(i1 - 64, i2 - 64, x, y);
+            int num = Ex[i1][i2] / 2;
+            if (num > 0)
+                DrawSPic(num, x, y);
+        }
+    SDL_SetRenderTarget(render, screenTex);
+    CurTargetSurface = screen;
+    switch (Where)
+    {
+    case 1: memcpy(ExGroundS, Ex, sizeof(Ex)); break;
+    case 2: memcpy(ExGroundB, Ex, sizeof(Ex)); break;
+    }
+}
 
 void InitialScene(int Visible)
 {
@@ -446,45 +535,172 @@ void CalLTPosOnImageByCenter(int i1, int i2, int& x, int& y)
 //----------------------------------------------------------------------
 void DrawBField()
 {
-    // TODO: 完整战场绘制
     int Bx1 = Bx, By1 = By;
     int widthregion = CENTER_X / 36 + 3;
     int sumregion = CENTER_Y / 9;
 
+    LoadGroundTex(Bx1, By1);
     for (int sum = -sumregion; sum <= sumregion + 15; sum++)
         for (int i = -widthregion; i <= widthregion; i++)
         {
             int i1 = Bx1 + i + sum / 2;
             int i2 = By1 - i + (sum - sum / 2);
-            if (i1 >= 0 && i1 < 64 && i2 >= 0 && i2 < 64)
+            if (i1 >= -63 && i1 <= 127 && i2 >= -63 && i2 <= 127)
             {
                 TPosition pos = GetPositionOnScreen(i1, i2, Bx1, By1);
-                int num = BField[CurrentBattle][i1][i2] / 2;
-                if (num > 0) DrawSPic(num, pos.x, pos.y);
+                int num = ExGroundB[i1 + 64][i2 + 64] / 2;
+
+                // 重画闪烁的地面贴图
+                if (num > 0 && SPNGIndex[num].Frame > 1)
+                    DrawSPic(num, pos.x, pos.y);
+
+                // 建筑和人物
+                if (i1 >= 0 && i1 < 64 && i2 >= 0 && i2 < 64)
+                {
+                    num = BField[1][i1][i2] / 2;
+                    if (num > 0)
+                        DrawSPic(num, pos.x, pos.y);
+                    num = BField[2][i1][i2];
+                    if (num >= 0)
+                    {
+                        int picnum;
+                        if (Brole[num].Pic > 0)
+                            picnum = Brole[num].Pic;
+                        else
+                            picnum = Brole[num].StaticPic[Brole[num].Face];
+                        DrawFPic(picnum, pos.x, pos.y, Rrole[Brole[num].rnum + 1].ActionNum,
+                            Brole[num].shadow, Brole[num].alpha, Brole[num].mixColor, Brole[num].mixAlpha);
+                    }
+                }
             }
         }
 
-    // 画战场上的角色
-    for (int i = 0; i < BRoleAmount; i++)
-    {
-        if (Brole[i].Dead != 0) continue;
-        TPosition pos = GetPositionOnScreen(Brole[i].X, Brole[i].Y, Bx1, By1);
-        // TODO: 画角色贴图
-    }
+    DrawProgress();
+    CleanTextScreen();
+    DrawVirtualKey();
 }
 
-void DrawBfieldWithoutRole(int x, int y) { /* TODO */ }
+void DrawBfieldWithoutRole(int x, int y)
+{
+    // Pascal中也是空实现(注释掉的代码)
+}
 
 void DrawRoleOnBfield(int x, int y, uint32 mixColor, int mixAlpha, int Alpha)
 {
-    // TODO: 画战场角色
+    // Pascal中也是空实现(注释掉的代码)
 }
 
-void InitialBFieldImage(int layer) { /* TODO */ }
+void InitialBFieldImage(int layer)
+{
+    for (int i1 = 0; i1 < 64; i1++)
+        for (int i2 = 0; i2 < 64; i2++)
+        {
+            for (int j = 0; j <= 2; j++)
+            {
+                int num = BField[j][i1][i2] / 2;
+                if (num > 0 && num < SPicAmount)
+                    LoadOnePNGTexture("resource/smap", pSPic, SPNGIndex[num]);
+            }
+        }
+    ExpandGroundOnImg();
+}
 
 void DrawBFieldWithCursor(int AttAreaType, int step, int range)
 {
-    // TODO: 画战场选择光标
+    CleanTextScreen();
+    if (SW_SURFACE == 0)
+        SDL_SetTextureColorMod(ImgBGroundTex, 128, 128, 128);
+    else
+        SDL_SetSurfaceColorMod(ImgBGround, 128, 128, 128);
+    LoadGroundTex(Bx, By);
+    if (SW_SURFACE == 0)
+        SDL_SetTextureColorMod(ImgBGroundTex, 255, 255, 255);
+    else
+        SDL_SetSurfaceColorMod(ImgBGround, 255, 255, 255);
+    SetAminationPosition(AttAreaType, step, range);
+    for (int i1 = 0; i1 < 64; i1++)
+        for (int i2 = 0; i2 < 64; i2++)
+        {
+            if (BField[0][i1][i2] > 0)
+            {
+                TPosition pos = GetPositionOnScreen(i1, i2, Bx, By);
+                int shadow = 0;
+                switch (AttAreaType)
+                {
+                case 0:
+                    if (BField[4][i1][i2] > 0) shadow = 1;
+                    else if ((abs(i1 - Bx) + abs(i2 - By) <= step) && BField[3][i1][i2] >= 0) shadow = 0;
+                    else shadow = -1;
+                    break;
+                case 1:
+                    if (BField[4][i1][i2] > 0) shadow = 1;
+                    else if ((i1 == Bx && abs(i2 - By) <= step) || (i2 == By && abs(i1 - Bx) <= step)) shadow = 0;
+                    else shadow = -1;
+                    break;
+                case 2:
+                    if (BField[4][i1][i2] > 0) shadow = 1;
+                    else shadow = -1;
+                    break;
+                case 3:
+                    if (BField[4][i1][i2] > 0) shadow = 1;
+                    else if ((abs(i1 - Bx) + abs(i2 - By) <= step) && BField[0][i1][i2] >= 0) shadow = 0;
+                    else shadow = -1;
+                    break;
+                case 4:
+                    if (BField[4][i1][i2] > 0) shadow = 1;
+                    else if ((abs(i1 - Bx) + abs(i2 - By) <= step) && abs(i1 - Bx) != abs(i2 - By)) shadow = 0;
+                    else shadow = -1;
+                    break;
+                case 5:
+                    if (BField[4][i1][i2] > 0) shadow = 1;
+                    else if ((abs(i1 - Bx) <= step) && (abs(i2 - By) <= step) && abs(i1 - Bx) != abs(i2 - By)) shadow = 0;
+                    else shadow = -1;
+                    break;
+                case 6:
+                {
+                    int minstep = 3;
+                    if (BField[4][i1][i2] > 0) shadow = 1;
+                    else if ((abs(i1 - Bx) + abs(i2 - By) <= step) && (abs(i1 - Bx) + abs(i2 - By) > minstep) && BField[3][i1][i2] >= 0) shadow = 0;
+                    else shadow = -1;
+                    break;
+                }
+                }
+                if (shadow == 0)
+                    DrawSPic(BField[0][i1][i2] / 2, pos.x, pos.y, nullptr, shadow, 0, 0, 0);
+                if (shadow > 0)
+                    DrawSPic(BField[0][i1][i2] / 2, pos.x, pos.y, nullptr, shadow, 0, 0, 0);
+            }
+        }
+
+    for (int i1 = 0; i1 < 64; i1++)
+        for (int i2 = 0; i2 < 64; i2++)
+        {
+            TPosition pos = GetPositionOnScreen(i1, i2, Bx, By);
+            if (BField[1][i1][i2] > 0)
+                DrawSPic(BField[1][i1][i2] / 2, pos.x, pos.y, nullptr, 0, 30, 0, 0);
+            int bnum = BField[2][i1][i2];
+            if (bnum >= 0 && Brole[bnum].Dead == 0)
+            {
+                bool highlight = false;
+                switch (SelectAimMode)
+                {
+                case 0: highlight = (BField[4][i1][i2] > 0) && (Brole[bnum].Team != 0); break;
+                case 1: highlight = (BField[4][i1][i2] > 0) && (Brole[bnum].Team == 0); break;
+                case 2: highlight = Brole[bnum].Team != 0; break;
+                case 3: highlight = Brole[bnum].Team == 0; break;
+                case 4: highlight = (i1 == Bx) && (i2 == By); break;
+                case 5: highlight = (BField[4][i1][i2] > 0); break;
+                case 6: highlight = true; break;
+                case 7: highlight = false; break;
+                }
+                uint32 mc = 0xFFFFFFFF;
+                int ma = 0, sh = 0;
+                if (highlight) { ma = 20; sh = 1; }
+                DrawFPic(Brole[bnum].StaticPic[Brole[bnum].Face], pos.x, pos.y,
+                    Rrole[Brole[bnum].rnum + 1].ActionNum, sh, 0, mc, ma);
+            }
+        }
+    DrawVirtualKey();
 }
 
 void DrawBlackScreen()
@@ -495,12 +711,79 @@ void DrawBlackScreen()
 void DrawBFieldWithEft(int Epicnum, int beginpic, int endpic, int curlevel, int bnum, int SelectAimMode, int flash,
     uint32 mixColor, int index, int shadow, int alpha, uint32 MixColor2, int MixAlpha2)
 {
-    // TODO: 战场特效绘制
+    if (needOffset != 0)
+    {
+        offsetX = rand() % 5;
+        offsetY = rand() % 5;
+    }
+    int rnum = Brole[bnum].rnum;
+    for (int i = 0; i < BRoleAmount; i++)
+    {
+        int t = 0;
+        if (BField[4][Brole[i].X][Brole[i].Y] > 0)
+            if (CanSelectAim(bnum, i, -1, SelectAimMode))
+                t = 1;
+        if (t == 1)
+        {
+            Brole[i].shadow = 1;
+            Brole[i].mixColor = 0xFFFFFFFF;
+            Brole[i].mixAlpha = t * (10 + rand() % 40);
+        }
+    }
+
+    DrawBField();
+    for (int i1 = 0; i1 < 64; i1++)
+        for (int i2 = 0; i2 < 64; i2++)
+        {
+            if (BField[4][i1][i2] > 0)
+            {
+                TPosition pos = GetPositionOnScreen(i1, i2, Bx, By);
+                int k = Epicnum + curlevel - BField[4][i1][i2];
+                if (k >= beginpic && k <= endpic)
+                {
+                    shadow = 0;
+                    switch (Rrole[rnum + 1].MPType)
+                    {
+                    case 2:
+                        MixColor2 = 0xFFFFFFFF;
+                        MixAlpha2 = (rand() % 2) * 20 * Rrole[rnum + 1].CurrentMP / MAX_MP;
+                        shadow = 1;
+                        break;
+                    case 3:
+                        MixColor2 = MapRGBA(64, 64, 64);
+                        MixAlpha2 = -1 * (rand() % 2);
+                        break;
+                    default:
+                        MixColor2 = 0;
+                        MixAlpha2 = 0;
+                        break;
+                    }
+                    if (Rrole[rnum + 1].AttPoi > 0)
+                    {
+                        MixColor2 = MapRGBA(255 - Rrole[rnum + 1].AttPoi * 2, 255, 255 - Rrole[rnum + 1].AttPoi * 2);
+                        MixAlpha2 = -1 * (rand() % 2);
+                    }
+                    if (SW_SURFACE == 0)
+                        DrawEPic(k, pos.x, pos.y, shadow, 25, MixColor2, MixAlpha2, index);
+                    else
+                        DrawEPic(k, pos.x, pos.y, 0, 0, 0, 0, index);
+                }
+            }
+        }
+    for (int i = 0; i < BRoleAmount; i++)
+    {
+        Brole[i].shadow = 0;
+        Brole[i].mixColor = 0;
+        Brole[i].mixAlpha = 0;
+    }
+    offsetX = 0;
+    offsetY = 0;
 }
 
 void DrawBFieldWithAction(int bnum, int Apicnum)
 {
-    // TODO: 战场动作绘制
+    Brole[bnum].Pic = Apicnum;
+    DrawBField();
 }
 
 //----------------------------------------------------------------------
@@ -522,7 +805,35 @@ void DrawClouds()
 
 void DrawProgress()
 {
-    // TODO: 画加载进度
+    if (SEMIREAL == 1)
+    {
+        int x = CENTER_X - 180;
+        int y = CENTER_Y * 2 - 70;
+        DrawMPic(2014, x - 150, y - 10);
+
+        std::vector<int> rangeArr(BRoleAmount);
+        std::vector<int> p(BRoleAmount);
+        for (int i = 0; i < BRoleAmount; i++)
+        {
+            rangeArr[i] = i;
+            p[i] = Brole[i].RealProgress * 480 / 10000;
+        }
+        // 按进度排序
+        for (int i = 0; i < BRoleAmount - 1; i++)
+            for (int j = i + 1; j < BRoleAmount; j++)
+            {
+                if (p[i] <= p[j])
+                {
+                    std::swap(p[i], p[j]);
+                    std::swap(rangeArr[i], rangeArr[j]);
+                }
+            }
+        for (int i = 0; i < BRoleAmount; i++)
+            if (Brole[rangeArr[i]].Dead == 0)
+            {
+                DrawHeadPic(Rrole[Brole[rangeArr[i]].rnum + 1].HeadNum, p[i] + x, y, 0, 0, 0, 0, 0.25f, 0.25f);
+            }
+    }
 }
 
 void LoadGroundTex(int x, int y)
