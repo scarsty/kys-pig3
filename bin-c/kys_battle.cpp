@@ -123,7 +123,7 @@ void LoadBattleTiles()
             }
             LoadFreshScreen(CENTER_X - 140, CENTER_Y);
             char str[64];
-            snprintf(str, sizeof(str), "\xe8\xbc\x89\xe5\x85\xa5\xe6\x88\xb0\xe9\xac\xa5\xe4\xba\xba\xe7\x89\xa9\xe8\xb2\xbc\xe5\x9c\x96 %2d/%2d", i + 1, BRoleAmount);
+            snprintf(str, sizeof(str), "載入戰鬥人物貼圖 %2d/%2d", i + 1, BRoleAmount);
             DrawTextWithRect(str, CENTER_X - 120, CENTER_Y, 0, ColColor(0x64), ColColor(0x66), 30);
             UpdateAllScreen();
         }
@@ -188,7 +188,7 @@ int SelectTeamMembers(int forceSingle)
     int x = CENTER_X - 110;
     int y = CENTER_Y - 90;
     int h = 28;
-    std::string str1 = "\xe5\x8f\x83\xe6\x88\xb0"; // 參戰
+    std::string str1 = "參戰";
     RecordFreshScreen(x, y, 220, 250);
     int result = 0;
     int max_ = 1;
@@ -202,8 +202,8 @@ int SelectTeamMembers(int forceSingle)
             max_++;
         }
     }
-    menuString[0] = (forceSingle != 0) ? "   \xe9\x99\x90\xe9\x81\xb8\xe4\xb8\x80\xe4\xba\xba" : "   \xe5\x85\xa8\xe5\x93\xa1\xe5\x8f\x83\xe6\x88\xb0";
-    menuString[max_] = "   \xe9\x96\x8b\xe5\xa7\x8b\xe6\x88\xb0\xe9\xac\xa5"; // 開始戰鬥
+    menuString[0] = (forceSingle != 0) ? "   限選一人" : "   全員參戰";
+    menuString[max_] = "   開始戰鬥";
     int forall = (1 << (max_ - 1)) - 1;
 
     auto ShowMultiMenu = [&]()
@@ -2110,7 +2110,7 @@ void AddExp()
             Rrole[rnum].ExpForItem += basicvalue * 3 / 5;
             ShowSimpleStatus(rnum, x, y);
             char str[64];
-            snprintf(str, sizeof(str), "\xe7\xb6\x93\xe9\xa9\x97+%d", basicvalue);
+            snprintf(str, sizeof(str), "經驗+%d", basicvalue);
             DrawTextWithRect(str, x, y + 70, 0, ColColor(0x64), ColColor(0x66), 40, 0);
             p++;
         }
@@ -2357,7 +2357,7 @@ void UsePoison(int bnum)
             Rrole[rnum1 + 1].Poison += addpoi;
             Brole[bnum1].ShowNumber = addpoi;
             Brole[bnum].ExpGot += addpoi / 5;
-            std::string str = "\xe4\xbd\xbf\xe6\xaf\x92"; // 使毒
+            std::string str = "使毒";
             ShowMagicName(2, str);
             SetAminationPosition(0, 0, 0);
             PlayActionAmination(bnum, 0);
@@ -2454,7 +2454,7 @@ void Medcine(int bnum)
             if (Rrole[rnum1 + 1].Hurt < 0) Rrole[rnum1 + 1].Hurt = 0;
             Brole[bnum].ExpGot += addlife / 10;
             Brole[bnum1].ShowNumber = addlife;
-            std::string str = "\xe9\x86\xab\xe7\x99\x82"; // 醫療
+            std::string str = "醫療";
             ShowMagicName(3, str);
             SetAminationPosition(0, 0, 0);
             PlayActionAmination(bnum, 0);
@@ -2492,7 +2492,7 @@ void MedPoison(int bnum)
             Rrole[rnum1 + 1].Poison -= minuspoi;
             Brole[bnum1].ShowNumber = minuspoi;
             Brole[bnum].ExpGot += minuspoi / 5;
-            std::string str = "\xe8\xa7\xa3\xe6\xaf\x92"; // 解毒
+            std::string str = "解毒";
             ShowMagicName(4, str);
             SetAminationPosition(0, 0, 0);
             PlayActionAmination(bnum, 0);
@@ -2613,19 +2613,19 @@ void Rest(int bnum)
             if (Rmagic[neinum + 1].AttDistance[0] > 0)
             {
                 Rrole[rnum + 1].CurrentMP += Rrole[rnum + 1].MaxMP * (Rmagic[neinum + 1].AttDistance[0] + (Rmagic[neinum + 1].AttDistance[1] - Rmagic[neinum + 1].AttDistance[0]) * neilevel / 10) / 100;
-                ShowStringOnBrole(std::string((char*)&Rmagic[neinum + 1].Name[0]) + "\xc2\xb7\xe5\x9b\x9e\xe5\x86\x85", bnum, 3); // ·回内
+                ShowStringOnBrole(std::string((char*)&Rmagic[neinum + 1].Name[0]) + "·回内", bnum, 3);
             }
             Rrole[rnum + 1].CurrentMP = std::min((int)Rrole[rnum + 1].CurrentMP, (int)Rrole[rnum + 1].MaxMP);
             if (Rmagic[neinum + 1].AttDistance[2] > 0)
             {
                 Rrole[rnum + 1].CurrentHP += Rrole[rnum + 1].MaxHP * (Rmagic[neinum + 1].AttDistance[2] + (Rmagic[neinum + 1].AttDistance[3] - Rmagic[neinum + 1].AttDistance[2]) * neilevel / 10) / 100;
-                ShowStringOnBrole(std::string((char*)&Rmagic[neinum + 1].Name[0]) + "\xc2\xb7\xe5\x9b\x9e\xe5\x91\xbd", bnum, 3); // ·回命
+                ShowStringOnBrole(std::string((char*)&Rmagic[neinum + 1].Name[0]) + "·回命", bnum, 3);
             }
             Rrole[rnum + 1].CurrentHP = std::min((int)Rrole[rnum + 1].CurrentHP, (int)Rrole[rnum + 1].MaxHP);
             if (Rmagic[neinum + 1].AddMP[4] > 0)
             {
                 Rrole[rnum + 1].PhyPower += Rmagic[neinum + 1].AddMP[4];
-                ShowStringOnBrole(std::string((char*)&Rmagic[neinum + 1].Name[0]) + "\xc2\xb7\xe5\x9b\x9e\xe9\xab\x94", bnum, 3); // ·回體
+                ShowStringOnBrole(std::string((char*)&Rmagic[neinum + 1].Name[0]) + "·回體", bnum, 3);
             }
             Rrole[rnum + 1].PhyPower = std::min((int)Rrole[rnum + 1].PhyPower, MAX_PHYSICAL_POWER);
         }
@@ -3072,11 +3072,11 @@ bool SelectAutoMode()
         }
     }
     std::string modestring[4];
-    modestring[0] = "\xe6\x89\x8b\xe5\x8b\x95"; // 手動
-    modestring[1] = "\xe5\x85\xa8\xe6\x94\xbb"; // 全攻
-    modestring[2] = "\xe5\xb9\xb3\xe8\xa1\xa1"; // 平衡
-    modestring[3] = "\xe6\xb7\xb7\xe5\xad\x90"; // 混子
-    std::string str = "\xe7\xa2\xba\xe8\xaa\x8d"; // 確認
+    modestring[0] = "手動";
+    modestring[1] = "全攻";
+    modestring[2] = "平衡";
+    modestring[3] = "混子";
+    std::string str = "確認";
 
     RecordFreshScreen(x, y, w + 1, (amount + 1) * h + 1);
     std::vector<int> tempmode(BRoleAmount);
@@ -3640,24 +3640,604 @@ void ambush(int bnum, int mnum, int level, int Si)
 //----------------------------------------------------------------------
 // TSpecialAbility - 主动特技
 //----------------------------------------------------------------------
-void TSpecialAbility::SA_0(int bnum, int mnum, int level) { /* 战神 */ }
-void TSpecialAbility::SA_1(int bnum, int mnum, int level) { /* 风雷 */ }
-void TSpecialAbility::SA_2(int bnum, int mnum, int level) { /* 孤注 */ }
-void TSpecialAbility::SA_3(int bnum, int mnum, int level) { /* 倾国 */ }
-void TSpecialAbility::SA_4(int bnum, int mnum, int level) { /* 毒箭 */ }
-void TSpecialAbility::SA_5(int bnum, int mnum, int level) { /* 远攻 */ }
-void TSpecialAbility::SA_6(int bnum, int mnum, int level) { /* 连击 */ }
-void TSpecialAbility::SA_7(int bnum, int mnum, int level) { /* 反伤 */ }
-void TSpecialAbility::SA_8(int bnum, int mnum, int level) { /* 灵精 */ }
-void TSpecialAbility::SA_9(int bnum, int mnum, int level) { /* 闪避 */ }
-void TSpecialAbility::SA_10(int bnum, int mnum, int level) { /* 博采 */ }
-void TSpecialAbility::SA_11(int bnum, int mnum, int level) { /* 聆音 */ }
-void TSpecialAbility::SA_12(int bnum, int mnum, int level) { /* 青翼 */ }
-void TSpecialAbility::SA_13(int bnum, int mnum, int level) { /* 回体 */ }
-void TSpecialAbility::SA_14(int bnum, int mnum, int level) { /* 伤逝 */ }
-void TSpecialAbility::SA_15(int bnum, int mnum, int level) { /* 黯然 */ }
-void TSpecialAbility::SA_16(int bnum, int mnum, int level) { /* 慈悲 */ }
-void TSpecialAbility::SA_17(int bnum, int mnum, int level) { /* 悲歌 */ }
+// SA_0: 状态类特技通用入口
+void TSpecialAbility::SA_0(int bnum, int mnum, int level)
+{
+    ShowMagicName(mnum);
+    for (int i = 0; i < BRoleAmount; i++)
+    {
+        if (BField[4][Brole[i].X][Brole[i].Y] > 0 && Brole[i].Dead == 0)
+        {
+            if (Rmagic[mnum].HurtType == 2)
+            {
+                int hurt = 0;
+                switch (Rmagic[mnum].AddMP[0])
+                {
+                case 0: if (Brole[bnum].Team != Brole[i].Team) hurt = 1; break;
+                case 1: if (Brole[bnum].Team == Brole[i].Team) hurt = 1; break;
+                case 4: if (bnum == i) hurt = 1; break;
+                }
+                if (hurt == 1)
+                {
+                    int s = 1;
+                    while (s <= 5 && Rmagic[mnum].AddMP[s] >= 0)
+                    {
+                        int k = Brole[i].StateLevel[Rmagic[mnum].AddMP[s]];
+                        int j = Rmagic[mnum].Attack[(s - 1) * 2] + (Rmagic[mnum].Attack[(s - 1) * 2 + 1] - Rmagic[mnum].Attack[(s - 1) * 2]) * (level - 1) / 9;
+                        // 慈悲状态
+                        if (Rmagic[mnum].AddMP[s] == 23)
+                        {
+                            Brole[i].StateLevel[Rmagic[mnum].AddMP[s]] = Brole[bnum].rnum;
+                            Brole[i].StateRound[Rmagic[mnum].AddMP[s]] = Rmagic[mnum].HurtMP[level - 1];
+                        }
+                        else if (Rmagic[mnum].AddMP[s] == 26) // 定身状态
+                        {
+                            if (rand() % 100 < j)
+                            {
+                                Brole[i].StateLevel[Rmagic[mnum].AddMP[s]] = -1;
+                                Brole[i].StateRound[Rmagic[mnum].AddMP[s]] = Rmagic[mnum].HurtMP[level - 1];
+                            }
+                        }
+                        else
+                        {
+                            int r = Rmagic[mnum].HurtMP[level - 1];
+                            if (bnum == i) r++;
+                            ModifyState(i, Rmagic[mnum].AddMP[s], j, r);
+                        }
+                        s++;
+                    }
+                }
+            }
+        }
+    }
+    PlaySoundA(Rmagic[mnum].SoundNum, 0);
+    PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    if (Rmagic[mnum].NeedItem >= 0)
+        instruct_32(Rmagic[mnum].NeedItem, -Rmagic[mnum].NeedItemAmount);
+}
+
+// SA_1: 娇生惯养
+void TSpecialAbility::SA_1(int bnum, int mnum, int level)
+{
+    ShowMagicName(mnum);
+    GiveMeLife(bnum, mnum, level, 0);
+}
+
+// SA_2: 舍己为人
+void TSpecialAbility::SA_2(int bnum, int mnum, int level)
+{
+    ShowMagicName(mnum);
+    if (BField[2][Ax][Ay] >= 0)
+    {
+        int aimbnum = BField[2][Ax][Ay];
+        if (Brole[aimbnum].Team == Brole[bnum].Team)
+        {
+            instruct_67(Rmagic[mnum].SoundNum);
+            PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+            int rnum = Brole[bnum].rnum;
+            int MPnum = 200 * level;
+            if (MPnum > Rrole[rnum].CurrentMP)
+                MPnum = Rrole[rnum].CurrentMP;
+            if (MPnum > Rrole[Brole[aimbnum].rnum].MaxMP - Rrole[Brole[aimbnum].rnum].CurrentMP)
+                MPnum = Rrole[Brole[aimbnum].rnum].MaxMP - Rrole[Brole[aimbnum].rnum].CurrentMP;
+            Rrole[rnum].CurrentMP -= MPnum;
+            Rrole[Brole[aimbnum].rnum].CurrentMP += MPnum;
+            PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+        }
+    }
+    Brole[bnum].Acted = 1;
+}
+
+// SA_3: 药王神篇，全体解毒
+void TSpecialAbility::SA_3(int bnum, int mnum, int level)
+{
+    if (Brole[bnum].Team != 0 || Brole[bnum].Auto != 0)
+    {
+        int m = 0;
+        for (int i = 0; i < BRoleAmount; i++)
+        {
+            int rnum = Brole[i].rnum;
+            if (Brole[bnum].Team == Brole[i].Team)
+                if (Rrole[rnum].Poison > 0) m++;
+        }
+        if (m < 2) return;
+    }
+    ShowMagicName(mnum);
+    instruct_67(Rmagic[mnum].SoundNum);
+    PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+
+    int curenum = 5 * level;
+    for (int i = 0; i < BRoleAmount; i++)
+    {
+        if (Brole[i].Team == Brole[bnum].Team && Brole[i].Dead == 0)
+        {
+            Brole[i].ShowNumber = std::min((int)Rrole[Brole[i].rnum].Poison, curenum);
+            Rrole[Brole[i].rnum].Poison = std::max(0, (int)Rrole[Brole[i].rnum].Poison - curenum);
+            BField[4][Brole[i].X][Brole[i].Y] = 1;
+        }
+    }
+    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    ShowHurtValue(4);
+    Brole[bnum].Acted = 1;
+}
+
+// SA_4: 打坐吐纳，减体力加内力
+void TSpecialAbility::SA_4(int bnum, int mnum, int level)
+{
+    int rnum = Brole[bnum].rnum;
+    if (Brole[bnum].Team != 0 || Brole[bnum].Auto != 0)
+        if (Rrole[rnum].CurrentMP > Rrole[rnum].MaxMP / 2) return;
+    ShowMagicName(mnum);
+    instruct_67(Rmagic[mnum].SoundNum);
+    PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+
+    int dePhy = 20;
+    if (dePhy > Rrole[rnum].PhyPower) dePhy = Rrole[rnum].PhyPower;
+    int addMP = dePhy * 100;
+    if (addMP > Rrole[rnum].MaxMP - Rrole[rnum].CurrentMP)
+        addMP = Rrole[rnum].MaxMP - Rrole[rnum].CurrentMP;
+    dePhy = addMP / 100;
+
+    Rrole[rnum].PhyPower -= dePhy;
+    Rrole[rnum].CurrentMP += addMP;
+
+    BField[4][Brole[bnum].X][Brole[bnum].Y] = 1;
+    Brole[bnum].ShowNumber = addMP;
+    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    ShowHurtValue(1, 0, "+d%");
+    Brole[bnum].Acted = 1;
+}
+
+// SA_5: GiveMeLife(1)
+void TSpecialAbility::SA_5(int bnum, int mnum, int level)
+{
+    ShowMagicName(mnum);
+    GiveMeLife(bnum, mnum, level, 1);
+}
+
+// SA_6: 妙手空空，偷取敌人物品
+void TSpecialAbility::SA_6(int bnum, int mnum, int level)
+{
+    static const int16_t stealitems[40] = { 0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 206, 207, 208, 209, 210 };
+    static const int16_t stealitems0[30] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 171, 172 };
+
+    auto StealRandom = [&]() {
+        if (rand() % 100 < level * 5)
+        {
+            int si = 0;
+            switch (MODVersion)
+            {
+            case 13: si = stealitems[rand() % 40]; break;
+            case 0: si = stealitems0[rand() % 30]; break;
+            }
+            if ((double)(rand()) / RAND_MAX <= std::pow(0.9954, Ritem[si + 1].Price))
+                instruct_2(si, 1 + rand() % level);
+        }
+    };
+
+    ShowMagicName(mnum);
+    int aimbnum = BField[2][Ax][Ay];
+    BField[4][Ax][Ay] = 1;
+    instruct_67(Rmagic[mnum].SoundNum);
+    PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    if (aimbnum >= 0)
+    {
+        if (Brole[aimbnum].Team != Brole[bnum].Team)
+        {
+            int aimrnum = Brole[aimbnum].rnum;
+            int itemid = -1, itemnum = 0, k = 0;
+            for (k = 0; k <= 2; k++)
+            {
+                if (Rrole[aimrnum].TakingItem[k] >= 0)
+                {
+                    if (rand() % 100 > 50)
+                    {
+                        itemid = Rrole[aimrnum].TakingItem[k];
+                        itemnum = rand() % Rrole[aimrnum].TakingItemAmount[k] + 1;
+                        break;
+                    }
+                }
+            }
+            if (itemid >= 0)
+            {
+                Rrole[aimrnum].TakingItemAmount[k] -= itemnum;
+                if (Rrole[aimrnum].TakingItemAmount[k] <= 0)
+                    Rrole[aimrnum].TakingItem[k] = -1;
+                instruct_2(itemid, itemnum);
+            }
+            else
+                StealRandom();
+        }
+    }
+    if (rand() % 100 < 30)
+    {
+        std::string str = "偷天換日";
+        ShowMagicName(0, str);
+        memset(&BField[4][0][0], 0, 4096 * 2);
+        for (int i = 0; i < BRoleAmount; i++)
+            if (Brole[bnum].Team != Brole[i].Team && Brole[i].Dead == 0)
+                BField[4][Brole[i].X][Brole[i].Y] = 1 + rand() % 6;
+        instruct_67(Rmagic[mnum].SoundNum);
+        PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+        PlayMagicAmination(bnum, 100, Rmagic[mnum].AddMP[0]);
+        Redraw();
+        for (int i = 0; i < BRoleAmount; i++)
+        {
+            Brole[i].ShowNumber = -1;
+            if (Brole[bnum].Team != Brole[i].Team && Brole[i].Dead == 0)
+            {
+                int aimrnum = Brole[aimbnum].rnum;
+                int itemid = -1, itemnum = 0;
+                for (int kk = 0; kk <= 2; kk++)
+                {
+                    CheckBasicEvent();
+                    if (Rrole[aimrnum].TakingItem[kk] >= 0)
+                    {
+                        if (rand() % 100 < 30)
+                        {
+                            itemid = Rrole[aimrnum].TakingItem[kk];
+                            itemnum = rand() % Rrole[aimrnum].TakingItemAmount[kk] + 1;
+                            break;
+                        }
+                    }
+                }
+                if (itemid >= 0)
+                {
+                    int kk2 = 0;
+                    for (kk2 = 0; kk2 <= 2; kk2++)
+                        if (Rrole[aimrnum].TakingItem[kk2] == itemid) break;
+                    Rrole[aimrnum].TakingItemAmount[kk2] -= itemnum;
+                    if (Rrole[aimrnum].TakingItemAmount[kk2] <= 0)
+                        Rrole[aimrnum].TakingItem[kk2] = -1;
+                    instruct_2(itemid, itemnum);
+                }
+                else
+                    StealRandom();
+            }
+        }
+    }
+    Brole[bnum].Acted = 1;
+}
+
+// SA_7: 阎王敌，全体加生命
+void TSpecialAbility::SA_7(int bnum, int mnum, int level)
+{
+    if (Brole[bnum].Team != 0 || Brole[bnum].Auto != 0)
+    {
+        int m = 0;
+        for (int i = 0; i < BRoleAmount; i++)
+        {
+            int rnum = Brole[i].rnum;
+            if (Brole[bnum].Team == Brole[i].Team)
+                if (Rrole[rnum].CurrentHP < Rrole[rnum].MaxHP * 4 / 5) m++;
+        }
+        if (m < 2) return;
+    }
+    ShowMagicName(mnum);
+    instruct_67(Rmagic[mnum].SoundNum);
+    PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+    for (int i = 0; i < BRoleAmount; i++)
+    {
+        if (Brole[i].Team == Brole[bnum].Team && Brole[i].Dead == 0)
+        {
+            int curenum = Rrole[Brole[i].rnum].MaxHP * 5 * level / 100;
+            Rrole[Brole[i].rnum].CurrentHP += curenum;
+            if (Rrole[Brole[i].rnum].CurrentHP > Rrole[Brole[i].rnum].MaxHP)
+                Rrole[Brole[i].rnum].CurrentHP = Rrole[Brole[i].rnum].MaxHP;
+            BField[4][Brole[i].X][Brole[i].Y] = 1;
+            Brole[i].ShowNumber = curenum;
+        }
+    }
+    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    ShowHurtValue(3);
+    Brole[bnum].Acted = 1;
+}
+
+// SA_8: 运功疗伤，减内加血
+void TSpecialAbility::SA_8(int bnum, int mnum, int level)
+{
+    int rnum = Brole[bnum].rnum;
+    if (Brole[bnum].Team != 0 || Brole[bnum].Auto != 0)
+        if (Rrole[rnum].CurrentHP > Rrole[rnum].MaxHP / 2) return;
+    ShowMagicName(mnum);
+    instruct_67(Rmagic[mnum].SoundNum);
+    PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+
+    int deMP = 100 * level;
+    if (deMP > Rrole[rnum].CurrentMP) deMP = Rrole[rnum].CurrentMP;
+    int addHP = deMP;
+    if (addHP > Rrole[rnum].MaxHP - Rrole[rnum].CurrentHP)
+        addHP = Rrole[rnum].MaxHP - Rrole[rnum].CurrentHP;
+    deMP = addHP;
+
+    Rrole[rnum].CurrentMP -= deMP;
+    Rrole[rnum].CurrentHP += addHP;
+
+    BField[4][Brole[bnum].X][Brole[bnum].Y] = 1;
+    Brole[bnum].ShowNumber = addHP;
+    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    ShowHurtValue(3);
+    Brole[bnum].Acted = 1;
+}
+
+// SA_9: 十面埋伏
+void TSpecialAbility::SA_9(int bnum, int mnum, int level)
+{
+    ShowMagicName(mnum);
+    ambush(bnum, mnum, level, 1);
+}
+
+// SA_10: 潇湘夜雨
+void TSpecialAbility::SA_10(int bnum, int mnum, int level)
+{
+    ShowMagicName(mnum);
+    ambush(bnum, mnum, level, 0);
+}
+
+// SA_11: 狮子吼，AOE伤害或治疗盲目队友
+void TSpecialAbility::SA_11(int bnum, int mnum, int level)
+{
+    ShowMagicName(mnum);
+    instruct_67(Rmagic[mnum].SoundNum);
+    PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+
+    int hurt = 50 * level;
+    for (int i = 0; i < BRoleAmount; i++)
+    {
+        if (i != bnum && Brole[i].Dead == 0 && Brole[i].StateLevel[18] == 0)
+        {
+            Rrole[Brole[i].rnum].CurrentHP -= hurt;
+            if (Rrole[Brole[i].rnum].CurrentHP < 0) Rrole[Brole[i].rnum].CurrentHP = 0;
+            BField[4][Brole[i].X][Brole[i].Y] = 1;
+            Brole[i].ShowNumber = hurt;
+        }
+        if (Brole[i].StateLevel[18] > 0)
+        {
+            Rrole[Brole[i].rnum].CurrentHP += hurt;
+            if (Rrole[Brole[i].rnum].CurrentHP > Rrole[Brole[i].rnum].MaxHP)
+                Rrole[Brole[i].rnum].CurrentHP = Rrole[Brole[i].rnum].MaxHP;
+            BField[4][Brole[i].X][Brole[i].Y] = 1;
+        }
+    }
+    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    ShowHurtValue(0);
+    Brole[bnum].Acted = 1;
+}
+
+// SA_12: 吸星大法，直线攻击+吸内+拉近
+void TSpecialAbility::SA_12(int bnum, int mnum, int level)
+{
+    ShowMagicName(mnum);
+    instruct_67(Rmagic[mnum].SoundNum);
+    PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    int rnum = Brole[bnum].rnum;
+    int incx = Ax - Bx;
+    int incy = Ay - By;
+    int curx = Bx, cury = By;
+    for (int i = 0; i < Rmagic[mnum].MoveDistance[level - 1]; i++)
+    {
+        curx += incx;
+        cury += incy;
+        if (curx >= 0 && cury >= 0 && BField[2][curx][cury] >= 0)
+        {
+            int aimbnum = BField[2][curx][cury];
+            int aimx = curx, aimy = cury;
+            while (BField[2][aimx - incx][aimy - incy] < 0 && BField[1][aimx - incx][aimy - incy] <= 0)
+            {
+                aimx -= incx;
+                aimy -= incy;
+            }
+            BField[2][curx][cury] = -1;
+            BField[2][aimx][aimy] = aimbnum;
+            Brole[aimbnum].X = aimx;
+            Brole[aimbnum].Y = aimy;
+
+            int hurt = Rmagic[mnum].HurtMP[level - 1] + rand() % 5 - rand() % 5;
+            Brole[aimbnum].ShowNumber = hurt;
+            Rrole[Brole[aimbnum].rnum].CurrentMP -= hurt;
+            if (Rrole[Brole[aimbnum].rnum].CurrentMP <= 0)
+                Rrole[Brole[aimbnum].rnum].CurrentMP = 0;
+
+            Brole[aimbnum].StateLevel[0] = -5 * level;
+            Brole[aimbnum].StateRound[0] = level;
+            Brole[aimbnum].StateLevel[1] = -5 * level;
+            Brole[aimbnum].StateRound[1] = level;
+
+            Rrole[rnum].CurrentMP += hurt;
+            Rrole[rnum].MaxMP += rand() % (hurt / 2 + 1);
+            if (Rrole[rnum].MaxMP > MAX_MP) Rrole[rnum].MaxMP = MAX_MP;
+            if (Rrole[rnum].CurrentMP > Rrole[rnum].MaxMP)
+                Rrole[rnum].CurrentMP = Rrole[rnum].MaxMP;
+        }
+    }
+    ShowHurtValue(1);
+    Brole[bnum].Acted = 1;
+}
+
+// SA_13: 含沙射影，全体下毒
+void TSpecialAbility::SA_13(int bnum, int mnum, int level)
+{
+    ShowMagicName(mnum);
+    instruct_67(Rmagic[mnum].SoundNum);
+    PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+    int rnum = Brole[bnum].rnum;
+    int Value = LinearInsert(level, 1, 10, Rmagic[mnum].Attack[0], Rmagic[mnum].Attack[1]);
+    for (int i = 0; i < BRoleAmount; i++)
+    {
+        if (Brole[i].Team != Brole[bnum].Team && Brole[i].Dead == 0)
+        {
+            int curenum = Value + rand() % 3 - Rrole[Brole[i].rnum].DefPoi - Brole[i].loverlevel[3];
+            curenum = std::max(0, curenum);
+            Rrole[Brole[i].rnum].Poison += curenum;
+            Brole[i].ShowNumber = curenum;
+            if (Rrole[Brole[i].rnum].Poison > 99)
+                Rrole[Brole[i].rnum].Poison = 99;
+            BField[4][Brole[i].X][Brole[i].Y] = 1 + rand() % 6;
+        }
+    }
+    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    ShowHurtValue(2);
+    Brole[bnum].Acted = 1;
+}
+
+// SA_14: 落石，放置乱石
+void TSpecialAbility::SA_14(int bnum, int mnum, int level)
+{
+    ShowMagicName(mnum);
+    instruct_67(Rmagic[mnum].SoundNum);
+    PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+
+    int stonenum = Rmagic[mnum].Attack[0] + (Rmagic[mnum].Attack[1] - Rmagic[mnum].Attack[0]) * level / 10;
+    CalCanSelect(bnum, 1, Rmagic[mnum].MoveDistance[level - 1]);
+
+    for (int i = 0; i < stonenum; i++)
+    {
+        Ax = Bx;
+        Ay = By;
+        if (Brole[bnum].Auto == 0 && Brole[bnum].Team == 0)
+        {
+            while (BField[2][Ax][Ay] != -1 || BField[1][Ax][Ay] != 0)
+                while (!SelectRange(bnum, 0, Rmagic[mnum].MoveDistance[level - 1], 0));
+        }
+        else
+        {
+            int k = 0;
+            for (int i1 = 0; i1 <= 63; i1++)
+                for (int i2 = 0; i2 <= 63; i2++)
+                {
+                    if (BField[2][i1][i2] == -1 && BField[1][i1][i2] == 0 && BField[3][i1][i2] == 0)
+                    {
+                        int k1 = rand() % 10000;
+                        if (k1 > k) { k = k1; Ax = i1; Ay = i2; }
+                    }
+                }
+        }
+        BField[1][Ax][Ay] = 1487 * 2 + 1;
+        int x, y;
+        CalPosOnImage(Ax, Ay, x, y);
+        Redraw();
+    }
+    Brole[bnum].Acted = 1;
+}
+
+// SA_15: 同仇敌忾，多人围殴
+void TSpecialAbility::SA_15(int bnum, int mnum, int level)
+{
+    ShowMagicName(mnum);
+    int gridnum = Rmagic[mnum].Attack[0] + (Rmagic[mnum].Attack[1] - Rmagic[mnum].Attack[0]) * level / 10;
+    int Ax1 = std::max(0, Ax - gridnum);
+    int Ax2 = std::min(63, Ax + gridnum);
+    int Ay1 = std::max(0, Ay - gridnum);
+    int Ay2 = std::min(63, Ay + gridnum);
+
+    BField[4][Ax][Ay] = 1;
+    for (int x = Ax1; x <= Ax2; x++)
+    {
+        for (int y = Ay1; y <= Ay2; y++)
+        {
+            if (BField[2][x][y] > -1)
+            {
+                if (Brole[BField[2][x][y]].Dead == 0 && Brole[BField[2][x][y]].Team == Brole[bnum].Team)
+                {
+                    int attackbnum = BField[2][x][y];
+                    int attackmnum = Rrole[Brole[attackbnum].rnum].Magic[1];
+                    int attacklevel = Rrole[Brole[attackbnum].rnum].MagLevel[1] / 100 + 1;
+                    ShowMagicName(attackmnum);
+                    instruct_67(Rmagic[attackmnum].SoundNum);
+                    PlayActionAmination(attackbnum, Rmagic[attackmnum].MagicType);
+                    CalHurtRole(attackbnum, attackmnum, attacklevel, 1);
+                    PlayMagicAmination(attackbnum, Rmagic[attackmnum].AmiNum, Rmagic[mnum].AddMP[0]);
+                    Brole[attackmnum].Pic = 0;
+                    ShowHurtValue(Rmagic[attackmnum].HurtType);
+                }
+            }
+        }
+    }
+    Brole[bnum].Acted = 1;
+}
+
+// SA_16: 静诵黄庭，全体恢复体力
+void TSpecialAbility::SA_16(int bnum, int mnum, int level)
+{
+    if (Brole[bnum].Team != 0 || Brole[bnum].Auto != 0)
+    {
+        int m = 0;
+        for (int i = 0; i < BRoleAmount; i++)
+        {
+            int rnum = Brole[i].rnum;
+            if (Brole[bnum].Team == Brole[i].Team)
+                if (Rrole[rnum].PhyPower < MAX_PHYSICAL_POWER / 2) m++;
+        }
+        if (m < 2) return;
+    }
+    ShowMagicName(mnum);
+    instruct_67(Rmagic[mnum].SoundNum);
+    PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+
+    int curenum = MAX_PHYSICAL_POWER * 5 * level / 100;
+    for (int i = 0; i < BRoleAmount; i++)
+    {
+        if (Brole[i].Team == Brole[bnum].Team && Brole[i].Dead == 0)
+        {
+            Rrole[Brole[i].rnum].PhyPower += curenum;
+            if (Rrole[Brole[i].rnum].PhyPower > MAX_PHYSICAL_POWER)
+                Rrole[Brole[i].rnum].PhyPower = MAX_PHYSICAL_POWER;
+            BField[4][Brole[i].X][Brole[i].Y] = 1;
+            Brole[i].ShowNumber = curenum;
+        }
+    }
+    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    ShowHurtValue(3);
+    Brole[bnum].Acted = 1;
+}
+
+// SA_17: 乱世浮萍，把行动机会让给队友
+void TSpecialAbility::SA_17(int bnum, int mnum, int level)
+{
+    ShowMagicName(mnum);
+    BField[4][Bx][By] = 1;
+    BField[4][Ax][Ay] = 10;
+    int bnum2 = BField[2][Ax][Ay];
+    Bx = Ax;
+    By = Ay;
+    if (bnum2 >= 0)
+    {
+        if (Brole[bnum2].Team == Brole[bnum].Team)
+        {
+            PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+            int oldactstatus = Brole[bnum2].Acted;
+            Brole[bnum2].Acted = 0;
+            if (Brole[bnum2].Auto == 0 && Brole[bnum2].Team == 0)
+            {
+                while (Brole[bnum2].Acted == 0)
+                {
+                    switch (BattleMenu(bnum2))
+                    {
+                    case 0: MoveRole(bnum2); break;
+                    case 1: Attack(bnum2); break;
+                    case 2: UsePoison(bnum2); break;
+                    case 3: MedPoison(bnum2); break;
+                    case 4: Medcine(bnum2); break;
+                    case 5: BattleMenuItem(bnum2); break;
+                    case 6: Wait(bnum2); break;
+                    case 7: SelectShowStatus(bnum2); break;
+                    case 8: case 9: Rest(bnum2); break;
+                    }
+                }
+            }
+            else
+                AutoBattle3(bnum2);
+            Brole[bnum2].Acted = oldactstatus;
+            Rrole[Brole[bnum].rnum].CurrentMP -= Rmagic[mnum].NeedMP * level;
+            if (Rrole[Brole[bnum].rnum].CurrentMP < 0)
+                Rrole[Brole[bnum].rnum].CurrentMP = 0;
+        }
+    }
+    Brole[bnum].Acted = 1;
+}
 void TSpecialAbility::SA_18(int bnum, int mnum, int level)
 {
     ShowMagicName(mnum);
@@ -3972,14 +4552,410 @@ void TSpecialAbility::SA_24(int bnum, int mnum, int level)
     }
     Brole[bnum].Acted = 1;
 }
-void TSpecialAbility::SA_25(int bnum, int mnum, int level) { /* 定身 */ }
-void TSpecialAbility::SA_26(int bnum, int mnum, int level) { /* 控制 */ }
-void TSpecialAbility::SA_27(int bnum, int mnum, int level) { /* 混乱 */ }
-void TSpecialAbility::SA_28(int bnum, int mnum, int level) { /* 拳理 */ }
-void TSpecialAbility::SA_29(int bnum, int mnum, int level) { /* 剑意 */ }
-void TSpecialAbility::SA_30(int bnum, int mnum, int level) { /* 刀气 */ }
-void TSpecialAbility::SA_31(int bnum, int mnum, int level) { /* 奇兵 */ }
-void TSpecialAbility::SA_32(int bnum, int mnum, int level) { /* 狙击 */ }
+// SA_25: 全体恢复内力
+void TSpecialAbility::SA_25(int bnum, int mnum, int level)
+{
+    if (Brole[bnum].Team != 0 || Brole[bnum].Auto != 0)
+    {
+        int m = 0;
+        for (int i = 0; i < BRoleAmount; i++)
+        {
+            int rnum = Brole[i].rnum;
+            if (Brole[bnum].Team == Brole[i].Team)
+                if (Rrole[rnum].CurrentMP < Rrole[rnum].MaxMP * 4 / 5) m++;
+        }
+        if (m < 2) return;
+    }
+    ShowMagicName(mnum);
+    for (int i = 0; i < BRoleAmount; i++)
+    {
+        if (Brole[i].Dead == 0)
+        {
+            if (Brole[i].Team == Brole[bnum].Team && Brole[i].StateLevel[18] == 0 && i != bnum)
+            {
+                int addmp = Rrole[Brole[i].rnum].MaxMP * Rmagic[mnum].Attack[0] * level / 100;
+                if (Rrole[Brole[i].rnum].CurrentMP + addmp > Rrole[Brole[i].rnum].MaxMP)
+                    addmp = Rrole[Brole[i].rnum].MaxMP - Rrole[Brole[i].rnum].CurrentMP;
+                Rrole[Brole[i].rnum].CurrentMP += addmp;
+                BField[4][Brole[i].X][Brole[i].Y] = 1;
+                Brole[i].ShowNumber = addmp;
+            }
+            if (Brole[i].StateLevel[18] > 0)
+            {
+                int addmp = Rrole[Brole[i].rnum].MaxMP * Rmagic[mnum].Attack[0] * level / 50;
+                if (Rrole[Brole[i].rnum].CurrentMP + addmp > Rrole[Brole[i].rnum].MaxMP)
+                    addmp = Rrole[Brole[i].rnum].MaxMP - Rrole[Brole[i].rnum].CurrentMP;
+                Rrole[Brole[i].rnum].CurrentMP += addmp;
+                BField[4][Brole[i].X][Brole[i].Y] = 1;
+                Brole[i].ShowNumber = addmp;
+            }
+        }
+    }
+    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    ShowHurtValue(1, 0, "+%d");
+    Brole[bnum].Acted = 1;
+}
+
+// SA_26: 先天一阳指，直线攻击+定身+我方加血
+void TSpecialAbility::SA_26(int bnum, int mnum, int level)
+{
+    ShowMagicName(mnum);
+    instruct_67(Rmagic[mnum].SoundNum);
+    PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+
+    for (int i = 0; i < BRoleAmount; i++)
+    {
+        if (BField[4][Brole[i].X][Brole[i].Y] != 0 && Brole[i].Dead == 0 && bnum != i)
+        {
+            Brole[i].ShowNumber = -1;
+            // 敌方伤害
+            if (Brole[i].Team != Brole[bnum].Team)
+            {
+                int hurt = CalHurtValue(bnum, i, mnum, level, 1);
+                Brole[i].ShowNumber = hurt;
+                Rrole[Brole[i].rnum].CurrentHP -= hurt;
+                Rrole[Brole[i].rnum].Hurt += hurt * 100 / Rrole[Brole[i].rnum].MaxHP / LIFE_HURT;
+                // 定身
+                int rnd = rand() % 100;
+                if (rnd < Rmagic[mnum].Attack[6] + (Rmagic[mnum].Attack[7] - Rmagic[mnum].Attack[6]) * level / 10)
+                {
+                    Brole[i].StateLevel[26] = -1;
+                    Brole[i].StateRound[26] = 3;
+                }
+                if (Rrole[Brole[i].rnum].Hurt > 99) Rrole[Brole[i].rnum].Hurt = 99;
+                Brole[bnum].ExpGot += 1 + rand() % 10;
+                if (Rrole[Brole[i].rnum].CurrentHP <= 0)
+                {
+                    Rrole[Brole[i].rnum].CurrentHP = 0;
+                    Brole[bnum].ExpGot += 30 + rand() % 20;
+                }
+            }
+            // 我方加血
+            if (Brole[i].Team == Brole[bnum].Team)
+            {
+                int hurt = Rmagic[mnum].Attack[4] + (Rmagic[mnum].Attack[5] - Rmagic[mnum].Attack[4]) * level / 10;
+                Rrole[Brole[i].rnum].CurrentHP += Rrole[Brole[i].rnum].MaxHP * hurt / 100;
+                if (Rrole[Brole[i].rnum].CurrentHP > Rrole[Brole[i].rnum].MaxHP)
+                    Rrole[Brole[i].rnum].CurrentHP = Rrole[Brole[i].rnum].MaxHP;
+                Brole[i].ShowNumber = Rrole[Brole[i].rnum].MaxHP * hurt / 100;
+            }
+        }
+    }
+    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    ShowHurtValue(5);
+    Brole[bnum].Acted = 1;
+}
+
+// SA_27: 韦编三绝，控制目标敌人
+void TSpecialAbility::SA_27(int bnum, int mnum, int level)
+{
+    ShowMagicName(mnum);
+    int Pctrl = rand() % 100;
+    int Pm = Rmagic[mnum].Attack[0] + (Rmagic[mnum].Attack[1] - Rmagic[mnum].Attack[0]) * level / 10;
+
+    int enemyamount = 0;
+    for (int i = 0; i <= BRoleAmount; i++)
+    {
+        if (Brole[i].Dead == 0 && Brole[i].Team != Brole[bnum].Team)
+            enemyamount++;
+    }
+    if (enemyamount == 1) Pctrl = Pm;
+
+    if (Pctrl < Pm)
+    {
+        int aimBnum = BField[2][Ax][Ay];
+        if (aimBnum >= 0)
+        {
+            if (Brole[aimBnum].Team != Brole[bnum].Team)
+            {
+                Brole[aimBnum].StateLevel[27] = -Brole[bnum].Team - 1;
+                Brole[aimBnum].StateRound[27] = 3;
+                BField[4][Ax][Ay] = 1;
+            }
+            else
+            {
+                // 解除我方混乱状态
+                Brole[aimBnum].StateLevel[28] = 0;
+                Brole[aimBnum].StateRound[28] = 0;
+                BField[4][Ax][Ay] = 1;
+            }
+        }
+    }
+    Brole[bnum].Acted = 1;
+    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+}
+
+// SA_28: 断己相杀，与敌人死磕至一方死亡
+void TSpecialAbility::SA_28(int bnum, int mnum, int level)
+{
+    ShowMagicName(mnum);
+    int Anum = BField[2][Ax][Ay];
+    if (Anum >= 0)
+    {
+        if (Brole[Anum].Team != Brole[bnum].Team)
+        {
+            // 找敌方最强武功
+            int hmattA = 0, hmnumA = 0, hmlevelA = 0;
+            for (int i = 0; i < 10; i++)
+            {
+                int cmnum = Rrole[Brole[Anum].rnum].Magic[i];
+                if (cmnum <= 0) break;
+                if (Rmagic[cmnum].HurtType == 2) continue;
+                int cmlevel = Rrole[Brole[Anum].rnum].MagLevel[i] / 100 + 1;
+                int cmatt = Rmagic[cmnum].Attack[0] + (Rmagic[cmnum].Attack[1] - Rmagic[cmnum].Attack[0]) * cmlevel / 10;
+                if (cmatt > hmattA) { hmnumA = cmnum; hmlevelA = cmlevel; hmattA = cmatt; }
+            }
+            // 找己方最强武功
+            int hmattB = 0, hmnumB = 0, hmlevelB = 0;
+            for (int i = 0; i < 10; i++)
+            {
+                int cmnum = Rrole[Brole[bnum].rnum].Magic[i];
+                if (cmnum <= 0) break;
+                if (Rmagic[cmnum].HurtType == 2) continue;
+                int cmlevel = Rrole[Brole[bnum].rnum].MagLevel[i] / 100 + 1;
+                int cmatt = Rmagic[cmnum].Attack[0] + (Rmagic[cmnum].Attack[1] - Rmagic[cmnum].Attack[0]) * cmlevel / 10;
+                if (cmatt > hmattB) { hmnumB = cmnum; hmlevelB = cmlevel; hmattB = cmatt; }
+            }
+
+            int rnumA = Brole[Anum].rnum;
+            int rnumB = Brole[bnum].rnum;
+            while (true)
+            {
+                // 己方攻击
+                ShowMagicName(hmnumB);
+                instruct_67(Rmagic[hmnumB].SoundNum);
+                PlayActionAmination(bnum, Rmagic[hmnumB].MagicType);
+                int hurt = CalHurtValue(bnum, Anum, hmnumB, hmlevelB, 1);
+                BField[4][Brole[Anum].X][Brole[Anum].Y] = 1;
+                Bx = Brole[Anum].X; By = Brole[Anum].Y;
+                Ax = Brole[bnum].X; Ay = Brole[bnum].Y;
+                PlayMagicAmination(bnum, Rmagic[hmnumB].AmiNum);
+                Brole[Anum].ShowNumber = hurt;
+                ShowHurtValue(Rmagic[hmnumB].HurtType);
+                BField[4][Brole[Anum].X][Brole[Anum].Y] = 0;
+                Brole[Anum].ShowNumber = 0;
+                Rrole[rnumA].CurrentHP -= hurt;
+                if (Rrole[rnumA].CurrentHP <= 0) { Rrole[rnumA].CurrentHP = 0; break; }
+
+                // 敌方攻击
+                ShowMagicName(hmnumA);
+                instruct_67(Rmagic[hmnumA].SoundNum);
+                PlayActionAmination(Anum, Rmagic[hmnumA].MagicType);
+                hurt = CalHurtValue(Anum, bnum, hmnumA, hmlevelA, 1);
+                BField[4][Brole[bnum].X][Brole[bnum].Y] = 1;
+                Bx = Brole[bnum].X; By = Brole[bnum].Y;
+                Ax = Brole[Anum].X; Ay = Brole[Anum].Y;
+                PlayMagicAmination(Anum, Rmagic[hmnumA].AmiNum);
+                Brole[bnum].ShowNumber = hurt;
+                ShowHurtValue(Rmagic[hmnumA].HurtType);
+                Brole[bnum].ShowNumber = 0;
+                BField[4][Brole[bnum].X][Brole[bnum].Y] = 0;
+                Rrole[rnumB].CurrentHP -= hurt;
+                if (Rrole[rnumB].CurrentHP <= 0) { Rrole[rnumB].CurrentHP = 0; break; }
+            }
+            Rrole[rnumB].CurrentMP -= Rmagic[mnum].NeedMP * level;
+            if (Rrole[rnumB].CurrentMP < 0) Rrole[rnumB].CurrentMP = 0;
+            Rrole[rnumA].CurrentMP -= Rmagic[mnum].NeedMP * level;
+            if (Rrole[rnumA].CurrentMP < 0) Rrole[rnumA].CurrentMP = 0;
+            ClearDeadRolePic();
+            Brole[Anum].Pic = 0;
+            Brole[bnum].Pic = 0;
+        }
+    }
+    Brole[bnum].Acted = 1;
+}
+
+// SA_29: 七窍玲珑，延长队友正面状态
+void TSpecialAbility::SA_29(int bnum, int mnum, int level)
+{
+    if (Brole[bnum].Team != 0 || Brole[bnum].Auto != 0)
+    {
+        int aimbnum = BField[2][Ax][Ay];
+        int j = 0;
+        for (int i = 0; i <= 20; i++)
+            if (Brole[aimbnum].StateLevel[i] > 0) j++;
+        if (j == 0) return;
+    }
+    ShowMagicName(mnum);
+    for (int j = 0; j < BRoleAmount; j++)
+    {
+        if (BField[4][Brole[j].X][Brole[j].Y] != 0 && Brole[j].Team == Brole[bnum].Team)
+        {
+            int aimbnum = j;
+            if (Brole[aimbnum].Team == Brole[bnum].Team)
+            {
+                int ERound = Rmagic[mnum].Attack[0] + (Rmagic[mnum].Attack[1] - Rmagic[mnum].Attack[0]) * level / 10;
+                for (int i = 0; i < STATUS_AMOUNT; i++)
+                {
+                    if (Brole[aimbnum].StateLevel[i] > 0)
+                        Brole[aimbnum].StateRound[i] += ERound;
+                }
+            }
+        }
+    }
+    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    Brole[bnum].Acted = 1;
+}
+
+// SA_30: 排兵布阵，改变队友位置
+void TSpecialAbility::SA_30(int bnum, int mnum, int level)
+{
+    ShowMagicName(mnum);
+    if (BField[2][Ax][Ay] >= 0)
+    {
+        int aimbnum = BField[2][Ax][Ay];
+        BField[4][Ax][Ay] = 1;
+        auto aimbrole = Brole[BField[2][Ax][Ay]];
+        if (aimbrole.Team == Brole[bnum].Team)
+        {
+            if (Brole[bnum].Auto == 0 && Brole[bnum].Team == 0)
+            {
+                while (BField[2][Ax][Ay] != -1)
+                    while (!SelectRange(bnum, 0, Rmagic[mnum].MoveDistance[level - 1], 0));
+            }
+            else
+            {
+                int k = 0;
+                CalCanSelect(bnum, 1, Rmagic[mnum].MoveDistance[level - 1]);
+                for (int i1 = 0; i1 <= 63; i1++)
+                    for (int i2 = 0; i2 <= 63; i2++)
+                    {
+                        if (BField[2][i1][i2] == -1 && BField[1][i1][i2] == 0 && BField[3][i1][i2] == 0)
+                        {
+                            int k1 = rand() % 10000;
+                            if (k1 > k) { k = k1; Ax = i1; Ay = i2; }
+                        }
+                    }
+            }
+            BField[4][Ax][Ay] = 10;
+            instruct_67(Rmagic[mnum].SoundNum);
+            PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+            PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+            BField[2][aimbrole.X][aimbrole.Y] = -1;
+            Brole[aimbnum].X = Ax;
+            Brole[aimbnum].Y = Ay;
+            BField[2][Ax][Ay] = aimbnum;
+        }
+    }
+    Brole[bnum].Acted = 1;
+}
+
+// SA_31: 森罗万象，学习队友/全部角色特技或武功
+void TSpecialAbility::SA_31(int bnum, int mnum, int level)
+{
+    int forall = GetItemAmount(COMPASS_ID);
+    int rnum = Brole[bnum].rnum;
+    bool AI = (Brole[bnum].Auto != 0) || (Brole[bnum].Team != 0);
+    if (Rmagic[Rrole[rnum].Magic[0]].ScriptNum != 31) return;
+    ShowMagicName(mnum);
+    int amount = 0;
+    std::vector<int16_t> mnumarray;
+    std::vector<std::string> menuString;
+    if (level < 10 || MODVersion != 13)
+    {
+        mnumarray.resize(260);
+        menuString.resize(260);
+        for (int i = 0; i < BRoleAmount; i++)
+        {
+            if (((Brole[i].Team == Brole[bnum].Team && Brole[i].Dead == 0) || level == 10) && i != bnum)
+            {
+                int eachamount = (MODVersion == 13) ? 1 : 10;
+                for (int i1 = 0; i1 < eachamount; i1++)
+                {
+                    if (Rrole[Brole[i].rnum].Magic[i1] > 0)
+                    {
+                        mnumarray[amount] = Rrole[Brole[i].rnum].Magic[i1];
+                        std::string namemagic = std::string((char*)Rrole[Brole[i].rnum].Name);
+                        int namelen = DrawLength(namemagic);
+                        for (int pad = namelen; pad < 10; pad++) namemagic += ' ';
+                        namemagic += std::string((char*)Rmagic[Rrole[Brole[i].rnum].Magic[i1]].Name);
+                        menuString[amount] = namemagic;
+                        kyslog("%s", menuString[amount].c_str());
+                        amount++;
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        mnumarray.resize(100);
+        menuString.resize(100);
+        for (int i = 1; i <= 107; i++)
+        {
+            int ss = GetStarState(i);
+            if (ss == 1 || ss > 2 || forall >= 2)
+            {
+                int rn = StarToRole(i);
+                if (Rrole[rn].Magic[0] > 0)
+                {
+                    if (Rmagic[Rrole[rn].Magic[0]].HurtType == 2)
+                    {
+                        mnumarray[amount] = Rrole[rn].Magic[0];
+                        std::string namemagic = std::string((char*)Rrole[rn].Name);
+                        int namelen = DrawLength(namemagic);
+                        for (int pad = namelen; pad < 10; pad++) namemagic += ' ';
+                        namemagic += std::string((char*)Rmagic[Rrole[rn].Magic[0]].Name);
+                        menuString[amount] = namemagic;
+                        kyslog("%s", menuString[amount].c_str());
+                        amount++;
+                    }
+                }
+            }
+        }
+    }
+    if (amount > 0)
+    {
+        int res = -1;
+        if (AI)
+            res = rand() % amount;
+        else
+        {
+            menuString.resize(amount);
+            res = CommonScrollMenu(CENTER_X - 60 - (int)menuString[0].size() * 5, 130, 105 + (int)menuString[0].size() * 10, amount - 1, 12, menuString);
+        }
+        if (res < 0)
+        {
+            Brole[bnum].Acted = 0;
+            return;
+        }
+        Rrole[Brole[bnum].rnum].Magic[0] = mnumarray[res];
+        PlayMagicAmination(bnum, Rmagic[mnumarray[res]].AmiNum, Rmagic[mnumarray[res]].AddMP[0]);
+        if (AI) ShowMagicName(Rrole[Brole[bnum].rnum].Magic[0]);
+    }
+    Brole[bnum].Acted = 1;
+    if (forall > 2) Brole[bnum].Acted = 0;
+}
+
+// SA_32: 众生平等，均分全场生命值
+void TSpecialAbility::SA_32(int bnum, int mnum, int level)
+{
+    ShowMagicName(mnum);
+    int life = 0, sum = 0;
+    for (int i = 0; i < BRoleAmount; i++)
+    {
+        if (Brole[i].Dead == 0)
+        {
+            life += Rrole[Brole[i].rnum].CurrentHP;
+            sum++;
+        }
+    }
+    if (sum != 0)
+        life = life / sum;
+    else
+        life = Rrole[Brole[bnum].rnum].CurrentHP;
+
+    for (int i = 0; i < BRoleAmount; i++)
+    {
+        if (Brole[i].Dead == 0)
+        {
+            Rrole[Brole[i].rnum].CurrentHP = life;
+            BField[4][Brole[i].X][Brole[i].Y] = 1 + rand() % 6;
+        }
+    }
+    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    Brole[bnum].Acted = 1;
+}
 void TSpecialAbility::SA_33(int bnum, int mnum, int level)
 {
     ShowMagicName(mnum);
@@ -3996,7 +4972,7 @@ void TSpecialAbility::SA_33(int bnum, int mnum, int level)
                 aimbnum2 = BField[2][Ax][Ay];
                 if (aimbnum2 == aimbnum1)
                 {
-                    std::string str = "\xe4\xb8\x8d\xe5\x8f\xaf\xe9\x81\xb8\xe5\x90\x8c\xe4\xb8\x80\xe4\xba\xba\xef\xbc\x81"; // 不可選同一人！
+                    std::string str = "不可選同一人！";
                     DrawTextWithRect(str, CENTER_X - 70, CENTER_Y - 20, 145, ColColor(15), ColColor(17));
                     WaitAnyKey();
                 }
@@ -4051,7 +5027,7 @@ void TSpecialAbility::SA_34(int bnum, int mnum, int level)
                 aimbnum2 = BField[2][Ax][Ay];
                 if (aimbnum2 == aimbnum1)
                 {
-                    std::string str = "\xe4\xb8\x8d\xe5\x8f\xaf\xe9\x81\xb8\xe5\x90\x8c\xe4\xb8\x80\xe4\xba\xba\xef\xbc\x81";
+                    std::string str = "不可選同一人！";
                     DrawTextWithRect(str, CENTER_X - 70, CENTER_Y - 20, 145, ColColor(15), ColColor(17));
                     WaitAnyKey();
                 }

@@ -686,7 +686,7 @@ void StartAmi()
 bool InitialRole()
 {
     LoadR(0);
-    std::string input_name = (SIMPLE == 1) ? "\xe8\x90\xa7\xe7\xac\x91\xe7\xab\xb9" : "\xe8\x95\xad\xe7\xac\x91\xe7\xab\xb9";
+    std::string input_name = (SIMPLE == 1) ? "萧笑竹" : "蕭笑竹";
 
     Redraw();
     RecordFreshScreen();
@@ -729,10 +729,10 @@ bool InitialRole()
             if (MODVersion != 13) Rrole[1].Aptitude = rand() % 100;
             Redraw();
             ShowStatus(0);
-            DrawTextWithRect("\xe8\xb3\x87\xe8\xb3\xaa", 150, CENTER_Y + 120, 80, 0, 0x202020, 30, 0);
+            DrawTextWithRect("資質", 150, CENTER_Y + 120, 80, 0, 0x202020, 30, 0);
             char buf[16]; snprintf(buf, sizeof(buf), "%4d", Rrole[1].Aptitude);
             DrawEngShadowText(buf, 200, CENTER_Y + 123, ColColor(0x64), ColColor(0x66));
-            DrawTextWithRect("\xe9\x81\xb8\xe5\xae\x9a\xe5\xb1\xac\xe6\x80\xa7\xe5\x90\x8e\xe6\x8c\x89\xe5\x9b\x9e\xe8\xbb\x8a\xe6\x88\x96\xe9\x80\x99\xe8\xa3\xa1\xe7\xa2\xba\xe8\xaa\x8d", 175, CENTER_Y + 171, 260, 0, 0);
+            DrawTextWithRect("選定屬性后按回車或這裡確認", 175, CENTER_Y + 171, 260, 0, 0);
             UpdateAllScreen();
             int i = WaitAnyKey();
             if (MouseInRegion(175, CENTER_Y + 171, 260, 22) && i != SDLK_ESCAPE) break;
@@ -742,7 +742,7 @@ bool InitialRole()
         InitGrowth();
         if (MODVersion == 0 || MODVersion == 13 || MODVersion == 31 || MODVersion == 12 || MODVersion == 41)
         {
-            if (input_name == "\xe6\x9b\xb9\xe8\xbc\x95\xe7\xbe\xbd") // 曹輕羽
+            if (input_name == "曹輕羽")
             {
                 Rrole[1].MaxHP = 125; Rrole[1].CurrentHP = 125;
                 Rrole[1].MaxMP = 125; Rrole[1].CurrentMP = 125;
@@ -754,7 +754,7 @@ bool InitialRole()
                 Rrole[1].Unusual = 30; Rrole[1].HidWeapon = 30;
                 Rrole[1].Aptitude = 100; Rrole[1].MagLevel[0] = 999;
             }
-            if (input_name == "\xe5\xb0\x8f\xe5\xb0\x8f\xe8\xb1\xac") // 小小豬
+            if (input_name == "小小豬")
             {
                 Rrole[1].addnum = 1; Rrole[1].Aptitude = 100;
                 Rrole[1].MagLevel[0] = 999; Rrole[1].AmiFrameNum[0] = 2;
@@ -1856,24 +1856,24 @@ bool MenuItem()
 
     int ItemTypeList[11] = { 0, 10, 11, 3, 4, 21, 22, 23, 24, 25, 32 };
     std::string words2[23] = {
-        "\xe7\x94\x9f\xe5\x91\xbd", "\xe7\x94\x9f\xe5\x91\xbd", "\xe4\xb8\xad\xe6\xaf\x92", "\xe9\xab\x94\xe5\x8a\x9b",
-        "\xe5\x85\xa7\xe5\x8a\x9b", "\xe5\x85\xa7\xe5\x8a\x9b", "\xe5\x85\xa7\xe5\x8a\x9b", "\xe6\x94\xbb\xe6\x93\x8a",
-        "\xe8\xbc\x95\xe5\x8a\x9f", "\xe9\x98\xb2\xe7\xa6\xa6", "\xe9\x86\xab\xe7\x99\x82", "\xe7\x94\xa8\xe6\xaf\x92",
-        "\xe8\xa7\xa3\xe6\xaf\x92", "\xe6\x8a\x97\xe6\xaf\x92", "\xe6\x8b\xb3\xe6\x8e\x8c", "\xe5\xbe\xa1\xe5\x8a\x8d",
-        "\xe8\x80\x8d\xe5\x88\x80", "\xe7\x89\xb9\xe6\xae\x8a", "\xe6\x9a\x97\xe5\x99\xa8", "\xe4\xbd\x9c\xe5\xbc\x8a",
-        "\xe5\x93\x81\xe5\xbe\xb7", "\xe7\xa7\xbb\xe5\x8b\x95", "\xe5\xb8\xb6\xe6\xaf\x92"
+        "生命", "生命", "中毒", "體力",
+        "內力", "內力", "內力", "攻擊",
+        "輕功", "防禦", "醫療", "用毒",
+        "解毒", "抗毒", "拳掌", "御劍",
+        "耍刀", "特殊", "暗器", "作弊",
+        "品德", "移動", "帶毒"
     };
     std::string words3[13] = {
-        "\xe5\x85\xa7\xe5\x8a\x9b", "\xe5\x85\xa7\xe5\x8a\x9b", "\xe6\x94\xbb\xe6\x93\x8a", "\xe8\xbc\x95\xe5\x8a\x9f",
-        "\xe7\x94\xa8\xe6\xaf\x92", "\xe9\x86\xab\xe7\x99\x82", "\xe8\xa7\xa3\xe6\xaf\x92", "\xe6\x8b\xb3\xe6\x8e\x8c",
-        "\xe5\xbe\xa1\xe5\x8a\x8d", "\xe8\x80\x8d\xe5\x88\x80", "\xe7\x89\xb9\xe6\xae\x8a", "\xe6\x9a\x97\xe5\x99\xa8",
-        "\xe8\xb3\x87\xe8\xb3\xaa"
+        "內力", "內力", "攻擊", "輕功",
+        "用毒", "醫療", "解毒", "拳掌",
+        "御劍", "耍刀", "特殊", "暗器",
+        "資質"
     };
     std::string menuString[11] = {
-        "\xe5\x8a\x87\xe6\x83\x85", "\xe5\x85\xb5\xe5\x99\xa8", "\xe8\xad\xb7\xe7\x94\xb2",
-        "\xe4\xb8\xb9\xe8\x97\xa5", "\xe6\x9a\x97\xe5\x99\xa8", "\xe6\x8b\xb3\xe7\xb6\x93",
-        "\xe5\x8a\x8d\xe8\xad\x9c", "\xe5\x88\x80\xe9\x8c\x84", "\xe5\xa5\x87\xe9\x96\x80",
-        "\xe6\x9a\x97\xe5\x85\xb8", "\xe5\xbf\x83\xe6\xb3\x95"
+        "劇情", "兵器", "護甲",
+        "丹藥", "暗器", "拳經",
+        "劍譜", "刀錄", "奇門",
+        "暗典", "心法"
     };
 
     LoadTeamSimpleStatus(maxteam);
@@ -1935,11 +1935,11 @@ bool MenuItem()
                     if (item == COMPASS_ID)
                     {
                         snprintf(buf, sizeof(buf), "%3d,%3d", My, Mx);
-                        std::string s1 = "\xe4\xbd\xa0\xe7\x9a\x84\xe4\xbd\x8d\xe7\xbd\xae\xef\xbc\x9a"; // 你的位置：
+                        std::string s1 = "你的位置：";
                         DrawShadowText(s1, 8 + xp, 48 + dt + yp, 0, 0x202020);
                         DrawShadowText(buf, 108 + xp, 48 + dt + yp, ColColor(0x64), ColColor(0x66));
                         snprintf(buf, sizeof(buf), "%3d,%3d", ShipX, ShipY);
-                        std::string s2 = "\xe8\x88\xb9\xe7\x9a\x84\xe4\xbd\x8d\xe7\xbd\xae\xef\xbc\x9a"; // 船的位置：
+                        std::string s2 = "船的位置：";
                         DrawShadowText(s2, 188 + xp, 48 + dt + yp, 0, 0x202020);
                         DrawShadowText(buf, 288 + xp, 48 + dt + yp, ColColor(0x64), ColColor(0x66));
                     }
@@ -1949,7 +1949,7 @@ bool MenuItem()
                         if (Ritem[item].User >= 0)
                         {
                             int len2 = DrawLength(std::string((char*)Ritem[item].Introduction));
-                            std::string suse = "\xe4\xbd\xbf\xe7\x94\xa8"; // 使用
+                            std::string suse = "使用"; // 使用
                             int namelen = DrawLength(std::string((char*)Rrole[Ritem[item].User].Name));
                             DrawShadowText(suse, 18 + namelen * 10 + len2 * 10 + xp, 47 + dt + yp, ColColor(0x64), ColColor(0x66));
                             DrawShadowText(std::string((char*)Rrole[Ritem[item].User].Name), 18 + len2 * 10 + xp, 47 + dt + yp, ColColor(0x64), ColColor(0x66));
@@ -1980,12 +1980,12 @@ bool MenuItem()
                     }
                     if (len2 > 0)
                     {
-                        std::string s = "\xe5\x8a\x9f\xe6\x95\x88\xef\xbc\x9a"; // 功效：
+                        std::string s = "功效："; // 功效：
                         DrawShadowText(s, 8 + xp, 78 + dt + yp, ColColor(0x21), ColColor(0x23));
                     }
                     if (len3 > 0)
                     {
-                        std::string s = "\xe9\x9c\x80\xe6\xb1\x82\xef\xbc\x9a"; // 需求：
+                        std::string s = "需求："; // 需求：
                         DrawShadowText(s, 8 + xp, 78 + dt + (len2 + l1) / l * 28 + yp, ColColor(0x21), ColColor(0x23));
                     }
                     char buf[32];
@@ -1999,7 +1999,7 @@ bool MenuItem()
                             if (i == 4)
                             {
                                 switch (Ritem[item].ChangeMPType)
-                                { case 0: str2 = "\xe9\x99\xb0"; break; case 1: str2 = "\xe9\x99\xbd"; break; case 2: str2 = "\xe8\xaa\xbf\xe5\x92\x8c"; break; }
+                                { case 0: str2 = "陰"; break; case 1: str2 = "陽"; break; case 2: str2 = "調和"; break; }
                             }
                             uint32 c1, c2;
                             if (i == 0 || i == 5) { c1 = ColColor(0x10); c2 = ColColor(0x13); }
@@ -2019,7 +2019,7 @@ bool MenuItem()
                             if (i == 0)
                             {
                                 switch (Ritem[item].NeedMPType)
-                                { case 0: str2 = "\xe9\x99\xb0"; break; case 1: str2 = "\xe9\x99\xbd"; break; case 2: str2 = "\xe8\xaa\xbf\xe5\x92\x8c"; break; }
+                                { case 0: str2 = "陰"; break; case 1: str2 = "陽"; break; case 2: str2 = "調和"; break; }
                             }
                             uint32 c1, c2;
                             if (i == 1) { c1 = ColColor(0x10); c2 = ColColor(0x13); }
@@ -2044,7 +2044,7 @@ bool MenuItem()
                         DrawSimpleStatusByTeam(i, ui_x, ui_y + i * 80, 0, 50);
                     if (curitem >= 0 && TeamList[i] == Ritem[curitem].User)
                     {
-                        std::string s = "\xe4\xbd\xbf\xe7\x94\xa8\xe4\xb8\xad"; // 使用中
+                        std::string s = "使用中"; // 使用中
                         DrawTextWithRect(s, ui_x + 15, ui_y + i * 80 + 50, 0, ColColor(0x64), ColColor(0x66), 50, 0);
                     }
                     if (Ritem[curitem].Magic > 0)
@@ -2053,7 +2053,7 @@ bool MenuItem()
                         if (level > 0)
                         {
                             char buf[32];
-                            snprintf(buf, sizeof(buf), "%2d\xe7\xb4\x9a", level); // %2d級
+                            snprintf(buf, sizeof(buf), "%2d級", level); // %2d級
                             DrawShadowText(buf, ui_x + 220, ui_y + 80 * i + 60, ColColor(0x64), ColColor(0x66));
                         }
                     }
@@ -2301,8 +2301,8 @@ void UseItem(int inum, int teammate)
         {
             TransBlackScreen();
             UpdateAllScreen();
-            std::string menuString[2] = { "\xe5\x8f\x96\xe6\xb6\x88", "\xe7\xb9\xbc\xe7\xba\x8c" }; // 取消, 繼續
-            std::string str = "\xe6\xad\xa4\xe7\x89\xa9\xe5\x93\x81\xe6\xad\xa3\xe6\x9c\x89\xe4\xba\xba\xe8\xa3\x9d\xe5\x82\x99\xef\xbc\x8c\xe6\x98\xaf\xe5\x90\xa6\xe7\xb9\xbc\xe7\xba\x8c\xef\xbc\x9f"; // 此物品正有人裝備，是否繼續？
+            std::string menuString[2] = { "取消", "繼續" }; // 取消, 繼續
+            std::string str = "此物品正有人裝備，是否繼續？"; // 此物品正有人裝備，是否繼續？
             DrawTextWithRect(str, CENTER_X - 142, CENTER_Y - 40, 285, 0, 0x202020);
             menu = CommonMenu2(CENTER_X - 45, CENTER_Y, 45, menuString);
         }
@@ -2312,7 +2312,7 @@ void UseItem(int inum, int teammate)
             {
                 TransBlackScreen();
                 UpdateAllScreen();
-                std::string str = "\xe8\xaa\xb0\xe8\xa6\x81\xe8\xa3\x9d\xe5\x82\x99"; // 誰要裝備
+                std::string str = "誰要裝備"; // 誰要裝備
                 std::string str1((char*)&Ritem[inum].Name[0]);
                 int off = DrawTextFrame(CENTER_X - 275, CENTER_Y - 193, 8 + DrawLength(str1));
                 DrawShadowText(str, CENTER_X - 275 + off, CENTER_Y - 193 + 3, 0, 0x202020);
@@ -2342,7 +2342,7 @@ void UseItem(int inum, int teammate)
                 }
                 else
                 {
-                    std::string str = "\xe6\xad\xa4\xe4\xba\xba\xe4\xb8\x8d\xe9\x81\xa9\xe5\x90\x88\xe8\xa3\x9d\xe5\x82\x99\xe6\xad\xa4\xe7\x89\xa9\xe5\x93\x81"; // 此人不適合裝備此物品
+                    std::string str = "此人不適合裝備此物品"; // 此人不適合裝備此物品
                     DrawTextWithRect(str, CENTER_X - 100, CENTER_Y + 40, 205, ColColor(0x64), ColColor(0x66));
                     WaitAnyKey();
                     Redraw();
@@ -2358,8 +2358,8 @@ void UseItem(int inum, int teammate)
         {
             TransBlackScreen();
             UpdateAllScreen();
-            std::string menuString[2] = { "\xe5\x8f\x96\xe6\xb6\x88", "\xe7\xb9\xbc\xe7\xba\x8c" }; // 取消, 繼續
-            std::string str = "\xe6\xad\xa4\xe7\xa7\x98\xe7\xac\x88\xe6\xad\xa3\xe6\x9c\x89\xe4\xba\xba\xe4\xbf\xae\xe7\x85\x89\xef\xbc\x8c\xe6\x98\xaf\xe5\x90\xa6\xe7\xb9\xbc\xe7\xba\x8c\xef\xbc\x9f"; // 此秘笈正有人修煉，是否繼續？
+            std::string menuString[2] = { "取消", "繼續" }; // 取消, 繼續
+            std::string str = "此秘笈正有人修煉，是否繼續？"; // 此秘笈正有人修煉，是否繼續？
             DrawTextWithRect(str, CENTER_X - 142, CENTER_Y - 40, 285, 0, 0x202020);
             menu = CommonMenu2(CENTER_X - 45, CENTER_Y, 45, menuString);
         }
@@ -2369,7 +2369,7 @@ void UseItem(int inum, int teammate)
             {
                 TransBlackScreen();
                 UpdateAllScreen();
-                std::string str = "\xe8\xaa\xb0\xe8\xa6\x81\xe4\xbf\xae\xe7\x85\x89"; // 誰要修煉
+                std::string str = "誰要修煉"; // 誰要修煉
                 std::string str1((char*)&Ritem[inum].Name[0]);
                 int off = DrawTextFrame(CENTER_X - 275, CENTER_Y - 193, 8 + DrawLength(str1));
                 DrawShadowText(str, CENTER_X - 275 + off, CENTER_Y - 193 + 3, 0, 0x202020);
@@ -2403,7 +2403,7 @@ void UseItem(int inum, int teammate)
                 }
                 else
                 {
-                    std::string str = "\xe6\xad\xa4\xe4\xba\xba\xe4\xb8\x8d\xe9\x81\xa9\xe5\x90\x88\xe4\xbf\xae\xe7\x85\x89\xe6\xad\xa4\xe7\xa7\x98\xe7\xac\x88"; // 此人不適合修煉此秘笈
+                    std::string str = "此人不適合修煉此秘笈"; // 此人不適合修煉此秘笈
                     DrawTextWithRect(str, CENTER_X - 100, CENTER_Y + 40, 205, ColColor(0x64), ColColor(0x66));
                     WaitAnyKey();
                     Redraw();
@@ -2420,7 +2420,7 @@ void UseItem(int inum, int teammate)
         {
             if (teammate == -1)
             {
-                std::string str = "\xe8\xaa\xb0\xe8\xa6\x81\xe6\x9c\x8d\xe7\x94\xa8"; // 誰要服用
+                std::string str = "誰要服用"; // 誰要服用
                 std::string str1((char*)&Ritem[inum].Name[0]);
                 DrawTextWithRect(str, CENTER_X - 275, CENTER_Y - 193, DrawLength(str1) * 10 + 80, 0, 0x202020);
                 DrawShadowText(str1, CENTER_X - 275 + 99, CENTER_Y - 193 + 2, ColColor(0x64), ColColor(0x66));
@@ -2505,8 +2505,8 @@ bool CanEquip(int rnum, int inum, int use)
         {
             TransBlackScreen();
             UpdateAllScreen();
-            std::string menuString[2] = { "\xe5\x8f\x96\xe6\xb6\x88", "\xe7\xb9\xbc\xe7\xba\x8c" }; // 取消, 繼續
-            std::string str = "\xe6\x98\xaf\xe5\x90\xa6\xe8\xa6\x81\xe8\x87\xaa\xe5\xae\xae\xef\xbc\x9f"; // 是否要自宮？
+            std::string menuString[2] = { "取消", "繼續" }; // 取消, 繼續
+            std::string str = "是否要自宮？"; // 是否要自宮？
             DrawTextWithRect(str, CENTER_X - 63, CENTER_Y, 0, 0, 0x202020);
             if (CommonMenu2(CENTER_X - 49, CENTER_Y + 40, 48, menuString) == 1)
                 Rrole[rnum].Sexual = 2;
@@ -2520,9 +2520,9 @@ bool CanEquip(int rnum, int inum, int use)
 void MenuStatus()
 {
     std::string menuString[3];
-    menuString[0] = "\xe6\x9b\xb4\xe6\x8f\x9b"; // 更換
-    menuString[1] = "\xe5\x8d\xb8\xe4\xb8\x8b"; // 卸下
-    menuString[2] = "\xe5\x8f\x96\xe6\xb6\x88"; // 取消
+    menuString[0] = "更換";
+    menuString[1] = "卸下";
+    menuString[2] = "取消";
     Redraw();
     DrawMPic(2015, CENTER_X - 384 + 283, CENTER_Y - 240);
     TransBlackScreen();
@@ -2638,13 +2638,13 @@ void ShowStatus(int rnum, int bnum)
 {
     if (rnum < 0 || rnum >= 1000) return;
     const char* strs[] = {
-        "\xe7\xad\x89\xe7\xb4\x9a", "\xe7\x94\x9f\xe5\x91\xbd", "\xe5\x85\xa7\xe5\x8a\x9b", "\xe9\xab\x94\xe5\x8a\x9b", "\xe7\xb6\x93\xe9\xa9\x97", "\xe5\x8d\x87\xe7\xb4\x9a",
-        "\xe6\x94\xbb\xe6\x93\x8a", "\xe9\x98\xb2\xe7\xa6\xa6", "\xe8\xbc\x95\xe5\x8a\x9f", "\xe7\xa7\xbb\xe5\x8b\x95",
-        "\xe9\x86\xab\xe7\x99\x82\xe8\x83\xbd\xe5\x8a\x9b", "\xe7\x94\xa8\xe6\xaf\x92\xe8\x83\xbd\xe5\x8a\x9b", "\xe8\xa7\xa3\xe6\xaf\x92\xe8\x83\xbd\xe5\x8a\x9b",
-        "\xe6\x8b\xb3\xe6\x8e\x8c\xe5\x8a\x9f\xe5\xa4\xab", "\xe5\xbe\xa1\xe5\x8a\x8d\xe8\x83\xbd\xe5\x8a\x9b", "\xe8\x80\x8d\xe5\x88\x80\xe6\x8a\x80\xe5\xb7\xa7",
-        "\xe7\x89\xb9\xe6\xae\x8a\xe5\x85\xb5\xe5\x99\xa8", "\xe6\x9a\x97\xe5\x99\xa8\xe6\x8a\x80\xe5\xb7\xa7",
-        "\xe6\xad\xa6\xe5\x99\xa8", "\xe8\xad\xb7\xe5\x85\xb7",
-        "\xe6\x89\x80\xe6\x9c\x83\xe6\xad\xa6\xe5\x8a\x9f"
+        "等級", "生命", "內力", "體力", "經驗", "升級",
+        "攻擊", "防禦", "輕功", "移動",
+        "醫療能力", "用毒能力", "解毒能力",
+        "拳掌功夫", "御劍能力", "耍刀技巧",
+        "特殊兵器", "暗器技巧",
+        "武器", "護具",
+        "所會武功"
     };
 
     int xp = CENTER_X - 384 + 260;
@@ -2922,7 +2922,7 @@ void SetColorByPro(int Cur, int MaxValue, uint32& color1, uint32& color2)
 
 void MenuAbility()
 {
-    std::string menustring2[3] = { "\xe6\x9b\xb4\xe6\x8f\x9b", "\xe5\x8d\xb8\xe4\xb8\x8b", "\xe5\x8f\x96\xe6\xb6\x88" }; // 更換, 卸下, 取消
+    std::string menustring2[3] = { "更換", "卸下", "取消" };
     int x = CENTER_X - 384 + 270;
     int y = CENTER_Y - 240 + 5;
     Redraw();
@@ -2982,7 +2982,7 @@ void MenuAbility()
                 {
                     TransBlackScreen();
                     int menu2 = SelectOneTeamMember(x + 50, y + 80 + select * 150,
-                        "\xe9\x81\xb8\xe6\x93\x87\xe7\x9b\xae\xe6\xa8\x99\xe9\x9a\x8a\xe5\x8f\x8b", 0, 0); // 選擇目標隊友
+                        "選擇目標隊友", 0, 0); // 選擇目標隊友
                     if (menu2 >= 0)
                     {
                         if (select == 0) EffectMedcine(TeamList[menu], TeamList[menu2]);
@@ -3044,8 +3044,8 @@ void MenuAbility()
 }
 void ShowAbility(int rnum, int select, int showLeave)
 {
-    std::string strs[4] = { "\xe6\x99\xae\xe9\x80\x9a", "\xe6\xad\xa6\xe5\xad\xb8", "\xe5\x85\xa7\xe5\x8a\x9f", "\xe4\xbf\xae\xe7\x85\x89\xe7\x89\xa9\xe5\x93\x81" }; // 普通, 武學, 內功, 修煉物品
-    std::string strs1[3] = { "\xe9\x86\xab\xe7\x99\x82", "\xe8\xa7\xa3\xe6\xaf\x92", "\xe9\x9b\xa2\xe9\x9a\x8a" }; // 醫療, 解毒, 離隊
+    std::string strs[4] = { "普通", "武學", "內功", "修煉物品" }; // 普通, 武學, 內功, 修煉物品
+    std::string strs1[3] = { "醫療", "解毒", "離隊" }; // 醫療, 解毒, 離隊
     int x = CENTER_X - 384 + 250;
     int y = CENTER_Y - 240 + 5;
     int itemx = x + 230;
@@ -3142,7 +3142,7 @@ void MenuLeave()
 {
     TransBlackScreen();
     int menu = SelectOneTeamMember(CENTER_X - 384 + 270 + 50, CENTER_Y - 240 + 7 + 80,
-        "\xe8\xa6\x81\xe6\xb1\x82\xe8\xaa\xb0\xe9\x9b\xa2\xe9\x9a\x8a", 0, 0); // 要求誰離隊
+        "要求誰離隊", 0, 0); // 要求誰離隊
     if (menu >= 0)
     {
         for (int i = 0; i < 100; i++)
@@ -3180,19 +3180,19 @@ void MenuSet()
 
     maxmenu = 8;
     std::string str[8] = {
-        "\xe9\x9f\xb3\xe6\xa8\x82\xe9\x9f\xb3\xe9\x87\x8f",   // 音樂音量
-        "\xe9\x9f\xb3\xe6\x95\x88\xe9\x9f\xb3\xe9\x87\x8f",   // 音效音量
-        "\xe5\xa4\xa7\xe5\x9c\xb0\xe5\x9c\x96\xe8\xb5\xb0\xe8\xb7\xaf\xe5\xbb\xb6\xe9\x81\xb2", // 大地圖走路延遲
-        "\xe5\x85\xa7\xe5\xa0\xb4\xe6\x99\xaf\xe8\xb5\xb0\xe8\xb7\xaf\xe5\xbb\xb6\xe9\x81\xb2", // 內場景走路延遲
-        "\xe6\x88\xb0\xe9\xac\xa5\xe5\x8b\x95\xe7\x95\xab\xe5\xbb\xb6\xe9\x81\xb2", // 戰鬥動畫延遲
-        "\xe6\x88\xb0\xe9\xac\xa5\xe6\x96\x87\xe5\xad\x97\xe9\xa1\xaf\xe7\xa4\xba", // 戰鬥文字顯示
-        "\xe9\xa1\xaf\xe7\xa4\xba\xe6\xa8\xa1\xe5\xbc\x8f",     // 顯示模式
-        "\xe6\x96\x87\xe5\xad\x97\xe8\xa8\xad\xe7\xbd\xae"      // 文字設置
+        "音樂音量",   // 音樂音量
+        "音效音量",   // 音效音量
+        "大地圖走路延遲", // 大地圖走路延遲
+        "內場景走路延遲", // 內場景走路延遲
+        "戰鬥動畫延遲", // 戰鬥動畫延遲
+        "戰鬥文字顯示", // 戰鬥文字顯示
+        "顯示模式",     // 顯示模式
+        "文字設置"      // 文字設置
     };
     std::string str2[8];
     std::string menuString[2] = {
-        "\xe5\x8f\x96\xe6\xb6\x88", // 取消
-        "\xe7\xa2\xba\xe5\xae\x9a"  // 確定
+        "取消", // 取消
+        "確定"  // 確定
     };
     int Value[9];
     Value[0] = VOLUME;
@@ -3257,9 +3257,9 @@ void MenuSet()
                 }
                 else
                 {
-                    if (i == 5) str2[i] = (Value[i] == 0) ? "\xe9\x97\x9c\xe9\x96\x89" : "\xe6\x89\x93\xe9\x96\x8b"; // 關閉 : 打開
-                    if (i == 6) str2[i] = (Value[i] == 0) ? "\xe7\xaa\x97\xe5\x8f\xa3" : "\xe5\x85\xa8\xe5\xb1\x8f"; // 窗口 : 全屏
-                    if (i == 7) str2[i] = (Value[i] == 0) ? "\xe7\xb9\x81\xe9\xab\x94" : "\xe7\xb0\xa1\xe9\xab\x94"; // 繁體 : 簡體
+                    if (i == 5) str2[i] = (Value[i] == 0) ? "關閉" : "打開"; // 關閉 : 打開
+                    if (i == 6) str2[i] = (Value[i] == 0) ? "窗口" : "全屏"; // 窗口 : 全屏
+                    if (i == 7) str2[i] = (Value[i] == 0) ? "繁體" : "簡體"; // 繁體 : 簡體
                 }
                 DrawShadowText(str[i], x + 10, y + 5 + i * h0, color1, color2);
                 DrawShadowText(str2[i], x + 170, y + 5 + i * h0, color1, color2);
@@ -3399,10 +3399,10 @@ int MenuLoad()
 {
     int x = CENTER_X, y = 90;
     std::string menuString[11] = {
-        "\xe9\x80\xb2\xe5\xba\xa6\xe4\xb8\x80", "\xe9\x80\xb2\xe5\xba\xa6\xe4\xba\x8c", "\xe9\x80\xb2\xe5\xba\xa6\xe4\xb8\x89",
-        "\xe9\x80\xb2\xe5\xba\xa6\xe5\x9b\x9b", "\xe9\x80\xb2\xe5\xba\xa6\xe4\xba\x94", "\xe9\x80\xb2\xe5\xba\xa6\xe5\x85\xad",
-        "\xe9\x80\xb2\xe5\xba\xa6\xe4\xb8\x83", "\xe9\x80\xb2\xe5\xba\xa6\xe5\x85\xab", "\xe9\x80\xb2\xe5\xba\xa6\xe4\xb9\x9d",
-        "\xe9\x80\xb2\xe5\xba\xa6\xe5\x8d\x81", "\xe8\x87\xaa\xe5\x8b\x95\xe6\xaa\x94"
+        "進度一", "進度二", "進度三",
+        "進度四", "進度五", "進度六",
+        "進度七", "進度八", "進度九",
+        "進度十", "自動檔"
     };
     std::string menuEngString[11];
     for (int i = 0; i < 11; i++)
@@ -3430,7 +3430,7 @@ int MenuLoad()
         else
         {
             menu = -1;
-            std::string str = "\xe8\xae\x80\xe6\xaa\x94\xe5\xa4\xb1\xe6\x95\x97\xef\xbc\x81";
+            std::string str = "讀檔失敗！";
             DrawTextWithRect(str, x - 40, y + 310, 322, MapRGBA(240, 20, 20), MapRGBA(212, 20, 20));
             WaitAnyKey();
         }
@@ -3442,10 +3442,10 @@ int MenuLoadAtBeginning(int mode)
 {
     int x = CENTER_X - 175, y = CENTER_Y - 110;
     std::string menuString[11] = {
-        "\xe9\x80\xb2\xe5\xba\xa6\xe4\xb8\x80", "\xe9\x80\xb2\xe5\xba\xa6\xe4\xba\x8c", "\xe9\x80\xb2\xe5\xba\xa6\xe4\xb8\x89",
-        "\xe9\x80\xb2\xe5\xba\xa6\xe5\x9b\x9b", "\xe9\x80\xb2\xe5\xba\xa6\xe4\xba\x94", "\xe9\x80\xb2\xe5\xba\xa6\xe5\x85\xad",
-        "\xe9\x80\xb2\xe5\xba\xa6\xe4\xb8\x83", "\xe9\x80\xb2\xe5\xba\xa6\xe5\x85\xab", "\xe9\x80\xb2\xe5\xba\xa6\xe4\xb9\x9d",
-        "\xe9\x80\xb2\xe5\xba\xa6\xe5\x8d\x81", "\xe8\x87\xaa\xe5\x8b\x95\xe6\xaa\x94"
+        "進度一", "進度二", "進度三",
+        "進度四", "進度五", "進度六",
+        "進度七", "進度八", "進度九",
+        "進度十", "自動檔"
     };
     std::string menuEngString[11];
     for (int i = 0; i < 11; i++)
@@ -3471,7 +3471,7 @@ int MenuLoadAtBeginning(int mode)
             else
             {
                 menu = -2;
-                std::string str = "\xe8\xae\x80\xe6\xaa\x94\xe5\xa4\xb1\xe6\x95\x97\xef\xbc\x81";
+                std::string str = "讀檔失敗！";
                 DrawTextWithRect(str, x - 40, y + 310, 322, MapRGBA(240, 20, 20), MapRGBA(212, 20, 20));
                 WaitAnyKey();
             }
@@ -3481,7 +3481,7 @@ int MenuLoadAtBeginning(int mode)
             if (!LoadForSecondRound(menu + 1))
             {
                 menu = -2;
-                std::string str = "\xe8\xae\x80\xe6\xaa\x94\xe5\xa4\xb1\xe6\x95\x97\xef\xbc\x81";
+                std::string str = "讀檔失敗！";
                 DrawTextWithRect(str, x - 40, y + 310, 322, MapRGBA(240, 20, 20), MapRGBA(212, 20, 20));
                 WaitAnyKey();
             }
@@ -3572,10 +3572,10 @@ bool LoadForSecondRound(int num)
 void MenuSave()
 {
     std::string menuString[10] = {
-        "\xe9\x80\xb2\xe5\xba\xa6\xe4\xb8\x80", "\xe9\x80\xb2\xe5\xba\xa6\xe4\xba\x8c", "\xe9\x80\xb2\xe5\xba\xa6\xe4\xb8\x89",
-        "\xe9\x80\xb2\xe5\xba\xa6\xe5\x9b\x9b", "\xe9\x80\xb2\xe5\xba\xa6\xe4\xba\x94", "\xe9\x80\xb2\xe5\xba\xa6\xe5\x85\xad",
-        "\xe9\x80\xb2\xe5\xba\xa6\xe4\xb8\x83", "\xe9\x80\xb2\xe5\xba\xa6\xe5\x85\xab", "\xe9\x80\xb2\xe5\xba\xa6\xe4\xb9\x9d",
-        "\xe9\x80\xb2\xe5\xba\xa6\xe5\x8d\x81"
+        "進度一", "進度二", "進度三",
+        "進度四", "進度五", "進度六",
+        "進度七", "進度八", "進度九",
+        "進度十"
     };
     std::string menuEngString[10];
     for (int i = 0; i < 10; i++)
@@ -3592,7 +3592,7 @@ void MenuSave()
     }
     if ((Where == 1 && MODVersion == 13 && CurScene == 71) || ScreenBlendMode > 0)
     {
-        std::string str = "\xe6\xad\xa4\xe6\x99\x82\xe4\xb8\x8d\xe5\x8f\xaf\xe5\xad\x98\xe6\xaa\x94\xef\xbc\x81";
+        std::string str = "此時不可存檔！";
         DrawTextWithRect(str, CENTER_X + 60, 90, 152, ColColor(5), ColColor(7));
         WaitAnyKey();
     }
@@ -3603,7 +3603,7 @@ void MenuSave()
         {
             if (!SaveR(menu + 1))
             {
-                std::string str = "\xe5\xad\x98\xe6\xaa\x94\xe5\xa4\xb1\xe6\x95\x97\xef\xbc\x81";
+                std::string str = "存檔失敗！";
                 DrawTextWithRect(str, CENTER_X - 384 + 420 - 40, CENTER_Y - 240 + 90 + 280, 322,
                     MapRGBA(240, 20, 20), MapRGBA(212, 20, 20));
                 WaitAnyKey();
@@ -3971,136 +3971,136 @@ void Maker()
 {
     std::vector<std::string> words;
     words.push_back("");
-    words.push_back("\xe3\x80\x8a\xe9\x87\x91\xe5\xba\xb8\xe6\xb0\xb4\xe6\xbb\xb8\xe5\x82\xb3\xe3\x80\x8b"); // 《金庸水滸傳》
+    words.push_back("《金庸水滸傳》"); // 《金庸水滸傳》
     words.push_back("hugebase");
     words.push_back("Legend of Little Village III");
     words.push_back("108 Brothers And Sisters");
     words.push_back("");
 
-    words.push_back("\xe9\x90\xb5\xe8\xa1\x80\xe4\xb8\xb9\xe5\xbf\x83\xe8\xab\x96\xe5\xa3\x87\xe5\x87\xba\xe5\x93\x81"); // 鐵血丹心論壇出品
+    words.push_back("鐵血丹心論壇出品"); // 鐵血丹心論壇出品
     words.push_back("www.tiexuedanxin.net");
     words.push_back("www.dawuxia.net");
     words.push_back("www.txdx.net");
     words.push_back("");
 
-    words.push_back("\xe7\xb8\xbd\xe7\xad\x96\xe5\x8a\x83"); // 總策劃
-    words.push_back("\xe5\xb0\x8f\xe5\xb0\x8f\xe7\x8c\xaa"); // 小小猪
+    words.push_back("總策劃"); // 總策劃
+    words.push_back("小小猪"); // 小小猪
     words.push_back("");
 
-    words.push_back("\xe7\xb8\xbd\xe6\x9e\xb6\xe6\xa7\x8b"); // 總架構
+    words.push_back("總架構"); // 總架構
     words.push_back("bttt");
     words.push_back("");
 
-    words.push_back("\xe7\xa8\x8b\xe5\xbc\x8f"); // 程式
-    words.push_back("\xe5\x87\xaf\xe5\x93\xa5"); // 凯哥
+    words.push_back("程式"); // 程式
+    words.push_back("凯哥"); // 凯哥
     words.push_back("bttt");
-    words.push_back("\xe5\xb0\x8f\xe5\xb0\x8f\xe7\x8c\xaa"); // 小小猪
-    words.push_back("\xe7\x9c\x9f\xe6\xad\xa3\xe7\x9a\x84\xe5\xbc\xba\xe5\xbc\xba"); // 真正的强强
-    words.push_back("\xe6\x97\xa0\xe9\x85\x92\xe8\x82\x86\xe5\xb1\x8b"); // 无酒肆屋
+    words.push_back("小小猪"); // 小小猪
+    words.push_back("真正的强强"); // 真正的强强
+    words.push_back("无酒肆屋"); // 无酒肆屋
     words.push_back("");
 
-    words.push_back("\xe4\xba\x8b\xe4\xbb\xb6"); // 事件
-    words.push_back("\xe5\xb0\x8f\xe5\xb0\x8f\xe7\x8c\xaa"); // 小小猪
-    words.push_back("\xe5\x87\xb6\xe7\xa5\x9e\xe6\x81\xb6\xe7\x85\x9e"); // 凶神恶煞
-    words.push_back("\xe5\x87\xaf\xe5\x93\xa5"); // 凯哥
+    words.push_back("事件"); // 事件
+    words.push_back("小小猪"); // 小小猪
+    words.push_back("凶神恶煞"); // 凶神恶煞
+    words.push_back("凯哥"); // 凯哥
     words.push_back("KA");
     words.push_back("");
 
-    words.push_back("\xe8\x85\xb3\xe6\x9c\xac"); // 腳本
-    words.push_back("\xe6\x9f\xb3\xe6\x97\xa0\xe8\x89\xb2"); // 柳无色
+    words.push_back("腳本"); // 腳本
+    words.push_back("柳无色"); // 柳无色
     words.push_back("bttt");
-    words.push_back("\xe6\x97\xa0\xe9\x85\x92\xe8\x82\x86\xe5\xb1\x8b"); // 无酒肆屋
+    words.push_back("无酒肆屋"); // 无酒肆屋
     words.push_back("DonaldHuang");
-    words.push_back("\xe9\x9b\xb2\xe6\xb7\xa1\xe9\xa2\xa8\xe6\xb8\x85"); // 雲淡風清
+    words.push_back("雲淡風清"); // 雲淡風清
     words.push_back("");
 
-    words.push_back("\xe5\x8a\x87\xe6\x9c\xac"); // 劇本
-    words.push_back("\xe9\xa3\x8e\xe7\xa5\x9e\xe6\x97\xa0\xe5\x90\x8d"); // 风神无名
-    words.push_back("\xe5\xa4\xa9\xe5\xa4\x96\xe8\x8d\x89"); // 天外草
-    words.push_back("\xe4\xba\x91\xe6\xbd\x87\xe6\xbd\x87"); // 云潇潇
-    words.push_back("\xe8\xb5\xab\xe8\xbf\x9e\xe6\x98\xa5\xe6\xb0\xb4"); // 赫连春水
-    words.push_back("\xe9\xa6\x8b\xe5\xb8\x88\xe6\x97\xa0\xe7\x9b\xb8"); // 馋师无相
+    words.push_back("劇本"); // 劇本
+    words.push_back("风神无名"); // 风神无名
+    words.push_back("天外草"); // 天外草
+    words.push_back("云潇潇"); // 云潇潇
+    words.push_back("赫连春水"); // 赫连春水
+    words.push_back("馋师无相"); // 馋师无相
     words.push_back("");
 
-    words.push_back("\xe8\xa8\xad\xe8\xa8\x88"); // 設計
-    words.push_back("\xe9\xa3\x8e\xe7\xa5\x9e\xe6\x97\xa0\xe5\x90\x8d"); // 风神无名
+    words.push_back("設計"); // 設計
+    words.push_back("风神无名"); // 风神无名
     words.push_back("qja");
-    words.push_back("\xe5\x8d\x97\xe5\xae\xab\xe6\xa2\xa6"); // 南宫梦
+    words.push_back("南宫梦"); // 南宫梦
     words.push_back("xuantianxi");
     words.push_back("");
 
-    words.push_back("\xe7\xbe\x8e\xe5\xb7\xa5"); // 美工
-    words.push_back("\xe6\xb8\xb8\xe5\xae\xa2"); // 游客
+    words.push_back("美工"); // 美工
+    words.push_back("游客"); // 游客
     words.push_back("xuantianxi");
-    words.push_back("\xe4\xbb\xa4\xe7\x8b\x90\xe5\xbf\x83\xe6\x83\x85"); // 令狐心情
-    words.push_back("\xe5\xb0\x8f\xe5\xad\xa9\xe5\xae\xb6\xe5\xae\xb6"); // 小孩家家
-    words.push_back("\xe4\xbc\x8a\xe4\xba\xba\xe6\x9e\x95\xe8\xbe\xb9\xe9\x86\x89"); // 伊人枕边醉
+    words.push_back("令狐心情"); // 令狐心情
+    words.push_back("小孩家家"); // 小孩家家
+    words.push_back("伊人枕边醉"); // 伊人枕边醉
     words.push_back("Czhe520");
-    words.push_back("\xe6\xb5\x81\xe6\x9c\xa8\xe5\x8c\x86\xe5\x8c\x86"); // 流木匆匆
-    words.push_back("\xe6\x97\xa0\xe9\x85\x92\xe8\x82\x86\xe5\xb1\x8b"); // 无酒肆屋
-    words.push_back("\xe9\xa1\xb9\xe7\xbe\xbd"); // 项羽
-    words.push_back("\xe6\xa5\xbc\xe8\x8a\x8a\xe8\x8a\x8a"); // 楼芊芊
-    words.push_back("\xe7\x9f\xad\xe6\xad\x8c\xe5\xbe\xae\xe5\x90\x9f"); // 短歌微吟
-    words.push_back("\xe8\x95\xb4\xe6\xae\x8a"); // 蕴殊
-    words.push_back("\xe5\xae\x81\xe5\xa4\x9c"); // 宁夜
-    words.push_back("\xe5\x87\xba\xe9\x97\xa8\xe5\x9c\xa8\xe5\x93\xaa\xe5\x84\xbf"); // 出门在哪儿
+    words.push_back("流木匆匆"); // 流木匆匆
+    words.push_back("无酒肆屋"); // 无酒肆屋
+    words.push_back("项羽"); // 项羽
+    words.push_back("楼芊芊"); // 楼芊芊
+    words.push_back("短歌微吟"); // 短歌微吟
+    words.push_back("蕴殊"); // 蕴殊
+    words.push_back("宁夜"); // 宁夜
+    words.push_back("出门在哪儿"); // 出门在哪儿
     words.push_back("");
 
-    words.push_back("\xe5\xa0\xb4\xe6\x99\xaf"); // 場景
-    words.push_back("\xe6\xb8\xb8\xe5\xae\xa2"); // 游客
-    words.push_back("\xe6\x9f\xb3\xe6\x97\xa0\xe8\x89\xb2"); // 柳无色
+    words.push_back("場景"); // 場景
+    words.push_back("游客"); // 游客
+    words.push_back("柳无色"); // 柳无色
     words.push_back("");
 
-    words.push_back("\xe9\x9f\xb3\xe6\x95\x88"); // 音效
-    words.push_back("\xe5\x87\xaf\xe5\x93\xa5"); // 凯哥
-    words.push_back("\xe4\xba\x91\xe6\xbd\x87\xe6\xbd\x87"); // 云潇潇
-    words.push_back("\xe8\xb5\xab\xe8\xbf\x9e\xe6\x98\xa5\xe6\xb0\xb4"); // 赫连春水
+    words.push_back("音效"); // 音效
+    words.push_back("凯哥"); // 凯哥
+    words.push_back("云潇潇"); // 云潇潇
+    words.push_back("赫连春水"); // 赫连春水
     words.push_back("");
 
-    words.push_back("\xe5\xb7\xa5\xe5\x85\xb7"); // 工具
+    words.push_back("工具"); // 工具
     words.push_back("KA");
-    words.push_back("\xe7\x9c\x9f\xe6\xad\xa3\xe7\x9a\x84\xe5\xbc\xba\xe5\xbc\xba"); // 真正的强强
+    words.push_back("真正的强强"); // 真正的强强
     words.push_back("bttt");
     words.push_back("");
 
-    words.push_back("\xe6\xb8\xac\xe8\xa9\xa6"); // 測試
+    words.push_back("測試"); // 測試
     words.push_back("9523");
     words.push_back("gn0811");
-    words.push_back("\xe5\xbc\xa0\xe8\xb4\x9d\xe5\x85\x8b"); // 张贝克
+    words.push_back("张贝克"); // 张贝克
     words.push_back("Chopsticks");
-    words.push_back("\xe5\xa4\xa9\xe7\x9c\x9f\xe6\x9c\xa8\xe9\xa0\xad\xe4\xba\xba"); // 天真木頭人
-    words.push_back("\xe5\x8f\xb6\xe5\xa2\xa8"); // 叶墨
-    words.push_back("\xe6\x9f\xb3\xe6\x97\xa0\xe8\x89\xb2"); // 柳无色
-    words.push_back("\xe8\xb7\xaf\xe4\xba\xba\xe7\x94\xb2"); // 路人甲
-    words.push_back("\xe6\x9d\xa8\xe8\xa3\x95\xe5\xbd\xaa"); // 杨裕彪
+    words.push_back("天真木頭人"); // 天真木頭人
+    words.push_back("叶墨"); // 叶墨
+    words.push_back("柳无色"); // 柳无色
+    words.push_back("路人甲"); // 路人甲
+    words.push_back("杨裕彪"); // 杨裕彪
     words.push_back("CLRGC");
     words.push_back("");
 
-    words.push_back("\xe6\xa0\xa1\xe5\xb0\x8d"); // 校對
-    words.push_back("\xe5\xa4\xa9\xe4\xb8\x80\xe6\xb0\xb4"); // 天一水
-    words.push_back("\xe5\xa4\xa9\xe4\xb8\x8b\xe6\x9c\x89\xe6\x95\xb5"); // 天下有敌
-    words.push_back("\xe5\x8d\x97\xe7\xaa\x97\xe5\xaf\x84\xe5\x82\xb2\xe7\x94\x9f"); // 南窗寄傲生
+    words.push_back("校對"); // 校對
+    words.push_back("天一水"); // 天一水
+    words.push_back("天下有敵"); // 天下有敌
+    words.push_back("南窗寄傲生"); // 南窗寄傲生
     words.push_back("xq3366");
     words.push_back("");
 
-    words.push_back("Android\xe7\xa7\xbb\xe6\xa4\x8d"); // Android移植
+    words.push_back("Android移植"); // Android移植
     words.push_back("KA");
     words.push_back("bttt");
     words.push_back("");
 
-    words.push_back("\xe7\x89\xb9\xe5\x88\xa5\xe6\x84\x9f\xe8\xac\x9d"); // 特別感謝
-    words.push_back("\xe6\xb2\xb3\xe6\xb4\x9b\xe5\xb7\xa5\xe4\xbd\x9c\xe5\xae\xa4"); // 河洛工作室
-    words.push_back("\xe6\x99\xba\xe5\x86\xa0\xe7\xa7\x91\xe6\x8a\x80"); // 智冠科技
-    words.push_back("\xe6\xb8\xb8\xe6\xb3\xb3\xe7\x9a\x84\xe9\xb1\xbc"); // 游泳的鱼
+    words.push_back("特別感謝"); // 特別感謝
+    words.push_back("河洛工作室"); // 河洛工作室
+    words.push_back("智冠科技"); // 智冠科技
+    words.push_back("游泳的鱼"); // 游泳的鱼
     words.push_back("chaoliu");
     words.push_back("fanyixia");
     words.push_back("hihi88byebye");
     words.push_back("chenxurui07");
-    words.push_back("\xe6\x99\xb4\xe7\xa9\xba\xe9\xa3\x9e\xe9\x9b\xaa"); // 晴空飞雪
-    words.push_back("\xe8\x93\x9d\xe9\x9b\xa8\xe5\x86\xb0\xe5\x88\x80"); // 蓝雨冰刀
-    words.push_back("\xe7\x8e\x89\xe8\x8a\xb7\xe9\xa6\xa8"); // 玉芷馨
+    words.push_back("晴空飞雪"); // 晴空飞雪
+    words.push_back("蓝雨冰刀"); // 蓝雨冰刀
+    words.push_back("玉芷馨"); // 玉芷馨
     words.push_back("chumsdock");
-    words.push_back("\xe6\xb2\xa7\xe6\xb5\xb7\xe4\xb8\x80\xe7\xac\x91"); // 沧海一笑
+    words.push_back("沧海一笑"); // 沧海一笑
     words.push_back("ena");
     words.push_back("qiu001");
     words.push_back("winson7891");
@@ -4108,13 +4108,13 @@ void Maker()
     words.push_back("soastao");
     words.push_back("NamelessOne47");
     words.push_back("lsl330");
-    words.push_back("\xe6\xb3\xa5\xe5\xb7\xb4"); // 泥巴
-    words.push_back("\xe7\x8e\x8b\xe5\xad\x90"); // 王子
+    words.push_back("泥巴"); // 泥巴
+    words.push_back("王子"); // 王子
     words.push_back("ice");
-    words.push_back("\xe9\xbb\x91\xe5\xa4\xa9\xe9\xb9\x85"); // 黑天鹅
+    words.push_back("黑天鹅"); // 黑天鹅
     words.push_back("");
 
-    words.push_back("\xe9\x96\x8b\xe7\x99\xbc\xe5\xb7\xa5\xe5\x85\xb7\xe4\xbb\xa5\xe5\x8f\x8a\xe9\x96\x8b\xe7\x99\xbc\xe5\xba\xab"); // 開發工具以及開發庫
+    words.push_back("開發工具以及開發庫"); // 開發工具以及開發庫
     words.push_back("Free Pascal Compiler");
     words.push_back("Lazarus / CodeTyphon");
     words.push_back("ADT / NDK");
@@ -4126,7 +4126,7 @@ void Maker()
     words.push_back("lua");
     words.push_back("");
 
-    words.push_back("\xe8\x87\xb4\xe8\xac\x9d\xe4\xbb\xa5\xe4\xb8\x8b\xe9\x96\x8b\xe6\xba\x90\xe9\xa0\x85\xe7\x9b\xae"); // 致謝以下開源項目
+    words.push_back("致謝以下開源項目"); // 致謝以下開源項目
     words.push_back("JEDI-SDL");
     words.push_back("kys-pascal");
     words.push_back("kys-cpp");
@@ -4136,18 +4136,18 @@ void Maker()
     words.push_back("Pascal Game Development");
     words.push_back("");
 
-    words.push_back("\xe8\x87\xb4\xe8\xac\x9d\xe4\xbb\xa5\xe4\xb8\x8b""MOD\xe9\xa0\x85\xe7\x9b\xae"); // 致謝以下MOD項目
-    words.push_back("\xe9\x87\x91\xe5\xba\xb8\xe7\xbe\xa4\xe4\xbf\xa0\xe5\x89\x8d\xe5\x82\xb3"); // 金庸群俠前傳
-    words.push_back("\xe4\xba\xba\xe5\x9c\xa8\xe6\xb1\x9f\xe6\xb9\x96-\xe9\x9b\x9c\xe5\x85\xb5\xe6\xa8\xa1\xe6\x93\xac\xe5\x99\xa8"); // 人在江湖-雜兵模擬器
-    words.push_back("\xe9\x80\x90\xe5\xa4\xa2\xe6\xb1\x9f\xe6\xb9\x96\xe8\xa1\x8c"); // 逐夢江湖行
+    words.push_back("致謝以下""MOD項目"); // 致謝以下MOD項目
+    words.push_back("金庸群俠前傳"); // 金庸群俠前傳
+    words.push_back("人在江湖-雜兵模擬器"); // 人在江湖-雜兵模擬器
+    words.push_back("逐夢江湖行"); // 逐夢江湖行
     words.push_back("");
 
-    words.push_back("\xe7\x89\xb9\xe5\x88\xa5\xe8\x87\xb4\xe8\xac\x9d\xe7\x9f\xad\xe6\xad\x8c\xe8\xa1\x8c""MIDI\xe9\x9f\xb3\xe8\x89\xb2\xe5\xba\xab"); // 特別致謝短歌行MIDI音色庫
+    words.push_back("特別致謝短歌行""MIDI音色庫"); // 特別致謝短歌行MIDI音色庫
     words.push_back("");
 
-    words.push_back("\xe5\x86\x8d\xe6\xac\xa1\xe8\x87\xb4\xe8\xac\x9d"); // 再次致謝
-    words.push_back("\xe8\xab\x96\xe5\xa3\x87\xe7\x84\xa1\xe6\x95\xb8\xe7\x89\x88\xe5\x8f\x8b"); // 論壇無數版友
-    words.push_back("\xe4\xbb\xa5\xe5\x8f\x8a\xe7\xb6\xb2\xe7\xb5\xa1\xe4\xb8\x8a\xe7\x9a\x84\xe8\xab\xb8\xe5\xa4\x9a\xe7\xb4\xa0\xe6\x9d\x90"); // 以及網絡上的諸多素材
+    words.push_back("再次致謝"); // 再次致謝
+    words.push_back("論壇無數版友"); // 論壇無數版友
+    words.push_back("以及網絡上的諸多素材"); // 以及網絡上的諸多素材
     words.push_back("");
 
     if (Where < 3)

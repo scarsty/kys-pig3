@@ -2394,7 +2394,7 @@ int Digging(int beginPic, int goal, int shovel, int restrict_val)
     ShowSurface(x, y, blankpic, surfaceVec);
     DrawSPic(shovel / 2, (position % 9) * 20 + 10 + x, (position / 9) * 20 + 5 + y);
     char goalstr[16]; snprintf(goalstr, sizeof(goalstr), "%d", goal);
-    DrawShadowText("\xe7\x9b\xae\xe6\xa8\x99:  X", x - 5, y - 25, ColColor(0x21), ColColor(0x23));
+    DrawShadowText("目標:  X", x - 5, y - 25, ColColor(0x21), ColColor(0x23));
     DrawSPic(goldpic / 2, 55 + x, y - 25);
     DrawShadowText(goalstr, x + 85, y - 25, ColColor(0x21), ColColor(0x23));
     for (int i = 0; i < restrict_val; i++)
@@ -2448,7 +2448,7 @@ int Digging(int beginPic, int goal, int shovel, int restrict_val)
         surfaceVec.assign(Surface, Surface + 81);
         ShowSurface(x, y, blankpic, surfaceVec);
         DrawSPic(shovel / 2, (position % 9) * 20 + 10 + x, (position / 9) * 20 + 5 + y);
-        DrawShadowText("\xe7\x9b\xae\xe6\xa8\x99:  X", x - 5, y - 25, ColColor(0x21), ColColor(0x23));
+        DrawShadowText("目標:  X", x - 5, y - 25, ColColor(0x21), ColColor(0x23));
         DrawSPic(goldpic / 2, 55 + x, y - 25);
         DrawShadowText(goalstr, x + 85, y - 25, ColColor(0x21), ColColor(0x23));
         for (int i = 0; i < restrict_val; i++)
@@ -2593,8 +2593,8 @@ bool SpellPicture(int num, int chance)
         if (menu > -1)
             DrawRectangle((menu % 5) * 80 + x, (menu / 5) * 80 + y + 30, 80, 80, 0, ColColor(0xFF), 0);
         char word[32], word1[32];
-        snprintf(word, sizeof(word), "\xe6\xa9\x9f\xe6\x9c\x83%d", chance);
-        snprintf(word1, sizeof(word1), "\xe5\x91\xbd\xe4\xb8\xad%d", right);
+        snprintf(word, sizeof(word), "機會%d", chance);
+        snprintf(word1, sizeof(word1), "命中%d", right);
         DrawShadowText(word, x + 25, y + 5, ColColor(5), ColColor(7));
         DrawShadowText(word1, x + 220, y + 5, ColColor(5), ColColor(7));
         UpdateAllScreen();
@@ -3512,10 +3512,10 @@ void ShowMap()
             CleanTextScreen();
             DrawShadowText(str2[p].c_str(), 37 + xp, 80 + yp, ColColor(21), ColColor(25));
             DrawEngShadowText(str3[p], 37 + xp, 100 + yp, ColColor(255), ColColor(254));
-            DrawShadowText("\xe4\xbd\xa0\xe7\x9a\x84\xe4\xbd\x8d\xe7\xbd\xae", 37 + xp, 275 + yp, ColColor(21), ColColor(25));
+            DrawShadowText("你的位置", 37 + xp, 275 + yp, ColColor(21), ColColor(25));
             char buf[32]; snprintf(buf, sizeof(buf), "%3d, %3d", My, Mx);
             DrawEngShadowText(buf, 37 + xp, 295 + yp, ColColor(255), ColColor(254));
-            DrawShadowText("\xe8\x88\xb9\xe7\x9a\x84\xe4\xbd\x8d\xe7\xbd\xae", 37 + xp, 325 + yp, ColColor(21), ColColor(25));
+            DrawShadowText("船的位置", 37 + xp, 325 + yp, ColColor(21), ColColor(25));
             snprintf(buf, sizeof(buf), "%3d, %3d", ShipX, ShipY);
             DrawEngShadowText(buf, 37 + xp, 345 + yp, ColColor(255), ColColor(254));
         }
