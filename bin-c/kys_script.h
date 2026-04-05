@@ -1,0 +1,186 @@
+#pragma once
+// kys_script.h - Lua脚本接口
+// 对应 kys_script.pas
+
+#include "kys_type.h"
+#include <string>
+
+struct lua_State;
+
+// 脚本管理
+void InitialScript();
+void DestroyScript();
+void ExecScript(const std::string& filename, const std::string& functionname = "");
+void ExecScriptString(const std::string& script, const std::string& functionname = "");
+
+// ---- Lua暴露函数 (全部注册到lua_script) ----
+// 以下函数均为 int func(lua_State* L) 形式
+
+int Lua_Blank(lua_State* L);
+int Lua_Pause(lua_State* L);
+int Lua_GetMousePosition(lua_State* L);
+int Lua_ClearButton(lua_State* L);
+int Lua_CheckButton(lua_State* L);
+int Lua_GetButton(lua_State* L);
+int Lua_GetTime(lua_State* L);
+int Lua_ExecEvent(lua_State* L);
+int Lua_Clear(lua_State* L);
+int Lua_OldTalk(lua_State* L);
+int Lua_Talk(lua_State* L);
+int Lua_GetItem(lua_State* L);
+int Lua_AddItem(lua_State* L);
+int Lua_ShowString(lua_State* L);
+int Lua_ShowStringWithBox(lua_State* L);
+int Lua_Menu(lua_State* L);
+int Lua_AskYesOrNo(lua_State* L);
+int Lua_ModifyEvent(lua_State* L);
+int Lua_UseItem(lua_State* L);
+int Lua_HaveItemAmount(lua_State* L);
+int Lua_HaveItemBool(lua_State* L);
+int Lua_AnotherGetItem(lua_State* L);
+int Lua_CompareProInTeam(lua_State* L);
+int Lua_AllLeave(lua_State* L);
+int Lua_AskBattle(lua_State* L);
+int Lua_TryBattle(lua_State* L);
+int Lua_AskJoin(lua_State* L);
+int Lua_Join(lua_State* L);
+int Lua_AskRest(lua_State* L);
+int Lua_Rest(lua_State* L);
+int Lua_LightScene(lua_State* L);
+int Lua_DarkScene(lua_State* L);
+int Lua_Dead(lua_State* L);
+int Lua_InTeam(lua_State* L);
+int Lua_TeamIsFull(lua_State* L);
+int Lua_LeaveTeam(lua_State* L);
+int Lua_LearnMagic(lua_State* L);
+int Lua_GetMainMapPosition(lua_State* L);
+int Lua_SetMainMapPosition(lua_State* L);
+int Lua_GetScenePosition(lua_State* L);
+int Lua_SetScenePosition(lua_State* L);
+int Lua_GetSceneFace(lua_State* L);
+int Lua_SetSceneFace(lua_State* L);
+int Lua_Delay(lua_State* L);
+int Lua_DrawRect(lua_State* L);
+int Lua_MemberAmount(lua_State* L);
+int Lua_GetMember(lua_State* L);
+int Lua_SetMember(lua_State* L);
+int Lua_GetGlobalValue(lua_State* L);
+int Lua_SetGlobalValue(lua_State* L);
+int Lua_GetRolePro(lua_State* L);
+int Lua_SetRolePro(lua_State* L);
+int Lua_GetItemPro(lua_State* L);
+int Lua_SetItemPro(lua_State* L);
+int Lua_SetItemIntro(lua_State* L);
+int Lua_GetMagicPro(lua_State* L);
+int Lua_SetMagicPro(lua_State* L);
+int Lua_GetScenePro(lua_State* L);
+int Lua_SetScenePro(lua_State* L);
+int Lua_GetSceneMapPro(lua_State* L);
+int Lua_SetSceneMapPro(lua_State* L);
+int Lua_GetSceneEventPro(lua_State* L);
+int Lua_SetSceneEventPro(lua_State* L);
+int Lua_PlayMusic(lua_State* L);
+int Lua_PlayWave(lua_State* L);
+int Lua_WalkFromTo(lua_State* L);
+int Lua_SceneFromTo(lua_State* L);
+int Lua_PlayAnimation(lua_State* L);
+int Lua_GetNameAsString(lua_State* L);
+int Lua_SetNameAsString(lua_State* L);
+int Lua_ReadTalkAsString(lua_State* L);
+int Lua_ChangeScene(lua_State* L);
+int Lua_ShowPicture(lua_State* L);
+int Lua_GetItemList(lua_State* L);
+int Lua_GetCurrentScene(lua_State* L);
+int Lua_GetCurrentEvent(lua_State* L);
+int Lua_GetBattleNumber(lua_State* L);
+int Lua_SelectOneAim(lua_State* L);
+int Lua_GetBattleRolePro(lua_State* L);
+int Lua_SetBattleRolePro(lua_State* L);
+int Lua_PlayAction(lua_State* L);
+int Lua_PlayHurtValue(lua_State* L);
+int Lua_SetAminationLayer(lua_State* L);
+int Lua_ClearRoleFromBattle(lua_State* L);
+int Lua_AddRoleIntoBattle(lua_State* L);
+int Lua_ForceBattleResult(lua_State* L);
+int Lua_AskSoftStar(lua_State* L);
+int Lua_WeiShop(lua_State* L);
+int Lua_OpenAllScene(lua_State* L);
+int Lua_ShowEthics(lua_State* L);
+int Lua_ShowRepute(lua_State* L);
+int Lua_JudgeSceneEvent(lua_State* L);
+
+// 旧版指令封装
+int Lua_OldSetSceneMapPro(lua_State* L);
+int Lua_OldSetScenePosition(lua_State* L);
+int Lua_OldLearnMagic(lua_State* L);
+int Lua_ChangeMMapMusic(lua_State* L);
+int Lua_ZeroAllMP(lua_State* L);
+int Lua_SetOneUsePoi(lua_State* L);
+int Lua_Add3EventNum(lua_State* L);
+
+// 条件判断函数
+int Lua_Judge5Item(lua_State* L);
+int Lua_JudgeEthics(lua_State* L);
+int Lua_JudgeAttack(lua_State* L);
+int Lua_JudgeMoney(lua_State* L);
+int Lua_JudgeSexual(lua_State* L);
+int Lua_JudgeFemaleInTeam(lua_State* L);
+int Lua_JudgeEventNum(lua_State* L);
+int Lua_JudgeScenePic(lua_State* L);
+int Lua_Judge14BooksPlaced(lua_State* L);
+
+// 属性修改
+int Lua_AddAptitude(lua_State* L);
+int Lua_SetOneMagic(lua_State* L);
+int Lua_AddEthics(lua_State* L);
+int Lua_ChangeScenePic(lua_State* L);
+int Lua_OpenScene(lua_State* L);
+int Lua_Play2Animation(lua_State* L);
+int Lua_AddSpeed(lua_State* L);
+int Lua_AddMP(lua_State* L);
+int Lua_AddAttack(lua_State* L);
+int Lua_AddHP(lua_State* L);
+int Lua_SetMPPro(lua_State* L);
+int Lua_AddRepute(lua_State* L);
+int Lua_BreakStoneGate(lua_State* L);
+int Lua_FightForTop(lua_State* L);
+int Lua_SetSexual(lua_State* L);
+int Lua_BackHome(lua_State* L);
+
+// 特殊UI
+int Lua_EatOneItem(lua_State* L);
+int Lua_SelectOneTeamMember(lua_State* L);
+int Lua_SetAttribute(lua_State* L);
+int Lua_SetRoleFace(lua_State* L);
+int Lua_EnterNumber(lua_State* L);
+int Lua_SetMenuEscType(lua_State* L);
+int Lua_GetBattlePro(lua_State* L);
+int Lua_SetBattlePro(lua_State* L);
+int Lua_ShowStatus(lua_State* L);
+int Lua_ShowSimpleStatus(lua_State* L);
+int Lua_UpdateAllScreen(lua_State* L);
+int Lua_ShowAbility(lua_State* L);
+int Lua_GetScreenSize(lua_State* L);
+int Lua_JumpScene(lua_State* L);
+int Lua_GetX50(lua_State* L);
+int Lua_SetX50(lua_State* L);
+int Lua_ShowTitle(lua_State* L);
+int Lua_CheckJumpFlag(lua_State* L);
+int Lua_ExitScript(lua_State* L);
+int Lua_AddRoleProWithHint(lua_State* L);
+int Lua_ColColor(lua_State* L);
+int Lua_SetBattleName(lua_State* L);
+int Lua_SetShowMR(lua_State* L);
+int Lua_SetScreenBlendMode(lua_State* L);
+int Lua_PlayMovie(lua_State* L);
+int Lua_ResetScene(lua_State* L);
+int Lua_SetTeam(lua_State* L);
+int Lua_GetTeam(lua_State* L);
+int Lua_ReadMem(lua_State* L);
+int Lua_WriteMem(lua_State* L);
+int Lua_GetRoleName(lua_State* L);
+int Lua_GetItemName(lua_State* L);
+int Lua_GetMagicName(lua_State* L);
+int Lua_GetSubMapName(lua_State* L);
+int Lua_DrawLengthS(lua_State* L);
+int Lua_GetKey(lua_State* L);
