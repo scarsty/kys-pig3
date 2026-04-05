@@ -1,4 +1,4 @@
-// kys_main.cpp - 游戏主流程实现
+﻿// kys_main.cpp - 游戏主流程实现
 // 对应 kys_main.pas
 
 #include "kys_main.h"
@@ -984,7 +984,7 @@ bool CheckEvent3()
 
 void TurnBlack()
 {
-    // TODO: 实现黑屏过渡
+    instruct_14();
 }
 
 void Moveman(int x1, int y1, int x2, int y2)
@@ -1235,7 +1235,19 @@ void CallEvent(int num)
     // TODO: 实现KDEF指令解析
 }
 
-void ReSetEntrance() { /* TODO */ }
+void ReSetEntrance()
+{
+    memset(Entrance, -1, sizeof(Entrance));
+    for (int i = 0; i < std::min(SceneAmount, 1002); i++)
+    {
+        if (Rscene[i].MainEntranceX1 >= 0 && Rscene[i].MainEntranceX1 < 480
+            && Rscene[i].MainEntranceY1 >= 0 && Rscene[i].MainEntranceY1 < 480)
+            Entrance[Rscene[i].MainEntranceX1][Rscene[i].MainEntranceY1] = (int16_t)i;
+        if (Rscene[i].MainEntranceX2 >= 0 && Rscene[i].MainEntranceX2 < 480
+            && Rscene[i].MainEntranceY2 >= 0 && Rscene[i].MainEntranceY2 < 480)
+            Entrance[Rscene[i].MainEntranceX2][Rscene[i].MainEntranceY2] = (int16_t)i;
+    }
+}
 void Maker() { /* TODO */ }
 
 void ScrollTextAmi(std::vector<std::string>& words, int chnsize, int engsize, int linespace,
@@ -1268,8 +1280,17 @@ void CloudCreateOnSide(int num)
 
 bool IsCave(int snum)
 {
-    // TODO: 判断是否是山洞场景
-    return false;
+    switch (MODVersion)
+    {
+    case 13:
+        return snum == 6 || snum == 10 || snum == 26 || snum == 35 || snum == 52
+            || snum == 71 || snum == 72 || snum == 78 || snum == 87 || snum == 107;
+    case 31:
+        return false;
+    default:
+        return snum == 5 || snum == 7 || snum == 10 || snum == 41 || snum == 42
+            || snum == 46 || snum == 65 || snum == 66 || snum == 67 || snum == 72 || snum == 79;
+    }
 }
 
 bool CheckString(const std::string& str)
@@ -1277,4 +1298,10 @@ bool CheckString(const std::string& str)
     return !str.empty();
 }
 
-void SpecialFunction() { /* TODO */ }
+void SpecialFunction()
+{
+    std::string str = "輸入功能編號";
+    DrawTextWithRect(str, CENTER_X + 120, CENTER_Y - 240 + 130, 128, 0, ColColor(0x23));
+    std::string str2 = "f" + std::to_string(EnterNumber(0, 32767, CENTER_X + 120, CENTER_Y - 240 + 200, 0));
+    ExecScript(AppPath + "script/1.lua", str2);
+}

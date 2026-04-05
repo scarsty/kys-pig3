@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 // kys_draw.h - 图形绘制系统
 // 对应 kys_draw.pas
 

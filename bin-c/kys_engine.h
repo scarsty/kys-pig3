@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 // kys_engine.h - 基础引擎: 音频、文件IO、绘图、文字、屏幕管理
 // 对应 kys_engine.pas
 

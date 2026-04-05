@@ -1,4 +1,4 @@
-// kys_draw.cpp - 绘制实现
+﻿// kys_draw.cpp - 绘制实现
 // 对应 kys_draw.pas
 
 #include "kys_draw.h"
@@ -14,7 +14,7 @@
 #include <cstring>
 
 //----------------------------------------------------------------------
-// DrawPic - 画单个图�?
+// DrawPic - 画单个图片
 //----------------------------------------------------------------------
 void DrawPic(SDL_Surface* sur, int Pictype, int num, int px, int py, int shadow, int alpha, uint32 mixColor, int mixAlpha)
 {
@@ -47,7 +47,7 @@ void DrawTPic(int imgnum, int px, int py, SDL_Rect* region, int shadow, int Alph
 }
 
 //----------------------------------------------------------------------
-// DrawMPic - 主地图贴�?
+// DrawMPic - 主地图贴图
 //----------------------------------------------------------------------
 void DrawMPic(int num, int px, int py, int Framenum, int shadow, int alpha, uint32 mixColor, int mixAlpha, double scalex, double scaley, double angle)
 {
@@ -113,7 +113,7 @@ void DrawHeadPic(int num, int px, int py, int shadow, int alpha, uint32 mixColor
 }
 
 //----------------------------------------------------------------------
-// DrawEPic - 效果�?
+// DrawEPic - 效果图
 //----------------------------------------------------------------------
 void DrawEPic(int num, int px, int py, int eNum)
 {
@@ -133,7 +133,7 @@ void DrawEPic(int num, int px, int py, int shadow, int alpha, uint32 mixColor, i
 }
 
 //----------------------------------------------------------------------
-// DrawFPic - 战斗人物�?
+// DrawFPic - 战斗人物图
 //----------------------------------------------------------------------
 void DrawFPic(int num, int px, int py, int index)
 {
@@ -160,7 +160,7 @@ void DrawFPic(int num, int px, int py, int index, int shadow, int alpha, uint32 
 }
 
 //----------------------------------------------------------------------
-// DrawCPic - �?
+// DrawCPic - 云图
 //----------------------------------------------------------------------
 void DrawCPic(int num, int px, int py, int shadow, int alpha, uint32 mixColor, int mixAlpha)
 {
@@ -169,7 +169,7 @@ void DrawCPic(int num, int px, int py, int shadow, int alpha, uint32 mixColor, i
 }
 
 //----------------------------------------------------------------------
-// DrawIPic - 物品�?
+// DrawIPic - 物品图
 //----------------------------------------------------------------------
 void DrawIPic(int num, int px, int py, int shadow, int alpha, uint32 mixColor, int mixAlpha)
 {
@@ -306,7 +306,7 @@ void DrawMMap()
 }
 
 //----------------------------------------------------------------------
-// DrawScene - 画场�?
+// DrawScene - 画场景
 //----------------------------------------------------------------------
 void DrawScene()
 {
@@ -324,7 +324,7 @@ void DrawScene()
 
     LoadGroundTex(Cx1, Cy1);
 
-    // 地面动画�?
+    // 地面动画帧
     for (int sum = -sumregion; sum <= sumregion + 2; sum++)
         for (int i = -widthregion; i <= widthregion; i++)
         {
@@ -464,12 +464,12 @@ void DrawBField()
             }
         }
 
-    // 画战场上的角�?
+    // 画战场上的角色
     for (int i = 0; i < BRoleAmount; i++)
     {
         if (Brole[i].Dead != 0) continue;
         TPosition pos = GetPositionOnScreen(Brole[i].X, Brole[i].Y, Bx1, By1);
-        // TODO: 画角色贴�?
+        // TODO: 画角色贴图
     }
 }
 
@@ -477,7 +477,7 @@ void DrawBfieldWithoutRole(int x, int y) { /* TODO */ }
 
 void DrawRoleOnBfield(int x, int y, uint32 mixColor, int mixAlpha, int Alpha)
 {
-    // TODO: 画战场角�?
+    // TODO: 画战场角色
 }
 
 void InitialBFieldImage(int layer) { /* TODO */ }
@@ -522,12 +522,31 @@ void DrawClouds()
 
 void DrawProgress()
 {
-    // TODO: 画加载进�?
+    // TODO: 画加载进度
 }
 
 void LoadGroundTex(int x, int y)
 {
-    // TODO: 加载地面纹理
+    int dx, dy;
+    CalLTPosOnImageByCenter(x, y, dx, dy);
+    SDL_Rect dest = { dx, dy, CENTER_X * 2, CENTER_Y * 2 };
+    SDL_FRect destf = rect2f(dest);
+    if (SW_SURFACE == 0)
+    {
+        switch (Where)
+        {
+        case 1: SDL_RenderTexture(render, ImgSGroundTex, &destf, nullptr); break;
+        case 2: SDL_RenderTexture(render, ImgBGroundTex, &destf, nullptr); break;
+        }
+    }
+    else
+    {
+        switch (Where)
+        {
+        case 1: SDL_BlitSurface(ImgSGround, &dest, screen, nullptr); break;
+        case 2: SDL_BlitSurface(ImgBGround, &dest, screen, nullptr); break;
+        }
+    }
 }
 
 int DrawTextFrame(int x, int y, int len, int alpha, uint32 mixColor, int mixAlpha)
@@ -547,5 +566,20 @@ void DrawTextWithRect(const std::string& word, int x, int y, int w, uint32 color
 void DrawVirtualKey()
 {
     if (CellPhone == 0 || ShowVirtualKey == 0) return;
-    // TODO: 画虚拟按�?
+    int u = 50, d = 50, l = 50, r = 50;
+    switch (VirtualKeyValue)
+    {
+    case SDLK_UP: u = 0; break;
+    case SDLK_LEFT: l = 0; break;
+    case SDLK_DOWN: d = 0; break;
+    case SDLK_RIGHT: r = 0; break;
+    }
+    DrawTPic(51, VirtualKeyX, VirtualKeyY, nullptr, 0, u);
+    DrawTPic(53, VirtualKeyX - VirtualKeySize - VirtualKeySpace, VirtualKeyY + VirtualKeySize + VirtualKeySpace, nullptr, 0, l);
+    DrawTPic(52, VirtualKeyX, VirtualKeyY + VirtualKeySize * 2 + VirtualKeySpace * 2, nullptr, 0, d);
+    DrawTPic(54, VirtualKeyX + VirtualKeySize + VirtualKeySpace, VirtualKeyY + VirtualKeySize + VirtualKeySpace, nullptr, 0, r);
+    DrawTPic(56, CENTER_X * 2 - 100, CENTER_Y * 2 - 200, nullptr, 0, 50);
+    DrawTPic(57, CENTER_X * 2 - 200, CENTER_Y * 2 - 100, nullptr, 0, 50);
+    DrawTPic(55, CENTER_X - 120, CENTER_Y * 2 - 70, nullptr, 0, 50);
+    DrawTPic(58, CENTER_X + 50, CENTER_Y * 2 - 70, nullptr, 0, 50);
 }

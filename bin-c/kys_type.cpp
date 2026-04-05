@@ -1,4 +1,4 @@
-// kys_type.cpp - 全局大数组定义
+﻿// kys_type.cpp - 全局大数组定义
 // 对应 kys_type.pas implementation
 
 #include "kys_type.h"

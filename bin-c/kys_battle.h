@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 // kys_battle.h - 战斗系统
 // 对应 kys_battle.pas
 

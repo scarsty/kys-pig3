@@ -1,4 +1,4 @@
-// kys_battle.cpp - 战斗系统实现
+﻿// kys_battle.cpp - 战斗系统实现
 // 对应 kys_battle.pas
 
 #include "kys_battle.h"
@@ -221,11 +221,33 @@ int CalBroleMoveAbility(int bnum)
     if (bnum < 0 || bnum >= BRoleAmount) return 0;
     int rnum = Brole[bnum].rnum;
     if (rnum < 0 || rnum >= 1000) return 3;
-    return std::max(1, Rrole[rnum + 1].Data[73]);  // MoveStep
+    int step = Rrole[rnum].Movestep;
+    int result = step / 10;
+    if (result > 15)
+        result = 15;
+    result = result + Brole[bnum].StateLevel[3] + Brole[bnum].loverlevel[2]
+        + Ritem[Rrole[rnum].Equip[1]].AddMove + Ritem[Rrole[rnum].Equip[0]].AddMove;
+    if (SEMIREAL == 1 && result > 7)
+        result = 7;
+    return result;
 }
 
 void CalMoveAbility()
 {
+    int maxRealspeed = 1;
+    for (int i = 0; i < BRoleAmount; i++)
+    {
+        int rnum = Brole[i].rnum;
+        if (SEMIREAL == 1 && Brole[i].Dead == 0)
+        {
+            Brole[i].RealSpeed = (int)(Rrole[rnum].Speed + 100) - Rrole[rnum].Hurt / 10 - Rrole[rnum].Poison / 30;
+            maxRealspeed = std::max(maxRealspeed, Brole[i].RealSpeed);
+        }
+    }
+    for (int i = 0; i < BRoleAmount; i++)
+    {
+        Brole[i].RealSpeed = (int)(Brole[i].RealSpeed * 200.0 / maxRealspeed);
+    }
     for (int i = 0; i < BRoleAmount; i++)
         Brole[i].Step = CalBroleMoveAbility(i);
 }
@@ -273,8 +295,12 @@ int BattleMenu(int bnum)
 
 void MoveRole(int bnum)
 {
-    // TODO: 移动角色
-    Brole[bnum].Acted = 1;
+    CalCanSelect(bnum, 0, Brole[bnum].Step);
+    SelectAimMode = 4;
+    if (SelectAim(bnum, Brole[bnum].Step))
+    {
+        MoveAmination(bnum);
+    }
 }
 
 bool MoveAmination(int bnum)
@@ -298,7 +324,44 @@ void SeekPath2(int x, int y, int step, int myteam, int mode, int bnum)
     // TODO: 完整BFS
 }
 
-void CalCanSelect(int bnum, int mode, int step) { /* TODO */ }
+void CalCanSelect(int bnum, int mode, int step)
+{
+    if (mode == 0 || mode == 3)
+    {
+        memset(&BField[3][0][0], -1, 4096 * 2);
+        memset(&BField[7][0][0], 0, 4096 * 2);
+        if (Brole[bnum].Acted == 0)
+            memset(&BField[6][0][0], 0, sizeof(BField[6]));
+        BField[3][Brole[bnum].X][Brole[bnum].Y] = 0;
+        SeekPath2(Brole[bnum].X, Brole[bnum].Y, step, Brole[bnum].Team, mode, bnum);
+        if (Brole[bnum].Acted == 0)
+            memcpy(&BField[6][0][0], &BField[3][0][0], 4096 * 2);
+    }
+
+    if (mode == 1)
+    {
+        memset(&BField[3][0][0], -1, 4096 * 2);
+        for (int i1 = std::max(0, Brole[bnum].X - step); i1 <= std::min(63, Brole[bnum].X + step); i1++)
+        {
+            int step0 = abs(i1 - Brole[bnum].X);
+            for (int i2 = std::max(0, Brole[bnum].Y - step + step0); i2 <= std::min(63, Brole[bnum].Y + step - step0); i2++)
+            {
+                BField[3][i1][i2] = 0;
+            }
+        }
+    }
+
+    if (mode == 2)
+    {
+        for (int i1 = 0; i1 < 64; i1++)
+            for (int i2 = 0; i2 < 64; i2++)
+            {
+                BField[3][i1][i2] = -1;
+                if (BField[2][i1][i2] >= 0)
+                    BField[3][i1][i2] = 0;
+            }
+    }
+}
 
 void ModifyRange(int bnum, int mnum, int& step, int& range)
 {
@@ -416,7 +479,47 @@ void Wait(int bnum)
 
 void RestoreRoleStatus()
 {
-    // TODO: 恢复战后角色状态
+    for (int i = 0; i < BRoleAmount; i++)
+    {
+        int rnum = Brole[i].rnum;
+        for (int j = 0; j < STATUS_AMOUNT; j++)
+        {
+            Brole[i].StateLevel[j] = 0;
+            Brole[i].StateRound[j] = 0;
+        }
+
+        if (Brole[i].Team == 0)
+        {
+            Rrole[rnum].CurrentHP = Rrole[rnum].CurrentHP + Rrole[rnum].MaxHP / 2;
+            if (Rrole[rnum].CurrentHP <= 0)
+                Rrole[rnum].CurrentHP = 1;
+            if (Rrole[rnum].CurrentHP > Rrole[rnum].MaxHP)
+                Rrole[rnum].CurrentHP = Rrole[rnum].MaxHP;
+            Rrole[rnum].CurrentMP = Rrole[rnum].CurrentMP + Rrole[rnum].MaxMP / 20;
+            if (Rrole[rnum].CurrentMP > Rrole[rnum].MaxMP)
+                Rrole[rnum].CurrentMP = Rrole[rnum].MaxMP;
+            Rrole[rnum].PhyPower = Rrole[rnum].PhyPower + MAX_PHYSICAL_POWER / 2;
+            if (Rrole[rnum].PhyPower > MAX_PHYSICAL_POWER)
+                Rrole[rnum].PhyPower = MAX_PHYSICAL_POWER;
+        }
+        else
+        {
+            Rrole[rnum].Hurt = 0;
+            Rrole[rnum].Poison = 0;
+            Rrole[rnum].CurrentHP = Rrole[rnum].MaxHP;
+            Rrole[rnum].CurrentMP = Rrole[rnum].MaxMP;
+            Rrole[rnum].PhyPower = MAX_PHYSICAL_POWER * 9 / 10;
+        }
+    }
+
+    for (int i = 0; i < 1002; i++)
+    {
+        if (Rmagic[i].ScriptNum == 31)
+        {
+            Rrole[0].Magic[0] = i;
+            break;
+        }
+    }
 }
 
 void AddExp()

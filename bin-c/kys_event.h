@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 // kys_event.h - 事件与对话系统
 // 对应 kys_event.pas
 

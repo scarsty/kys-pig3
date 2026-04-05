@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 // kys_type.h - 类型定义与全局变量声明
 // 对应 kys_type.pas
 

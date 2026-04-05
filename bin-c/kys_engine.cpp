@@ -1,4 +1,4 @@
-// kys_engine.cpp - 引擎实现
+﻿// kys_engine.cpp - 引擎实现
 // 对应 kys_engine.pas
 
 #include "kys_engine.h"
@@ -14,6 +14,8 @@
 #include "strfunc.h"
 #include "PotConv.h"
 #include "ZipFile.h"
+#include "SimpleCC.h"
+#include <zip.h>
 
 #include <algorithm>
 #define _USE_MATH_DEFINES
@@ -24,6 +26,9 @@
 #include <cstring>
 #include <fstream>
 #include <map>
+
+// 前置声明
+void CleanTextScreenRect(int x, int y, int w, int h);
 
 // 内部变量
 static MIX_Mixer* gMixer = nullptr;
@@ -343,13 +348,15 @@ bool IsStringUTF8(const std::string& str)
 
 std::string Simplified2Traditional(const std::string& str)
 {
-    // TODO: 使用SimpleCC库进行简繁转�?
+    if (ccs2t)
+        return ((SimpleCC*)ccs2t)->conv(str);
     return str;
 }
 
 std::string Traditional2Simplified(const std::string& str)
 {
-    // TODO: 使用SimpleCC库进行繁简转换
+    if (cct2s)
+        return ((SimpleCC*)cct2s)->conv(str);
     return str;
 }
 
@@ -403,7 +410,7 @@ void DrawText(const std::string& word, int x_pos, int y_pos, uint32 color, int e
         }
 
         // TODO: CreateFontTile 渲染单个字符
-        // 简化处�? 直接使用TTF渲染
+        // 简化处理, 直接使用TTF渲染
         if (k >= 128)
             dest.x += CHINESE_FONT_REALSIZE;
         else
@@ -884,7 +891,7 @@ uint32 CheckBasicEvent()
         {
             int x, y;
             SDL_GetMouseState2(x, y);
-            // TODO: 虚拟按键检�?
+            // TODO: 虚拟按键检测
         }
         break;
     case SDL_EVENT_KEY_UP:
@@ -998,7 +1005,7 @@ void ReadTiles()
 
 int LoadPNGTilesThread(void* Data)
 {
-    // TODO: 多线程加载贴�?
+    // TODO: 多线程加载贴图
     return 0;
 }
 
@@ -1101,7 +1108,7 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
 
 void LoadOnePNGTexture(const std::string& path, void* z, TPNGIndex& PNGIndex, int forceLoad)
 {
-    // TODO: 从文�?zip载入一张PNG贴图
+    // TODO: 从文件/zip载入一张PNG贴图
     if (PNGIndex.Loaded != 0 && forceLoad == 0) return;
     // 加载逻辑
     PNGIndex.Loaded = 1;
@@ -1109,13 +1116,13 @@ void LoadOnePNGTexture(const std::string& path, void* z, TPNGIndex& PNGIndex, in
 
 bool LoadTileFromFile(const std::string& filename, void*& pt, int usesur, int& w, int& h)
 {
-    // TODO: 从文件加载贴�?
+    // TODO: 从文件加载贴图
     return false;
 }
 
 bool LoadTileFromMem(const char* p, int len, void*& pt, int usesur, int& w, int& h)
 {
-    // TODO: 从内存加载贴�?
+    // TODO: 从内存加载贴图
     return false;
 }
 
@@ -1127,6 +1134,17 @@ std::string LoadStringFromIMZMEM(const std::string& path, const char* p, int num
 
 void DestroyAllTextures(int all)
 {
+    if (all == 1)
+    {
+        DestroyRenderTextures();
+        if (screenTex) SDL_DestroyTexture(screenTex);
+        if (ImgSGroundTex) SDL_DestroyTexture(ImgSGroundTex);
+        if (ImgBGroundTex) SDL_DestroyTexture(ImgBGroundTex);
+        if (pMPic) zip_close((zip_t*)pMPic);
+        if (pSPic) zip_close((zip_t*)pSPic);
+        if (pHPic) zip_close((zip_t*)pHPic);
+        if (pIPic) zip_close((zip_t*)pIPic);
+    }
     for (auto& pair : CharTex)
     {
         if (SW_SURFACE == 0)
@@ -1185,7 +1203,7 @@ void DrawPNGTileS(SDL_Surface* scr, TPNGIndex& PNGIndex, int FrameNum, int px, i
     SDL_Rect* region, int shadow, int alpha, uint32 mixColor, int mixAlpha,
     double scalex, double scaley, double angle)
 {
-    // TODO: Surface模式的贴图绘�?
+    // TODO: Surface模式的贴图绘制
 }
 
 bool PlayMovie(const std::string& filename)
@@ -1246,8 +1264,45 @@ void ResetFontSize()
 
 void LoadTeamSimpleStatus(int& max)
 {
-    // TODO: 加载队伍简略状�?
-    max = 0;
+    for (int i = 0; i < 6; i++)
+    {
+        if (TeamList[i] >= 0)
+        {
+            if (SW_SURFACE == 0)
+            {
+                if (TEXT_LAYER != 0)
+                {
+                    SDL_SetRenderTarget(render, SimpleTextTex[i]);
+                    SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_NONE);
+                    SDL_SetRenderDrawColor(render, 255, 255, 255, 0);
+                    SDL_RenderFillRect(render, nullptr);
+                }
+                SDL_SetRenderTarget(render, SimpleStatusTex[i]);
+                SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_NONE);
+                SDL_SetRenderDrawColor(render, 0, 0, 0, 0);
+                SDL_RenderClear(render);
+                ShowSimpleStatus(TeamList[i], 0, 0, i);
+                SDL_SetTextureBlendMode(SimpleStatusTex[i], SDL_BLENDMODE_BLEND);
+            }
+            else
+            {
+                if (TEXT_LAYER != 0)
+                {
+                    SDL_FillSurfaceRect(SimpleText[i], nullptr, MapRGBA(255, 255, 255, 0));
+                    SDL_SetSurfaceBlendMode(SimpleText[i], SDL_BLENDMODE_NONE);
+                }
+                CurTargetSurface = SimpleStatus[i];
+                SDL_FillSurfaceRect(CurTargetSurface, nullptr, 0);
+                ShowSimpleStatus(TeamList[i], 0, 0, i);
+                SDL_SetSurfaceBlendMode(SimpleStatus[i], SDL_BLENDMODE_BLEND);
+            }
+            max = i;
+        }
+    }
+    if (SW_SURFACE == 0)
+        SDL_SetRenderTarget(render, screenTex);
+    else
+        CurTargetSurface = screen;
 }
 
 void DrawSimpleStatusByTeam(int i, int px, int py, uint32 mixColor, int mixAlpha)
@@ -1268,17 +1323,94 @@ void TransBlackScreen()
 
 void RecordFreshScreen()
 {
-    // TODO: 记录当前画面
+    RecordFreshScreen(0, 0, CENTER_X * 2, CENTER_Y * 2);
 }
 
 void LoadFreshScreen()
 {
-    // TODO: 恢复画面
+    LoadFreshScreen(0, 0);
 }
 
-void RecordFreshScreen(int x, int y, int w, int h) { /* TODO */ }
-void LoadFreshScreen(int x, int y) { /* TODO */ }
-void FreeFreshScreen() { /* TODO */ }
+void RecordFreshScreen(int x, int y, int w, int h)
+{
+    SDL_Rect dest = { x, y, w, h };
+    if (SW_SURFACE == 0)
+    {
+        SDL_Texture* tex = SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, w, h);
+        SDL_SetRenderTarget(render, tex);
+        SDL_FRect destf = rect2f(dest);
+        SDL_RenderTexture(render, screenTex, &destf, nullptr);
+        SDL_SetRenderTarget(render, screenTex);
+        FreshScreen.push_back(reinterpret_cast<SDL_Surface*>(tex));
+    }
+    else
+    {
+        SDL_Surface* sur = SDL_CreateSurface(w, h, SDL_GetPixelFormatForMasks(32, RMask, GMask, BMask, AMask));
+        SDL_BlitSurface(screen, &dest, sur, nullptr);
+        FreshScreen.push_back(sur);
+    }
+    kyslog("Now the amount of fresh screens is %d", (int)FreshScreen.size());
+}
+
+void LoadFreshScreen(int x, int y)
+{
+    int i = (int)FreshScreen.size() - 1;
+    if (i >= 0)
+    {
+        if (SW_SURFACE == 0)
+        {
+            if (FreshScreen[i] != nullptr)
+            {
+                SDL_Texture* tex = reinterpret_cast<SDL_Texture*>(FreshScreen[i]);
+                SDL_Rect dest;
+                dest.x = x;
+                dest.y = y;
+                float wf, hf;
+                SDL_GetTextureSize(tex, &wf, &hf);
+                dest.w = (int)wf;
+                dest.h = (int)hf;
+                CleanTextScreenRect(x, y, dest.w, dest.h);
+                SDL_FRect destf = rect2f(dest);
+                SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_NONE);
+                SDL_RenderTexture(render, tex, nullptr, &destf);
+            }
+        }
+        else
+        {
+            if (FreshScreen[i] != nullptr)
+            {
+                SDL_Surface* sur = FreshScreen[i];
+                SDL_Rect dest;
+                dest.x = x;
+                dest.y = y;
+                dest.w = sur->w;
+                dest.h = sur->h;
+                SDL_BlitSurface(sur, nullptr, screen, &dest);
+                CleanTextScreenRect(x, y, dest.w, dest.h);
+            }
+        }
+    }
+}
+
+void FreeFreshScreen()
+{
+    int i = (int)FreshScreen.size() - 1;
+    if (i >= 0)
+    {
+        if (SW_SURFACE == 0)
+        {
+            SDL_DestroyTexture(reinterpret_cast<SDL_Texture*>(FreshScreen[i]));
+            FreshScreen[i] = nullptr;
+            FreshScreen.erase(FreshScreen.begin() + i);
+        }
+        else
+        {
+            SDL_DestroySurface(FreshScreen[i]);
+            FreshScreen[i] = nullptr;
+            FreshScreen.erase(FreshScreen.begin() + i);
+        }
+    }
+}
 
 void UpdateAllScreen()
 {
@@ -1510,5 +1642,5 @@ std::vector<int> readnumbersformstring(const std::string& str)
     return strfunc::findNumbers<int>(str);
 }
 
-SDL_FRect Rect2f(SDL_Rect r) { return { (float)r.x, (float)r.y, (float)r.w, (float)r.h }; }
+SDL_FRect rect2f(const SDL_Rect& r) { return { (float)r.x, (float)r.y, (float)r.w, (float)r.h }; }
 SDL_Rect Rectf2(SDL_FRect r) { return { (int)r.x, (int)r.y, (int)r.w, (int)r.h }; }
