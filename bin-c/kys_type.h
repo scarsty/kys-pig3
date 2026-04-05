@@ -17,6 +17,11 @@ struct lua_State;
 using uint32 = uint32_t;
 using uint16 = uint16_t;
 
+// 数组大小常量
+constexpr int MAX_BATTLE_ROLE = 100;
+constexpr int MAX_EPNG = 201;
+constexpr int MAX_FPNG = 1001;
+
 // ---- 简单结构体 ----
 
 struct TPosition

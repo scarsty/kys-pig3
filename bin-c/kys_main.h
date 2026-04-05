@@ -45,7 +45,13 @@ int CommonMenu(int x, int y, int w, int max, int default_, const std::string men
     int needFrame, uint32 color1, uint32 color2, uint32 menucolor1, uint32 menucolor2, int count);
 int CommonScrollMenu(int x, int y, int w, int max, int maxshow, const std::string menuString[], int count);
 int CommonScrollMenu(int x, int y, int w, int max, int maxshow, const std::string menuString[], const std::string menuEngString[], int count);
+inline int CommonScrollMenu(int x, int y, int w, int max, int maxshow, const std::vector<std::string>& menuString) {
+    return CommonScrollMenu(x, y, w, max, maxshow, menuString.data(), (int)menuString.size());
+}
 int CommonMenu2(int x, int y, int w, const std::string menuString[], int max = 1);
+inline int CommonMenu2(int x, int y, int w, const std::vector<std::string>& menuString, int max = 1) {
+    return CommonMenu2(x, y, w, menuString.data(), max);
+}
 int SelectOneTeamMember(int x, int y, const std::string& str, int list1, int list2, int mask = 63);
 
 void MenuEsc();

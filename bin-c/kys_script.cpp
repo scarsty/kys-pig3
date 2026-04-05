@@ -22,264 +22,264 @@
 
 void InitialScript()
 {
-    Lua_script = luaL_newstate();
-    luaL_openlibs(Lua_script);
+    lua_script = luaL_newstate();
+    luaL_openlibs(lua_script);
 
     // 注册所有Lua函数 (按字母序, 含instruct_N别名)
-    lua_register(Lua_script, "add3eventnum", Lua_Add3EventNum);
-    lua_register(Lua_script, "instruct_26", Lua_Add3EventNum);
-    lua_register(Lua_script, "addaptitude", Lua_AddAptitude);
-    lua_register(Lua_script, "instruct_34", Lua_AddAptitude);
-    lua_register(Lua_script, "addattack", Lua_AddAttack);
-    lua_register(Lua_script, "instruct_47", Lua_AddAttack);
-    lua_register(Lua_script, "addethics", Lua_AddEthics);
-    lua_register(Lua_script, "instruct_37", Lua_AddEthics);
-    lua_register(Lua_script, "addhp", Lua_AddHP);
-    lua_register(Lua_script, "instruct_48", Lua_AddHP);
-    lua_register(Lua_script, "additem", Lua_AddItem);
-    lua_register(Lua_script, "instruct_32", Lua_AddItem);
-    lua_register(Lua_script, "addmp", Lua_AddMP);
-    lua_register(Lua_script, "instruct_46", Lua_AddMP);
-    lua_register(Lua_script, "addrepute", Lua_AddRepute);
-    lua_register(Lua_script, "instruct_56", Lua_AddRepute);
-    lua_register(Lua_script, "addroleintobattle", Lua_AddRoleIntoBattle);
-    lua_register(Lua_script, "addspeed", Lua_AddSpeed);
-    lua_register(Lua_script, "instruct_45", Lua_AddSpeed);
-    lua_register(Lua_script, "allleave", Lua_AllLeave);
-    lua_register(Lua_script, "instruct_59", Lua_AllLeave);
-    lua_register(Lua_script, "anothergetitem", Lua_AnotherGetItem);
-    lua_register(Lua_script, "instruct_41", Lua_AnotherGetItem);
-    lua_register(Lua_script, "npcgetitem", Lua_AnotherGetItem);
-    lua_register(Lua_script, "askbattle", Lua_AskBattle);
-    lua_register(Lua_script, "instruct_5", Lua_AskBattle);
-    lua_register(Lua_script, "askjoin", Lua_AskJoin);
-    lua_register(Lua_script, "instruct_9", Lua_AskJoin);
-    lua_register(Lua_script, "askrest", Lua_AskRest);
-    lua_register(Lua_script, "instruct_11", Lua_AskRest);
-    lua_register(Lua_script, "asksoftstar", Lua_AskSoftStar);
-    lua_register(Lua_script, "instruct_51", Lua_AskSoftStar);
-    lua_register(Lua_script, "askyesorno", Lua_AskYesOrNo);
-    lua_register(Lua_script, "endamination", Lua_BackHome);
-    lua_register(Lua_script, "instruct_62", Lua_BackHome);
-    lua_register(Lua_script, "instruct_24", Lua_Blank);
-    lua_register(Lua_script, "instruct_65", Lua_Blank);
-    lua_register(Lua_script, "instruct_7", Lua_Blank);
-    lua_register(Lua_script, "instruct_57", Lua_BreakStoneGate);
-    lua_register(Lua_script, "changemmapmusic", Lua_ChangeMMapMusic);
-    lua_register(Lua_script, "instruct_8", Lua_ChangeMMapMusic);
-    lua_register(Lua_script, "changescene", Lua_ChangeScene);
-    lua_register(Lua_script, "changescenepic", Lua_ChangeScenePic);
-    lua_register(Lua_script, "instruct_38", Lua_ChangeScenePic);
-    lua_register(Lua_script, "checkbutton", Lua_CheckButton);
-    lua_register(Lua_script, "clear", Lua_Clear);
-    lua_register(Lua_script, "instruct_0", Lua_Clear);
-    lua_register(Lua_script, "clearbutton", Lua_ClearButton);
-    lua_register(Lua_script, "clearrolefrombattle", Lua_ClearRoleFromBattle);
-    lua_register(Lua_script, "compareprointeam", Lua_CompareProInTeam);
-    lua_register(Lua_script, "darkscene", Lua_DarkScene);
-    lua_register(Lua_script, "instruct_14", Lua_DarkScene);
-    lua_register(Lua_script, "dead", Lua_Dead);
-    lua_register(Lua_script, "instruct_15", Lua_Dead);
-    lua_register(Lua_script, "delay", Lua_Delay);
-    lua_register(Lua_script, "drawrect", Lua_DrawRect);
-    lua_register(Lua_script, "eatoneitem", Lua_EatOneItem);
-    lua_register(Lua_script, "enternumber", Lua_EnterNumber);
-    lua_register(Lua_script, "execevent", Lua_ExecEvent);
-    lua_register(Lua_script, "instruct_58", Lua_FightForTop);
-    lua_register(Lua_script, "forcebattleresult", Lua_ForceBattleResult);
-    lua_register(Lua_script, "getbattlenumber", Lua_GetBattleNumber);
-    lua_register(Lua_script, "getbattlepro", Lua_GetBattlePro);
-    lua_register(Lua_script, "getbattlerolepro", Lua_GetBattleRolePro);
-    lua_register(Lua_script, "getbutton", Lua_GetButton);
-    lua_register(Lua_script, "getcurrentevent", Lua_GetCurrentEvent);
-    lua_register(Lua_script, "getcurrentscene", Lua_GetCurrentScene);
-    lua_register(Lua_script, "getitem", Lua_GetItem);
-    lua_register(Lua_script, "instruct_2", Lua_GetItem);
-    lua_register(Lua_script, "getitemlist", Lua_GetItemList);
-    lua_register(Lua_script, "getitempro", Lua_GetItemPro);
-    lua_register(Lua_script, "getmagicpro", Lua_GetMagicPro);
-    lua_register(Lua_script, "getmainmapposition", Lua_GetMainMapPosition);
-    lua_register(Lua_script, "getmember", Lua_GetMember);
-    lua_register(Lua_script, "getglobalvalue", Lua_GetGlobalValue);
-    lua_register(Lua_script, "getmouseposition", Lua_GetMousePosition);
-    lua_register(Lua_script, "getnameasstring", Lua_GetNameAsString);
-    lua_register(Lua_script, "getrolepro", Lua_GetRolePro);
-    lua_register(Lua_script, "getsceneeventpro", Lua_GetSceneEventPro);
-    lua_register(Lua_script, "getsceneface", Lua_GetSceneFace);
-    lua_register(Lua_script, "getscenemappro", Lua_GetSceneMapPro);
-    lua_register(Lua_script, "getsceneposition", Lua_GetScenePosition);
-    lua_register(Lua_script, "getscenepro", Lua_GetScenePro);
-    lua_register(Lua_script, "getscreensize", Lua_GetScreenSize);
-    lua_register(Lua_script, "gettime", Lua_GetTime);
-    lua_register(Lua_script, "haveitem", Lua_HaveItemBool);
-    lua_register(Lua_script, "haveitemamount", Lua_HaveItemAmount);
-    lua_register(Lua_script, "instruct_18", Lua_HaveItemBool);
-    lua_register(Lua_script, "instruct_43", Lua_HaveItemBool);
-    lua_register(Lua_script, "instruct_16", Lua_InTeam);
-    lua_register(Lua_script, "inteam", Lua_InTeam);
-    lua_register(Lua_script, "instruct_10", Lua_Join);
-    lua_register(Lua_script, "join", Lua_Join);
-    lua_register(Lua_script, "instruct_61", Lua_Judge14BooksPlaced);
-    lua_register(Lua_script, "judge14booksplaced", Lua_Judge14BooksPlaced);
-    lua_register(Lua_script, "instruct_50", Lua_Judge5Item);
-    lua_register(Lua_script, "instruct_29", Lua_JudgeAttack);
-    lua_register(Lua_script, "judgeattack", Lua_JudgeAttack);
-    lua_register(Lua_script, "instruct_28", Lua_JudgeEthics);
-    lua_register(Lua_script, "judgeethics", Lua_JudgeEthics);
-    lua_register(Lua_script, "instruct_55", Lua_JudgeEventNum);
-    lua_register(Lua_script, "judgeeventnum", Lua_JudgeEventNum);
-    lua_register(Lua_script, "instruct_42", Lua_JudgeFemaleInTeam);
-    lua_register(Lua_script, "judgefemaleinteam", Lua_JudgeFemaleInTeam);
-    lua_register(Lua_script, "instruct_31", Lua_JudgeMoney);
-    lua_register(Lua_script, "judgemoney", Lua_JudgeMoney);
-    lua_register(Lua_script, "judgesceneevent", Lua_JudgeSceneEvent);
-    lua_register(Lua_script, "instruct_60", Lua_JudgeScenePic);
-    lua_register(Lua_script, "judgescenepic", Lua_JudgeScenePic);
-    lua_register(Lua_script, "instruct_36", Lua_JudgeSexual);
-    lua_register(Lua_script, "judgesexual", Lua_JudgeSexual);
-    lua_register(Lua_script, "jumpscene", Lua_JumpScene);
-    lua_register(Lua_script, "learnmagic", Lua_LearnMagic);
-    lua_register(Lua_script, "instruct_21", Lua_LeaveTeam);
-    lua_register(Lua_script, "leave", Lua_LeaveTeam);
-    lua_register(Lua_script, "leaveteam", Lua_LeaveTeam);
-    lua_register(Lua_script, "instruct_13", Lua_LightScene);
-    lua_register(Lua_script, "lightscene", Lua_LightScene);
-    lua_register(Lua_script, "memberamount", Lua_MemberAmount);
-    lua_register(Lua_script, "menu", Lua_Menu);
-    lua_register(Lua_script, "instruct_3", Lua_ModifyEvent);
-    lua_register(Lua_script, "modifyevent", Lua_ModifyEvent);
-    lua_register(Lua_script, "instruct_33", Lua_OldLearnMagic);
-    lua_register(Lua_script, "learnmagic2", Lua_OldLearnMagic);
-    lua_register(Lua_script, "instruct_17", Lua_OldSetSceneMapPro);
-    lua_register(Lua_script, "setscenemappro2", Lua_OldSetSceneMapPro);
-    lua_register(Lua_script, "setscenemap", Lua_OldSetSceneMapPro);
-    lua_register(Lua_script, "instruct_19", Lua_OldSetScenePosition);
-    lua_register(Lua_script, "setsceneposition2", Lua_OldSetScenePosition);
-    lua_register(Lua_script, "instruct_1", Lua_OldTalk);
-    lua_register(Lua_script, "instruct_54", Lua_OpenAllScene);
-    lua_register(Lua_script, "openallscene", Lua_OpenAllScene);
-    lua_register(Lua_script, "instruct_39", Lua_OpenScene);
-    lua_register(Lua_script, "openscene", Lua_OpenScene);
-    lua_register(Lua_script, "pause", Lua_Pause);
-    lua_register(Lua_script, "instruct_44", Lua_Play2Animation);
-    lua_register(Lua_script, "play2animation", Lua_Play2Animation);
-    lua_register(Lua_script, "playaction", Lua_PlayAction);
-    lua_register(Lua_script, "instruct_27", Lua_PlayAnimation);
-    lua_register(Lua_script, "playanimation", Lua_PlayAnimation);
-    lua_register(Lua_script, "playhurtvalue", Lua_PlayHurtValue);
-    lua_register(Lua_script, "instruct_66", Lua_PlayMusic);
-    lua_register(Lua_script, "playmusic", Lua_PlayMusic);
-    lua_register(Lua_script, "instruct_67", Lua_PlayWave);
-    lua_register(Lua_script, "playwave", Lua_PlayWave);
+    lua_register(lua_script, "add3eventnum", Lua_Add3EventNum);
+    lua_register(lua_script, "instruct_26", Lua_Add3EventNum);
+    lua_register(lua_script, "addaptitude", Lua_AddAptitude);
+    lua_register(lua_script, "instruct_34", Lua_AddAptitude);
+    lua_register(lua_script, "addattack", Lua_AddAttack);
+    lua_register(lua_script, "instruct_47", Lua_AddAttack);
+    lua_register(lua_script, "addethics", Lua_AddEthics);
+    lua_register(lua_script, "instruct_37", Lua_AddEthics);
+    lua_register(lua_script, "addhp", Lua_AddHP);
+    lua_register(lua_script, "instruct_48", Lua_AddHP);
+    lua_register(lua_script, "additem", Lua_AddItem);
+    lua_register(lua_script, "instruct_32", Lua_AddItem);
+    lua_register(lua_script, "addmp", Lua_AddMP);
+    lua_register(lua_script, "instruct_46", Lua_AddMP);
+    lua_register(lua_script, "addrepute", Lua_AddRepute);
+    lua_register(lua_script, "instruct_56", Lua_AddRepute);
+    lua_register(lua_script, "addroleintobattle", Lua_AddRoleIntoBattle);
+    lua_register(lua_script, "addspeed", Lua_AddSpeed);
+    lua_register(lua_script, "instruct_45", Lua_AddSpeed);
+    lua_register(lua_script, "allleave", Lua_AllLeave);
+    lua_register(lua_script, "instruct_59", Lua_AllLeave);
+    lua_register(lua_script, "anothergetitem", Lua_AnotherGetItem);
+    lua_register(lua_script, "instruct_41", Lua_AnotherGetItem);
+    lua_register(lua_script, "npcgetitem", Lua_AnotherGetItem);
+    lua_register(lua_script, "askbattle", Lua_AskBattle);
+    lua_register(lua_script, "instruct_5", Lua_AskBattle);
+    lua_register(lua_script, "askjoin", Lua_AskJoin);
+    lua_register(lua_script, "instruct_9", Lua_AskJoin);
+    lua_register(lua_script, "askrest", Lua_AskRest);
+    lua_register(lua_script, "instruct_11", Lua_AskRest);
+    lua_register(lua_script, "asksoftstar", Lua_AskSoftStar);
+    lua_register(lua_script, "instruct_51", Lua_AskSoftStar);
+    lua_register(lua_script, "askyesorno", Lua_AskYesOrNo);
+    lua_register(lua_script, "endamination", Lua_BackHome);
+    lua_register(lua_script, "instruct_62", Lua_BackHome);
+    lua_register(lua_script, "instruct_24", Lua_Blank);
+    lua_register(lua_script, "instruct_65", Lua_Blank);
+    lua_register(lua_script, "instruct_7", Lua_Blank);
+    lua_register(lua_script, "instruct_57", Lua_BreakStoneGate);
+    lua_register(lua_script, "changemmapmusic", Lua_ChangeMMapMusic);
+    lua_register(lua_script, "instruct_8", Lua_ChangeMMapMusic);
+    lua_register(lua_script, "changescene", Lua_ChangeScene);
+    lua_register(lua_script, "changescenepic", Lua_ChangeScenePic);
+    lua_register(lua_script, "instruct_38", Lua_ChangeScenePic);
+    lua_register(lua_script, "checkbutton", Lua_CheckButton);
+    lua_register(lua_script, "clear", Lua_Clear);
+    lua_register(lua_script, "instruct_0", Lua_Clear);
+    lua_register(lua_script, "clearbutton", Lua_ClearButton);
+    lua_register(lua_script, "clearrolefrombattle", Lua_ClearRoleFromBattle);
+    lua_register(lua_script, "compareprointeam", Lua_CompareProInTeam);
+    lua_register(lua_script, "darkscene", Lua_DarkScene);
+    lua_register(lua_script, "instruct_14", Lua_DarkScene);
+    lua_register(lua_script, "dead", Lua_Dead);
+    lua_register(lua_script, "instruct_15", Lua_Dead);
+    lua_register(lua_script, "delay", Lua_Delay);
+    lua_register(lua_script, "drawrect", Lua_DrawRect);
+    lua_register(lua_script, "eatoneitem", Lua_EatOneItem);
+    lua_register(lua_script, "enternumber", Lua_EnterNumber);
+    lua_register(lua_script, "execevent", Lua_ExecEvent);
+    lua_register(lua_script, "instruct_58", Lua_FightForTop);
+    lua_register(lua_script, "forcebattleresult", Lua_ForceBattleResult);
+    lua_register(lua_script, "getbattlenumber", Lua_GetBattleNumber);
+    lua_register(lua_script, "getbattlepro", Lua_GetBattlePro);
+    lua_register(lua_script, "getbattlerolepro", Lua_GetBattleRolePro);
+    lua_register(lua_script, "getbutton", Lua_GetButton);
+    lua_register(lua_script, "getcurrentevent", Lua_GetCurrentEvent);
+    lua_register(lua_script, "getcurrentscene", Lua_GetCurrentScene);
+    lua_register(lua_script, "getitem", Lua_GetItem);
+    lua_register(lua_script, "instruct_2", Lua_GetItem);
+    lua_register(lua_script, "getitemlist", Lua_GetItemList);
+    lua_register(lua_script, "getitempro", Lua_GetItemPro);
+    lua_register(lua_script, "getmagicpro", Lua_GetMagicPro);
+    lua_register(lua_script, "getmainmapposition", Lua_GetMainMapPosition);
+    lua_register(lua_script, "getmember", Lua_GetMember);
+    lua_register(lua_script, "getglobalvalue", Lua_GetGlobalValue);
+    lua_register(lua_script, "getmouseposition", Lua_GetMousePosition);
+    lua_register(lua_script, "getnameasstring", Lua_GetNameAsString);
+    lua_register(lua_script, "getrolepro", Lua_GetRolePro);
+    lua_register(lua_script, "getsceneeventpro", Lua_GetSceneEventPro);
+    lua_register(lua_script, "getsceneface", Lua_GetSceneFace);
+    lua_register(lua_script, "getscenemappro", Lua_GetSceneMapPro);
+    lua_register(lua_script, "getsceneposition", Lua_GetScenePosition);
+    lua_register(lua_script, "getscenepro", Lua_GetScenePro);
+    lua_register(lua_script, "getscreensize", Lua_GetScreenSize);
+    lua_register(lua_script, "gettime", Lua_GetTime);
+    lua_register(lua_script, "haveitem", Lua_HaveItemBool);
+    lua_register(lua_script, "haveitemamount", Lua_HaveItemAmount);
+    lua_register(lua_script, "instruct_18", Lua_HaveItemBool);
+    lua_register(lua_script, "instruct_43", Lua_HaveItemBool);
+    lua_register(lua_script, "instruct_16", Lua_InTeam);
+    lua_register(lua_script, "inteam", Lua_InTeam);
+    lua_register(lua_script, "instruct_10", Lua_Join);
+    lua_register(lua_script, "join", Lua_Join);
+    lua_register(lua_script, "instruct_61", Lua_Judge14BooksPlaced);
+    lua_register(lua_script, "judge14booksplaced", Lua_Judge14BooksPlaced);
+    lua_register(lua_script, "instruct_50", Lua_Judge5Item);
+    lua_register(lua_script, "instruct_29", Lua_JudgeAttack);
+    lua_register(lua_script, "judgeattack", Lua_JudgeAttack);
+    lua_register(lua_script, "instruct_28", Lua_JudgeEthics);
+    lua_register(lua_script, "judgeethics", Lua_JudgeEthics);
+    lua_register(lua_script, "instruct_55", Lua_JudgeEventNum);
+    lua_register(lua_script, "judgeeventnum", Lua_JudgeEventNum);
+    lua_register(lua_script, "instruct_42", Lua_JudgeFemaleInTeam);
+    lua_register(lua_script, "judgefemaleinteam", Lua_JudgeFemaleInTeam);
+    lua_register(lua_script, "instruct_31", Lua_JudgeMoney);
+    lua_register(lua_script, "judgemoney", Lua_JudgeMoney);
+    lua_register(lua_script, "judgesceneevent", Lua_JudgeSceneEvent);
+    lua_register(lua_script, "instruct_60", Lua_JudgeScenePic);
+    lua_register(lua_script, "judgescenepic", Lua_JudgeScenePic);
+    lua_register(lua_script, "instruct_36", Lua_JudgeSexual);
+    lua_register(lua_script, "judgesexual", Lua_JudgeSexual);
+    lua_register(lua_script, "jumpscene", Lua_JumpScene);
+    lua_register(lua_script, "learnmagic", Lua_LearnMagic);
+    lua_register(lua_script, "instruct_21", Lua_LeaveTeam);
+    lua_register(lua_script, "leave", Lua_LeaveTeam);
+    lua_register(lua_script, "leaveteam", Lua_LeaveTeam);
+    lua_register(lua_script, "instruct_13", Lua_LightScene);
+    lua_register(lua_script, "lightscene", Lua_LightScene);
+    lua_register(lua_script, "memberamount", Lua_MemberAmount);
+    lua_register(lua_script, "menu", Lua_Menu);
+    lua_register(lua_script, "instruct_3", Lua_ModifyEvent);
+    lua_register(lua_script, "modifyevent", Lua_ModifyEvent);
+    lua_register(lua_script, "instruct_33", Lua_OldLearnMagic);
+    lua_register(lua_script, "learnmagic2", Lua_OldLearnMagic);
+    lua_register(lua_script, "instruct_17", Lua_OldSetSceneMapPro);
+    lua_register(lua_script, "setscenemappro2", Lua_OldSetSceneMapPro);
+    lua_register(lua_script, "setscenemap", Lua_OldSetSceneMapPro);
+    lua_register(lua_script, "instruct_19", Lua_OldSetScenePosition);
+    lua_register(lua_script, "setsceneposition2", Lua_OldSetScenePosition);
+    lua_register(lua_script, "instruct_1", Lua_OldTalk);
+    lua_register(lua_script, "instruct_54", Lua_OpenAllScene);
+    lua_register(lua_script, "openallscene", Lua_OpenAllScene);
+    lua_register(lua_script, "instruct_39", Lua_OpenScene);
+    lua_register(lua_script, "openscene", Lua_OpenScene);
+    lua_register(lua_script, "pause", Lua_Pause);
+    lua_register(lua_script, "instruct_44", Lua_Play2Animation);
+    lua_register(lua_script, "play2animation", Lua_Play2Animation);
+    lua_register(lua_script, "playaction", Lua_PlayAction);
+    lua_register(lua_script, "instruct_27", Lua_PlayAnimation);
+    lua_register(lua_script, "playanimation", Lua_PlayAnimation);
+    lua_register(lua_script, "playhurtvalue", Lua_PlayHurtValue);
+    lua_register(lua_script, "instruct_66", Lua_PlayMusic);
+    lua_register(lua_script, "playmusic", Lua_PlayMusic);
+    lua_register(lua_script, "instruct_67", Lua_PlayWave);
+    lua_register(lua_script, "playwave", Lua_PlayWave);
 
     // set/put 系列
-    lua_register(Lua_script, "setbattlepro", Lua_SetBattlePro);
-    lua_register(Lua_script, "setbattlerolepro", Lua_SetBattleRolePro);
-    lua_register(Lua_script, "setitempro", Lua_SetItemPro);
-    lua_register(Lua_script, "setmagicpro", Lua_SetMagicPro);
-    lua_register(Lua_script, "setmember", Lua_SetMember);
-    lua_register(Lua_script, "setglobalvalue", Lua_SetGlobalValue);
-    lua_register(Lua_script, "setrolepro", Lua_SetRolePro);
-    lua_register(Lua_script, "setsceneeventpro", Lua_SetSceneEventPro);
-    lua_register(Lua_script, "setscenemappro", Lua_SetSceneMapPro);
-    lua_register(Lua_script, "setscenepro", Lua_SetScenePro);
+    lua_register(lua_script, "setbattlepro", Lua_SetBattlePro);
+    lua_register(lua_script, "setbattlerolepro", Lua_SetBattleRolePro);
+    lua_register(lua_script, "setitempro", Lua_SetItemPro);
+    lua_register(lua_script, "setmagicpro", Lua_SetMagicPro);
+    lua_register(lua_script, "setmember", Lua_SetMember);
+    lua_register(lua_script, "setglobalvalue", Lua_SetGlobalValue);
+    lua_register(lua_script, "setrolepro", Lua_SetRolePro);
+    lua_register(lua_script, "setsceneeventpro", Lua_SetSceneEventPro);
+    lua_register(lua_script, "setscenemappro", Lua_SetSceneMapPro);
+    lua_register(lua_script, "setscenepro", Lua_SetScenePro);
 
-    lua_register(Lua_script, "putbattlepro", Lua_SetBattlePro);
-    lua_register(Lua_script, "putbattlerolepro", Lua_SetBattleRolePro);
-    lua_register(Lua_script, "putitempro", Lua_SetItemPro);
-    lua_register(Lua_script, "putmagicpro", Lua_SetMagicPro);
-    lua_register(Lua_script, "putmember", Lua_SetMember);
-    lua_register(Lua_script, "putglobalvalue", Lua_SetGlobalValue);
-    lua_register(Lua_script, "putrolepro", Lua_SetRolePro);
-    lua_register(Lua_script, "putsceneeventpro", Lua_SetSceneEventPro);
-    lua_register(Lua_script, "putscenemappro", Lua_SetSceneMapPro);
-    lua_register(Lua_script, "putscenepro", Lua_SetScenePro);
+    lua_register(lua_script, "putbattlepro", Lua_SetBattlePro);
+    lua_register(lua_script, "putbattlerolepro", Lua_SetBattleRolePro);
+    lua_register(lua_script, "putitempro", Lua_SetItemPro);
+    lua_register(lua_script, "putmagicpro", Lua_SetMagicPro);
+    lua_register(lua_script, "putmember", Lua_SetMember);
+    lua_register(lua_script, "putglobalvalue", Lua_SetGlobalValue);
+    lua_register(lua_script, "putrolepro", Lua_SetRolePro);
+    lua_register(lua_script, "putsceneeventpro", Lua_SetSceneEventPro);
+    lua_register(lua_script, "putscenemappro", Lua_SetSceneMapPro);
+    lua_register(lua_script, "putscenepro", Lua_SetScenePro);
 
-    lua_register(Lua_script, "instruct_12", Lua_Rest);
-    lua_register(Lua_script, "rest", Lua_Rest);
-    lua_register(Lua_script, "instruct_25", Lua_SceneFromTo);
-    lua_register(Lua_script, "scenefromto", Lua_SceneFromTo);
-    lua_register(Lua_script, "selectoneaim", Lua_SelectOneAim);
-    lua_register(Lua_script, "selectoneteammember", Lua_SelectOneTeamMember);
-    lua_register(Lua_script, "setaminationlayer", Lua_SetAminationLayer);
-    lua_register(Lua_script, "setattribute", Lua_SetAttribute);
-    lua_register(Lua_script, "setmainmapposition", Lua_SetMainMapPosition);
-    lua_register(Lua_script, "setmenuesctype", Lua_SetMenuEscType);
-    lua_register(Lua_script, "instruct_49", Lua_SetMPPro);
-    lua_register(Lua_script, "setmppro", Lua_SetMPPro);
-    lua_register(Lua_script, "setpersonmppro", Lua_SetMPPro);
-    lua_register(Lua_script, "instruct_35", Lua_SetOneMagic);
-    lua_register(Lua_script, "setonemagic", Lua_SetOneMagic);
-    lua_register(Lua_script, "instruct_23", Lua_SetOneUsePoi);
-    lua_register(Lua_script, "setoneusepoi", Lua_SetOneUsePoi);
-    lua_register(Lua_script, "instruct_40", Lua_SetRoleFace);
-    lua_register(Lua_script, "setroleface", Lua_SetRoleFace);
-    lua_register(Lua_script, "setsceneface", Lua_SetSceneFace);
-    lua_register(Lua_script, "setsceneposition", Lua_SetScenePosition);
-    lua_register(Lua_script, "instruct_63", Lua_SetSexual);
-    lua_register(Lua_script, "showability", Lua_ShowAbility);
-    lua_register(Lua_script, "instruct_52", Lua_ShowEthics);
-    lua_register(Lua_script, "showethics", Lua_ShowEthics);
-    lua_register(Lua_script, "showpicture", Lua_ShowPicture);
-    lua_register(Lua_script, "instruct_53", Lua_ShowRepute);
-    lua_register(Lua_script, "showrepute", Lua_ShowRepute);
-    lua_register(Lua_script, "showstatus", Lua_ShowStatus);
-    lua_register(Lua_script, "showstring", Lua_ShowString);
-    lua_register(Lua_script, "showstringwithbox", Lua_ShowStringWithBox);
-    lua_register(Lua_script, "setnameasstring", Lua_SetNameAsString);
-    lua_register(Lua_script, "talk", Lua_Talk);
-    lua_register(Lua_script, "instruct_20", Lua_TeamIsFull);
-    lua_register(Lua_script, "teamisfull", Lua_TeamIsFull);
-    lua_register(Lua_script, "instruct_6", Lua_TryBattle);
-    lua_register(Lua_script, "trybattle", Lua_TryBattle);
-    lua_register(Lua_script, "instruct_4", Lua_UseItem);
-    lua_register(Lua_script, "useitem", Lua_UseItem);
-    lua_register(Lua_script, "instruct_30", Lua_WalkFromTo);
-    lua_register(Lua_script, "walkfromto", Lua_WalkFromTo);
-    lua_register(Lua_script, "instruct_64", Lua_WeiShop);
-    lua_register(Lua_script, "weishop", Lua_WeiShop);
-    lua_register(Lua_script, "instruct_22", Lua_ZeroAllMP);
-    lua_register(Lua_script, "zeroallmp", Lua_ZeroAllMP);
-    lua_register(Lua_script, "getx50", Lua_GetX50);
-    lua_register(Lua_script, "setx50", Lua_SetX50);
-    lua_register(Lua_script, "putx50", Lua_SetX50);
+    lua_register(lua_script, "instruct_12", Lua_Rest);
+    lua_register(lua_script, "rest", Lua_Rest);
+    lua_register(lua_script, "instruct_25", Lua_SceneFromTo);
+    lua_register(lua_script, "scenefromto", Lua_SceneFromTo);
+    lua_register(lua_script, "selectoneaim", Lua_SelectOneAim);
+    lua_register(lua_script, "selectoneteammember", Lua_SelectOneTeamMember);
+    lua_register(lua_script, "setaminationlayer", Lua_SetAminationLayer);
+    lua_register(lua_script, "setattribute", Lua_SetAttribute);
+    lua_register(lua_script, "setmainmapposition", Lua_SetMainMapPosition);
+    lua_register(lua_script, "setmenuesctype", Lua_SetMenuEscType);
+    lua_register(lua_script, "instruct_49", Lua_SetMPPro);
+    lua_register(lua_script, "setmppro", Lua_SetMPPro);
+    lua_register(lua_script, "setpersonmppro", Lua_SetMPPro);
+    lua_register(lua_script, "instruct_35", Lua_SetOneMagic);
+    lua_register(lua_script, "setonemagic", Lua_SetOneMagic);
+    lua_register(lua_script, "instruct_23", Lua_SetOneUsePoi);
+    lua_register(lua_script, "setoneusepoi", Lua_SetOneUsePoi);
+    lua_register(lua_script, "instruct_40", Lua_SetRoleFace);
+    lua_register(lua_script, "setroleface", Lua_SetRoleFace);
+    lua_register(lua_script, "setsceneface", Lua_SetSceneFace);
+    lua_register(lua_script, "setsceneposition", Lua_SetScenePosition);
+    lua_register(lua_script, "instruct_63", Lua_SetSexual);
+    lua_register(lua_script, "showability", Lua_ShowAbility);
+    lua_register(lua_script, "instruct_52", Lua_ShowEthics);
+    lua_register(lua_script, "showethics", Lua_ShowEthics);
+    lua_register(lua_script, "showpicture", Lua_ShowPicture);
+    lua_register(lua_script, "instruct_53", Lua_ShowRepute);
+    lua_register(lua_script, "showrepute", Lua_ShowRepute);
+    lua_register(lua_script, "showstatus", Lua_ShowStatus);
+    lua_register(lua_script, "showstring", Lua_ShowString);
+    lua_register(lua_script, "showstringwithbox", Lua_ShowStringWithBox);
+    lua_register(lua_script, "setnameasstring", Lua_SetNameAsString);
+    lua_register(lua_script, "talk", Lua_Talk);
+    lua_register(lua_script, "instruct_20", Lua_TeamIsFull);
+    lua_register(lua_script, "teamisfull", Lua_TeamIsFull);
+    lua_register(lua_script, "instruct_6", Lua_TryBattle);
+    lua_register(lua_script, "trybattle", Lua_TryBattle);
+    lua_register(lua_script, "instruct_4", Lua_UseItem);
+    lua_register(lua_script, "useitem", Lua_UseItem);
+    lua_register(lua_script, "instruct_30", Lua_WalkFromTo);
+    lua_register(lua_script, "walkfromto", Lua_WalkFromTo);
+    lua_register(lua_script, "instruct_64", Lua_WeiShop);
+    lua_register(lua_script, "weishop", Lua_WeiShop);
+    lua_register(lua_script, "instruct_22", Lua_ZeroAllMP);
+    lua_register(lua_script, "zeroallmp", Lua_ZeroAllMP);
+    lua_register(lua_script, "getx50", Lua_GetX50);
+    lua_register(lua_script, "setx50", Lua_SetX50);
+    lua_register(lua_script, "putx50", Lua_SetX50);
 
-    lua_register(Lua_script, "showtitle", Lua_ShowTitle);
-    lua_register(Lua_script, "readtalkasstring", Lua_ReadTalkAsString);
-    lua_register(Lua_script, "checkjumpflag", Lua_CheckJumpFlag);
-    lua_register(Lua_script, "exit", Lua_ExitScript);
-    lua_register(Lua_script, "addroleprowithhint", Lua_AddRoleProWithHint);
-    lua_register(Lua_script, "colcolor", Lua_ColColor);
-    lua_register(Lua_script, "setbattlename", Lua_SetBattleName);
-    lua_register(Lua_script, "showsimplestatus", Lua_ShowSimpleStatus);
-    lua_register(Lua_script, "updateallscreen", Lua_UpdateAllScreen);
+    lua_register(lua_script, "showtitle", Lua_ShowTitle);
+    lua_register(lua_script, "readtalkasstring", Lua_ReadTalkAsString);
+    lua_register(lua_script, "checkjumpflag", Lua_CheckJumpFlag);
+    lua_register(lua_script, "exit", Lua_ExitScript);
+    lua_register(lua_script, "addroleprowithhint", Lua_AddRoleProWithHint);
+    lua_register(lua_script, "colcolor", Lua_ColColor);
+    lua_register(lua_script, "setbattlename", Lua_SetBattleName);
+    lua_register(lua_script, "showsimplestatus", Lua_ShowSimpleStatus);
+    lua_register(lua_script, "updateallscreen", Lua_UpdateAllScreen);
 
-    lua_register(Lua_script, "putitemintro", Lua_SetItemIntro);
-    lua_register(Lua_script, "setitemintro", Lua_SetItemIntro);
+    lua_register(lua_script, "putitemintro", Lua_SetItemIntro);
+    lua_register(lua_script, "setitemintro", Lua_SetItemIntro);
 
-    lua_register(Lua_script, "setshowmainrole", Lua_SetShowMR);
-    lua_register(Lua_script, "setscreenblendmode", Lua_SetScreenBlendMode);
-    lua_register(Lua_script, "playmovie", Lua_PlayMovie);
-    lua_register(Lua_script, "resetscene", Lua_ResetScene);
+    lua_register(lua_script, "setshowmainrole", Lua_SetShowMR);
+    lua_register(lua_script, "setscreenblendmode", Lua_SetScreenBlendMode);
+    lua_register(lua_script, "playmovie", Lua_PlayMovie);
+    lua_register(lua_script, "resetscene", Lua_ResetScene);
 
-    lua_register(Lua_script, "setteam", Lua_SetTeam);
-    lua_register(Lua_script, "getteam", Lua_GetTeam);
+    lua_register(lua_script, "setteam", Lua_SetTeam);
+    lua_register(lua_script, "getteam", Lua_GetTeam);
 
-    lua_register(Lua_script, "read_mem", Lua_ReadMem);
-    lua_register(Lua_script, "write_mem", Lua_WriteMem);
+    lua_register(lua_script, "read_mem", Lua_ReadMem);
+    lua_register(lua_script, "write_mem", Lua_WriteMem);
 
-    lua_register(Lua_script, "getrolename", Lua_GetRoleName);
-    lua_register(Lua_script, "getitemname", Lua_GetItemName);
-    lua_register(Lua_script, "getmagicname", Lua_GetMagicName);
-    lua_register(Lua_script, "getsubmapname", Lua_GetSubMapName);
+    lua_register(lua_script, "getrolename", Lua_GetRoleName);
+    lua_register(lua_script, "getitemname", Lua_GetItemName);
+    lua_register(lua_script, "getmagicname", Lua_GetMagicName);
+    lua_register(lua_script, "getsubmapname", Lua_GetSubMapName);
 
-    lua_register(Lua_script, "drawlength", Lua_DrawLengthS);
-    lua_register(Lua_script, "getkey", Lua_GetKey);
+    lua_register(lua_script, "drawlength", Lua_DrawLengthS);
+    lua_register(lua_script, "getkey", Lua_GetKey);
 }
 
 void DestroyScript()
 {
-    lua_close(Lua_script);
+    lua_close(lua_script);
 }
 
 void ExecScript(const std::string& filename, const std::string& functionname)
@@ -304,24 +304,24 @@ void ExecScriptString(const std::string& script, const std::string& functionname
         kyslog("Found BOM, replace it to space");
         s[0] = ' '; s[1] = ' '; s[2] = ' ';
     }
-    // 转小写
+    // 转小�?
     for (auto& c : s)
         if (c >= 'A' && c <= 'Z') c = c - 'A' + 'a';
 
-    int result = luaL_loadbuffer(Lua_script, s.c_str(), s.size(), "code");
+    int result = luaL_loadbuffer(lua_script, s.c_str(), s.size(), "code");
     if (result == 0)
     {
-        result = lua_pcall(Lua_script, 0, 0, 0);
+        result = lua_pcall(lua_script, 0, 0, 0);
         if (!functionname.empty())
         {
-            lua_getglobal(Lua_script, functionname.c_str());
-            result = lua_pcall(Lua_script, 0, 1, 0);
+            lua_getglobal(lua_script, functionname.c_str());
+            result = lua_pcall(lua_script, 0, 1, 0);
         }
     }
     if (result != 0)
     {
-        kyslog("%s", lua_tostring(Lua_script, -1));
-        lua_pop(Lua_script, 1);
+        kyslog("%s", lua_tostring(lua_script, -1));
+        lua_pop(lua_script, 1);
     }
 }
 
@@ -525,7 +525,7 @@ int Lua_Menu(lua_State* L)
 
 int Lua_AskYesOrNo(lua_State* L)
 {
-    std::string menuStr[2] = {"\xe5\x90\xa6", "\xe6\x98\xaf"}; // 否, 是
+    std::string menuStr[2] = {"\xe5\x90\xa6", "\xe6\x98\xaf"}; // �? �?
     int y = lua_tointeger_ex(L, -2);
     int x = lua_tointeger_ex(L, -1);
     lua_pushinteger(L, CommonMenu2(x, y, 78, menuStr));
@@ -720,7 +720,7 @@ int Lua_GetGlobalValue(lua_State* L)
     int n1 = lua_tointeger_ex(L, -2);
     int n2 = lua_tointeger_ex(L, -1);
     if (n1 >= 0 && n1 <= 20 && n2 >= 0 && n2 <= 14)
-        lua_pushinteger(L, Rshop[n1].Data[n2]);
+        lua_pushinteger(L, RShop[n1].Data[n2]);
     else
         lua_pushinteger(L, -2);
     return 1;
@@ -728,7 +728,7 @@ int Lua_GetGlobalValue(lua_State* L)
 
 int Lua_SetGlobalValue(lua_State* L)
 {
-    Rshop[lua_tointeger_ex(L, -2)].Data[lua_tointeger_ex(L, -1)] = lua_tointeger_ex(L, -3);
+    RShop[lua_tointeger_ex(L, -2)].Data[lua_tointeger_ex(L, -1)] = lua_tointeger_ex(L, -3);
     return 0;
 }
 
@@ -738,7 +738,7 @@ int Lua_GetRolePro(lua_State* L)
     return 1;
 }
 
-// 内部辅助：赋值或字符串写入
+// 内部辅助：赋值或字符串写�?
 static void SetPro(lua_State* L, int* pos)
 {
     if (lua_isnumber(L, -3))
@@ -1083,7 +1083,7 @@ int Lua_AddRoleIntoBattle(lua_State* L)
     return 1;
 }
 
-int Lua_ForceBattleResult(lua_State* L) { BStatus = lua_tointeger_ex(L, -1); return 0; }
+int Lua_ForceBattleResult(lua_State* L) { Bstatus = lua_tointeger_ex(L, -1); return 0; }
 int Lua_AskSoftStar(lua_State* L) { instruct_51(); return 0; }
 
 int Lua_WeiShop(lua_State* L)

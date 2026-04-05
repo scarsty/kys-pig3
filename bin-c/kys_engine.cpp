@@ -16,7 +16,11 @@
 #include "ZipFile.h"
 
 #include <algorithm>
+#define _USE_MATH_DEFINES
 #include <cmath>
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 #include <cstring>
 #include <fstream>
 #include <map>
@@ -26,9 +30,6 @@ static MIX_Mixer* gMixer = nullptr;
 static MIX_Track* MusicTrack = nullptr;
 static MIX_Track* SfxTracks[10] = {};
 static int SfxNextTrack = 0;
-
-// 字符纹理缓存
-static std::map<int, void*> CharTex;
 
 //----------------------------------------------------------------------
 // Mixer 辅助
@@ -80,7 +81,7 @@ bool EventWatch(void* p, SDL_Event* e)
     switch (e->type)
     {
     case SDL_EVENT_DID_ENTER_FOREGROUND:
-        PlayMP3(nowmusic, -1, 0);
+        PlayMP3(NowMusic, -1, 0);
         break;
     case SDL_EVENT_DID_ENTER_BACKGROUND:
         StopMP3();
@@ -180,7 +181,7 @@ void PlayMP3(int MusicNum, int times, int frombeginning)
             SDL_SetNumberProperty(id, MIX_PROP_PLAY_LOOPS_NUMBER, -1);
             MIX_PlayTrack(MusicTrack, id);
             SDL_DestroyProperties(id);
-            nowmusic = MusicNum;
+            NowMusic = MusicNum;
         }
     }
 }
@@ -342,7 +343,7 @@ bool IsStringUTF8(const std::string& str)
 
 std::string Simplified2Traditional(const std::string& str)
 {
-    // TODO: 使用SimpleCC库进行简繁转换
+    // TODO: 使用SimpleCC库进行简繁转�?
     return str;
 }
 
@@ -402,7 +403,7 @@ void DrawText(const std::string& word, int x_pos, int y_pos, uint32 color, int e
         }
 
         // TODO: CreateFontTile 渲染单个字符
-        // 简化处理: 直接使用TTF渲染
+        // 简化处�? 直接使用TTF渲染
         if (k >= 128)
             dest.x += CHINESE_FONT_REALSIZE;
         else
@@ -525,7 +526,7 @@ void DrawRectangle(int x, int y, int w, int h, uint32 colorin, uint32 colorframe
         GetRGBA(colorin, &r, &g, &b);
 
         SDL_Surface* tempscr = SDL_CreateSurface(w + 1, h + 1,
-            SDL_GetPixelFormatForMasks(32, Rmask, Gmask, Bmask, Amask));
+            SDL_GetPixelFormatForMasks(32, RMask, GMask, BMask, AMask));
         SDL_FillSurfaceRect(tempscr, nullptr, MapRGBA(r, g, b, (uint8_t)(alpha * 255 / 100)));
 
         for (int i1 = 0; i1 <= w; i1++)
@@ -561,7 +562,7 @@ void DrawRectangleWithoutFrame(int x, int y, int w, int h, uint32 colorin, int a
         if (w > 0 && h > 0)
         {
             SDL_Surface* tempsur = SDL_CreateSurface(w, h,
-                SDL_GetPixelFormatForMasks(32, Rmask, Gmask, Bmask, Amask));
+                SDL_GetPixelFormatForMasks(32, RMask, GMask, BMask, AMask));
             SDL_FillSurfaceRect(tempsur, nullptr, MapRGBA(r, g, b, (uint8_t)(255 - alpha * 255 / 100)));
             SDL_SetSurfaceBlendMode(tempsur, SDL_BLENDMODE_BLEND);
             SDL_Rect dest = { x, y, w, h };
@@ -678,7 +679,7 @@ void CreateAssistantRenderTextures()
         else
         {
             TextScreen = SDL_CreateSurface(RESOLUTIONX, RESOLUTIONY,
-                SDL_GetPixelFormatForMasks(32, Rmask, Gmask, Bmask, Amask));
+                SDL_GetPixelFormatForMasks(32, RMask, GMask, BMask, AMask));
             TextScreenTex = SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, RESOLUTIONX, RESOLUTIONY);
             SDL_SetTextureBlendMode(TextScreenTex, SDL_BLENDMODE_BLEND);
         }
@@ -693,7 +694,7 @@ void CreateMainRenderTextures()
 {
     if (SW_SURFACE == 0)
     {
-        screenTex = SDL_CreateTexture(render, 0, SDL_TEXTUREACCESS_TARGET, CENTER_X * 2, CENTER_Y * 2);
+        screenTex = SDL_CreateTexture(render, SDL_PIXELFORMAT_UNKNOWN, SDL_TEXTUREACCESS_TARGET, CENTER_X * 2, CENTER_Y * 2);
         ImgSGroundTex = SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, ImageWidth, ImageHeight);
         ImgBGroundTex = SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, ImageWidth, ImageHeight);
         SimpleStateTex = SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, 960, 90);
@@ -709,16 +710,16 @@ void CreateMainRenderTextures()
     else
     {
         screen = SDL_CreateSurface(CENTER_X * 2, CENTER_Y * 2,
-            SDL_GetPixelFormatForMasks(32, Rmask, Gmask, Bmask, Amask));
+            SDL_GetPixelFormatForMasks(32, RMask, GMask, BMask, AMask));
         ImgSGround = SDL_CreateSurface(ImageWidth, ImageHeight,
-            SDL_GetPixelFormatForMasks(32, Rmask, Gmask, Bmask, Amask));
+            SDL_GetPixelFormatForMasks(32, RMask, GMask, BMask, AMask));
         ImgBGround = SDL_CreateSurface(ImageWidth, ImageHeight,
-            SDL_GetPixelFormatForMasks(32, Rmask, Gmask, Bmask, Amask));
+            SDL_GetPixelFormatForMasks(32, RMask, GMask, BMask, AMask));
         SimpleState = SDL_CreateSurface(270, 90,
-            SDL_GetPixelFormatForMasks(32, Rmask, Gmask, Bmask, Amask));
+            SDL_GetPixelFormatForMasks(32, RMask, GMask, BMask, AMask));
         for (int i = 0; i < 6; i++)
             SimpleStatus[i] = SDL_CreateSurface(270, 90,
-                SDL_GetPixelFormatForMasks(32, Rmask, Gmask, Bmask, Amask));
+                SDL_GetPixelFormatForMasks(32, RMask, GMask, BMask, AMask));
         CurTargetSurface = screen;
         screenTex = SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, CENTER_X * 2, CENTER_Y * 2);
         SDL_SetTextureBlendMode(screenTex, SDL_BLENDMODE_NONE);
@@ -759,7 +760,7 @@ void ResizeSimpleText(int initial)
             {
                 if (SimpleText[i] != nullptr) SDL_DestroySurface(SimpleText[i]);
                 SimpleText[i] = SDL_CreateSurface(w1 + x, y + h1,
-                    SDL_GetPixelFormatForMasks(32, Rmask, Gmask, Bmask, Amask));
+                    SDL_GetPixelFormatForMasks(32, RMask, GMask, BMask, AMask));
             }
         }
     }
@@ -873,7 +874,7 @@ uint32 CheckBasicEvent()
         ResizeWindow(event.window.data1, event.window.data2);
         break;
     case SDL_EVENT_DID_ENTER_FOREGROUND:
-        PlayMP3(nowmusic, -1, 0);
+        PlayMP3(NowMusic, -1, 0);
         break;
     case SDL_EVENT_DID_ENTER_BACKGROUND:
         StopMP3(0);
@@ -883,7 +884,7 @@ uint32 CheckBasicEvent()
         {
             int x, y;
             SDL_GetMouseState2(x, y);
-            // TODO: 虚拟按键检测
+            // TODO: 虚拟按键检�?
         }
         break;
     case SDL_EVENT_KEY_UP:
@@ -905,15 +906,15 @@ uint32 CheckBasicEvent()
     return result;
 }
 
-int AngleToDirection(float y, float x)
+int AngleToDirection(double y, double x)
 {
     int result = 0;
-    float angle = atan2f(-y, x);
-    float ar = (float)(M_PI / 4);
-    if (fabsf(angle + (float)M_PI / 8) < ar) result = SDLK_RIGHT;
-    if (fabsf(angle - (float)M_PI * 3 / 8) < ar) result = SDLK_UP;
-    if (fabsf(angle - (float)M_PI * 7 / 8) < ar || angle < -(float)M_PI * 7 / 8) result = SDLK_LEFT;
-    if (fabsf(angle + (float)M_PI * 5 / 8) < ar) result = SDLK_DOWN;
+    double angle = atan2(-y, x);
+    double ar = M_PI / 4;
+    if (fabs(angle + M_PI / 8) < ar) result = SDLK_RIGHT;
+    if (fabs(angle - M_PI * 3 / 8) < ar) result = SDLK_UP;
+    if (fabs(angle - M_PI * 7 / 8) < ar || angle < -M_PI * 7 / 8) result = SDLK_LEFT;
+    if (fabs(angle + M_PI * 5 / 8) < ar) result = SDLK_DOWN;
     if (ScreenRotate == 1)
     {
         switch (result)
@@ -997,7 +998,7 @@ void ReadTiles()
 
 int LoadPNGTilesThread(void* Data)
 {
-    // TODO: 多线程加载贴图
+    // TODO: 多线程加载贴�?
     return 0;
 }
 
@@ -1100,7 +1101,7 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
 
 void LoadOnePNGTexture(const std::string& path, void* z, TPNGIndex& PNGIndex, int forceLoad)
 {
-    // TODO: 从文件/zip载入一张PNG贴图
+    // TODO: 从文�?zip载入一张PNG贴图
     if (PNGIndex.Loaded != 0 && forceLoad == 0) return;
     // 加载逻辑
     PNGIndex.Loaded = 1;
@@ -1108,13 +1109,13 @@ void LoadOnePNGTexture(const std::string& path, void* z, TPNGIndex& PNGIndex, in
 
 bool LoadTileFromFile(const std::string& filename, void*& pt, int usesur, int& w, int& h)
 {
-    // TODO: 从文件加载贴图
+    // TODO: 从文件加载贴�?
     return false;
 }
 
 bool LoadTileFromMem(const char* p, int len, void*& pt, int usesur, int& w, int& h)
 {
-    // TODO: 从内存加载贴图
+    // TODO: 从内存加载贴�?
     return false;
 }
 
@@ -1184,7 +1185,7 @@ void DrawPNGTileS(SDL_Surface* scr, TPNGIndex& PNGIndex, int FrameNum, int px, i
     SDL_Rect* region, int shadow, int alpha, uint32 mixColor, int mixAlpha,
     double scalex, double scaley, double angle)
 {
-    // TODO: Surface模式的贴图绘制
+    // TODO: Surface模式的贴图绘�?
 }
 
 bool PlayMovie(const std::string& filename)
@@ -1245,7 +1246,7 @@ void ResetFontSize()
 
 void LoadTeamSimpleStatus(int& max)
 {
-    // TODO: 加载队伍简略状态
+    // TODO: 加载队伍简略状�?
     max = 0;
 }
 
@@ -1405,7 +1406,7 @@ bool MouseInRegion(int x, int y, int w, int h, int& x1, int& y1)
     return InRegion(x1, y1, x, y, w, h);
 }
 
-SDL_Rect GetRealRect(int& x, int& y, int& w, int& h, int force)
+void GetRealRect(int& x, int& y, int& w, int& h, int force)
 {
     if (KEEP_SCREEN_RATIO == 1 || force)
     {
@@ -1422,7 +1423,6 @@ SDL_Rect GetRealRect(int& x, int& y, int& w, int& h, int force)
         w = w * RESOLUTIONX / (CENTER_X * 2);
         h = h * RESOLUTIONY / (CENTER_Y * 2);
     }
-    return { x, y, w, h };
 }
 
 SDL_Rect GetRealRect(SDL_Rect rect, int force)
@@ -1485,11 +1485,11 @@ void QuickSortB(TBuildInfo* a, int l, int r)
 {
     if (l >= r) return;
     int i = l, j = r;
-    int x = a[(l + r) / 2].Index;
+    int x = a[(l + r) / 2].c;
     while (i <= j)
     {
-        while (a[i].Index < x) i++;
-        while (a[j].Index > x) j--;
+        while (a[i].c < x) i++;
+        while (a[j].c > x) j--;
         if (i <= j) { TBuildInfo t = a[i]; a[i] = a[j]; a[j] = t; i++; j--; }
     }
     if (l < j) QuickSortB(a, l, j);

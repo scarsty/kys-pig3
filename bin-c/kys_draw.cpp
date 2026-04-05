@@ -14,7 +14,7 @@
 #include <cstring>
 
 //----------------------------------------------------------------------
-// DrawPic - 画单个图片
+// DrawPic - 画单个图�?
 //----------------------------------------------------------------------
 void DrawPic(SDL_Surface* sur, int Pictype, int num, int px, int py, int shadow, int alpha, uint32 mixColor, int mixAlpha)
 {
@@ -47,7 +47,7 @@ void DrawTPic(int imgnum, int px, int py, SDL_Rect* region, int shadow, int Alph
 }
 
 //----------------------------------------------------------------------
-// DrawMPic - 主地图贴图
+// DrawMPic - 主地图贴�?
 //----------------------------------------------------------------------
 void DrawMPic(int num, int px, int py, int Framenum, int shadow, int alpha, uint32 mixColor, int mixAlpha, double scalex, double scaley, double angle)
 {
@@ -113,7 +113,7 @@ void DrawHeadPic(int num, int px, int py, int shadow, int alpha, uint32 mixColor
 }
 
 //----------------------------------------------------------------------
-// DrawEPic - 效果图
+// DrawEPic - 效果�?
 //----------------------------------------------------------------------
 void DrawEPic(int num, int px, int py, int eNum)
 {
@@ -133,7 +133,7 @@ void DrawEPic(int num, int px, int py, int shadow, int alpha, uint32 mixColor, i
 }
 
 //----------------------------------------------------------------------
-// DrawFPic - 战斗人物图
+// DrawFPic - 战斗人物�?
 //----------------------------------------------------------------------
 void DrawFPic(int num, int px, int py, int index)
 {
@@ -160,7 +160,7 @@ void DrawFPic(int num, int px, int py, int index, int shadow, int alpha, uint32 
 }
 
 //----------------------------------------------------------------------
-// DrawCPic - 云
+// DrawCPic - �?
 //----------------------------------------------------------------------
 void DrawCPic(int num, int px, int py, int shadow, int alpha, uint32 mixColor, int mixAlpha)
 {
@@ -169,7 +169,7 @@ void DrawCPic(int num, int px, int py, int shadow, int alpha, uint32 mixColor, i
 }
 
 //----------------------------------------------------------------------
-// DrawIPic - 物品图
+// DrawIPic - 物品�?
 //----------------------------------------------------------------------
 void DrawIPic(int num, int px, int py, int shadow, int alpha, uint32 mixColor, int mixAlpha)
 {
@@ -196,12 +196,12 @@ void Redraw()
     case 2: DrawBField(); break;
     case 3:
         CleanTextScreen();
-        DrawTPic(openpic, OpenPicPosition.x, OpenPicPosition.y);
+        DrawTPic(OpenPic, OpenPicPosition.x, OpenPicPosition.y);
         OpenPicPosition.x--;
         // 滚动背景
         if (OpenPicPosition.x < -400 + CENTER_X * 2)
         {
-            openpic = 31 + rand() % 6;
+            OpenPic = 31 + rand() % 6;
             OpenPicPosition.x = 0;
             OpenPicPosition.y = 0;
         }
@@ -213,10 +213,10 @@ void Redraw()
         break;
     case 4:
         CleanTextScreen();
-        DrawTPic(openpic, OpenPicPosition.x, OpenPicPosition.y);
+        DrawTPic(OpenPic, OpenPicPosition.x, OpenPicPosition.y);
         if (OpenPicPosition.x < -400 + CENTER_X * 2 || OpenPicPosition.x == 0)
         {
-            openpic = 31 + rand() % 6;
+            OpenPic = 31 + rand() % 6;
             OpenPicPosition.x = 0;
             OpenPicPosition.y = 0;
         }
@@ -259,7 +259,7 @@ void DrawMMap()
                 {
                     if (InShip == 0)
                     {
-                        if (still == 0)
+                        if (Still == 0)
                             num = BEGIN_WALKPIC + MFace * 7 + MStep;
                         else
                             num = BEGIN_WALKPIC + 27 + MFace * 6 + MStep;
@@ -269,7 +269,7 @@ void DrawMMap()
                 }
                 // 空船位置
                 if (MODVersion == 13 && CellPhone == 0)
-                    if (i1 == Shipy && i2 == Shipx && InShip == 0)
+                    if (i1 == ShipY && i2 == ShipX && InShip == 0)
                         num = 3715 + ShipFace * 4;
 
                 if (num > 0 && num < MPicAmount)
@@ -283,7 +283,7 @@ void DrawMMap()
                         Width = MPNGIndex[num].w;
                         yoffset = MPNGIndex[num].y;
                         int Height = MPNGIndex[num].h;
-                        BuildArray[k].Index = ((i1 + i2) - (Width + 35) / 36 - (yoffset - Height + 1) / 9) * 1024 + i2;
+                        BuildArray[k].c = ((i1 + i2) - (Width + 35) / 36 - (yoffset - Height + 1) / 9) * 1024 + i2;
                     }
                     k++;
                 }
@@ -306,7 +306,7 @@ void DrawMMap()
 }
 
 //----------------------------------------------------------------------
-// DrawScene - 画场景
+// DrawScene - 画场�?
 //----------------------------------------------------------------------
 void DrawScene()
 {
@@ -316,7 +316,7 @@ void DrawScene()
 
     int widthregion = CENTER_X / 36 + 3;
     int sumregion = CENTER_Y / 9;
-    if (ShowBlackScreen)
+    if (showBlackScreen)
     {
         widthregion = 100 / 36 + 3;
         sumregion = 100 / 9;
@@ -324,7 +324,7 @@ void DrawScene()
 
     LoadGroundTex(Cx1, Cy1);
 
-    // 地面动画层
+    // 地面动画�?
     for (int sum = -sumregion; sum <= sumregion + 2; sum++)
         for (int i = -widthregion; i <= widthregion; i++)
         {
@@ -361,7 +361,7 @@ void DrawScene()
                     int num = SData[CurScene][1][i1][i2] / 2;
                     DrawSPic(num, pos.x, pos.y - SData[CurScene][4][i1][i2]);
                 }
-                if (showMR && i1 == Sx && i2 == Sy)
+                if (ShowMR && i1 == Sx && i2 == Sy)
                     DrawSPic(CurSceneRolePic, pos.x, pos.y - SData[CurScene][4][i1][i2]);
                 if (SData[CurScene][2][i1][i2] > 0)
                 {
@@ -377,7 +377,7 @@ void DrawScene()
             }
         }
 
-    if (ShowBlackScreen) DrawBlackScreen();
+    if (showBlackScreen) DrawBlackScreen();
     if (HaveText == 1) CleanTextScreen();
 }
 
@@ -459,17 +459,17 @@ void DrawBField()
             if (i1 >= 0 && i1 < 64 && i2 >= 0 && i2 < 64)
             {
                 TPosition pos = GetPositionOnScreen(i1, i2, Bx1, By1);
-                int num = BField[CurBattle][i1][i2] / 2;
+                int num = BField[CurrentBattle][i1][i2] / 2;
                 if (num > 0) DrawSPic(num, pos.x, pos.y);
             }
         }
 
-    // 画战场上的角色
+    // 画战场上的角�?
     for (int i = 0; i < BRoleAmount; i++)
     {
         if (Brole[i].Dead != 0) continue;
         TPosition pos = GetPositionOnScreen(Brole[i].X, Brole[i].Y, Bx1, By1);
-        // TODO: 画角色贴图
+        // TODO: 画角色贴�?
     }
 }
 
@@ -477,7 +477,7 @@ void DrawBfieldWithoutRole(int x, int y) { /* TODO */ }
 
 void DrawRoleOnBfield(int x, int y, uint32 mixColor, int mixAlpha, int Alpha)
 {
-    // TODO: 画战场角色
+    // TODO: 画战场角�?
 }
 
 void InitialBFieldImage(int layer) { /* TODO */ }
@@ -522,7 +522,7 @@ void DrawClouds()
 
 void DrawProgress()
 {
-    // TODO: 画加载进度
+    // TODO: 画加载进�?
 }
 
 void LoadGroundTex(int x, int y)
@@ -547,5 +547,5 @@ void DrawTextWithRect(const std::string& word, int x, int y, int w, uint32 color
 void DrawVirtualKey()
 {
     if (CellPhone == 0 || ShowVirtualKey == 0) return;
-    // TODO: 画虚拟按键
+    // TODO: 画虚拟按�?
 }

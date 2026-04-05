@@ -14,45 +14,45 @@ public:
     int mnum = 0;
     int rnum = 0;
 
-    void SA_0();
-    void SA_1();
-    void SA_2();
-    void SA_3();
-    void SA_4();
-    void SA_5();
-    void SA_6();
-    void SA_7();
-    void SA_8();
-    void SA_9();
-    void SA_10();
-    void SA_11();
-    void SA_12();
-    void SA_13();
-    void SA_14();
-    void SA_15();
-    void SA_16();
-    void SA_17();
-    void SA_18();
-    void SA_19();
-    void SA_20();
-    void SA_21();
-    void SA_22();
-    void SA_23();
-    void SA_24();
-    void SA_25();
-    void SA_26();
-    void SA_27();
-    void SA_28();
-    void SA_29();
-    void SA_30();
-    void SA_31();
-    void SA_32();
-    void SA_33();
-    void SA_34();
-    void SA_35();
-    void SA_36();
-    void SA_37();
-    void SA_38();
+    void SA_0(int bnum, int mnum, int level);
+    void SA_1(int bnum, int mnum, int level);
+    void SA_2(int bnum, int mnum, int level);
+    void SA_3(int bnum, int mnum, int level);
+    void SA_4(int bnum, int mnum, int level);
+    void SA_5(int bnum, int mnum, int level);
+    void SA_6(int bnum, int mnum, int level);
+    void SA_7(int bnum, int mnum, int level);
+    void SA_8(int bnum, int mnum, int level);
+    void SA_9(int bnum, int mnum, int level);
+    void SA_10(int bnum, int mnum, int level);
+    void SA_11(int bnum, int mnum, int level);
+    void SA_12(int bnum, int mnum, int level);
+    void SA_13(int bnum, int mnum, int level);
+    void SA_14(int bnum, int mnum, int level);
+    void SA_15(int bnum, int mnum, int level);
+    void SA_16(int bnum, int mnum, int level);
+    void SA_17(int bnum, int mnum, int level);
+    void SA_18(int bnum, int mnum, int level);
+    void SA_19(int bnum, int mnum, int level);
+    void SA_20(int bnum, int mnum, int level);
+    void SA_21(int bnum, int mnum, int level);
+    void SA_22(int bnum, int mnum, int level);
+    void SA_23(int bnum, int mnum, int level);
+    void SA_24(int bnum, int mnum, int level);
+    void SA_25(int bnum, int mnum, int level);
+    void SA_26(int bnum, int mnum, int level);
+    void SA_27(int bnum, int mnum, int level);
+    void SA_28(int bnum, int mnum, int level);
+    void SA_29(int bnum, int mnum, int level);
+    void SA_30(int bnum, int mnum, int level);
+    void SA_31(int bnum, int mnum, int level);
+    void SA_32(int bnum, int mnum, int level);
+    void SA_33(int bnum, int mnum, int level);
+    void SA_34(int bnum, int mnum, int level);
+    void SA_35(int bnum, int mnum, int level);
+    void SA_36(int bnum, int mnum, int level);
+    void SA_37(int bnum, int mnum, int level);
+    void SA_38(int bnum, int mnum, int level);
 };
 
 class TSpecialAbility2
@@ -62,104 +62,141 @@ public:
     int rnum = 0;
     int anum = 0;
 
-    void SA2_0();
-    void SA2_1();
-    void SA2_2();
-    void SA2_3();
-    void SA2_4();
-    void SA2_5();
-    void SA2_6();
-    void SA2_7();
-    void SA2_8();
-    void SA2_9();
-    void SA2_10();
-    void SA2_11();
-    void SA2_12();
-    void SA2_100();
-    void SA2_101();
-    void SA2_102();
-    void SA2_103();
+    void SA2_0(int bnum, int mnum, int mnum2, int level);
+    void SA2_1(int bnum, int mnum, int mnum2, int level);
+    void SA2_2(int bnum, int mnum, int mnum2, int level);
+    void SA2_3(int bnum, int mnum, int mnum2, int level);
+    void SA2_4(int bnum, int mnum, int mnum2, int level);
+    void SA2_5(int bnum, int mnum, int mnum2, int level);
+    void SA2_6(int bnum, int mnum, int mnum2, int level);
+    void SA2_7(int bnum, int mnum, int mnum2, int level);
+    void SA2_8(int bnum, int mnum, int mnum2, int level);
+    void SA2_9(int bnum, int mnum, int mnum2, int level);
+    void SA2_10(int bnum, int mnum, int mnum2, int level);
+    void SA2_11(int bnum, int mnum, int mnum2, int level);
+    void SA2_12(int bnum, int mnum, int mnum2, int level);
+    void SA2_100(int bnum, int mnum, int mnum2, int level);
+    void SA2_101(int bnum, int mnum, int mnum2, int level);
+    void SA2_102(int bnum, int mnum, int mnum2, int level);
+    void SA2_103(int bnum, int mnum, int mnum2, int level);
 };
 
 // ---- 战斗主要函数 ----
 
 // 战斗入口
-int Battle(int battlenum, int getexp = 0, int forceSingle = 0);
+bool Battle(int battlenum, int getexp = 0, int forceSingle = 0);
 int getBnum(int rnum);
 
 // 初始化
 void LoadBattleTiles();
 void FreeBattleTiles();
-void InitialBField();
-void InitialBRole();
-void SelectTeamMembers();
+bool InitialBField();
+void InitialBRole(int i, int rnum, int team, int x, int y);
+int SelectTeamMembers(int forceSingle = 0);
 
 // 战斗控制
 void BattleMainControl();
-void CalBroleMoveAbility(int bnum);
-void CalMoveAbility(int bnum, int step);
+int CalBroleMoveAbility(int bnum);
+void CalMoveAbility();
 void ReArrangeBRole();
-void BattleStatus(int bnum);
-void BattleMenu(int bnum);
+int BattleStatus();
+int BattleMenu(int bnum);
 
 // 面向与距离
 int CalFace(int x1, int y1, int x2, int y2);
-void CalFace(int bnum1, int bnum2);
+int CalFace(int bnum1, int bnum2);
 int CalBroleDistance(int bnum1, int bnum2);
 
 // 移动
-void MoveRole(int bnum, int x, int y);
-void MoveAmination(int bnum, int x1, int y1, int x2, int y2);
-void SeekPath2(int bnum, int ex, int ey);
+void MoveRole(int bnum);
+bool MoveAmination(int bnum);
+void SeekPath2(int x, int y, int step, int myteam, int mode, int bnum);
 
 // 目标选择
-void SelectShowStatus(int bnum);
-int SelectAim(int bnum, int mnum);
-void SelectRange(int bnum, int step, int* list = nullptr, int* count = nullptr);
-void SelectDirector(int bnum, int mnum);
-void SelectCross(int bnum, int step);
-void SelectFar(int bnum, int step);
-int CalCanSelect(int bnum, int mnum);
-bool CanSelectAim(int bnum, int mnum, int ax, int ay);
+bool SelectShowStatus(int bnum);
+bool SelectAim(int bnum, int step);
+bool SelectRange(int bnum, int AttAreaType, int step, int range);
+bool SelectDirector(int bnum, int AttAreaType, int step, int range);
+bool SelectCross(int bnum, int AttAreaType, int step, int range);
+bool SelectFar(int bnum, int mnum, int level);
+void CalCanSelect(int bnum, int mode, int step);
+bool CanSelectAim(int bnum, int aimbnum, int mnum, int aimMode);
+
+// 攻击
+void Attack(int bnum);
+void AttackAction(int bnum, int i, int mnum, int level);
+void AttackAction(int bnum, int mnum, int level);
+void ModifyRange(int bnum, int mnum, int& step, int& range);
 
 // 魔法/武功
-void ShowMagicName(int mnum);
-int SelectMagic(int bnum);
-void SetAminationPosition(int bnum, int mnum);
-void SetAminationPosition(int bnum, int mnum, int ax, int ay);
-void PlayMagicAmination(int bnum, int mnum);
-void PlayActionAmination(int bnum, int action);
+void ShowMagicName(int mnum, const std::string& str = "");
+int SelectMagic(int rnum);
+void SetAminationPosition(int mode, int step, int range, int aimMode);
+void SetAminationPosition(int bx, int by, int ax, int ay, int mode, int step, int range, int aimMode);
+void PlayMagicAmination(int bnum, int eNum, int aimMode = 0, int mode = 0);
+void PlayActionAmination(int bnum, int mode);
 
 // 伤害计算
-void CalHurtRole(int bnum, int mnum);
-int CalHurtValue(int bnum1, int bnum2, int mnum);
-int CalHurtValue(int bnum1, int mnum);
-void SelectColor(int& color, int value);
-void ShowHurtValue(int bnum);
-void ShowStringOnBrole(int bnum, const std::string& str, uint32 color);
-int CalPoiHurtLife(int bnum1, int bnum2, int mnum);
+void CalHurtRole(int bnum, int mnum, int level, int mode);
+int CalHurtValue(int bnum1, int bnum2, int mnum, int level, int mode);
+int CalHurtValue2(int bnum1, int bnum2, int mnum, int level, int mode);
+void SelectColor(int mode, uint32& color1, uint32& color2, std::string& formatstr);
+void ShowHurtValue(int mode, int team = 0, const std::string& fstr = "");
+void ShowStringOnBrole(const std::string& str, int bnum, int mode = 0, int up = 0);
+void CalPoiHurtLife();
 void ClearDeadRolePic();
 
 // 战斗效果
-void Wait(int bnum, int time = 0);
-void RestoreRoleStatus(int bnum);
-void AddExp(int bnum, int exp);
-void CheckLevelUp(int bnum);
-void LevelUp(int bnum);
-void CheckBook(int bnum);
-int CalRNum(int bnum);
+void Wait(int bnum);
+void RestoreRoleStatus();
+void AddExp();
+void CheckLevelUp();
+void LevelUp(int bnum, int rnum);
+void CheckBook();
+int CalRNum(int team);
 
 // 战斗菜单
 void BattleMenuItem(int bnum);
-void UsePoison(int bnum, int mnum);
-void Medcine(int bnum, int mnum);
-void MedPoison(int bnum, int target);
-void UseHiddenWeapon(int bnum);
+void UsePoison(int bnum);
+void Medcine(int bnum);
+void MedPoison(int bnum);
+void UseHiddenWeapon(int bnum, int inum = 0);
 void Rest(int bnum);
 void GiveUp(int bnum);
 
+// 回合管理
+void RoundOver();
+void RoundOver(int bnum);
+
 // AI系统
 void AutoBattle(int bnum);
+void AutoBattle2(int bnum);
+void AutoBattle3(int bnum);
+void Auto(int bnum);
+bool AutoUseItem(int bnum, int list, int test = 0);
+bool SelectAutoMode();
+void TryMoveAttack(int& Mx1, int& My1, int& Ax1, int& Ay1, int& tempmaxhurt, int bnum, int mnum, int level);
+void NearestMove(int& Mx1, int& My1, int bnum);
+void FarthestMove(int& Mx1, int& My1, int bnum);
+void NearestMoveByPro(int& Mx1, int& My1, int& Ax1, int& Ay1, int bnum, int TeamMate, int KeepDis, int Prolist, int MaxMinPro, int mode);
+bool ProbabilityByValue(int cur, int m, int mode, int& n);
+void TryAttack(int& Ax1, int& Ay1, int& magicid, int& cmlevel, int Mx, int My, int bnum);
+void TryMoveCure(int& Mx1, int& My1, int& Ax1, int& Ay1, int bnum);
+void CureAction(int bnum);
+void SetEnemyAttribute();
+
+// 特殊能力
+bool UseSpecialAbility(int bnum, int mnum, int level);
+bool SpecialAttack(int bnum);
+int16_t GetMagicWithSA2(int16_t SANum);
+void CheckAttackAttachment(int bnum, int mnum, int level);
+void CheckDefenceAttachment(int bnum, int mnum, int level);
+
+// 状态与辅助
+void ModifyState(int bnum, int statenum, int16_t MaxValue, int16_t maxround);
+void GiveMeLife(int bnum, int mnum, int level, int Si);
+void ambush(int bnum, int mnum, int level, int Si);
+int IFinbattle(int num);
 void AutoBattle2(int bnum);
 void AutoBattle3(int bnum);
 void TryMoveAttack(int bnum);

@@ -57,7 +57,6 @@ void SetFontSize(int Chnsize, int engsize, int initial = 0);
 void DrawRectangle(int x, int y, int w, int h, uint32 colorin, uint32 colorframe, int alpha, int trans = 1);
 void DrawRectangleWithoutFrame(int x, int y, int w, int h, uint32 colorin, int alpha);
 void DrawItemFrame(int x, int y, int realcoord = 0);
-int DrawTextFrame(int x, int y, int num);
 
 // 部分图片绘制
 void DrawPartPic(void* pic, int x, int y, int w, int h, int x1, int y1);
@@ -77,6 +76,13 @@ void InitialPicArrays();
 void ReadTiles();
 int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int LoadPic = 1, int16_t* frame = nullptr);
 void LoadOnePNGTexture(const std::string& path, void* z, TPNGIndex& PNGIndex, int forceLoad = 0);
+void DrawPNGTile(SDL_Renderer* r, TPNGIndex& PNGIndex, int FrameNum, int px, int py);
+void DrawPNGTile(SDL_Renderer* r, TPNGIndex& PNGIndex, int FrameNum, int px, int py,
+    SDL_Rect* region, int shadow, int alpha, uint32 mixColor, int mixAlpha,
+    double scalex, double scaley, double angle, SDL_Point* center);
+void DrawPNGTileS(SDL_Surface* scr, TPNGIndex& PNGIndex, int FrameNum, int px, int py,
+    SDL_Rect* region, int shadow, int alpha, uint32 mixColor, int mixAlpha,
+    double scalex, double scaley, double angle);
 
 // 屏幕管理
 void ResizeWindow(int w, int h);
@@ -89,6 +95,9 @@ void UpdateAllScreen();
 void UpdateScreen(int x = 0, int y = 0, int w = 0, int h = 0);
 void CleanTextScreen();
 void CleanKeyValue();
+void LoadFreshScreen();
+void LoadFreshScreen(int x, int y);
+void FreeFreshScreen();
 
 // 鼠标
 void SDL_GetMouseState2(int& x, int& y);
@@ -104,23 +113,20 @@ int AngleToDirection(double y, double x);
 void QuitConfirm();
 void ChangeCol();
 void TransBlackScreen();
+void RecordFreshScreen();
+void RecordFreshScreen(int x, int y, int w, int h);
+void LoadTeamSimpleStatus(int& max);
 
 // 视频播放
-void PlayMovie(const std::string& filename);
+bool PlayMovie(const std::string& filename);
 
 // 排序
 void QuickSortB(TBuildInfo* a, int l, int r);
 
 // 真实坐标转换
-void GetRealRect(int& x, int& y, int& w, int& h);
+void GetRealRect(int& x, int& y, int& w, int& h, int force = 0);
 TStretchInfo KeepRatioScale(int w0, int h0, int w1, int h1);
 SDL_FRect rect2f(const SDL_Rect& r);
-
-// 全局audio/mixer
-extern MIX_Mixer* gMixer;
-extern MIX_Track* MusicTrack;
-extern MIX_Track* SfxTracks[10];
-extern int SfxNextTrack;
 
 // 调试
 void tic();
