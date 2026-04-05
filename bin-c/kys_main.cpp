@@ -27,6 +27,8 @@ extern std::string zip_express(zip_t* z, const std::string& filename);
 #include <cmath>
 #include <cstring>
 #include <fstream>
+#include <filesystem>
+#include <chrono>
 
 // potdll前向声明 (动态加载)
 static void* (*PotCreateFromWindow)(SDL_Window*) = nullptr;
@@ -1522,74 +1524,151 @@ bool FindWay(int x1, int y1)
 //----------------------------------------------------------------------
 int CommonMenu(int x, int y, int w, int max, int default_, const std::string menuString[], int count)
 {
-    int menu = default_;
-    if (menu < 0) menu = 0;
-    if (menu > max) menu = max;
-    bool Selected = false;
-
-    while (SDL_PollEvent(&event) || true)
-    {
-        Redraw();
-        DrawRectangle(x, y, w, (max + 1) * 25 + 15, MapRGBA(0, 0, 0), MapRGBA(255, 255, 255), 50);
-        for (int i = 0; i <= max; i++)
-        {
-            uint32 c1 = MapRGBA(255, 255, 255);
-            uint32 c2 = MapRGBA(0, 0, 0);
-            if (i == menu)
-            {
-                c1 = MapRGBA(255, 255, 0);
-                DrawRectangleWithoutFrame(x + 5, y + 8 + i * 25, w - 10, 24, MapRGBA(0, 0, 128), 50);
-            }
-            DrawShadowText(menuString[i], x + 15, y + 10 + i * 25, c1, c2);
-        }
-        UpdateAllScreen();
-        CheckBasicEvent();
-
-        switch (event.type)
-        {
-        case SDL_EVENT_KEY_UP:
-            if (event.key.key == SDLK_RETURN || event.key.key == SDLK_SPACE)
-                return menu;
-            if (event.key.key == SDLK_ESCAPE)
-                return -1;
-            break;
-        case SDL_EVENT_KEY_DOWN:
-            if (event.key.key == SDLK_UP) { menu--; if (menu < 0) menu = max; }
-            if (event.key.key == SDLK_DOWN) { menu++; if (menu > max) menu = 0; }
-            break;
-        case SDL_EVENT_MOUSE_BUTTON_UP:
-            if (event.button.button == SDL_BUTTON_LEFT)
-            {
-                int mx, my;
-                if (MouseInRegion(x, y, w, (max + 1) * 25 + 15, mx, my))
-                    return std::min(max, (my - y - 8) / 25);
-            }
-            if (event.button.button == SDL_BUTTON_RIGHT)
-                return -1;
-            break;
-        case SDL_EVENT_MOUSE_MOTION:
-        {
-            int mx, my;
-            if (MouseInRegion(x, y, w, (max + 1) * 25 + 15, mx, my))
-                menu = std::min(max, (my - y - 8) / 25);
-            break;
-        }
-        }
-        CleanKeyValue();
-        SDL_Delay(20);
-    }
-    return -1;
+    std::string emptyEng[1];
+    return CommonMenu(x, y, w, max, default_, menuString, emptyEng, 1, 0, 0x202020, ColColor(0x64), ColColor(0x66), count);
 }
 
 int CommonMenu(int x, int y, int w, int max, int default_, const std::string menuString[], const std::string menuEngString[], int count)
 {
-    return CommonMenu(x, y, w, max, default_, menuString, count);
+    return CommonMenu(x, y, w, max, default_, menuString, menuEngString, 1, 0, 0x202020, ColColor(0x64), ColColor(0x66), count);
 }
 
 int CommonMenu(int x, int y, int w, int max, int default_, const std::string menuString[], const std::string menuEngString[],
     int needFrame, uint32 color1, uint32 color2, uint32 menucolor1, uint32 menucolor2, int count)
 {
-    return CommonMenu(x, y, w, max, default_, menuString, count);
+    int h = 28;
+    int menu = default_;
+    if (menu < 0) menu = 0;
+    if (menu > max) menu = max;
+
+    // 判断是否有英文串
+    int p = 0;
+    if (count > 0 && menuEngString != nullptr && menuEngString[0].size() > 0)
+        p = 1;
+
+    // 计算最大文字长度
+    int len = 0, lene = 0;
+    for (int i = 0; i <= max && i < count; i++)
+    {
+        int len1 = DrawLength(menuString[i]);
+        if (len1 > len) len = len1;
+        if (p == 1)
+        {
+            len1 = DrawLength(menuEngString[i]) + 2;
+            if (len1 > lene) lene = len1;
+        }
+    }
+    int len1 = len + lene;
+    w = w + 40;
+
+    RecordFreshScreen(x, y, w, max * h + h + 2);
+
+    // 内部绘制函数
+    auto ShowCommonMenu = [&]() {
+        LoadFreshScreen(x, y);
+        for (int i = 0; i <= std::min(max, count - 1); i++)
+        {
+            int alpha;
+            uint32 c1, c2;
+            if (i == menu)
+            {
+                alpha = 0;
+                c1 = menucolor1;
+                c2 = menucolor2;
+            }
+            else
+            {
+                alpha = 10;
+                c1 = color1;
+                c2 = color2;
+            }
+            DrawTextFrame(x, y + i * h, len1, alpha);
+            DrawShadowText(menuString[i], x + 19, y + 3 + h * i, c1, c2);
+            if (p == 1)
+                DrawEngShadowText(menuEngString[i], x + 19 + len * 10 + 20, y + 3 + h * i, c1, c2);
+        }
+    };
+
+    ShowCommonMenu();
+    UpdateAllScreen();
+
+    while (SDL_WaitEvent(&event))
+    {
+        CheckBasicEvent();
+        switch (event.type)
+        {
+        case SDL_EVENT_KEY_DOWN:
+            if (event.key.key == SDLK_DOWN)
+            {
+                menu++;
+                if (menu > max) menu = 0;
+                ShowCommonMenu();
+                UpdateAllScreen();
+            }
+            if (event.key.key == SDLK_UP)
+            {
+                menu--;
+                if (menu < 0) menu = max;
+                ShowCommonMenu();
+                UpdateAllScreen();
+            }
+            break;
+        case SDL_EVENT_KEY_UP:
+            if (event.key.key == SDLK_ESCAPE)
+            {
+                event.key.key = SDLK_UNKNOWN;
+                event.button.button = 0;
+                FreeFreshScreen();
+                return -1;
+            }
+            if (event.key.key == SDLK_RETURN || event.key.key == SDLK_SPACE)
+            {
+                event.key.key = SDLK_UNKNOWN;
+                event.button.button = 0;
+                FreeFreshScreen();
+                return menu;
+            }
+            break;
+        case SDL_EVENT_MOUSE_BUTTON_UP:
+            if (event.button.button == SDL_BUTTON_RIGHT)
+            {
+                event.key.key = SDLK_UNKNOWN;
+                event.button.button = 0;
+                FreeFreshScreen();
+                return -1;
+            }
+            if (event.button.button == SDL_BUTTON_LEFT)
+            {
+                if (MouseInRegion(x, y, w, max * h + h + 2))
+                {
+                    event.key.key = SDLK_UNKNOWN;
+                    event.button.button = 0;
+                    FreeFreshScreen();
+                    return menu;
+                }
+            }
+            break;
+        case SDL_EVENT_MOUSE_MOTION:
+        {
+            int mx, my;
+            if (MouseInRegion(x, y, w, max * h + h + 2, mx, my))
+            {
+                int menup = menu;
+                menu = (my - y - 2) / h;
+                if (menu > max) menu = max;
+                if (menu < 0) menu = 0;
+                if (menup != menu)
+                {
+                    ShowCommonMenu();
+                    UpdateAllScreen();
+                }
+            }
+            break;
+        }
+        }
+    }
+    FreeFreshScreen();
+    return -1;
 }
 
 int CommonScrollMenu(int x, int y, int w, int max, int maxshow, const std::string menuString[], int count)
@@ -3452,6 +3531,26 @@ void MenuSet()
     FreeFreshScreen();
 }
 
+static std::string GetFileDateTime(const std::string& filepath)
+{
+    try {
+        namespace fs = std::filesystem;
+        auto ftime = fs::last_write_time(filepath);
+        auto sctp = std::chrono::clock_cast<std::chrono::system_clock>(ftime);
+        auto tt = std::chrono::system_clock::to_time_t(sctp);
+        struct tm ltm;
+        localtime_s(&ltm, &tt);
+        char buf[32];
+        snprintf(buf, sizeof(buf), "%04d-%02d-%02d %02d:%02d:%02d",
+            ltm.tm_year + 1900, ltm.tm_mon + 1, ltm.tm_mday,
+            ltm.tm_hour, ltm.tm_min, ltm.tm_sec);
+        return buf;
+    }
+    catch (...) {
+        return "-------------------";
+    }
+}
+
 int MenuLoad()
 {
     int x = CENTER_X, y = 90;
@@ -3470,7 +3569,7 @@ int MenuLoad()
         else
             filename = AppPath + "save/" + std::to_string(i + 1) + ".zip";
         if (filefunc::fileExist(filename))
-            menuEngString[i] = "---";
+            menuEngString[i] = GetFileDateTime(filename);
         else
             menuEngString[i] = "-------------------";
     }
@@ -3487,7 +3586,7 @@ int MenuLoad()
         else
         {
             menu = -1;
-            std::string str = "讀檔失敗！";
+            std::string str = "讀檔失敗！索引丟失或文件不存在！";
             DrawTextWithRect(str, x - 40, y + 310, 322, MapRGBA(240, 20, 20), MapRGBA(212, 20, 20));
             WaitAnyKey();
         }
@@ -3513,7 +3612,7 @@ int MenuLoadAtBeginning(int mode)
         else
             filename = AppPath + "save/" + std::to_string(i + 1) + ".zip";
         if (filefunc::fileExist(filename))
-            menuEngString[i] = "---";
+            menuEngString[i] = GetFileDateTime(filename);
         else
             menuEngString[i] = "-------------------";
     }
@@ -3643,7 +3742,7 @@ void MenuSave()
         else
             filename = AppPath + "save/" + std::to_string(i + 1) + ".zip";
         if (filefunc::fileExist(filename))
-            menuEngString[i] = "---";
+            menuEngString[i] = GetFileDateTime(filename);
         else
             menuEngString[i] = "-------------------";
     }

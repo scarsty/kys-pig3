@@ -199,11 +199,11 @@ void Redraw()
         DrawTPic(OpenPic, OpenPicPosition.x, OpenPicPosition.y);
         OpenPicPosition.x--;
         // 滚动背景
-        if (OpenPicPosition.x < -400 + CENTER_X * 2)
+        if (OpenPicPosition.x < -TitlePNGIndex[OpenPic].w + CENTER_X * 2)
         {
             OpenPic = 31 + rand() % 6;
             OpenPicPosition.x = 0;
-            OpenPicPosition.y = 0;
+            OpenPicPosition.y = -(rand() % std::max(1, TitlePNGIndex[OpenPic].h - CENTER_Y * 2));
         }
         DrawTPic(12, CENTER_X - 384 + 112, CENTER_Y - 240 + 15);
         DrawTPic(10, CENTER_X - 384 + 110, CENTER_Y - 240 + 5);
@@ -214,11 +214,11 @@ void Redraw()
     case 4:
         CleanTextScreen();
         DrawTPic(OpenPic, OpenPicPosition.x, OpenPicPosition.y);
-        if (OpenPicPosition.x < -400 + CENTER_X * 2 || OpenPicPosition.x == 0)
+        if (OpenPicPosition.x < -TitlePNGIndex[OpenPic].w + CENTER_X * 2 || OpenPicPosition.x == 0)
         {
             OpenPic = 31 + rand() % 6;
-            OpenPicPosition.x = 0;
-            OpenPicPosition.y = 0;
+            OpenPicPosition.x = -(rand() % std::max(1, TitlePNGIndex[OpenPic].w - CENTER_X * 2));
+            OpenPicPosition.y = -(rand() % std::max(1, TitlePNGIndex[OpenPic].h - CENTER_Y * 2));
         }
         DrawShadowText(versionstr, 5, CENTER_Y * 2 - 30, ColColor(0x64), ColColor(0x66));
         break;
@@ -511,6 +511,7 @@ void InitialScene(int Visible)
             }
         }
     }
+    ExpandGroundOnImg();
 }
 
 int CalBlock(int x, int y)
@@ -862,16 +863,21 @@ void LoadGroundTex(int x, int y)
 
 int DrawTextFrame(int x, int y, int len, int alpha, uint32 mixColor, int mixAlpha)
 {
-    // 简单文字框
-    DrawRectangle(x, y, len * 10 + 24, 30, MapRGBA(0, 0, 0), MapRGBA(255, 255, 255), 50, 0);
-    return len * 10 + 24;
+    const int l = 19, m = 20, r = 21;
+    DrawTPic(l, x - 1, y, nullptr, 0, alpha, mixColor, mixAlpha);
+    SDL_Rect rect = { 0, 0, 10 * len, TitlePNGIndex[m].h };
+    DrawTPic(m, x + 19, y, &rect, 0, alpha, mixColor, mixAlpha);
+    DrawTPic(r, x + 19 + len * 10, y, nullptr, 0, alpha, mixColor, mixAlpha);
+    return 19;
 }
 
 void DrawTextWithRect(const std::string& word, int x, int y, int w, uint32 color1, uint32 color2, int alpha, int Refresh)
 {
-    DrawRectangle(x, y, w, 30, MapRGBA(0, 0, 0), MapRGBA(255, 255, 255), alpha);
-    DrawShadowText(word, x + 5, y + 5, color1, color2);
-    if (Refresh == 1) UpdateAllScreen();
+    int len = DrawLength(word);
+    len = std::max((w + 9) / 10, len);
+    DrawTextFrame(x, y, len, alpha);
+    DrawShadowText(word, x + 19, y + 3, color1, color2);
+    if (Refresh != 0) UpdateAllScreen();
 }
 
 void DrawVirtualKey()

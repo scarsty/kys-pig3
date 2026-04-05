@@ -30,6 +30,8 @@
 
 // 前置声明
 void CleanTextScreenRect(int x, int y, int w, int h);
+SDL_Rect GetRealRect(SDL_Rect rect, int force);
+SDL_FRect rect2f(const SDL_Rect& r);
 
 // 内部变量
 static MIX_Mixer* gMixer = nullptr;
@@ -1683,41 +1685,131 @@ void DestroyFontTextures()
 
 void DrawPNGTile(SDL_Renderer* r, TPNGIndex& PNGIndex, int FrameNum, int px, int py)
 {
-    DrawPNGTile(r, PNGIndex, FrameNum, px, py, nullptr, 0, 255, 0, 0, 1.0, 1.0, 0, nullptr);
+    DrawPNGTile(r, PNGIndex, FrameNum, px, py, nullptr, 0, 0, 0, 0, 1.0, 1.0, 0, nullptr);
 }
 
 void DrawPNGTile(SDL_Renderer* r, TPNGIndex& PNGIndex, int FrameNum, int px, int py,
     SDL_Rect* region, int shadow, int alpha, uint32 mixColor, int mixAlpha,
     double scalex, double scaley, double angle, SDL_Point* center)
 {
-    if (FrameNum < 0 || FrameNum >= PNGIndex.Frame) return;
+    if (SW_SURFACE != 0)
+    {
+        DrawPNGTileS(CurTargetSurface, PNGIndex, FrameNum, px, py, region, shadow, alpha, mixColor, mixAlpha, scalex, scaley, angle);
+        return;
+    }
+    if (PNGIndex.Frame == 0) return;
     if (PNGIndex.Pointers.empty()) return;
 
-    SDL_Texture* tex = (SDL_Texture*)PNGIndex.Pointers[FrameNum];
+    SDL_Texture* tex = (SDL_Texture*)PNGIndex.Pointers[0];
+    if (PNGIndex.Frame > 1)
+        tex = (SDL_Texture*)PNGIndex.Pointers[FrameNum % PNGIndex.Frame];
     if (tex == nullptr) return;
 
-    float wf, hf;
-    SDL_GetTextureSize(tex, &wf, &hf);
-    int w = (int)wf, h = (int)hf;
-
     SDL_FRect dest;
-    dest.x = (float)(px + PNGIndex.x);
-    dest.y = (float)(py + PNGIndex.y);
-    dest.w = (float)(w * scalex);
-    dest.h = (float)(h * scaley);
-
-    SDL_SetTextureAlphaMod(tex, (uint8_t)alpha);
-    if (shadow != 0) SDL_SetTextureColorMod(tex, 0, 0, 0);
-    else SDL_SetTextureColorMod(tex, 255, 255, 255);
-
-    if (angle != 0 || (center != nullptr))
+    dest.x = (float)(px - PNGIndex.x);
+    dest.y = (float)(py - PNGIndex.y);
+    if (region == nullptr)
     {
-        SDL_FPoint fcenter = { 0, 0 };
-        if (center) { fcenter.x = (float)center->x; fcenter.y = (float)center->y; }
-        SDL_RenderTextureRotated(r, tex, nullptr, &dest, angle, &fcenter, SDL_FLIP_NONE);
+        dest.w = (float)PNGIndex.w;
+        dest.h = (float)PNGIndex.h;
     }
     else
-        SDL_RenderTexture(r, tex, nullptr, &dest);
+    {
+        dest.w = (float)region->w;
+        dest.h = (float)region->h;
+    }
+    if (scalex != 1 || scaley != 1)
+    {
+        dest.w = (float)(dest.w * scalex);
+        dest.h = (float)(dest.h * scaley);
+    }
+
+    bool newtex = false;
+
+    // shadow < 0 → 变暗
+    if (shadow < 0 && mixAlpha == 0)
+    {
+        mixColor = 0;
+        mixAlpha = -25 * shadow;
+    }
+    // shadow > 0 → 变亮(白色)
+    if (shadow > 0 && mixAlpha == 0)
+    {
+        mixColor = 0xFFFFFFFF;
+        mixAlpha = shadow * 10;
+    }
+
+    SDL_SetTextureColorMod(tex, 255, 255, 255);
+    SDL_SetTextureAlphaMod(tex, 255);
+
+    // mixAlpha > 0 且 shadow <= 0: 颜色调制
+    if (mixAlpha > 0 && shadow <= 0)
+    {
+        uint8_t cr, cg, cb;
+        GetRGBA(mixColor, &cr, &cg, &cb);
+        uint8_t r1 = (uint8_t)std::max(0, 255 - (255 + (int)cg + (int)cb) * mixAlpha / 100);
+        uint8_t g1 = (uint8_t)std::max(0, 255 - (255 + (int)cr + (int)cb) * mixAlpha / 100);
+        uint8_t b1 = (uint8_t)std::max(0, 255 - (255 + (int)cr + (int)cg) * mixAlpha / 100);
+        SDL_SetTextureColorMod(tex, r1, g1, b1);
+    }
+
+    // mixAlpha < 0: 直接使用 mixColor 的 RGB
+    if (mixAlpha < 0)
+    {
+        uint8_t cr, cg, cb;
+        GetRGBA(mixColor, &cr, &cg, &cb);
+        SDL_SetTextureColorMod(tex, cr, cg, cb);
+    }
+
+    // mixAlpha > 0 且 shadow > 0: 创建临时纹理做加法混合
+    if (mixAlpha > 0 && shadow > 0)
+    {
+        uint8_t cr, cg, cb;
+        GetRGBA(mixColor, &cr, &cg, &cb);
+        SDL_Texture* ptex = SDL_GetRenderTarget(r);
+        SDL_Texture* tex1 = tex;
+        tex = SDL_CreateTexture(r, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, PNGIndex.w, PNGIndex.h);
+        newtex = true;
+        SDL_SetRenderTarget(r, tex);
+        SDL_SetTextureBlendMode(tex1, SDL_BLENDMODE_NONE);
+        SDL_RenderTexture(r, tex1, nullptr, nullptr);
+        SDL_SetTextureBlendMode(tex1, SDL_BLENDMODE_BLEND);
+        SDL_SetRenderDrawBlendMode(r, SDL_BLENDMODE_ADD);
+        SDL_SetRenderDrawColor(r, cr, cg, cb, (uint8_t)(255 * mixAlpha / 100));
+        SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
+        SDL_RenderFillRect(r, nullptr);
+        SDL_SetRenderTarget(r, ptex);
+    }
+
+    // alpha 透明度 (百分比: 0=不透明, 100=全透明)
+    if (alpha > 0)
+        SDL_SetTextureAlphaMod(tex, (uint8_t)(255 * (100 - alpha) / 100));
+
+    // 转换 region 为 src rect
+    SDL_FRect regionf;
+    SDL_FRect* pr = nullptr;
+    if (region != nullptr)
+    {
+        regionf.x = (float)region->x;
+        regionf.y = (float)region->y;
+        regionf.w = (float)region->w;
+        regionf.h = (float)region->h;
+        pr = &regionf;
+    }
+
+    // 转换 center
+    SDL_FPoint fcenter = { 0, 0 };
+    SDL_FPoint* pc = nullptr;
+    if (center != nullptr)
+    {
+        fcenter.x = (float)center->x;
+        fcenter.y = (float)center->y;
+        pc = &fcenter;
+    }
+
+    SDL_RenderTextureRotated(r, tex, pr, &dest, angle, pc, SDL_FLIP_NONE);
+    if (newtex)
+        SDL_DestroyTexture(tex);
 }
 
 void DrawPNGTileS(SDL_Surface* scr, TPNGIndex& PNGIndex, int FrameNum, int px, int py,
@@ -1831,23 +1923,69 @@ int DrawLength(const char* p)
 //----------------------------------------------------------------------
 void SetFontSize(int Chnsize, int engsize, int force)
 {
-    CHINESE_FONT_SIZE = Chnsize;
-    ENGLISH_FONT_SIZE = engsize;
+    double scale;
+    if (TEXT_LAYER == 0 || force == 1)
+        scale = 1;
+    else
+        scale = std::min((double)RESOLUTIONX / CENTER_X / 2, (double)RESOLUTIONY / CENTER_Y / 2);
+
+    // 非初始化时先关闭字体
+    if (force != -1)
+    {
+        if (Font) { TTF_CloseFont(Font); Font = nullptr; }
+        if (EngFont) { TTF_CloseFont(EngFont); EngFont = nullptr; }
+    }
+
+    if (force == -1)
+    {
+        // 初始化: 计算默认大小
+        CHINESE_FONT_SIZE = (int)round(20 * scale);
+        ENGLISH_FONT_SIZE = (int)round(18 * scale);
+        Chnsize = CHINESE_FONT_SIZE;
+        engsize = ENGLISH_FONT_SIZE;
+    }
+    else if (force == 2)
+    {
+        // 恢复: 使用保存的大小
+        Chnsize = CHINESE_FONT_SIZE;
+        engsize = ENGLISH_FONT_SIZE;
+    }
+    else
+    {
+        // 应用缩放
+        Chnsize = (int)round(Chnsize * scale);
+        engsize = (int)round(engsize * scale);
+    }
+
+    std::string fontfile = AppPath + CHINESE_FONT;
+    std::string engfontfile = AppPath + ENGLISH_FONT;
+
+    Font = TTF_OpenFont(fontfile.c_str(), (float)Chnsize);
+    EngFont = TTF_OpenFont(engfontfile.c_str(), (float)engsize);
+
     CHINESE_FONT_REALSIZE = Chnsize;
     ENGLISH_FONT_REALSIZE = engsize;
 
-    std::string fontfile = AppPath + "font/chinese.ttf";
-    std::string engfontfile = AppPath + "font/english.ttf";
+    if (Font == nullptr || EngFont == nullptr)
+        kyslog("Read fonts failed");
 
-    if (filefunc::fileExist(fontfile))
-        Font = TTF_OpenFont(fontfile.c_str(), (float)Chnsize);
-    if (filefunc::fileExist(engfontfile))
-        EngFont = TTF_OpenFont(engfontfile.c_str(), (float)engsize);
+    // 测试中文字体的空格宽度
+    if (Font)
+    {
+        uint16_t word[2] = { 32, 0 };
+        SDL_Color tempcolor = { 0, 0, 0, 255 };
+        SDL_Surface* Text = TTF_RenderText_Solid(Font, (const char*)word, 0, tempcolor);
+        if (Text)
+        {
+            CHNFONT_SPACEWIDTH = Text->w;
+            SDL_DestroySurface(Text);
+        }
+    }
 }
 
 void ResetFontSize()
 {
-    SetFontSize(20, 18, -1);
+    SetFontSize(0, 0, 2);
 }
 
 void LoadTeamSimpleStatus(int& max)
@@ -2053,51 +2191,89 @@ void FreeFreshScreen()
 
 void UpdateAllScreen()
 {
+    uint8_t r = 255, g = 255, b = 255;
+    switch (ScreenBlendMode)
+    {
+    case 0: r = 255; g = 255; b = 255; break;
+    case 1: r = 150; g = 150; b = 220; break;
+    case 2: r = 200; g = 152; b = 20; break;
+    }
+
     if (SW_SURFACE == 0)
     {
         SDL_SetRenderTarget(render, nullptr);
-        SDL_FRect src = { 0, 0, (float)(CENTER_X * 2), (float)(CENTER_Y * 2) };
-        SDL_FRect dst;
+        SDL_SetRenderDrawColor(render, 0, 0, 0, 0);
+        SDL_RenderClear(render);
+        SDL_SetTextureColorMod(screenTex, r, g, b);
         if (KEEP_SCREEN_RATIO == 1)
         {
-            TStretchInfo s = KeepRatioScale(CENTER_X * 2, CENTER_Y * 2, RESOLUTIONX, RESOLUTIONY);
-            dst = { (float)s.px, (float)s.py, (float)(CENTER_X * 2 * s.num / s.den), (float)(CENTER_Y * 2 * s.num / s.den) };
+            SDL_Rect src = { 0, 0, CENTER_X * 2, CENTER_Y * 2 };
+            SDL_Rect dest = GetRealRect(src, 1);
+            SDL_FRect destf = rect2f(dest);
+            SDL_RenderTexture(render, screenTex, nullptr, &destf);
         }
         else
         {
-            dst = { 0, 0, (float)RESOLUTIONX, (float)RESOLUTIONY };
+            if (ScreenRotate == 0)
+            {
+                SDL_RenderTexture(render, screenTex, nullptr, nullptr);
+            }
+            else
+            {
+                SDL_Rect dest;
+                dest.x = RESOLUTIONX;
+                dest.y = 0;
+                dest.w = RESOLUTIONY;
+                dest.h = RESOLUTIONX;
+                SDL_FRect destf = rect2f(dest);
+                SDL_FPoint mid = { 0, 0 };
+                SDL_RenderTextureRotated(render, screenTex, nullptr, &destf, 90, &mid, SDL_FLIP_NONE);
+            }
         }
-        SDL_RenderTexture(render, screenTex, &src, &dst);
-        if (TEXT_LAYER == 1)
+        SDL_SetTextureColorMod(screenTex, 255, 255, 255);
+        if (TEXT_LAYER == 1 && HaveText == 1)
         {
-            SDL_SetTextureBlendMode(TextScreenTex, SDL_BLENDMODE_BLEND);
-            SDL_FRect fulldst = { 0, 0, (float)RESOLUTIONX, (float)RESOLUTIONY };
-            SDL_RenderTexture(render, TextScreenTex, nullptr, &fulldst);
+            SDL_SetTextureColorMod(TextScreenTex, r, g, b);
+            SDL_RenderTexture(render, TextScreenTex, nullptr, nullptr);
+            SDL_SetTextureColorMod(TextScreenTex, 255, 255, 255);
         }
         SDL_RenderPresent(render);
         SDL_SetRenderTarget(render, screenTex);
     }
     else
     {
-        // SW模式: surface -> texture -> present
-        if (screen)
+        if (Where < 5)
         {
-            void* pixels;
-            int pitch;
-            SDL_LockTexture(screenTex, nullptr, &pixels, &pitch);
-            for (int y = 0; y < CENTER_Y * 2; y++)
-                memcpy((uint8_t*)pixels + y * pitch, (uint8_t*)screen->pixels + y * screen->pitch, CENTER_X * 2 * 4);
-            SDL_UnlockTexture(screenTex);
+            SDL_Rect* prect = nullptr;
+            SDL_Rect dest;
+            if (KEEP_SCREEN_RATIO == 1)
+            {
+                SDL_Rect src = { 0, 0, CENTER_X * 2, CENTER_Y * 2 };
+                dest = GetRealRect(src, 1);
+                prect = &dest;
+            }
+            if (SW_OUTPUT == 0)
+            {
+                SDL_UpdateTexture(screenTex, nullptr, screen->pixels, screen->pitch);
+                SDL_RenderClear(render);
+                SDL_SetTextureColorMod(screenTex, r, g, b);
+                SDL_RenderTexture(render, screenTex, nullptr, nullptr);
+                SDL_SetTextureColorMod(screenTex, 255, 255, 255);
+                if (TEXT_LAYER == 1 && HaveText == 1)
+                {
+                    SDL_UpdateTexture(TextScreenTex, nullptr, TextScreen->pixels, TextScreen->pitch);
+                    SDL_SetTextureColorMod(TextScreenTex, r, g, b);
+                    SDL_RenderTexture(render, TextScreenTex, nullptr, nullptr);
+                    SDL_SetTextureColorMod(TextScreenTex, 255, 255, 255);
+                }
+                SDL_RenderPresent(render);
+            }
+            else
+            {
+                SDL_BlitSurface(screen, nullptr, RealScreen, prect);
+                SDL_UpdateWindowSurface(window);
+            }
         }
-        SDL_SetRenderTarget(render, nullptr);
-        SDL_FRect fulldst = { 0, 0, (float)RESOLUTIONX, (float)RESOLUTIONY };
-        SDL_RenderTexture(render, screenTex, nullptr, &fulldst);
-        if (TEXT_LAYER == 1 && TextScreenTex)
-        {
-            SDL_SetTextureBlendMode(TextScreenTex, SDL_BLENDMODE_BLEND);
-            SDL_RenderTexture(render, TextScreenTex, nullptr, &fulldst);
-        }
-        SDL_RenderPresent(render);
     }
 }
 
@@ -2109,7 +2285,8 @@ void CleanTextScreen()
         {
             SDL_Texture* ptex = SDL_GetRenderTarget(render);
             SDL_SetRenderTarget(render, TextScreenTex);
-            SDL_SetRenderDrawColor(render, 0, 0, 0, 0);
+            SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_NONE);
+            SDL_SetRenderDrawColor(render, 255, 255, 255, 0);
             SDL_RenderClear(render);
             SDL_SetRenderTarget(render, ptex);
         }
@@ -2129,7 +2306,7 @@ void CleanTextScreenRect(int x, int y, int w, int h)
             SDL_Texture* ptex = SDL_GetRenderTarget(render);
             SDL_SetRenderTarget(render, TextScreenTex);
             SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_NONE);
-            SDL_SetRenderDrawColor(render, 0, 0, 0, 0);
+            SDL_SetRenderDrawColor(render, 255, 255, 255, 0);
             SDL_FRect rect = { (float)x, (float)y, (float)w, (float)h };
             SDL_RenderFillRect(render, &rect);
             SDL_SetRenderTarget(render, ptex);
