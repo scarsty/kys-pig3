@@ -520,6 +520,12 @@ void DrawText(const std::string& word, int x_pos, int y_pos, uint32 color, int e
                 SDL_SetTextureColorMod(tex, r, g, b);
                 dest.w = (float)cw;
                 dest.h = (float)charh;
+                if (TEXT_LAYER == 1)
+                {
+                    SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_MOD);
+                    SDL_RenderTexture(render, tex, nullptr, &dest);
+                    SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
+                }
                 SDL_RenderTexture(render, tex, nullptr, &dest);
             }
             else
@@ -527,7 +533,13 @@ void DrawText(const std::string& word, int x_pos, int y_pos, uint32 color, int e
                 SDL_Surface* sur = (SDL_Surface*)tile;
                 SDL_SetSurfaceColorMod(sur, r, g, b);
                 SDL_Rect destrect = { (int)dest.x, (int)dest.y, cw, charh };
-                SDL_BlitSurface(sur, nullptr, screen, &destrect);
+                if (TEXT_LAYER == 1)
+                {
+                    SDL_SetSurfaceBlendMode(sur, SDL_BLENDMODE_MOD);
+                    SDL_BlitSurface(sur, nullptr, CurTargetSurface, &destrect);
+                }
+                SDL_SetSurfaceBlendMode(sur, SDL_BLENDMODE_BLEND);
+                SDL_BlitSurface(sur, nullptr, CurTargetSurface, &destrect);
             }
         }
         if (k >= 128)
@@ -540,7 +552,10 @@ void DrawText(const std::string& word, int x_pos, int y_pos, uint32 color, int e
 
 void DrawEngText(const std::string& word, int x_pos, int y_pos, uint32 color)
 {
-    DrawText(word, x_pos, y_pos - 4, color, -1);
+    if (ENGLISH_FONT_SIZE == ENGLISH_FONT_REALSIZE)
+        DrawText(word, x_pos, y_pos - 4, color, -1);
+    else
+        DrawText(word, x_pos, y_pos - 4, color, (ENGLISH_FONT_REALSIZE / 2) + 1);
 }
 
 void DrawShadowText(const std::string& word, int x_pos, int y_pos, uint32 color1, uint32 color2,
@@ -2329,21 +2344,21 @@ void UpdateAllScreen()
 
 void CleanTextScreen()
 {
-    if (TEXT_LAYER == 1)
+    if (TEXT_LAYER == 1 && HaveText == 1)
     {
         if (SW_SURFACE == 0)
         {
-            SDL_Texture* ptex = SDL_GetRenderTarget(render);
             SDL_SetRenderTarget(render, TextScreenTex);
             SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_NONE);
             SDL_SetRenderDrawColor(render, 255, 255, 255, 0);
             SDL_RenderClear(render);
-            SDL_SetRenderTarget(render, ptex);
+            SDL_SetRenderTarget(render, screenTex);
         }
         else if (TextScreen)
         {
-            SDL_FillSurfaceRect(TextScreen, nullptr, 0);
+            SDL_FillSurfaceRect(TextScreen, nullptr, MapRGBA(255, 255, 255, 0));
         }
+        HaveText = 0;
     }
 }
 
@@ -2351,15 +2366,26 @@ void CleanTextScreenRect(int x, int y, int w, int h)
 {
     if (TEXT_LAYER == 1)
     {
-        if (SW_SURFACE == 0)
+        if (w == 0 || h == 0)
         {
-            SDL_Texture* ptex = SDL_GetRenderTarget(render);
-            SDL_SetRenderTarget(render, TextScreenTex);
-            SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_NONE);
-            SDL_SetRenderDrawColor(render, 255, 255, 255, 0);
-            SDL_FRect rect = { (float)x, (float)y, (float)w, (float)h };
-            SDL_RenderFillRect(render, &rect);
-            SDL_SetRenderTarget(render, ptex);
+            CleanTextScreen();
+        }
+        else
+        {
+            SDL_Rect dest = GetRealRect(SDL_Rect{ x, y, w, h }, 0);
+            if (SW_SURFACE == 0)
+            {
+                SDL_SetRenderTarget(render, TextScreenTex);
+                SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_NONE);
+                SDL_SetRenderDrawColor(render, 255, 255, 255, 0);
+                SDL_FRect destf = rect2f(dest);
+                SDL_RenderFillRect(render, &destf);
+                SDL_SetRenderTarget(render, screenTex);
+            }
+            else
+            {
+                SDL_FillSurfaceRect(TextScreen, &dest, MapRGBA(255, 255, 255, 0));
+            }
         }
     }
 }
@@ -2407,20 +2433,13 @@ bool MouseInRegion(int x, int y, int w, int h, int& x1, int& y1)
 
 void GetRealRect(int& x, int& y, int& w, int& h, int force)
 {
-    if (KEEP_SCREEN_RATIO == 1 || force)
+    if (TEXT_LAYER == 1 || force == 1)
     {
         TStretchInfo s = KeepRatioScale(CENTER_X * 2, CENTER_Y * 2, RESOLUTIONX, RESOLUTIONY);
         x = x * s.num / s.den + s.px;
         y = y * s.num / s.den + s.py;
         w = w * s.num / s.den;
         h = h * s.num / s.den;
-    }
-    else
-    {
-        x = x * RESOLUTIONX / (CENTER_X * 2);
-        y = y * RESOLUTIONY / (CENTER_Y * 2);
-        w = w * RESOLUTIONX / (CENTER_X * 2);
-        h = h * RESOLUTIONY / (CENTER_Y * 2);
     }
 }
 

@@ -198,7 +198,7 @@ void SetMODVersion()
     ASound.resize(99, nullptr);
 
     StartMusic = 59;
-    TitleString = "Legend of Little Village III - 108 Brothers and Sisters";
+    TitleString = "Legend of Little Village III - 108 Brothers and Sisters (c++)";
 
     OpenPicPosition.x = 0;
     OpenPicPosition.y = 0;
