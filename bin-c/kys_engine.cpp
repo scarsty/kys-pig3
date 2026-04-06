@@ -11,7 +11,6 @@
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3_mixer/SDL_mixer.h>
-#include <SDL3_image/SDL_image.h>
 
 #include "filefunc.h"
 #include "strfunc.h"
@@ -1622,7 +1621,7 @@ bool LoadTileFromFile(const std::string& filename, void*& pt, int usesur, int& w
     if (!filefunc::fileExist(filename)) return false;
     if (usesur == 0)
     {
-        SDL_Surface* tempscr = IMG_Load(filename.c_str());
+        SDL_Surface* tempscr = SDL_LoadPNG(filename.c_str());
         if (!tempscr) return false;
         pt = SDL_CreateTextureFromSurface(render, tempscr);
         SDL_DestroySurface(tempscr);
@@ -1638,7 +1637,7 @@ bool LoadTileFromFile(const std::string& filename, void*& pt, int usesur, int& w
     }
     else
     {
-        SDL_Surface* tempscr = IMG_Load(filename.c_str());
+        SDL_Surface* tempscr = SDL_LoadPNG(filename.c_str());
         if (!tempscr) return false;
         pt = SDL_ConvertSurface(tempscr, screen->format);
         SDL_DestroySurface(tempscr);
@@ -1659,8 +1658,8 @@ bool LoadTileFromMem(const char* p, int len, void*& pt, int usesur, int& w, int&
     if (!rwops) return false;
     if (usesur == 0)
     {
-        SDL_Surface* tempscr = IMG_Load_IO(rwops, false);
-        if (!tempscr) { SDL_CloseIO(rwops); return false; }
+        SDL_Surface* tempscr = SDL_LoadPNG_IO(rwops, true);
+        if (!tempscr) return false;
         pt = SDL_CreateTextureFromSurface(render, tempscr);
         SDL_DestroySurface(tempscr);
         if (pt)
@@ -1670,25 +1669,22 @@ bool LoadTileFromMem(const char* p, int len, void*& pt, int usesur, int& w, int&
             SDL_GetTextureSize((SDL_Texture*)pt, &wf, &hf);
             w = (int)wf;
             h = (int)hf;
-            SDL_CloseIO(rwops);
             return true;
         }
     }
     else
     {
-        SDL_Surface* tempscr = IMG_Load_IO(rwops, false);
-        if (!tempscr) { SDL_CloseIO(rwops); return false; }
+        SDL_Surface* tempscr = SDL_LoadPNG_IO(rwops, true);
+        if (!tempscr) return false;
         pt = SDL_ConvertSurface(tempscr, screen->format);
         SDL_DestroySurface(tempscr);
         if (pt)
         {
             w = ((SDL_Surface*)pt)->w;
             h = ((SDL_Surface*)pt)->h;
-            SDL_CloseIO(rwops);
             return true;
         }
     }
-    SDL_CloseIO(rwops);
     return false;
 }
 

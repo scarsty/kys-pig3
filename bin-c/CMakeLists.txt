@@ -29,7 +29,6 @@ target_include_directories(kys_pig3 PRIVATE ${MLCC_PATH})
 find_package(SDL3 REQUIRED)
 find_package(SDL3_ttf REQUIRED)
 find_package(SDL3_mixer REQUIRED)
-find_package(SDL3_image REQUIRED)
 find_package(Lua REQUIRED)
 
 target_include_directories(kys_pig3 PRIVATE ${LUA_INCLUDE_DIR})
@@ -38,7 +37,6 @@ target_link_libraries(kys_pig3 PRIVATE
     SDL3::SDL3
     SDL3_ttf::SDL3_ttf
     SDL3_mixer::SDL3_mixer
-    SDL3_image::SDL3_image
     ${LUA_LIBRARIES}
 )
 
