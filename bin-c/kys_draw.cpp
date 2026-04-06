@@ -479,6 +479,7 @@ void DrawScene()
     {
         CleanTextScreen();
     }
+    DrawVirtualKey();
 }
 
 void DrawSceneWithoutRole(int x, int y)
@@ -521,7 +522,7 @@ void ExpandGroundOnImg()
     }
     if (EXPAND_GROUND != 0 && (MODVersion != 13 || (CurScene != 81 && CurScene != 72)))
     {
-        for (int i1 = 95; i1 >= 0; i1--)
+        for (int i1 = 63; i1 >= 0; i1--)
         {
             for (int i2 = 0; i2 < 64; i2++)
             {
@@ -531,7 +532,7 @@ void ExpandGroundOnImg()
                 }
             }
         }
-        for (int i1 = 96; i1 < 192; i1++)
+        for (int i1 = 128; i1 < 192; i1++)
         {
             for (int i2 = 0; i2 < 64; i2++)
             {
@@ -543,7 +544,7 @@ void ExpandGroundOnImg()
         }
         for (int i1 = 0; i1 < 192; i1++)
         {
-            for (int i2 = 95; i2 >= 0; i2--)
+            for (int i2 = 63; i2 >= 0; i2--)
             {
                 if (Ex[i1][i2] <= 0)
                 {
@@ -553,7 +554,7 @@ void ExpandGroundOnImg()
         }
         for (int i1 = 0; i1 < 192; i1++)
         {
-            for (int i2 = 96; i2 < 192; i2++)
+            for (int i2 = 128; i2 < 192; i2++)
             {
                 if (Ex[i1][i2] <= 0)
                 {
@@ -1045,14 +1046,10 @@ void DrawClouds()
     }
     for (int i = 0; i < (int)Cloud.size(); i++)
     {
-        DrawCPic(Cloud[i].Picnum, Cloud[i].Positionx, Cloud[i].Positiony,
+        int x = Cloud[i].Positionx - (-Mx * 18 + My * 18 + 8640 - CENTER_X);
+        int y = Cloud[i].Positiony - (Mx * 9 + My * 9 + 9 - CENTER_Y);
+        DrawCPic(Cloud[i].Picnum, x, y,
             Cloud[i].Shadow, Cloud[i].Alpha, Cloud[i].mixColor, Cloud[i].mixAlpha);
-        Cloud[i].Positionx += Cloud[i].Speedx;
-        Cloud[i].Positiony += Cloud[i].Speedy;
-        if (Cloud[i].Positionx > CENTER_X * 2 + 200)
-        {
-            CloudCreateOnSide(i);
-        }
     }
 }
 

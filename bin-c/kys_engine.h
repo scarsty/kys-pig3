@@ -109,6 +109,7 @@ void FreeFreshScreen();
 void SDL_GetMouseState2(int& x, int& y);
 void GetMousePosition(int& x, int& y, int x0, int y0, int yp = 0);
 bool InRegion(int x1, int y1, int x, int y, int w, int h);
+bool InRegion(int x, int x1, int x2);
 bool MouseInRegion(int x, int y, int w, int h);
 bool MouseInRegion(int x, int y, int w, int h, int& x1, int& y1);
 int RegionParameter(int x, int x1, int x2);

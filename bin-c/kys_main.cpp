@@ -1411,76 +1411,367 @@ int WaitAnyKey()
 //----------------------------------------------------------------------
 void Walk()
 {
+    if (Where >= 3)
+    {
+        return;
+    }
+    uint32_t next_time = SDL_GetTicks();
+    uint32_t next_time2 = SDL_GetTicks();
+    uint32_t next_time3 = SDL_GetTicks();
+
+    int Mx1 = 0, My1 = 0;
     Where = 0;
-    CleanKeyValue();
+    int walking = 0;
+    int speed = 0;
+    int stillcount = 0;
+    int axp = 0, ayp = 0, axp1 = 0, ayp1 = 0;
+    int gotoEntrance = -1;
+    int x1, y1;
+
+    DrawMMap();
+    UpdateAllScreen();
+    Still = 0;
+    MStep = 0;
 
     while (SDL_PollEvent(&event) || true)
     {
-        Redraw();
-        DrawClouds();
-        UpdateAllScreen();
-        CheckBasicEvent();
+        if (Where >= 3)
+        {
+            break;
+        }
 
+        // 闪烁效果
+        uint32_t now = SDL_GetTicks();
+        if ((int)(now - next_time2) > 0)
+        {
+            next_time2 = now + 200;
+        }
+
+        // 飘云
+        if ((int)(now - next_time3) > 0 && MMAPAMI > 0)
+        {
+            for (int i = 0; i < CLOUD_AMOUNT; i++)
+            {
+                Cloud[i].Positionx += Cloud[i].Speedx;
+                Cloud[i].Positiony += Cloud[i].Speedy;
+                if (Cloud[i].Positionx > 17279 || Cloud[i].Positionx < 0 ||
+                    Cloud[i].Positiony > 8639 || Cloud[i].Positiony < 0)
+                {
+                    CloudCreateOnSide(i);
+                }
+            }
+            next_time3 = now + 40;
+        }
+
+        // 主角动作
+        if ((int)(now - next_time) > 0 && Where == 0)
+        {
+            if (walking == 0)
+            {
+                stillcount++;
+            }
+            else
+            {
+                stillcount = 0;
+            }
+            next_time = now + 320;
+        }
+
+        CheckBasicEvent();
         switch (event.type)
         {
-        case SDL_EVENT_KEY_UP:
-            if (event.key.key == SDLK_ESCAPE)
-            {
-                MenuEsc();
-            }
-            break;
         case SDL_EVENT_KEY_DOWN:
         {
-            int dx = 0, dy = 0;
-            if (event.key.key == SDLK_UP)
+            if (event.key.key == SDLK_LEFT)
             {
-                dx = -1;
-                dy = -1;
-                MFace = 0;
+                MFace = 2;
+                walking = 1;
             }
             if (event.key.key == SDLK_RIGHT)
             {
-                dx = 1;
-                dy = -1;
                 MFace = 1;
+                walking = 1;
             }
-            if (event.key.key == SDLK_LEFT)
+            if (event.key.key == SDLK_UP)
             {
-                dx = -1;
-                dy = 1;
-                MFace = 2;
+                MFace = 0;
+                walking = 1;
             }
             if (event.key.key == SDLK_DOWN)
             {
-                dx = 1;
-                dy = 1;
                 MFace = 3;
+                walking = 1;
             }
-            if (dx != 0 || dy != 0)
+            break;
+        }
+        case SDL_EVENT_KEY_UP:
+        {
+            if (*keyup == 0 && *keydown == 0 && *keyleft == 0 && *keyright == 0)
             {
-                int nx = Mx + dx, ny = My + dy;
-                if (CanWalk(nx, ny))
+                walking = 0;
+                speed = 0;
+            }
+            if (event.key.key == SDLK_ESCAPE)
+            {
+                MenuEsc();
+                if (Where >= 3)
                 {
-                    Mx = nx;
-                    My = ny;
-                    MStep++;
-                    if (CheckEntrance())
-                    {
-                        break;
-                    }
+                    break;
+                }
+            }
+            if (event.key.key == SDLK_TAB)
+            {
+                SpecialFunction();
+            }
+            break;
+        }
+        case SDL_EVENT_MOUSE_MOTION:
+        {
+            if (ShowVirtualKey == 0)
+            {
+                SDL_GetMouseState2(x1, y1);
+                if (x1 < CENTER_X && y1 < CENTER_Y)
+                {
+                    MFace = 2;
+                }
+                if (x1 > CENTER_X && y1 < CENTER_Y)
+                {
+                    MFace = 0;
+                }
+                if (x1 < CENTER_X && y1 > CENTER_Y)
+                {
+                    MFace = 3;
+                }
+                if (x1 > CENTER_X && y1 > CENTER_Y)
+                {
+                    MFace = 1;
                 }
             }
             break;
         }
         case SDL_EVENT_MOUSE_BUTTON_UP:
+        {
             if (event.button.button == SDL_BUTTON_RIGHT)
             {
+                event.button.button = 0;
                 MenuEsc();
+                if (Where >= 3)
+                {
+                    break;
+                }
+                nowstep = -1;
+                walking = 0;
+            }
+            if (event.button.button == SDL_BUTTON_LEFT)
+            {
+                walking = 2;
+                GetMousePosition(axp, ayp, Mx, My);
+                if (axp >= 0 && axp <= 479 && ayp >= 0 && ayp <= 479)
+                {
+                    memset(Fway, -1, sizeof(Fway));
+                    FindWay(Mx, My);
+                    gotoEntrance = -1;
+                    if (axp >= 0 && ayp >= 0 && BuildY[axp][ayp] > 0 && Entrance[axp][ayp] < 0)
+                    {
+                        int bx = BuildX[axp][ayp];
+                        int by = BuildY[axp][ayp];
+                        for (int i1 = bx - 3; i1 <= bx; i1++)
+                        {
+                            for (int i2 = by - 3; i2 <= by; i2++)
+                            {
+                                if (i1 >= 0 && i2 >= 0 && Entrance[i1][i2] >= 0 &&
+                                    BuildX[i1][i2] == bx && BuildY[i1][i2] == by)
+                                {
+                                    axp = i1;
+                                    ayp = i2;
+                                    goto found_entrance;
+                                }
+                            }
+                        }
+                        found_entrance:;
+                    }
+                    if (Entrance[axp][ayp] >= 0)
+                    {
+                        int minstep = 4096;
+                        for (int i = 0; i < 4; i++)
+                        {
+                            axp1 = axp;
+                            ayp1 = ayp;
+                            switch (i)
+                            {
+                            case 0: if (axp1 > 0) axp1 = axp - 1; break;
+                            case 1: ayp1 = ayp + 1; break;
+                            case 2: if (ayp1 > 0) ayp1 = ayp - 1; break;
+                            case 3: axp1 = axp + 1; break;
+                            }
+                            int step = Fway[axp1][ayp1];
+                            if (step >= 0 && minstep > step)
+                            {
+                                gotoEntrance = i;
+                                minstep = step;
+                            }
+                        }
+                        if (gotoEntrance >= 0)
+                        {
+                            switch (gotoEntrance)
+                            {
+                            case 0: axp = axp - 1; break;
+                            case 1: ayp = ayp + 1; break;
+                            case 2: ayp = ayp - 1; break;
+                            case 3: axp = axp + 1; break;
+                            }
+                            gotoEntrance = 3 - gotoEntrance;
+                        }
+                    }
+                    Moveman(Mx, My, axp, ayp);
+                    nowstep = Fway[axp][ayp] - 1;
+                }
+                else
+                {
+                    walking = 0;
+                }
             }
             break;
         }
-        CleanKeyValue();
-        SDL_Delay((uint32_t)WALK_SPEED);
+        }
+
+        // 如果主角正在行走, 则移动主角
+        if (walking > 0)
+        {
+            Still = 0;
+            stillcount = 0;
+            switch (walking)
+            {
+            case 1:
+            {
+                speed++;
+                Mx1 = Mx;
+                My1 = My;
+                if (speed == 1 || speed >= 5)
+                {
+                    switch (MFace)
+                    {
+                    case 0: Mx1--; break;
+                    case 1: My1++; break;
+                    case 2: My1--; break;
+                    case 3: Mx1++; break;
+                    }
+                    MStep++;
+                    if (MStep >= 7)
+                    {
+                        MStep = 1;
+                    }
+                    if (CanWalk(Mx1, My1))
+                    {
+                        Mx = Mx1;
+                        My = My1;
+                    }
+                }
+                break;
+            }
+            case 2:
+            {
+                if (nowstep < 0)
+                {
+                    walking = 0;
+                    if (gotoEntrance >= 0)
+                    {
+                        MFace = gotoEntrance;
+                    }
+                }
+                else
+                {
+                    Still = 0;
+                    if (linex[nowstep] - Mx < 0)
+                    {
+                        MFace = 0;
+                    }
+                    else if (linex[nowstep] - Mx > 0)
+                    {
+                        MFace = 3;
+                    }
+                    else if (liney[nowstep] - My > 0)
+                    {
+                        MFace = 1;
+                    }
+                    else
+                    {
+                        MFace = 2;
+                    }
+                    MStep++;
+                    if (MStep >= 7)
+                    {
+                        MStep = 1;
+                    }
+                    if (abs(Mx - linex[nowstep]) + abs(My - liney[nowstep]) == 1 &&
+                        CanWalk(linex[nowstep], liney[nowstep]))
+                    {
+                        Mx = linex[nowstep];
+                        My = liney[nowstep];
+                    }
+                    else
+                    {
+                        walking = 0;
+                    }
+                    nowstep--;
+                }
+                break;
+            }
+            }
+
+            // 每走一步均重画屏幕, 并检测是否处于某场景入口
+            Redraw();
+            UpdateAllScreen();
+            if (CheckEntrance())
+            {
+                walking = 0;
+                MStep = 0;
+                Still = 0;
+                stillcount = 0;
+                if (MMAPAMI == 0)
+                {
+                    DrawMMap();
+                    UpdateAllScreen();
+                }
+            }
+        }
+
+        if (Where == 1)
+        {
+            WalkInScene(0);
+        }
+
+        event.key.key = 0;
+        event.button.button = 0;
+
+        // 静止时画面和光标
+        if (walking == 0 && Where == 0)
+        {
+            if (MMAPAMI > 0)
+            {
+                DrawMMap();
+                GetMousePosition(axp, ayp, Mx, My);
+                TPosition pos = GetPositionOnScreen(axp, ayp, Mx, My);
+                DrawMPic(1, pos.x, pos.y, -1, 0, 50, 0, 0);
+                if (!CanWalk(axp, ayp))
+                {
+                    if (InRegion(axp, 0, 479) && InRegion(ayp, 0, 479) && Entrance[axp][ayp] >= 0)
+                    {
+                        DrawMPic(2001, pos.x, pos.y, -1, 0, 75, 0, 0);
+                    }
+                    else
+                    {
+                        DrawMPic(2001, pos.x, pos.y, -1, 0, 50, 0, 0);
+                    }
+                }
+                UpdateAllScreen();
+            }
+            SDL_Delay(40);
+        }
+        else
+        {
+            SDL_Delay((uint32_t)WALK_SPEED);
+        }
     }
 }
 
@@ -1536,20 +1827,58 @@ bool CanWalk(int x, int y)
 //----------------------------------------------------------------------
 bool CheckEntrance()
 {
-    for (int i = 0; i <= SceneAmount; i++)
+    int minspeed = 300;
+    if (MODVersion != 13)
     {
-        if (Rscene[i].MainEntranceX1 == Mx && Rscene[i].MainEntranceY1 == My)
+        minspeed = 70;
+    }
+    int x = Mx, y = My;
+    switch (MFace)
+    {
+    case 0: x--; break;
+    case 1: y++; break;
+    case 2: y--; break;
+    case 3: x++; break;
+    }
+    if (x < 0 || x >= 480 || y < 0 || y >= 480)
+    {
+        return false;
+    }
+    if (Entrance[x][y] >= 0)
+    {
+        int snum = Entrance[x][y];
+        bool canEnter = false;
+        if (Rscene[snum].EnCondition == 0)
         {
-            CurScene = i;
-            WalkInScene(1);
-            return true;
+            canEnter = true;
         }
-        if (Rscene[i].MainEntranceX2 == Mx && Rscene[i].MainEntranceY2 == My)
+        if (Rscene[snum].EnCondition == 2)
         {
-            CurScene = i;
-            WalkInScene(1);
-            return true;
+            for (int i = 0; i < 6; i++)
+            {
+                if (TeamList[i] >= 0)
+                {
+                    if (Rrole[TeamList[i]].Speed > minspeed)
+                    {
+                        canEnter = true;
+                    }
+                }
+            }
         }
+        if (canEnter)
+        {
+            TurnBlack();
+            CurScene = Entrance[x][y];
+            SFace = MFace;
+            SStep = 0;
+            Sx = Rscene[CurScene].EntranceX;
+            Sy = Rscene[CurScene].EntranceY;
+            SaveR(11);
+            WalkInScene(0);
+            CurScene = -1;
+            BlackScreen = 0;
+        }
+        return canEnter;
     }
     return false;
 }
@@ -1559,94 +1888,476 @@ bool CheckEntrance()
 //----------------------------------------------------------------------
 int WalkInScene(int Open)
 {
+    uint32_t next_time = SDL_GetTicks();
     Where = 1;
+    int walking = 0;
+    CurEvent = -1;
+    int stillcount = 0;
+    int speed = 0;
+    int AmiCount = 0;
+    int axp = 0, ayp = 0, axp1 = 0, ayp1 = 0;
+    int gotoEvent = -1;
+    int x1, y1;
+    int Sx1, Sy1;
+    int PreScene;
+    ExitSceneMusicNum = Rscene[CurScene].ExitMusic;
+
+    InitialScene();
+    for (int i = 0; i < 200; i++)
+    {
+        if (DData[CurScene][i][7] < DData[CurScene][i][6])
+        {
+            int range = DData[CurScene][i][6] - DData[CurScene][i][7] + 2;
+            if (range > 0)
+            {
+                DData[CurScene][i][5] = DData[CurScene][i][7] + (DData[CurScene][i][8] * 2) % range;
+            }
+        }
+    }
+
     if (Open == 1)
     {
-        Sx = Rscene[CurScene].EntranceX;
-        Sy = Rscene[CurScene].EntranceY;
+        Sx = BEGIN_Sx;
+        Sy = BEGIN_Sy;
+        Cx = Sx;
+        Cy = Sy;
+        ShowMR = false;
+        if (MODVersion != 13)
+        {
+            CurSceneRolePic = 3445;
+            ShowMR = true;
+            SFace = 1;
+        }
+        CurEvent = SData[CurScene][3][Sx][Sy];
+        CallEvent(BEGIN_EVENT);
+        ShowMR = true;
+        UpdateAllScreen();
+        CurEvent = -1;
     }
-    PlayMP3(Rscene[CurScene].EntranceMusic, -1);
-    InitialScene();
+
+    SStep = 0;
+    uint32_t now2 = 0;
+    TimeInWater = 15 + Rrole[0].CurrentMP / 100;
+
+    CurSceneRolePic = BEGIN_WALKPIC2 + SFace * 7;
+    DrawScene();
+    ShowSceneName(CurScene);
+    CheckEvent3();
 
     while (SDL_PollEvent(&event) || true)
     {
-        Redraw();
-        UpdateAllScreen();
-        CheckBasicEvent();
+        uint32_t timer1 = SDL_GetTicks();
+        now2 += 20;
+        if ((int)now2 > 4000)
+        {
+            now2 = 0;
+            TimeInWater--;
+        }
+        if (Where != 1)
+        {
+            break;
+        }
 
+        // 场景内动态效果
+        uint32_t now = SDL_GetTicks();
+        if ((int)(now - next_time) > 0)
+        {
+            for (int i = 0; i < 200; i++)
+            {
+                if (DData[CurScene][i][7] < DData[CurScene][i][6])
+                {
+                    DData[CurScene][i][5] += 2;
+                    if (DData[CurScene][i][5] > DData[CurScene][i][6])
+                    {
+                        DData[CurScene][i][5] = DData[CurScene][i][7];
+                    }
+                }
+            }
+            if (walking == 0)
+            {
+                stillcount++;
+            }
+            else
+            {
+                stillcount = 0;
+            }
+            if (stillcount >= 10)
+            {
+                SStep = 0;
+                stillcount = 0;
+            }
+            next_time = now + 200;
+            AmiCount++;
+        }
+
+        // 检查是否位于出口
+        if ((Sx == Rscene[CurScene].ExitX[0] && Sy == Rscene[CurScene].ExitY[0]) ||
+            (Sx == Rscene[CurScene].ExitX[1] && Sy == Rscene[CurScene].ExitY[1]) ||
+            (Sx == Rscene[CurScene].ExitX[2] && Sy == Rscene[CurScene].ExitY[2]))
+        {
+            Where = 0;
+            instruct_14();
+            break;
+        }
+        // 检查是否位于跳转口
+        if (Sx == Rscene[CurScene].JumpX1 && Sy == Rscene[CurScene].JumpY1 &&
+            Rscene[CurScene].JumpScene >= 0)
+        {
+            instruct_14();
+            PreScene = CurScene;
+            CurScene = Rscene[CurScene].JumpScene;
+            if (Rscene[PreScene].MainEntranceX1 != 0)
+            {
+                Sx = Rscene[CurScene].EntranceX;
+                Sy = Rscene[CurScene].EntranceY;
+            }
+            else
+            {
+                Sx = Rscene[CurScene].JumpX2;
+                Sy = Rscene[CurScene].JumpY2;
+            }
+            InitialScene();
+            walking = 0;
+            now2 = 0;
+            TimeInWater = 15 + Rrole[0].CurrentMP / 100;
+            DrawScene();
+            ShowSceneName(CurScene);
+            CheckEvent3();
+        }
+
+        CheckBasicEvent();
         switch (event.type)
         {
         case SDL_EVENT_KEY_UP:
+        {
+            if (*keyup == 0 && *keydown == 0 && *keyleft == 0 && *keyright == 0)
+            {
+                walking = 0;
+                speed = 0;
+            }
             if (event.key.key == SDLK_ESCAPE)
             {
                 MenuEsc();
+                if (Where >= 3)
+                {
+                    break;
+                }
+                walking = 0;
+            }
+            if (event.key.key == SDLK_RETURN || event.key.key == SDLK_SPACE)
+            {
+                CheckEvent1();
+            }
+            if (event.key.key == SDLK_TAB)
+            {
+                SpecialFunction();
             }
             break;
+        }
         case SDL_EVENT_KEY_DOWN:
         {
-            int dx = 0, dy = 0;
-            if (event.key.key == SDLK_UP)
+            if (event.key.key == SDLK_LEFT)
             {
-                dx = -1;
-                dy = -1;
-                SFace = 0;
+                SFace = 2;
+                walking = 1;
             }
             if (event.key.key == SDLK_RIGHT)
             {
-                dx = 1;
-                dy = -1;
                 SFace = 1;
+                walking = 1;
             }
-            if (event.key.key == SDLK_LEFT)
+            if (event.key.key == SDLK_UP)
             {
-                dx = -1;
-                dy = 1;
-                SFace = 2;
+                SFace = 0;
+                walking = 1;
             }
             if (event.key.key == SDLK_DOWN)
             {
-                dx = 1;
-                dy = 1;
                 SFace = 3;
+                walking = 1;
             }
-            if (dx != 0 || dy != 0)
+            break;
+        }
+        case SDL_EVENT_MOUSE_MOTION:
+        {
+            if (ShowVirtualKey == 0)
             {
-                int nx = Sx + dx, ny = Sy + dy;
-                if (CanWalkInScene(nx, ny))
+                SDL_GetMouseState2(x1, y1);
+                if (x1 < CENTER_X && y1 < CENTER_Y)
                 {
-                    Sx = nx;
-                    Sy = ny;
-                    SStep++;
-                    CheckEvent1();
+                    SFace = 2;
                 }
-            }
-            if (event.key.key == SDLK_SPACE || event.key.key == SDLK_RETURN)
-            {
-                CheckEvent3();
+                if (x1 > CENTER_X && y1 < CENTER_Y)
+                {
+                    SFace = 0;
+                }
+                if (x1 < CENTER_X && y1 > CENTER_Y)
+                {
+                    SFace = 3;
+                }
+                if (x1 > CENTER_X && y1 > CENTER_Y)
+                {
+                    SFace = 1;
+                }
             }
             break;
         }
         case SDL_EVENT_MOUSE_BUTTON_UP:
+        {
             if (event.button.button == SDL_BUTTON_RIGHT)
             {
                 MenuEsc();
+                if (Where >= 3)
+                {
+                    break;
+                }
+                nowstep = 0;
+                walking = 0;
+                if (Where == 0)
+                {
+                    if (Rscene[CurScene].ExitMusic >= 0)
+                    {
+                        StopMP3();
+                        PlayMP3(Rscene[CurScene].ExitMusic, -1);
+                    }
+                    break;
+                }
+            }
+            if (event.button.button == SDL_BUTTON_MIDDLE)
+            {
+                CheckEvent1();
+            }
+            if (event.button.button == SDL_BUTTON_LEFT)
+            {
+                if (walking == 0)
+                {
+                    walking = 2;
+                    GetMousePosition(axp, ayp, Sx, Sy, SData[CurScene][4][Sx][Sy]);
+                    if (axp >= 0 && axp <= 63 && ayp >= 0 && ayp <= 63)
+                    {
+                        memset(Fway, -1, sizeof(Fway));
+                        FindWay(Sx, Sy);
+                        gotoEvent = -1;
+                        if (CellPhone == 1 && InRegion(axp, 0, 64) && InRegion(ayp, 0, 64) &&
+                            SData[CurScene][3][axp][ayp] < 0)
+                        {
+                            for (int i1 = axp + 1; i1 >= axp; i1--)
+                            {
+                                for (int i2 = ayp + 1; i2 >= ayp; i2--)
+                                {
+                                    if (SData[CurScene][3][i1][i2] > 0 && !CanWalkInScene(i1, i2))
+                                    {
+                                        axp = i1;
+                                        ayp = i2;
+                                    }
+                                }
+                            }
+                        }
+                        if (InRegion(axp, 0, 64) && InRegion(ayp, 0, 64) &&
+                            SData[CurScene][3][axp][ayp] >= 0)
+                        {
+                            if (abs(axp - Sx) + abs(ayp - Sy) == 1)
+                            {
+                                if (axp < Sx) SFace = 0;
+                                if (axp > Sx) SFace = 3;
+                                if (ayp < Sy) SFace = 2;
+                                if (ayp > Sy) SFace = 1;
+                                if (CheckEvent1())
+                                {
+                                    walking = 0;
+                                }
+                            }
+                            else
+                            {
+                                if (!CanWalkInScene(axp, ayp))
+                                {
+                                    int minstep = 4096;
+                                    for (int i = 0; i < 4; i++)
+                                    {
+                                        axp1 = axp;
+                                        ayp1 = ayp;
+                                        switch (i)
+                                        {
+                                        case 0: axp1 = axp - 1; break;
+                                        case 1: ayp1 = ayp + 1; break;
+                                        case 2: ayp1 = ayp - 1; break;
+                                        case 3: axp1 = axp + 1; break;
+                                        }
+                                        int step = Fway[axp1][ayp1];
+                                        if (step >= 0 && minstep > step)
+                                        {
+                                            gotoEvent = i;
+                                            minstep = step;
+                                        }
+                                    }
+                                    if (gotoEvent >= 0)
+                                    {
+                                        switch (gotoEvent)
+                                        {
+                                        case 0: axp = axp - 1; break;
+                                        case 1: ayp = ayp + 1; break;
+                                        case 2: ayp = ayp - 1; break;
+                                        case 3: axp = axp + 1; break;
+                                        }
+                                        gotoEvent = 3 - gotoEvent;
+                                    }
+                                }
+                            }
+                        }
+                        if (axp >= 0 && ayp >= 0)
+                        {
+                            Moveman(Sx, Sy, axp, ayp);
+                            nowstep = Fway[axp][ayp] - 1;
+                        }
+                    }
+                    else
+                    {
+                        walking = 0;
+                    }
+                }
+                else
+                {
+                    walking = 0;
+                }
+                event.button.button = 0;
             }
             break;
         }
-
-        // 检查出口
-        for (int i = 0; i < 3; i++)
-        {
-            if (Sx == Rscene[CurScene].ExitX[i] && Sy == Rscene[CurScene].ExitY[i])
-            {
-                Where = 0;
-                PlayMP3(Rscene[CurScene].ExitMusic, -1);
-                return 0;
-            }
         }
 
-        CleanKeyValue();
-        SDL_Delay((uint32_t)WALK_SPEED2);
+        // 是否处于行走状态
+        if (walking > 0)
+        {
+            switch (walking)
+            {
+            case 1:
+            {
+                speed++;
+                stillcount = 0;
+                if (speed == 1 || speed >= 5)
+                {
+                    Sx1 = Sx;
+                    Sy1 = Sy;
+                    switch (SFace)
+                    {
+                    case 0: Sx1--; break;
+                    case 1: Sy1++; break;
+                    case 2: Sy1--; break;
+                    case 3: Sx1++; break;
+                    }
+                    SStep++;
+                    if (SStep >= 7)
+                    {
+                        SStep = 1;
+                    }
+                    if (CanWalkInScene(Sx1, Sy1))
+                    {
+                        Sx = Sx1;
+                        Sy = Sy1;
+                    }
+                }
+                break;
+            }
+            case 2:
+            {
+                if (nowstep >= 0)
+                {
+                    if (liney[nowstep] - Sy < 0)
+                    {
+                        SFace = 2;
+                    }
+                    else if (liney[nowstep] - Sy > 0)
+                    {
+                        SFace = 1;
+                    }
+                    else if (linex[nowstep] - Sx > 0)
+                    {
+                        SFace = 3;
+                    }
+                    else
+                    {
+                        SFace = 0;
+                    }
+                    SStep++;
+                    if (SStep >= 7)
+                    {
+                        SStep = 1;
+                    }
+                    if (abs(Sx - linex[nowstep]) + abs(Sy - liney[nowstep]) == 1)
+                    {
+                        Sx = linex[nowstep];
+                        Sy = liney[nowstep];
+                    }
+                    else
+                    {
+                        walking = 0;
+                    }
+                    nowstep--;
+                }
+                else
+                {
+                    walking = 0;
+                    if (gotoEvent >= 0)
+                    {
+                        SFace = gotoEvent;
+                        CheckEvent1();
+                    }
+                }
+                break;
+            }
+            }
+
+            CurSceneRolePic = BEGIN_WALKPIC2 + SFace * 7 + SStep;
+            DrawScene();
+            UpdateAllScreen();
+            CheckEvent3();
+        }
+
+        event.key.key = 0;
+        event.button.button = 0;
+
+        if (walking == 0 && Where == 1)
+        {
+            if (SCENEAMI > 0)
+            {
+                CurSceneRolePic = BEGIN_WALKPIC2 + SFace * 7 + SStep;
+                DrawScene();
+                if (walking == 0)
+                {
+                    GetMousePosition(axp, ayp, Sx, Sy, SData[CurScene][4][Sx][Sy]);
+                    if (axp >= 0 && axp < 64 && ayp >= 0 && ayp < 64)
+                    {
+                        TPosition pos = GetPositionOnScreen(axp, ayp, Sx, Sy);
+                        DrawMPic(1, pos.x, pos.y - SData[CurScene][4][axp][ayp], 0, 0, 50, 0, 0);
+                        if (!CanWalkInScene(axp, ayp))
+                        {
+                            if (SData[CurScene][3][axp][ayp] >= 0)
+                            {
+                                DrawMPic(2001, pos.x, pos.y - SData[CurScene][4][axp][ayp], 0, 0, 75, 0, 0);
+                            }
+                            else
+                            {
+                                DrawMPic(2001, pos.x, pos.y - SData[CurScene][4][axp][ayp], 0, 0, 50, 0, 0);
+                            }
+                        }
+                    }
+                }
+                UpdateAllScreen();
+            }
+            SDL_Delay(40);
+        }
+        else
+        {
+            SDL_Delay((uint32_t)WALK_SPEED2);
+        }
+    }
+
+    MFace = SFace;
+    ReSetEntrance();
+    if (ExitSceneMusicNum > 0 && Where != 3)
+    {
+        StopMP3();
+        PlayMP3(ExitSceneMusicNum, -1);
     }
     return 0;
 }
@@ -1668,74 +2379,86 @@ void ShowSceneName(int snum)
     }
 }
 
-bool CanWalkInScene(int x, int y)
+bool CanWalkInScene(int x1, int y1, int x, int y)
 {
-    if (x < 0 || y < 0 || x >= 64 || y >= 64)
-    {
+    if (x < 0 || x > 63 || y < 0 || y > 63)
         return false;
-    }
-    if (SData[CurScene][1][x][y] > 0)
-    {
-        return false;    // 建筑层阻挡
-    }
-    if (SData[CurScene][3][x][y] > 0)
-    {
-        return false;    // 事件层检查(某些事件阻挡)
-    }
+    // 建筑层: 仅 -2, -1, 0 可通行
+    if (SData[CurScene][1][x][y] > 0 || SData[CurScene][1][x][y] < -2)
+        return false;
+    // 高度差检查(仅相邻格)
+    if (abs(SData[CurScene][4][x][y] - SData[CurScene][4][x1][y1]) > 10
+        && abs(x1 - x) + abs(y1 - y) == 1)
+        return false;
+    // 事件类型1阻挡
+    if (SData[CurScene][3][x][y] >= 0
+        && DData[CurScene][SData[CurScene][3][x][y]][0] == 1)
+        return false;
+    // 特定地面贴图阻挡
+    int g = SData[CurScene][0][x][y];
+    if ((g >= 358 && g <= 362) || g == 522 || g == 1022
+        || (g >= 1324 && g <= 1330) || g == 1348)
+        return false;
     return true;
 }
 
-bool CanWalkInScene(int x1, int y1, int x, int y)
+bool CanWalkInScene(int x, int y)
 {
-    return CanWalkInScene(x, y);
+    return CanWalkInScene(Sx, Sy, x, y);
 }
 
 bool CheckEvent1()
 {
-    int e = SData[CurScene][3][Sx][Sy];
-    if (e > 0 && DData[CurScene][e][0] == 1)
+    int x = Sx, y = Sy;
+    switch (SFace)
     {
-        CurEvent = e;
-        CallEvent(e);
-        return true;
+    case 0: x = x - 1; break;
+    case 1: y = y + 1; break;
+    case 2: y = y - 1; break;
+    case 3: x = x + 1; break;
     }
-    return false;
+    bool result = false;
+    if (x >= 0 && x < 64 && y >= 0 && y < 64 && SData[CurScene][3][x][y] >= 0)
+    {
+        CurEvent = SData[CurScene][3][x][y];
+        if (DData[CurScene][CurEvent][2] > 0)
+        {
+            Cx = Sx;
+            Cy = Sy;
+            SStep = 0;
+            CurSceneRolePic = BEGIN_WALKPIC2 + SFace * 7 + SStep;
+            CallEvent(DData[CurScene][CurEvent][2]);
+            result = true;
+        }
+    }
+    CurEvent = -1;
+    if (MMAPAMI == 0 || SCENEAMI == 0)
+    {
+        Redraw();
+        UpdateAllScreen();
+    }
+    return result;
 }
 
 bool CheckEvent3()
 {
-    // 面对方向的格子
-    int fx = Sx, fy = Sy;
-    switch (SFace)
+    int enumVal = SData[CurScene][3][Sx][Sy];
+    bool result = false;
+    if (enumVal >= 0 && DData[CurScene][enumVal][4] > 0)
     {
-    case 0:
-        fx--;
-        fy--;
-        break;
-    case 1:
-        fx++;
-        fy--;
-        break;
-    case 2:
-        fx--;
-        fy++;
-        break;
-    case 3:
-        fx++;
-        fy++;
-        break;
-    }
-    if (fx >= 0 && fy >= 0 && fx < 64 && fy < 64)
-    {
-        int e = SData[CurScene][3][fx][fy];
-        if (e > 0 && DData[CurScene][e][0] == 3)
+        CurEvent = enumVal;
+        Cx = Sx;
+        Cy = Sy;
+        CallEvent(DData[CurScene][enumVal][4]);
+        result = true;
+        CurEvent = -1;
+        if (MMAPAMI == 0 || SCENEAMI == 0)
         {
-            CurEvent = e;
-            CallEvent(e);
-            return true;
+            Redraw();
+            UpdateAllScreen();
         }
     }
-    return false;
+    return result;
 }
 
 void TurnBlack()
@@ -4017,7 +4740,8 @@ void ShowStatus(int rnum, int bnum)
         "拳掌功夫", "御劍能力", "耍刀技巧",
         "特殊兵器", "暗器技巧",
         "武器", "護具",
-        "所會武功"
+        "所會武功",
+        "受傷", "中毒", "所會內功"
     };
 
     int xp = CENTER_X - 384 + 260;
@@ -4358,6 +5082,10 @@ void ShowSimpleStatus(int rnum, int x, int y, int forTeam)
             SDL_FillSurfaceRect(SimpleState, nullptr, 0);
         }
     }
+    else
+    {
+        forTeam = std::clamp(forTeam, 0, 5);
+    }
 
     SDL_Rect dest2 = { x, y, 960, 90 };
     int ox = 0, oy = 0;
@@ -4382,6 +5110,7 @@ void ShowSimpleStatus(int rnum, int x, int y, int forTeam)
     {
         w = 138 * Rrole[rnum].CurrentHP / std::min((int)Rrole[rnum].MaxHP, 9999);
     }
+    w = std::clamp(w, 0, 138);
     color = MapRGBA(196, std::max(0, 25 - Rrole[rnum].Hurt / 5), 16);
     DrawRectangleWithoutFrame(ox + 96, oy + 32, w, 9, color, -1);
     DrawRectangleWithoutFrame(ox + 96 + w, oy + 32, 138 - w, 9, color, alpha);
@@ -4395,6 +5124,7 @@ void ShowSimpleStatus(int rnum, int x, int y, int forTeam)
     {
         w = 138 * Rrole[rnum].CurrentMP / Rrole[rnum].MaxMP;
     }
+    w = std::clamp(w, 0, 138);
     switch (Rrole[rnum].MPType)
     {
     case 0: color = MapRGBA(112, 12, 112); break;
@@ -4406,6 +5136,7 @@ void ShowSimpleStatus(int rnum, int x, int y, int forTeam)
 
     // PhyPower bar
     w = 83 * Rrole[rnum].PhyPower / MAX_PHYSICAL_POWER;
+    w = std::clamp(w, 0, 83);
     color = MapRGBA(128, 128, 255);
     DrawRectangleWithoutFrame(ox + 115, oy + 65, w, 9, color, -1);
     DrawRectangleWithoutFrame(ox + 115 + w, oy + 65, 83 - w, 9, color, alpha);
@@ -4423,7 +5154,6 @@ void ShowSimpleStatus(int rnum, int x, int y, int forTeam)
         }
         else
         {
-            forTeam = std::clamp(forTeam, 0, 5);
             tex = SimpleTextTex[forTeam];
             sur = SimpleText[forTeam];
         }
@@ -6776,8 +7506,8 @@ void CloudCreate(int num)
     {
         return;
     }
-    Cloud[num].Positionx = rand() % (CENTER_X * 2 + 400) - 200;
-    Cloud[num].Positiony = rand() % (CENTER_Y * 2 + 200) - 100;
+    Cloud[num].Positionx = rand() % 17280;
+    Cloud[num].Positiony = rand() % 8640;
     Cloud[num].Speedx = rand() % 3 + 1;
     Cloud[num].Speedy = 0;
     Cloud[num].Picnum = rand() % std::max(1, CPicAmount);
@@ -6818,5 +7548,13 @@ void SpecialFunction()
     std::string str = "輸入功能編號";
     DrawTextWithRect(str, CENTER_X + 120, CENTER_Y - 240 + 130, 128, 0, ColColor(0x23));
     std::string str2 = "f" + std::to_string(EnterNumber(0, 32767, CENTER_X + 120, CENTER_Y - 240 + 200, 0));
-    ExecScript(AppPath + "script/1.lua", str2);
+    std::string scriptFile = AppPath + "script/1.lua";
+    if (!filefunc::fileExist(scriptFile))
+    {
+        str = " Script fail!";
+        DrawTextWithRect(str, CENTER_X - 384 + 400, CENTER_Y - 240 + 150, 150, ColColor(0x64), ColColor(0x66));
+        WaitAnyKey();
+        return;
+    }
+    ExecScript(scriptFile, str2);
 }

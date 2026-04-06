@@ -42,48 +42,130 @@ bool Battle(int battlenum, int getexp, int forceSingle)
     std::string str;
     if (battlenum >= 0 && battlenum < (int)BattleNames.size())
         str = BattleNames[battlenum];
+    else
+        str = std::string((char*)&WarSta.Name[0]);
     DrawTextWithRect(str, CENTER_X - DrawLength(str) * 5 - 24, CENTER_Y - 150, 0, ColColor(0x14), ColColor(0x16));
     UpdateAllScreen();
 
     if (autoselect)
     {
+        // 如果未发现自动参战设定, 则选择人物
         int SelectTeamList = SelectTeamMembers(forceSingle);
         for (int i = 0; i < 6; i++)
         {
-            int x = WarStaList[battlenum].TeamX[i];
-            int y = WarStaList[battlenum].TeamY[i];
+            int x = WarSta.TeamX[i];
+            int y = WarSta.TeamY[i];
             if (SelectTeamList & (1 << i))
             {
                 InitialBRole(BRoleAmount, TeamList[i], 0, x, y);
                 BRoleAmount++;
             }
         }
+        for (int i = 0; i < 6; i++)
+        {
+            int x = WarSta.TeamX[i];
+            int y = WarSta.TeamY[i] + 1;
+            if (WarSta.TeamMate[i] > 0 && instruct_16(WarSta.TeamMate[i], 1, 0) == 0)
+            {
+                InitialBRole(BRoleAmount, WarSta.TeamMate[i], 0, x, y);
+                BRoleAmount++;
+            }
+        }
     }
 
     if (MODVersion == 13)
+    {
+        // 设定敌方角色的状态, 珍珑之战除外
         if (CurrentBattle != 178)
             SetEnemyAttribute();
+        // 欧阳锋洪七公雪山之战
+        if (CurrentBattle == 159 || CurrentBattle == 292)
+        {
+            Rrole[243].CurrentHP = 999;
+            Rrole[243].CurrentMP = 10;
+            Rrole[243].Movestep = 0;
+            Rrole[244].CurrentHP = 999;
+            Rrole[244].CurrentMP = 10;
+            Rrole[244].Movestep = 0;
+        }
+    }
 
-    LoadBattleTiles();
+    // 调整人物的方向, 面向距离最短的敌人
+    for (int i1 = 0; i1 < BRoleAmount; i1++)
+    {
+        int mindis = 128;
+        for (int i2 = 0; i2 < BRoleAmount; i2++)
+        {
+            if (Brole[i1].Team != Brole[i2].Team)
+            {
+                int dis = CalBroleDistance(i1, i2);
+                if (dis < mindis)
+                {
+                    Brole[i1].Face = CalFace(i1, i2);
+                    mindis = dis;
+                }
+            }
+        }
+    }
+
+    for (int i = 0; i < BRoleAmount; i++)
+    {
+        if (Brole[i].Team == 0)
+            Brole[i].AutoMode = 1;
+        else
+            Brole[i].AutoMode = 0;
+        // 战场状态和情侣加成清空
+        for (int j = 0; j < 10; j++)
+            Brole[i].loverlevel[j] = 0;
+        for (int k = 0; k < 34; k++)
+            Brole[i].StateLevel[k] = 0;
+    }
+
+    TurnBlack();
+    int prewhere = Where;
     Where = 2;
+    InitialBFieldImage();
+    StopMP3();
+    PlayMP3(WarSta.MusicNum, -1);
+    BlackScreen = 0;
 
     Bx = Brole[0].X;
     By = Brole[0].Y;
+    Redraw();
+    TransBlackScreen();
+    if (battlenum >= 0 && battlenum < (int)BattleNames.size())
+        str = BattleNames[battlenum];
+    else
+        str = std::string((char*)&WarSta.Name[0]);
+    DrawTextWithRect(str, CENTER_X - DrawLength(str) * 5 - 24, CENTER_Y - 150, 0, ColColor(0x14), ColColor(0x16));
+    UpdateAllScreen();
+
+    LoadBattleTiles();
 
     BattleMainControl();
 
-    Where = 1;
-    FreeBattleTiles();
+    RestoreRoleStatus();
 
-    bool result = (Bstatus == 1);
-    if (result && getexp > 0)
+    if (Bstatus == 1)
     {
         AddExp();
         CheckLevelUp();
         CheckBook();
     }
-    RestoreRoleStatus();
-    return result;
+
+    Redraw();
+    UpdateAllScreen();
+
+    if (Rscene[CurScene].EntranceMusic >= 0)
+    {
+        StopMP3();
+        PlayMP3(Rscene[CurScene].EntranceMusic, -1);
+    }
+
+    FreeBattleTiles();
+
+    Where = prewhere;
+    return (Bstatus == 1);
 }
 
 int getBnum(int rnum)
@@ -142,45 +224,68 @@ void FreeBattleTiles()
 
 bool InitialBField()
 {
+    WarSta = WarStaList[CurrentBattle];
+    int fieldnum = WarSta.BFieldNum;
+    memcpy(&BField[0][0][0], &WARFLD.GRP[WARFLD.IDX[fieldnum]], 2 * 64 * 64 * 2);
+    for (int i1 = 0; i1 < 64; i1++)
+        for (int i2 = 0; i2 < 64; i2++)
+            BField[2][i1][i2] = -1;
     BRoleAmount = 0;
-    // 从WarStaList加载战场数据
-    if (CurrentBattle < 0 || CurrentBattle >= 401) return true;
+    bool result = true;
 
-    TWarData& w = WarStaList[CurrentBattle];
-    // 初始化敌方角色
-    for (int i = 0; i < 20; i++)
+    for (int i = 0; i < MAX_BATTLE_ROLE; i++)
     {
-        if (w.EnemyX[i] >= 0 && w.EnemyY[i] >= 0 && w.Enemy[i] >= 0)
+        Brole[i].rnum = -1;
+        Brole[i].Dead = 1;
+        Brole[i].Y = -1;
+        Brole[i].X = -1;
+    }
+
+    // 我方自动参战数据
+    for (int i = 0; i < 6; i++)
+    {
+        int x = WarSta.TeamX[i];
+        int y = WarSta.TeamY[i];
+        if (WarSta.AutoTeamMate[i] >= 0)
         {
-            InitialBRole(BRoleAmount, w.Enemy[i], 1, w.EnemyX[i], w.EnemyY[i]);
+            InitialBRole(BRoleAmount, WarSta.AutoTeamMate[i], 0, x, y);
             BRoleAmount++;
         }
     }
-    return true;
+    // 如没有自动参战人物, 返回假, 激活选择人物
+    if (BRoleAmount > 0)
+        result = false;
+    for (int i = 0; i < 20; i++)
+    {
+        int x = WarSta.EnemyX[i];
+        int y = WarSta.EnemyY[i];
+        if (WarSta.Enemy[i] >= 0)
+        {
+            InitialBRole(BRoleAmount, WarSta.Enemy[i], 1, x, y);
+            BRoleAmount++;
+        }
+    }
+    return result;
 }
 
 void InitialBRole(int i, int rnum, int team, int x, int y)
 {
-    if (i >= MAX_BATTLE_ROLE) return;
-    memset(&Brole[i], 0, sizeof(TBattleRole));
+    if (i < 0 || i >= MAX_BATTLE_ROLE) return;
     Brole[i].rnum = rnum;
     Brole[i].Team = team;
-    Brole[i].X = x;
     Brole[i].Y = y;
-    Brole[i].Face = (team == 0) ? 1 : 2;
+    Brole[i].X = x;
+    if (team == 0)
+        Brole[i].Face = 2;
+    else
+        Brole[i].Face = 1;
     Brole[i].Dead = 0;
-    Brole[i].Auto = (team == 0) ? 0 : 1;
-    Brole[i].Acted = 0;
-    Brole[i].ShowNumber = 0;
     Brole[i].Step = 0;
-
-    if (rnum >= 0 && rnum < 1000)
-    {
-        Brole[i].rnum = rnum;
-        // 从角色数据复制战斗属性
-        TRole& r = Rrole[rnum];
-        Brole[i].Pic = r.Data[14];  // WalkPic
-    }
+    Brole[i].Acted = 0;
+    Brole[i].ExpGot = 0;
+    Brole[i].Auto = 0;
+    Brole[i].RealSpeed = 0;
+    Brole[i].RealProgress = rand() % 7000;
 }
 
 int SelectTeamMembers(int forceSingle)
@@ -306,39 +411,374 @@ int CalBroleDistance(int bnum1, int bnum2)
 //----------------------------------------------------------------------
 void BattleMainControl()
 {
+    int delaytime = 7;
+    Bx = Brole[0].X;
+    By = Brole[0].Y;
+
+    // 若开启进度条, 则初始化一个随机值
+    if (SEMIREAL == 1)
+    {
+        for (int i = 0; i < BRoleAmount; i++)
+            Brole[i].RealProgress = rand() % 7000;
+    }
+
+    // 情侣加成对话
+    ClearDeadRolePic();
+    for (int k = 0; k < MAX_LOVER; k++)
+    {
+        int m = IFinbattle(loverlist[k][0]);
+        int n = IFinbattle(loverlist[k][1]);
+        if (m >= 0 && n >= 0 && m != n)
+        {
+            if (m == 0 && n == 0) break;
+            Bx = Brole[n].X;
+            By = Brole[n].Y;
+            Redraw();
+            NewTalk(loverlist[k][1], loverlist[k][4], -2, 0, 0, 28515, 0);
+            Bx = Brole[m].X;
+            By = Brole[m].Y;
+            Redraw();
+            NewTalk(loverlist[k][0], loverlist[k][4] + 1, -2, 1, 0, 28515, 0);
+            Brole[m].loverlevel[loverlist[k][2]] = loverlist[k][3];
+            if (loverlist[k][2] != 6) // 替代伤害为单向
+                Brole[n].loverlevel[loverlist[k][2]] = loverlist[k][3];
+        }
+    }
+
+    // 战斗未分出胜负则继续
     while (Bstatus == 0)
     {
         CalMoveAbility();
-        ReArrangeBRole();
+
+        if (SEMIREAL == 0)
+            ReArrangeBRole();
+
+        ClearDeadRolePic();
 
         for (int i = 0; i < BRoleAmount; i++)
         {
-            if (Brole[i].Dead != 0) continue;
-            if (Brole[i].Acted != 0) continue;
+            if ((SEMIREAL == 0) || (Brole[i].Acted == 1))
+            {
+                // 7号状态, 战神, 随机获得一种正面状态
+                if (Brole[i].StateLevel[7] > 0)
+                {
+                    int si = rand() % 21;
+                    if (si == 0 || si == 1 || si == 2 || si == 4 || si == 11 || si == 14 || si == 15)
+                    {
+                        Brole[i].StateLevel[si] = Brole[i].StateLevel[7];
+                        Brole[i].StateRound[si] = 3;
+                    }
+                    else if (si == 7)
+                    {
+                        Brole[i].StateRound[7] = Brole[i].StateRound[7] + 1;
+                    }
+                    else if (si == 5 || si == 6 || si == 20)
+                    {
+                        Brole[i].StateLevel[si] = Brole[i].StateLevel[7] / 2;
+                        Brole[i].StateRound[si] = 3;
+                    }
+                    else
+                    {
+                        Brole[i].StateLevel[si] = 1;
+                        Brole[i].StateRound[si] = 3;
+                    }
+                }
 
+                // 24号状态, 悲歌, 随机获得一种奖励
+                if (Brole[i].StateLevel[24] > 0)
+                {
+                    int si = rand() % 6;
+                    if (si == 0 || si == 1)
+                    {
+                        if (Brole[i].StateLevel[si] <= 0)
+                        {
+                            Brole[i].StateLevel[si] = 20;
+                            Brole[i].StateRound[si] = 1;
+                        }
+                        else
+                            Brole[i].StateRound[si] = Brole[i].StateRound[si] + 1;
+                    }
+                    else if (si == 3)
+                    {
+                        if (Brole[i].StateLevel[si] <= 0)
+                        {
+                            Brole[i].StateLevel[si] = 3;
+                            Brole[i].StateRound[si] = 1;
+                        }
+                        else
+                            Brole[i].StateRound[si] = Brole[i].StateRound[si] + 1;
+                    }
+                    else if (si == 2)
+                    {
+                        Rrole[Brole[i].rnum].PhyPower = Rrole[Brole[i].rnum].PhyPower + 50;
+                        if (Rrole[Brole[i].rnum].PhyPower > MAX_PHYSICAL_POWER)
+                            Rrole[Brole[i].rnum].PhyPower = MAX_PHYSICAL_POWER;
+                    }
+                    else if (si == 4)
+                    {
+                        Rrole[Brole[i].rnum].CurrentHP = Rrole[Brole[i].rnum].CurrentHP + 1000;
+                        if (Rrole[Brole[i].rnum].CurrentHP > Rrole[Brole[i].rnum].MaxHP)
+                            Rrole[Brole[i].rnum].CurrentHP = Rrole[Brole[i].rnum].MaxHP;
+                    }
+                    else if (si == 5)
+                    {
+                        Rrole[Brole[i].rnum].CurrentMP = Rrole[Brole[i].rnum].CurrentMP + 1000;
+                        if (Rrole[Brole[i].rnum].CurrentMP > Rrole[Brole[i].rnum].MaxMP)
+                            Rrole[Brole[i].rnum].CurrentMP = Rrole[Brole[i].rnum].MaxMP;
+                    }
+                }
+            }
+            // 是否已行动, 显示数字清空
+            Brole[i].Acted = 0;
+            Brole[i].ShowNumber = 0;
+            Brole[i].Moved = 0;
+        }
+
+        if (SEMIREAL == 1)
+        {
+            Redraw();
+            int act = 0;
+            int i = 0;
+            while (true)
+            {
+                SDL_PollEvent(&event);
+                for (i = 0; i < BRoleAmount; i++)
+                {
+                    if (Brole[i].Dead == 0)
+                    {
+                        Brole[i].RealProgress = Brole[i].RealProgress + Brole[i].RealSpeed + delaytime;
+                        if (Brole[i].RealProgress >= 10000)
+                        {
+                            Brole[i].RealProgress = Brole[i].RealProgress - 10000;
+                            act = 1;
+                            break;
+                        }
+                    }
+                }
+                if (act == 1)
+                    break;
+                Redraw();
+                UpdateAllScreen();
+                SDL_Delay(delaytime);
+                CheckBasicEvent();
+            }
+        }
+
+        int i;
+        if (SEMIREAL == 0)
+            i = 0;
+
+        while (i < BRoleAmount && Bstatus == 0)
+        {
+            // 当前人物位置作为屏幕中心
             Bx = Brole[i].X;
             By = Brole[i].Y;
 
-            Redraw();
-            UpdateAllScreen();
+            if (Brole[i].Dead == 0)
+            {
+                Redraw();
+                UpdateAllScreen();
+            }
+            CheckBasicEvent();
+            // 战场序号保存至变量28005
+            x50[28005 + 0x8000] = i;
 
-            if (Brole[i].Auto == 0)
-                BattleMenu(i);
+            // 混乱和控制状态, 临时修改其阵营
+            Brole[i].PreTeam = Brole[i].Team;
+            if (Brole[i].StateLevel[28] < 0)
+                Brole[i].Team = rand() % 99;
+            if (Brole[i].StateLevel[27] < 0)
+                Brole[i].Team = -Brole[i].StateLevel[27] - 1;
+
+            if (Brole[i].Moved == 0)
+                Brole[i].Step = CalBroleMoveAbility(i);
+
+            // 26号状态定身
+            // 未阵亡, 未被定身, 进入战斗
+            if (Brole[i].Dead == 0 && Brole[i].StateLevel[26] >= 0)
+            {
+                // 我方且非自动战斗, 显示选单
+                if (Brole[i].Team == 0 && Brole[i].Auto == 0)
+                {
+                    TBattleRole tempBrole;
+                    if (Brole[i].Acted == 0)
+                        tempBrole = Brole[i];
+                    switch (BattleMenu(i))
+                    {
+                    case 0: MoveRole(i); break;
+                    case 1: Attack(i); break;
+                    case 2: UsePoison(i); break;
+                    case 3: MedPoison(i); break;
+                    case 4: Medcine(i); break;
+                    case 5: BattleMenuItem(i); break;
+                    case 6: Wait(i); break;
+                    case 7: SelectShowStatus(i); break;
+                    case 8:
+                    case 9: Rest(i); break;
+                    case 10: Auto(i); break;
+                    case 11: GiveUp(i); break;
+                    default:
+                        BField[2][tempBrole.X][tempBrole.Y] = (int16_t)i;
+                        BField[2][Brole[i].X][Brole[i].Y] = -1;
+                        Brole[i] = tempBrole;
+                        break;
+                    }
+                }
+                else
+                {
+                    AutoBattle3(i);
+                    if (Rrole[Brole[i].rnum].addnum == 3) // 额外一次攻击
+                    {
+                        Brole[i].Acted = 0;
+                        AutoBattle3(i);
+                    }
+                    Brole[i].Acted = 1;
+                }
+            }
             else
-                AutoBattle(i);
+                Brole[i].Acted = 1;
 
-            Bstatus = BattleStatus();
-            if (Bstatus != 0) break;
-        }
-
-        if (Bstatus == 0)
-        {
-            CalPoiHurtLife();
             ClearDeadRolePic();
+            Brole[i].Pic = 0;
+            if (Brole[i].Dead == 0)
+            {
+                Redraw();
+                UpdateAllScreen();
+            }
+
+            // 恢复混乱的人的阵营
+            if (Brole[i].StateLevel[28] < 0)
+                Brole[i].Team = Brole[i].PreTeam;
+            // 检测是否有一方全灭
             Bstatus = BattleStatus();
-            RoundOver();
-            BattleRound++;
+            // 恢复被控制人的阵营
+            if (Brole[i].StateLevel[27] < 0)
+                Brole[i].Team = Brole[i].PreTeam;
+
+            if (Brole[i].Acted == 1)
+            {
+                // 内功
+                if (Brole[i].Dead == 0)
+                {
+                    for (int j = 0; j < 4; j++)
+                    {
+                        int neinum = Rrole[Brole[i].rnum].NeiGong[j];
+                        if (neinum <= 0) break;
+                        int neilevel = Rrole[Brole[i].rnum].NGLevel[j] / 100 + 1;
+                        Rrole[Brole[i].rnum].NGLevel[j] = std::min(999, Rrole[Brole[i].rnum].NGLevel[j] + 1);
+
+                        if (Rmagic[neinum].AddMP[1] > 0)
+                        {
+                            // 星宿毒功, 周围5*5格人中毒
+                            for (int x1 = -2; x1 <= 2; x1++)
+                                for (int y1 = -2; y1 <= 2; y1++)
+                                {
+                                    if (Brole[i].X + x1 < 0 || Brole[i].X + x1 > 63 || Brole[i].Y + y1 < 0 || Brole[i].Y + y1 > 63)
+                                        continue;
+                                    if (BField[2][Brole[i].X + x1][Brole[i].Y + y1] >= 0)
+                                    {
+                                        int bnum = BField[2][Brole[i].X + x1][Brole[i].Y + y1];
+                                        if (Brole[bnum].Team != Brole[i].Team)
+                                        {
+                                            int pnum = Rmagic[neinum].AddMP[0] + (Rmagic[neinum].AddMP[1] - Rmagic[neinum].AddMP[0]) * neilevel / 10;
+                                            if (pnum > Rrole[Brole[bnum].rnum].DefPoi + Brole[bnum].loverlevel[3])
+                                            {
+                                                Rrole[Brole[bnum].rnum].Poison = Rrole[Brole[bnum].rnum].Poison + pnum;
+                                                ShowStringOnBrole(std::string((char*)&Rmagic[neinum].Name[0]) + "·群毒", i, 2);
+                                            }
+                                        }
+                                    }
+                                }
+                        }
+
+                        // 化毒, 将中毒转化为内力
+                        if (Rmagic[neinum].AttDistance[5] > 0)
+                        {
+                            int curepoi = Rmagic[neinum].AttDistance[5] * neilevel;
+                            if (curepoi > Rrole[Brole[i].rnum].Poison)
+                                curepoi = Rrole[Brole[i].rnum].Poison;
+                            if (curepoi > 0)
+                                ShowStringOnBrole(std::string((char*)&Rmagic[neinum].Name[0]) + "·化毒", i, 4);
+                            Rrole[Brole[i].rnum].Poison = Rrole[Brole[i].rnum].Poison - curepoi;
+                            Rrole[Brole[i].rnum].CurrentMP = Rrole[Brole[i].rnum].CurrentMP + curepoi * neilevel;
+                            if (Rrole[Brole[i].rnum].CurrentMP > Rrole[Brole[i].rnum].MaxMP)
+                                Rrole[Brole[i].rnum].CurrentMP = Rrole[Brole[i].rnum].MaxMP;
+                        }
+
+                        // 葵花宝典, 每回合随机获得加轻、加移、闪避状态
+                        if (Rmagic[neinum].AddMP[2] == 1 || Rmagic[neinum].AddMP[2] == 10)
+                        {
+                            if (rand() % 100 > 50)
+                            {
+                                ModifyState(i, 2, 50, 3);
+                                ShowStringOnBrole(std::string((char*)&Rmagic[neinum].Name[0]) + "·身輕", i, 3);
+                            }
+                            if (rand() % 100 > 50)
+                            {
+                                ModifyState(i, 3, 5, 3);
+                                ShowStringOnBrole(std::string((char*)&Rmagic[neinum].Name[0]) + "·速行", i, 3);
+                            }
+                            if (rand() % 100 > 50)
+                            {
+                                ModifyState(i, 16, 50, 3);
+                                ShowStringOnBrole(std::string((char*)&Rmagic[neinum].Name[0]) + "·閃避", i, 3);
+                            }
+                        }
+
+                        // 九阴真经, 每回合随机获得加攻、加防状态, 减受伤
+                        if (Rmagic[neinum].AddMP[2] == 2 || Rmagic[neinum].AddMP[2] == 10)
+                        {
+                            if (rand() % 100 > 50)
+                            {
+                                ModifyState(i, 0, 10 * neilevel, 3);
+                                ShowStringOnBrole(std::string((char*)&Rmagic[neinum].Name[0]) + "·威力", i, 3);
+                            }
+                            if (rand() % 100 > 50)
+                            {
+                                ModifyState(i, 1, 10 * neilevel, 3);
+                                ShowStringOnBrole(std::string((char*)&Rmagic[neinum].Name[0]) + "·剛體", i, 3);
+                            }
+                            Rrole[Brole[i].rnum].Hurt = Rrole[Brole[i].rnum].Hurt - 10 * neilevel;
+                            if (Rrole[Brole[i].rnum].Hurt < 0)
+                                Rrole[Brole[i].rnum].Hurt = 0;
+                        }
+
+                        // 北冥真气, 周围5*5格人减内, 自己回内
+                        if (Rmagic[neinum].AddMP[2] == 3 || Rmagic[neinum].AddMP[2] == 10)
+                        {
+                            for (int x1 = -2; x1 <= 2; x1++)
+                                for (int y1 = -2; y1 <= 2; y1++)
+                                {
+                                    if (Brole[i].X + x1 < 0 || Brole[i].X + x1 > 63 || Brole[i].Y + y1 < 0 || Brole[i].Y + y1 > 63)
+                                        continue;
+                                    if (BField[2][Brole[i].X + x1][Brole[i].Y + y1] >= 0)
+                                    {
+                                        int bnum = BField[2][Brole[i].X + x1][Brole[i].Y + y1];
+                                        if (Brole[bnum].Team != Brole[i].Team)
+                                        {
+                                            int pnum = 50 * neilevel;
+                                            if (pnum > Rrole[Brole[bnum].rnum].CurrentMP)
+                                                pnum = Rrole[Brole[bnum].rnum].CurrentMP;
+                                            Rrole[Brole[bnum].rnum].CurrentMP = Rrole[Brole[bnum].rnum].CurrentMP - pnum;
+                                            Rrole[Brole[i].rnum].CurrentMP = Rrole[Brole[i].rnum].CurrentMP + pnum;
+                                            if (Rrole[Brole[i].rnum].CurrentMP > Rrole[Brole[i].rnum].MaxMP)
+                                                Rrole[Brole[i].rnum].CurrentMP = Rrole[Brole[i].rnum].MaxMP;
+                                            ShowStringOnBrole(std::string((char*)&Rmagic[neinum].Name[0]) + "·納氣", i, 1);
+                                        }
+                                    }
+                                }
+                        }
+                    }
+                }
+                RoundOver(i);
+                i = i + 1;
+                if (SEMIREAL == 1)
+                    break;
+            }
         }
+        CalPoiHurtLife();
+        x50[28101 + 0x8000] = BRoleAmount;
+        RoundOver();
     }
 }
 
@@ -374,8 +814,6 @@ void CalMoveAbility()
     {
         Brole[i].RealSpeed = (int)(Brole[i].RealSpeed * 200.0 / maxRealspeed);
     }
-    for (int i = 0; i < BRoleAmount; i++)
-        Brole[i].Step = CalBroleMoveAbility(i);
 }
 
 void ReArrangeBRole()
@@ -417,22 +855,209 @@ int BattleStatus()
 
 int BattleMenu(int bnum)
 {
-    std::string menuStr[] = { "移動", "攻擊", "用毒", "解毒", "醫療", "物品", "等待", "狀態" };
-    int menu = CommonMenu(CENTER_X - 60, CENTER_Y - 100, 80, 7, 0, menuStr, 8);
-    switch (menu)
+    int x = 50, y = 40, h = 28;
+    int MenuStatus = 0xFE0; // bits 5-11 initially on (物品/等待/状态/调息/结束/自动/认输)
+    int max = 6;
+    std::string word[12];
+    std::string num_str[10];
+    word[0] = "移動"; word[1] = "武學"; word[2] = "用毒"; word[3] = "解毒";
+    word[4] = "醫療"; word[5] = "物品"; word[6] = "等待"; word[7] = "狀態";
+    word[8] = "調息"; word[9] = "結束"; word[10] = "自動"; word[11] = "認輸";
+    num_str[0] = "零"; num_str[1] = "一"; num_str[2] = "二"; num_str[3] = "三";
+    num_str[4] = "四"; num_str[5] = "五"; num_str[6] = "六"; num_str[7] = "七";
+    num_str[8] = "八"; num_str[9] = "九";
+
+    int rnum = Brole[bnum].rnum;
+
+    // 移动是否可用
+    if (Brole[bnum].Step > 0)
     {
-    case 0: MoveRole(bnum); break;
-    case 1: Attack(bnum); break;
-    case 2: UsePoison(bnum); break;
-    case 3: MedPoison(bnum); break;
-    case 4: Medcine(bnum); break;
-    case 5: BattleMenuItem(bnum); break;
-    case 6: Wait(bnum); break;
-    case 7: SelectShowStatus(bnum); break;
-    default: break;
+        MenuStatus = MenuStatus | 1;
+        max++;
     }
-    Brole[bnum].Acted = 1;
-    return menu;
+    // 攻击是否可用
+    if (Rrole[rnum].PhyPower >= 10 && Rrole[rnum].Poison < 100)
+    {
+        int p = 0;
+        for (int ii = 0; ii < 10; ii++)
+        {
+            if (Rrole[rnum].Magic[ii] > 0)
+            {
+                int mnum = Rrole[rnum].Magic[ii];
+                if (Rmagic[mnum].NeedItem < 0 ||
+                    (Rmagic[mnum].NeedItem >= 0 && Rmagic[mnum].NeedItemAmount <= GetItemAmount(Rmagic[mnum].NeedItem)
+                     && Rmagic[mnum].NeedMP <= Rrole[rnum].CurrentMP))
+                {
+                    p = 1;
+                    break;
+                }
+            }
+        }
+        if (p > 0)
+        {
+            MenuStatus = MenuStatus | 2;
+            max++;
+        }
+    }
+    // 用毒是否可用
+    if (Rrole[rnum].UsePoi > 0 && Rrole[rnum].PhyPower >= 30)
+    {
+        MenuStatus = MenuStatus | 4;
+        max++;
+    }
+    // 解毒是否可用
+    if (Rrole[rnum].MedPoi > 0 && Rrole[rnum].PhyPower >= 50)
+    {
+        MenuStatus = MenuStatus | 8;
+        max++;
+    }
+    // 医疗是否可用
+    if (Rrole[rnum].Medcine > 0 && Rrole[rnum].PhyPower >= 50)
+    {
+        MenuStatus = MenuStatus | 16;
+        max++;
+    }
+    // 等待是否可用 (SEMIREAL模式下不可用)
+    if (SEMIREAL == 1)
+    {
+        MenuStatus = MenuStatus - 64;
+        max--;
+    }
+    // 调息结束是否可用
+    if (Brole[bnum].Moved > 0)
+    {
+        MenuStatus = MenuStatus - 256; // 去掉调息
+        max--;
+    }
+    else
+    {
+        MenuStatus = MenuStatus - 512; // 去掉结束
+        max--;
+    }
+
+    // 显示战斗菜单的lambda
+    auto ShowBMenu = [&](int ms, int menu_idx, int mx) {
+        LoadFreshScreen(x, y);
+        int p = 0;
+        for (int ii = 0; ii < 12; ii++)
+        {
+            if ((p == menu_idx) && (ms & (1 << ii)))
+            {
+                DrawTextFrame(x, y + h * p, 4);
+                DrawShadowText(word[ii], x + 19, y + h * p + 3, ColColor(0x64), ColColor(0x66));
+                p++;
+            }
+            else if ((p != menu_idx) && (ms & (1 << ii)))
+            {
+                DrawTextFrame(x + 5, y + h * p, 4, 20);
+                DrawShadowText(word[ii], x + 24, y + h * p + 3, 0, 0x202020);
+                p++;
+            }
+        }
+        UpdateAllScreen();
+    };
+
+    Redraw();
+    ShowSimpleStatus(Brole[bnum].rnum, 80, CENTER_Y * 2 - 150);
+
+    // 显示回合数
+    char roundbuf[16];
+    snprintf(roundbuf, sizeof(roundbuf), "%d", BattleRound);
+    std::string roundStr(roundbuf);
+    int l = (int)roundStr.size();
+    DrawTextFrame(x + 100, y, 4 + l * 2);
+    for (int ii = 0; ii < l; ii++)
+    {
+        int digit = roundStr[ii] - '0';
+        if (digit >= 0 && digit <= 9)
+            DrawShadowText(num_str[digit], x + 139 + (ii + 1) * 20, y + 3, 0, 0x202020);
+    }
+    DrawShadowText("回合", x + 119, y + 3, 0, 0x202020);
+
+    UpdateAllScreen();
+    RecordFreshScreen(x, y, 90, max * h + 40);
+    int menu = 0;
+    ShowBMenu(MenuStatus, menu, max);
+
+    while (SDL_WaitEvent(&event))
+    {
+        CheckBasicEvent();
+        switch (event.type)
+        {
+        case SDL_EVENT_KEY_DOWN:
+            if (event.key.key == SDLK_UP)
+            {
+                menu--;
+                if (menu < 0) menu = max;
+                ShowBMenu(MenuStatus, menu, max);
+            }
+            if (event.key.key == SDLK_DOWN)
+            {
+                menu++;
+                if (menu > max) menu = 0;
+                ShowBMenu(MenuStatus, menu, max);
+            }
+            event.key.key = 0;
+            break;
+        case SDL_EVENT_KEY_UP:
+            if (event.key.key == SDLK_RETURN || event.key.key == SDLK_SPACE)
+                goto bmenu_done;
+            if (event.key.key == SDLK_ESCAPE)
+            {
+                menu = -1;
+                goto bmenu_done;
+            }
+            break;
+        case SDL_EVENT_MOUSE_BUTTON_UP:
+        {
+            int xm, ym;
+            if (event.button.button == SDL_BUTTON_LEFT && menu != -1 && MouseInRegion(x, y, 120, (max + 1) * h, xm, ym))
+                goto bmenu_done;
+            if (event.button.button == SDL_BUTTON_RIGHT)
+            {
+                menu = -1;
+                goto bmenu_done;
+            }
+            break;
+        }
+        case SDL_EVENT_MOUSE_MOTION:
+        {
+            int xm, ym;
+            if (MouseInRegion(x, y, 120, (max + 1) * h, xm, ym))
+            {
+                int menup = menu;
+                menu = (ym - y - 2) / h;
+                if (menu > max) menu = max;
+                if (menu < 0) menu = 0;
+                if (menup != menu)
+                    ShowBMenu(MenuStatus, menu, max);
+            }
+            break;
+        }
+        }
+    }
+
+bmenu_done:
+    // 将菜单选项索引映射回word数组索引
+    int result = -1;
+    if (menu >= 0)
+    {
+        int p = 0;
+        for (int ii = 0; ii < 12; ii++)
+        {
+            if (MenuStatus & (1 << ii))
+            {
+                if (p == menu)
+                {
+                    result = ii;
+                    break;
+                }
+                p++;
+            }
+        }
+    }
+    FreeFreshScreen();
+    return result;
 }
 
 void MoveRole(int bnum)
@@ -3047,12 +3672,76 @@ void CureAction(int bnum)
 
 void RoundOver()
 {
-    BattleRound++;
+    BattleRound = BattleRound + 1;
+    if (BattleRound % 15 == 0)
+    {
+        // 乱石嶙峋每整15回合清一次
+        bool removeStone = false;
+        for (int i1 = 0; i1 < 64; i1++)
+            for (int i2 = 0; i2 < 64; i2++)
+            {
+                if (BField[1][i1][i2] == 1487 * 2 + 1)
+                {
+                    BField[1][i1][i2] = 0;
+                    removeStone = true;
+                }
+            }
+        if (removeStone)
+            InitialBFieldImage(1);
+    }
+    if (GetItemAmount(COMPASS_ID) > 2)
+    {
+        // 恢复0号人物的森罗万象
+        for (int i = 0; i < 1002; i++)
+        {
+            if (Rmagic[i].ScriptNum == 31)
+            {
+                Rrole[0].Magic[0] = i;
+                break;
+            }
+        }
+    }
 }
 
 void RoundOver(int bnum)
 {
-    Brole[bnum].Acted = 1;
+    if ((SEMIREAL == 0) || (Brole[bnum].Acted == 1))
+    {
+        // 情侣和状态恢复生命
+        int rnum = Brole[bnum].rnum;
+        Rrole[rnum].CurrentHP = Rrole[rnum].CurrentHP + Rrole[rnum].MaxHP * Brole[bnum].StateLevel[5] / 100;
+        Rrole[rnum].CurrentHP = Rrole[rnum].CurrentHP + Rrole[rnum].MaxHP * Brole[bnum].loverlevel[7] / 100;
+        if (Rrole[rnum].CurrentHP > Rrole[rnum].MaxHP)
+            Rrole[rnum].CurrentHP = Rrole[rnum].MaxHP;
+
+        // 情侣和状态恢复内力
+        Rrole[rnum].CurrentMP = Rrole[rnum].CurrentMP + Rrole[rnum].MaxMP * Brole[bnum].StateLevel[6] / 100;
+        Rrole[rnum].CurrentMP = Rrole[rnum].CurrentMP + Rrole[rnum].MaxMP * Brole[bnum].loverlevel[8] / 100;
+        if (Rrole[rnum].CurrentMP < 0)
+            Rrole[rnum].CurrentMP = 0;
+        if (Rrole[rnum].CurrentMP > Rrole[rnum].MaxMP)
+            Rrole[rnum].CurrentMP = Rrole[rnum].MaxMP;
+
+        // 状态恢复体力
+        int addphy = MAX_PHYSICAL_POWER * Brole[bnum].StateLevel[20] / 100;
+        if ((Rrole[rnum].PhyPower + addphy < 20) && (addphy < 0))
+            addphy = 0;
+        Rrole[rnum].PhyPower = Rrole[rnum].PhyPower + addphy;
+        if (Rrole[rnum].PhyPower > MAX_PHYSICAL_POWER)
+            Rrole[rnum].PhyPower = MAX_PHYSICAL_POWER;
+        if (Rrole[rnum].PhyPower < 1)
+            Rrole[rnum].PhyPower = 1;
+
+        for (int j = 0; j < 34; j++)
+        {
+            if (Brole[bnum].StateRound[j] > 0)
+            {
+                Brole[bnum].StateRound[j] = Brole[bnum].StateRound[j] - 1;
+                if (Brole[bnum].StateRound[j] <= 0)
+                    Brole[bnum].StateLevel[j] = 0;
+            }
+        }
+    }
 }
 
 bool SelectAutoMode()
@@ -3185,7 +3874,26 @@ bool SelectAutoMode()
     return resultVal;
 }
 
-void Auto(int bnum) { AutoBattle(bnum); }
+void Auto(int bnum)
+{
+    if (!SelectAutoMode())
+        return;
+    for (int i = 0; i < BRoleAmount; i++)
+    {
+        if (Brole[i].Team == 0 && Brole[i].Dead == 0)
+        {
+            if (Brole[i].AutoMode == 0)
+                Brole[i].Auto = 0;
+            else
+                Brole[i].Auto = 1;
+        }
+    }
+    if (Brole[bnum].Auto > 0)
+    {
+        AutoBattle3(bnum);
+        Brole[bnum].Acted = 1;
+    }
+}
 
 void SetEnemyAttribute()
 {
@@ -3223,8 +3931,9 @@ void SetEnemyAttribute()
 
 int IFinbattle(int num)
 {
+    if (num < 0) return -1;
     for (int i = 0; i < BRoleAmount; i++)
-        if (Brole[i].rnum == num && Brole[i].Dead == 0) return i;
+        if (Brole[i].rnum == num) return i;
     return -1;
 }
 
@@ -3523,7 +4232,15 @@ bool SpecialAttack(int bnum)
     return false;
 }
 
-void GiveUp(int bnum) { Brole[bnum].Dead = 1; }
+void GiveUp(int bnum)
+{
+    std::string menuString[2] = { "取消", "確認" };
+    if (CommonMenu(CENTER_X * 2 - 100, 10, 47, 1, 0, menuString, 2) != 1)
+        return;
+    for (int j = 0; j < BRoleAmount; j++)
+        if (Brole[bnum].Team == Brole[j].Team)
+            Brole[j].Dead = 1;
+}
 
 void ModifyState(int bnum, int statenum, int16_t MaxValue, int16_t maxround)
 {

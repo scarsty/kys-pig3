@@ -689,6 +689,28 @@ void DrawRectangleWithoutFrame(int x, int y, int w, int h, uint32 colorin, int a
                 SDL_GetPixelFormatForMasks(32, RMask, GMask, BMask, AMask));
             SDL_FillSurfaceRect(tempsur, nullptr, MapRGBA(r, g, b, (uint8_t)(255 - alpha * 255 / 100)));
             SDL_SetSurfaceBlendMode(tempsur, SDL_BLENDMODE_BLEND);
+            if (CurTargetSurface == TextScreen)
+                SDL_SetSurfaceBlendMode(tempsur, SDL_BLENDMODE_MOD);
+
+            if (alpha < 0)
+            {
+                for (int i1 = 0; i1 < w; i1++)
+                    for (int i2 = 0; i2 < h; i2++)
+                    {
+                        uint8_t a = 255;
+                        switch (alpha)
+                        {
+                        case -1:
+                            a = (uint8_t)std::round(250 - std::abs((double)i2 / h - 0.5) * 150);
+                            break;
+                        case -2:
+                            a = (uint8_t)std::round(150 + std::abs((double)i2 / h - 0.5) * 100);
+                            break;
+                        }
+                        PutPixel(tempsur, i1, i2, MapRGBA(r, g, b, a));
+                    }
+            }
+
             SDL_Rect dest = { x, y, w, h };
             if (SW_SURFACE == 0)
             {
@@ -1508,7 +1530,13 @@ void LoadOnePNGTexture(const std::string& path, void* z, TPNGIndex& PNGIndex, in
     if (PNGIndex.Loaded != 0 && forceLoad == 0) return;
     bool frommem = (PNG_TILE == 2) && (z != nullptr);
     std::string localpath = path;
-    if (!frommem) localpath = path;  // path already includes trailing '/'
+    if (!frommem)
+    {
+        if (!localpath.empty() && localpath.back() != '/' && localpath.back() != '\\')
+        {
+            localpath += "/";
+        }
+    }
 
     auto& idx = PNGIndex;
     if ((idx.Loaded == 0 || forceLoad == 1) && idx.PointerNum >= 0 && idx.Frame > 0)
@@ -2326,9 +2354,10 @@ void CleanKeyValue()
 //----------------------------------------------------------------------
 void GetMousePosition(int& x, int& y, int x0, int y0, int yp)
 {
-    SDL_GetMouseState2(x, y);
-    x -= x0;
-    y -= y0 + yp;
+    int x1, y1;
+    SDL_GetMouseState2(x1, y1);
+    x = (-x1 + CENTER_X + 2 * (y1 + yp) - 2 * CENTER_Y + 18) / 36 + x0;
+    y = (x1 - CENTER_X + 2 * (y1 + yp) - 2 * CENTER_Y + 18) / 36 + y0;
 }
 
 bool InRegion(int x1, int y1, int x, int y, int w, int h)

@@ -1749,11 +1749,37 @@ int instruct_50e(int code, int e1, int e2, int e3, int e4, int e5, int e6)
         break;
     case 49: // PE不可用
         break;
-    case 50: // 输入名字 (简化)
+    case 50: // 输入名字
+    {
+        e2 = e_GetValue(0, e1, e2);
+        e3 = e_GetValue(1, e1, e3);
+        e4 = e_GetValue(2, e1, e4);
+        e5 = e_GetValue(3, e1, e5);
+        char* p = nullptr;
+        switch (e2)
+        {
+        case 0: p = Rrole[e3].Name; break;
+        case 1: p = Ritem[e3].Name; break;
+        case 2: p = Rmagic[e3].Name; break;
+        case 3: p = Rscene[e3].Name; break;
+        }
+        if (p)
+        {
+            std::string nameStr(p);
+            if (EnterString(nameStr, CENTER_X - 150, CENTER_Y - 50, 300, 30))
+            {
+                int maxLen = (e5 > 0) ? e5 : 20;
+                strncpy(p, nameStr.c_str(), maxLen - 1);
+                p[maxLen - 1] = 0;
+            }
+        }
         break;
-    case 51: // 输入数字 (简化)
-        x50[e1] = 0;
+    }
+    case 51: // 输入数字
+    {
+        x50[e1] = EnterNumber(-32768, 32767, CENTER_X - 90, CENTER_Y - 90, 0);
         break;
+    }
     case 52: // 判断是否有某武功
     {
         e2 = e_GetValue(0, e1, e2);
@@ -3567,52 +3593,183 @@ int16_t EnterNumber(int MinValue, int MaxValue, int x, int y, int Default)
     MinValue = std::max(-32768, MinValue);
     MaxValue = std::min(32767, MaxValue);
 
-    // 绘制基本界面
+    std::string labels[14];
+    SDL_Rect buttons[14];
+    for (int i = 0; i <= 9; i++)
+    {
+        labels[i] = std::to_string(i);
+        buttons[i].x = x + (i + 2) % 3 * 35 + 20;
+        buttons[i].y = y + (3 - (i + 2) / 3) * 30 + 50;
+        buttons[i].w = 25;
+        buttons[i].h = 23;
+    }
+    labels[10] = "  ±";
+    buttons[10].x = x + 20;
+    buttons[10].y = y + 140;
+    buttons[10].w = 60;
+    buttons[10].h = 23;
+
+    labels[11] = "←";
+    buttons[11].x = x + 125;
+    buttons[11].y = y + 50;
+    buttons[11].w = 35;
+    buttons[11].h = 23;
+
+    labels[12] = "AC";
+    buttons[12].x = x + 125;
+    buttons[12].y = y + 80;
+    buttons[12].w = 35;
+    buttons[12].h = 23;
+
+    labels[13] = "OK";
+    buttons[13].x = x + 125;
+    buttons[13].y = y + 110;
+    buttons[13].w = 35;
+    buttons[13].h = 53;
+
     char buf[64];
-    snprintf(buf, sizeof(buf), "範圍%d~%d", MinValue, MaxValue); // 範圍
+    snprintf(buf, sizeof(buf), "範圍%d~%d", MinValue, MaxValue);
     DrawTextWithRect(buf, x, y - 35, DrawLength(buf) * 10 + 8, 0, ColColor(0x27));
     DrawRectangle(x, y, 180, 180, 0, ColColor(255), 50, 0);
+    DrawRectangle(x + 20, y + 10, 140, 23, 0, ColColor(255), 75, 0);
+    const int highButton = 13;
+    for (int i = 0; i <= highButton; i++)
+    {
+        DrawRectangle(buttons[i].x, buttons[i].y, buttons[i].w, buttons[i].h, 0, ColColor(255), 50, 0);
+    }
     UpdateAllScreen();
+    RecordFreshScreen(x, y, 181, 181);
 
-    SDL_Event ev;
-    int menu = -1, sure = 0;
-    while (SDL_PollEvent(&ev) || true)
+    int menu = -1;
+    int sure = 0; // 1-keyboard, 2-mouse
+    int pvalue = INT_MIN;
+    int pmenu = INT_MIN;
+
+    while (SDL_PollEvent(&event) || true)
     {
         CheckBasicEvent();
-        if (ev.type == SDL_EVENT_KEY_UP)
+        switch (event.type)
         {
+        case SDL_EVENT_KEY_UP:
             menu = -1;
-            if (ev.key.key >= SDLK_0 && ev.key.key <= SDLK_9) menu = ev.key.key - SDLK_0;
-            else if (ev.key.key == SDLK_MINUS) menu = 10;
-            else if (ev.key.key == SDLK_BACKSPACE) menu = 11;
-            else if (ev.key.key == SDLK_DELETE) menu = 12;
-            else if (ev.key.key == SDLK_RETURN || ev.key.key == SDLK_SPACE) { sure = 1; break; }
+            if (event.key.key >= SDLK_0 && event.key.key <= SDLK_9)
+                menu = event.key.key - SDLK_0;
+            else if (event.key.key >= SDLK_KP_1 && event.key.key <= SDLK_KP_9)
+                menu = event.key.key - SDLK_KP_1 + 1;
+            else if (event.key.key == SDLK_KP_0)
+                menu = 0;
+            else if (event.key.key == SDLK_MINUS || event.key.key == SDLK_KP_MINUS)
+                menu = 10;
+            else if (event.key.key == SDLK_BACKSPACE)
+                menu = 11;
+            else if (event.key.key == SDLK_DELETE)
+                menu = 12;
+            else if (event.key.key == SDLK_RETURN || event.key.key == SDLK_SPACE || event.key.key == SDLK_KP_ENTER)
+                menu = highButton;
             sure = 1;
+            break;
+
+        case SDL_EVENT_MOUSE_MOTION:
+            menu = -1;
+            for (int i = 0; i <= highButton; i++)
+            {
+                if (MouseInRegion(buttons[i].x, buttons[i].y, buttons[i].w, buttons[i].h))
+                {
+                    menu = i;
+                    break;
+                }
+            }
+            break;
+
+        case SDL_EVENT_MOUSE_BUTTON_UP:
+            if (event.button.button == SDL_BUTTON_LEFT)
+            {
+                menu = -1;
+                for (int i = 0; i <= highButton; i++)
+                {
+                    if (MouseInRegion(buttons[i].x, buttons[i].y, buttons[i].w, buttons[i].h))
+                    {
+                        menu = i;
+                        break;
+                    }
+                }
+                if (menu >= 0 && menu <= highButton)
+                    sure = 2;
+            }
+            break;
         }
-        if (sure > 0 && menu >= 0)
+
+        if (Value != pvalue || menu != pmenu)
+        {
+            LoadFreshScreen(x, y);
+            snprintf(buf, sizeof(buf), "%6d", Value);
+            DrawShadowText(buf, x + 80, y + 10, ColColor(0x64), ColColor(0x66));
+
+            if (menu >= 0 && menu <= highButton)
+            {
+                int c = 20 * menu + rand() % 20;
+                DrawRectangle(buttons[menu].x, buttons[menu].y, buttons[menu].w, buttons[menu].h,
+                    ColColor(c), ColColor(255), 50, 0);
+            }
+
+            for (int i = 0; i <= highButton; i++)
+            {
+                DrawShadowText(labels[i], buttons[i].x + 8, buttons[i].y + buttons[i].h / 2 - 11,
+                    ColColor(5), ColColor(7));
+            }
+            UpdateAllScreen();
+            pvalue = Value;
+            pmenu = menu;
+        }
+
+        CleanKeyValue();
+
+        if (sure > 0)
         {
             switch (menu)
             {
             case 0: case 1: case 2: case 3: case 4:
             case 5: case 6: case 7: case 8: case 9:
-                if (Value * 10 < 100000) Value = 10 * Value + menu;
+                if (Value * 10 < 100000)
+                    Value = 10 * Value + menu;
                 break;
-            case 10: Value = -Value; break;
-            case 11: Value /= 10; break;
-            case 12: Value = 0; break;
+            case 10:
+                Value = -Value;
+                break;
+            case 11:
+                Value = Value / 10;
+                break;
+            case 12:
+                Value = 0;
+                break;
+            default:
+                if (menu == highButton)
+                    goto enter_number_done;
+                break;
             }
-            // 刷新显示
-            snprintf(buf, sizeof(buf), "%6d", Value);
-            DrawRectangle(x, y, 180, 180, 0, ColColor(255), 50, 0);
-            DrawShadowText(buf, x + 80, y + 10, ColColor(0x64), ColColor(0x66));
-            UpdateAllScreen();
+            if (sure == 1)
+                menu = -1;
         }
+
         sure = 0;
         SDL_Delay(25);
     }
-    int16_t result = (int16_t)RegionParameter(Value, MinValue, MaxValue);
-    CleanKeyValue();
-    return result;
+
+enter_number_done:
+    {
+        int16_t result = (int16_t)RegionParameter(Value, MinValue, MaxValue);
+        if (result != Value)
+        {
+            Redraw();
+            UpdateAllScreen();
+            snprintf(buf, sizeof(buf), "依據範圍自動調整為%d！", result);
+            DrawTextWithRect(buf, x, y, DrawLength(buf) * 10 + 8, ColColor(0x64), ColColor(0x66));
+            WaitAnyKey();
+        }
+        CleanKeyValue();
+        FreeFreshScreen();
+        return result;
+    }
 }
 
 bool EnterString(std::string& str, int x, int y, int w, int h)
