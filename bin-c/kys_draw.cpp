@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstring>
+#include <format>
 
 //----------------------------------------------------------------------
 // DrawPic - 画单个图片
@@ -197,8 +198,7 @@ void DrawFPic(int num, int px, int py, int index, int shadow, int alpha, uint32 
         {
             if (FPNGIndex[index].Loaded == 0)
             {
-                char buf[64];
-                snprintf(buf, sizeof(buf), "resource/fight/fight%03d", index);
+                auto buf = std::format("resource/fight/fight{:03d}", index);
                 LoadPNGTiles(buf, FPNGIndex[index].PNGIndexArray, 1);
                 FPNGIndex[index].Loaded = 1;
             }
@@ -571,6 +571,10 @@ void InitialScene(int Visible)
         }
     }
     ExpandGroundOnImg();
+    if (IsCave(CurScene))
+        showBlackScreen = true;
+    else
+        showBlackScreen = false;
 }
 
 int CalBlock(int x, int y)

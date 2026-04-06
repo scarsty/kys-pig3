@@ -13,6 +13,7 @@
 #include <cmath>
 #include <algorithm>
 #include <cstdio>
+#include <format>
 #include "filefunc.h"
 
 // ---- 事件指令 ----
@@ -61,10 +62,9 @@ void instruct_2(int inum, int amount)
         x = CENTER_X;
         y = CENTER_Y + 60;
     }
-    char word[64];
-    snprintf(word, sizeof(word), "%d", amount);
+    auto word = std::format("{}", amount);
     int l1 = DrawLength(Ritem[inum].Name);
-    int l2 = DrawLength(word);
+    int l2 = DrawLength(word.c_str());
     DrawTextFrame(CENTER_X - (6 + l1 + l2) * 5 - 20, y, 6 + l1 + l2);
     x = CENTER_X - (6 + l1 + l2) * 5 + 1;
     DrawEngShadowText(word, x + 40 + 20 + l1 * 10, 3 + y, 0, 0x202020);
@@ -697,8 +697,7 @@ void instruct_34(int rnum, int iq)
     if (iq > 0)
     {
         std::string word = "資質增加";
-        char buf[16];
-        snprintf(buf, sizeof(buf), "%3d", iq);
+        auto buf = std::format("{:3d}", iq);
         Show3HintString(Rrole[rnum].Name, word, buf);
     }
 }
@@ -896,8 +895,7 @@ void AddRoleProWithHint(int rnum, int datalist, int num, const std::string& word
     Rrole[rnum].Data[datalist] += num;
     if (!word.empty())
     {
-        char buf[16];
-        snprintf(buf, sizeof(buf), "%d", num);
+        auto buf = std::format("{}", num);
         Show3HintString(Rrole[rnum].Name, word, buf);
     }
 }
@@ -906,8 +904,7 @@ void AddRoleProWithHint(int rnum, int datalist, int num, const std::string& word
 void instruct_45(int rnum, int speed)
 {
     Rrole[rnum].Speed += speed;
-    char buf[16];
-    snprintf(buf, sizeof(buf), "%d", speed);
+    auto buf = std::format("{}", speed);
     Show3HintString(Rrole[rnum].Name, "輕功增加", buf);
 }
 
@@ -916,8 +913,7 @@ void instruct_46(int rnum, int mp)
 {
     Rrole[rnum].MaxMP += mp;
     Rrole[rnum].CurrentMP = Rrole[rnum].MaxMP;
-    char buf[16];
-    snprintf(buf, sizeof(buf), "%d", mp);
+    auto buf = std::format("{}", mp);
     Show3HintString(Rrole[rnum].Name, "內力增加", buf);
 }
 
@@ -925,8 +921,7 @@ void instruct_46(int rnum, int mp)
 void instruct_47(int rnum, int Attack)
 {
     Rrole[rnum].Attack += Attack;
-    char buf[16];
-    snprintf(buf, sizeof(buf), "%d", Attack);
+    auto buf = std::format("{}", Attack);
     Show3HintString(Rrole[rnum].Name, "武力增加", buf);
 }
 
@@ -935,8 +930,7 @@ void instruct_48(int rnum, int hp)
 {
     Rrole[rnum].MaxHP += hp;
     Rrole[rnum].CurrentHP = Rrole[rnum].MaxHP;
-    char buf[16];
-    snprintf(buf, sizeof(buf), "%d", hp);
+    auto buf = std::format("{}", hp);
     Show3HintString(Rrole[rnum].Name, "生命增加", buf);
 }
 
@@ -974,8 +968,7 @@ void instruct_51()
 void ShowRolePro(int rnum, int datalist, const std::string& word)
 {
     Redraw();
-    char buf[16];
-    snprintf(buf, sizeof(buf), "%4d", Rrole[rnum].Data[datalist]);
+    auto buf = std::format("{:4d}", Rrole[rnum].Data[datalist]);
     Show3HintString("", word, buf);
 }
 
@@ -1295,12 +1288,15 @@ int instruct_50e(int code, int e1, int e2, int e3, int e4, int e5, int e6)
         break;
     case 11: // 连接字符串
     {
-        pw = (char*)&x50[e1];
+        char* dst = (char*)&x50[e1];
         pw1 = (char*)&x50[e2];
-        int len1 = (int)strlen(pw);
+        int len1 = (int)strlen(pw1);
+        for (int j = 0; j < len1; j++)
+            dst[j] = pw1[j];
         char* pw2 = (char*)&x50[e3];
-        strcpy(pw + len1, pw1);
-        strcat(pw, pw2);
+        int len2 = (int)strlen(pw2);
+        for (int j = 0; j <= len2; j++)  // 包含终止符
+            dst[len1 + j] = pw2[j];
         break;
     }
     case 12: // 空格字符串
@@ -1816,8 +1812,7 @@ int instruct_50e(int code, int e1, int e2, int e3, int e4, int e5, int e6)
     case 55: // 播放视频
     {
         DrawRectangleWithoutFrame(0, 0, CENTER_X * 2, CENTER_Y * 2, 0, 0);
-        char vname[64];
-        snprintf(vname, sizeof(vname), "%d.wmv", e_GetValue(0, e1, e2));
+        auto vname = std::format("{}.wmv", e_GetValue(0, e1, e2));
         if (PlayMovie(vname))
         {
             CleanKeyValue();
@@ -1830,9 +1825,8 @@ int instruct_50e(int code, int e1, int e2, int e3, int e4, int e5, int e6)
     {
         e2 = e_GetValue(0, e1, e2);
         e3 = e_GetValue(1, e1, e3);
-        char scriptpath[256], funcname[32];
-        snprintf(scriptpath, sizeof(scriptpath), "%sscript/%d.lua", AppPath.c_str(), e2);
-        snprintf(funcname, sizeof(funcname), "f%d", e3);
+        auto scriptpath = std::format("{}script/{}.lua", AppPath, e2);
+        auto funcname = std::format("f{}", e3);
         ExecScript(scriptpath, funcname);
         break;
     }
@@ -2344,8 +2338,7 @@ void NewTeammateList()
                 {
                     int pad = 16 - DrawLength(temp.c_str());
                     if (pad > 0) temp += std::string(pad, ' ');
-                    char buf[16]; snprintf(buf, sizeof(buf), "%d", Rrole[StarToRole(i)].Level);
-                    temp += buf;
+                    temp += std::format("{}", Rrole[StarToRole(i)].Level);
                 }
             }
             else
@@ -2365,8 +2358,7 @@ void NewTeammateList()
                 temp += Rrole[TeamList[i]].Name;
                 int pad = 12 - DrawLength(temp.c_str());
                 if (pad > 0) temp += std::string(pad, ' ');
-                char buf[16]; snprintf(buf, sizeof(buf), "%d", Rrole[TeamList[i]].Level);
-                temp += buf;
+                temp += std::format("{}", Rrole[TeamList[i]].Level);
             }
             else
                 temp += "  --------";
@@ -2869,7 +2861,7 @@ int Digging(int beginPic, int goal, int shovel, int restrict_val)
     std::vector<int> surfaceVec(Surface, Surface + 81);
     ShowSurface(x, y, blankpic, surfaceVec);
     DrawSPic(shovel / 2, (position % 9) * 20 + 10 + x, (position / 9) * 20 + 5 + y);
-    char goalstr[16]; snprintf(goalstr, sizeof(goalstr), "%d", goal);
+    auto goalstr = std::format("{}", goal);
     DrawShadowText("目標:  X", x - 5, y - 25, ColColor(0x21), ColColor(0x23));
     DrawSPic(goldpic / 2, 55 + x, y - 25);
     DrawShadowText(goalstr, x + 85, y - 25, ColColor(0x21), ColColor(0x23));
@@ -3070,11 +3062,10 @@ bool SpellPicture(int num, int chance)
             DrawRectangle((menu2 % 5) * 80 + x, (menu2 / 5) * 80 + y + 30, 80, 80, 0, ColColor(0x64), 0);
         if (menu > -1)
             DrawRectangle((menu % 5) * 80 + x, (menu / 5) * 80 + y + 30, 80, 80, 0, ColColor(0xFF), 0);
-        char word[32], word1[32];
-        snprintf(word, sizeof(word), "機會%d", chance);
-        snprintf(word1, sizeof(word1), "命中%d", right);
-        DrawShadowText(word, x + 25, y + 5, ColColor(5), ColColor(7));
-        DrawShadowText(word1, x + 220, y + 5, ColColor(5), ColColor(7));
+        auto wordStr = std::format("機會{}", chance);
+        auto word1Str = std::format("命中{}", right);
+        DrawShadowText(wordStr, x + 25, y + 5, ColColor(5), ColColor(7));
+        DrawShadowText(word1Str, x + 220, y + 5, ColColor(5), ColColor(7));
         UpdateAllScreen();
     };
     drawPuzzle();
@@ -3880,8 +3871,7 @@ void NewShop(int shop_num)
         DrawRectangle(x, y, 420, 116, 0, ColColor(255), 50);
         for (int i = 0; i < 5; i++)
         {
-            char buf[80];
-            snprintf(buf, sizeof(buf), "%5d%7d%6d%9d", sell.Price[i], sell.Amount[i], holdAmount[i], buyAmount[i]);
+            auto buf = std::format("{:5d}{:7d}{:6d}{:9d}", sell.Price[i], sell.Amount[i], holdAmount[i], buyAmount[i]);
             if (i == menu)
             {
                 DrawShadowText(menuStr[i].c_str(), x + 3, y + 2 + 22 * i, ColColor(0x64), ColColor(0x66));
@@ -3894,10 +3884,9 @@ void NewShop(int shop_num)
             }
         }
 
-        char moneyBuf[64];
-        snprintf(moneyBuf, sizeof(moneyBuf), "現有銀兩：%5d", money);
+        auto moneyBuf = std::format("現有銀兩：{:5d}", money);
         DrawTextWithRect(moneyBuf, x, y + 140, 160, 0, 0x202020, 0, 0);
-        snprintf(moneyBuf, sizeof(moneyBuf), "花費估算：%5d", totalprice);
+        moneyBuf = std::format("花費估算：{:5d}", totalprice);
         DrawTextWithRect(moneyBuf, x, y + 180, 160, 0, 0x202020, 0, 0);
         UpdateAllScreen();
 
@@ -3971,7 +3960,7 @@ void ShowMap()
         sceney.push_back(Rscene[i].MainEntranceY1);
         scenenum.push_back(i);
         str2.push_back((char*)Rscene[i].Name);
-        char buf[32]; snprintf(buf, sizeof(buf), "%3d, %3d", Rscene[i].MainEntranceY1, Rscene[i].MainEntranceX1);
+        auto buf = std::format("{:3d}, {:3d}", Rscene[i].MainEntranceY1, Rscene[i].MainEntranceX1);
         str3.push_back(buf);
     }
     int u = (int)scenex.size();
@@ -4017,10 +4006,10 @@ void ShowMap()
             DrawShadowText(str2[p].c_str(), 37 + xp, 80 + yp, ColColor(21), ColColor(25));
             DrawEngShadowText(str3[p], 37 + xp, 100 + yp, ColColor(255), ColColor(254));
             DrawShadowText("你的位置", 37 + xp, 275 + yp, ColColor(21), ColColor(25));
-            char buf[32]; snprintf(buf, sizeof(buf), "%3d, %3d", My, Mx);
+            auto buf = std::format("{:3d}, {:3d}", My, Mx);
             DrawEngShadowText(buf, 37 + xp, 295 + yp, ColColor(255), ColColor(254));
             DrawShadowText("船的位置", 37 + xp, 325 + yp, ColColor(21), ColColor(25));
-            snprintf(buf, sizeof(buf), "%3d, %3d", ShipX, ShipY);
+            buf = std::format("{:3d}, {:3d}", ShipX, ShipY);
             DrawEngShadowText(buf, 37 + xp, 345 + yp, ColColor(255), ColColor(254));
         }
         if (n % 20 == 1)
@@ -4105,9 +4094,8 @@ int16_t EnterNumber(int MinValue, int MaxValue, int x, int y, int Default)
     buttons[13].w = 35;
     buttons[13].h = 53;
 
-    char buf[64];
-    snprintf(buf, sizeof(buf), "範圍%d~%d", MinValue, MaxValue);
-    DrawTextWithRect(buf, x, y - 35, DrawLength(buf) * 10 + 8, 0, ColColor(0x27));
+    auto bufStr = std::format("範圍{}~{}", MinValue, MaxValue);
+    DrawTextWithRect(bufStr, x, y - 35, DrawLength(bufStr.c_str()) * 10 + 8, 0, ColColor(0x27));
     DrawRectangle(x, y, 180, 180, 0, ColColor(255), 50, 0);
     DrawRectangle(x + 20, y + 10, 140, 23, 0, ColColor(255), 75, 0);
     const int highButton = 13;
@@ -4180,8 +4168,8 @@ int16_t EnterNumber(int MinValue, int MaxValue, int x, int y, int Default)
         if (Value != pvalue || menu != pmenu)
         {
             LoadFreshScreen(x, y);
-            snprintf(buf, sizeof(buf), "%6d", Value);
-            DrawShadowText(buf, x + 80, y + 10, ColColor(0x64), ColColor(0x66));
+            auto valStr = std::format("{:6d}", Value);
+            DrawShadowText(valStr, x + 80, y + 10, ColColor(0x64), ColColor(0x66));
 
             if (menu >= 0 && menu <= highButton)
             {
@@ -4240,8 +4228,8 @@ enter_number_done:
         {
             Redraw();
             UpdateAllScreen();
-            snprintf(buf, sizeof(buf), "依據範圍自動調整為%d！", result);
-            DrawTextWithRect(buf, x, y, DrawLength(buf) * 10 + 8, ColColor(0x64), ColColor(0x66));
+            auto adjustStr = std::format("依據範圍自動調整為{}！", result);
+            DrawTextWithRect(adjustStr, x, y, DrawLength(adjustStr.c_str()) * 10 + 8, ColColor(0x64), ColColor(0x66));
             WaitAnyKey();
         }
         CleanKeyValue();

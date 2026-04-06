@@ -2,19 +2,28 @@
 #ifdef _MSC_VER 
 #define MYTHAPI _stdcall
 #ifdef __cplusplus
-#define HBAPI extern "C" __declspec (dllexport)
+#ifdef _WINDLL
+#define HBAPI extern "C" __declspec(dllexport)
 #else
-#define HBAPI __declspec (dllexport)
+#define HBAPI extern "C" __declspec(dllimport)
+#endif
+#else
+#ifdef _WINDLL
+#define HBAPI __declspec(dllexport)
+#else
+#define HBAPI __declspec(dllimport)
+#endif
 #endif
 #else
 #define HBAPI
-#define  MYTHAPI
+#define MYTHAPI
 #endif
-#ifdef _WINDLL
+
 HBAPI void* MYTHAPI PotCreateFromHandle(void* handle);
 HBAPI void* MYTHAPI PotCreateFromWindow(void* handle);
 HBAPI int MYTHAPI PotInputVideo(void* pot, char* filename);
 HBAPI int MYTHAPI PotPlayVideo(void* pot, char* filename, float volume);
 HBAPI int MYTHAPI PotSeek(void* pot, int seek);
 HBAPI int MYTHAPI PotDestory(void* pot);
-#endif
+
+#pragma comment(lib, "smallpot.lib")

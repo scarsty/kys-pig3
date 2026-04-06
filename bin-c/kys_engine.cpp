@@ -6,6 +6,8 @@
 #include "kys_main.h"
 #include "kys_draw.h"
 
+#include "PotDll.h"
+
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3_mixer/SDL_mixer.h>
@@ -26,6 +28,7 @@
 #endif
 #include <cstring>
 #include <fstream>
+#include <format>
 #include <map>
 
 // 前置声明
@@ -153,8 +156,7 @@ void InitialMusic()
     for (int i = 0; i < (int)ASound.size(); i++)
     {
         if (ASound[i] != nullptr) { MIX_DestroyAudio(ASound[i]); ASound[i] = nullptr; }
-        char buf[64];
-        snprintf(buf, sizeof(buf), "sound/atk%02d.wav", i);
+        auto buf = std::format("sound/atk{:02d}.wav", i);
         std::string str = AppPath + buf;
         if (filefunc::fileExist(str))
             ASound[i] = MIX_LoadAudio(nullptr, str.c_str(), false);
@@ -1915,8 +1917,11 @@ void DrawPNGTileS(SDL_Surface* scr, TPNGIndex& PNGIndex, int FrameNum, int px, i
 
 bool PlayMovie(const std::string& filename)
 {
-    // PotPlayVideo is from potdll, requires runtime DLL loading
-    // Pascal implementation also just calls PotPlayVideo(smallpot, filename, volume)
+    if (smallpot != nullptr)
+    {
+        PotPlayVideo(smallpot, (char*)filename.c_str(), VOLUME / 100.0f);
+        return true;
+    }
     return false;
 }
 
@@ -2123,7 +2128,24 @@ void FreeTeamSimpleStatus(SDL_Surface** SimpleStatusArr, int count)
 
 void TransBlackScreen()
 {
-    DrawRectangleWithoutFrame(0, 0, CENTER_X * 2, CENTER_Y * 2, MapRGBA(0, 0, 0), 30);
+    DrawRectangleWithoutFrame(0, 0, CENTER_X * 2, CENTER_Y * 2, 0, 50);
+    if (TEXT_LAYER == 1)
+    {
+        if (SW_SURFACE == 0)
+        {
+            SDL_SetRenderTarget(render, TextScreenTex);
+            SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_MOD);
+            SDL_SetRenderDrawColor(render, 128, 128, 128, 0);
+            SDL_RenderClear(render);
+            SDL_SetRenderTarget(render, screenTex);
+        }
+        else
+        {
+            CurTargetSurface = TextScreen;
+            DrawRectangleWithoutFrame(0, 0, RESOLUTIONX, RESOLUTIONY, MapRGBA(128, 128, 128, 0), 50);
+            CurTargetSurface = screen;
+        }
+    }
 }
 
 void RecordFreshScreen()

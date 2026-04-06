@@ -18,6 +18,7 @@
 #include "ZipFile.h"
 #include "filefunc.h"
 #include "strfunc.h"
+#include "PotDll.h"
 #include <zip.h>
 
 // 在kys_engine.cpp中定义
@@ -26,10 +27,11 @@ extern std::string zip_express(zip_t* z, const std::string& filename);
 #include <algorithm>
 #include <cmath>
 #include <cstring>
+#include <format>
 #include <fstream>
 
 // potdll前向声明 (动态加载)
-static void* (*PotCreateFromWindow)(SDL_Window*) = nullptr;
+//static void* (*PotCreateFromWindow)(SDL_Window*) = nullptr;
 
 //----------------------------------------------------------------------
 // Run - 程序入口, 初始化SDL、音频、视频、字体、脚本
@@ -160,7 +162,7 @@ void Run()
     }
 
     kyslog("Initial ended, start game");
-    // smallpot = PotCreateFromWindow(window);  // 视频播放模块 (动态加载)
+    smallpot = PotCreateFromWindow(window);
     Start();
     Quit();
 }
@@ -933,8 +935,7 @@ bool InitialRole()
             Redraw();
             ShowStatus(0);
             DrawTextWithRect("資質", 150, CENTER_Y + 120, 80, 0, 0x202020, 30, 0);
-            char buf[16];
-            snprintf(buf, sizeof(buf), "%4d", Rrole[0].Aptitude);
+            auto buf = std::format("{:4d}", Rrole[0].Aptitude);
             DrawEngShadowText(buf, 200, CENTER_Y + 123, ColColor(0x64), ColColor(0x66));
             DrawTextWithRect("選定屬性后按回車或這裡確認", 175, CENTER_Y + 171, 260, 0, 0);
             UpdateAllScreen();
@@ -3258,9 +3259,7 @@ void MenuEsc()
         }
         menup = menu;
 
-        char buf[64];
-        snprintf(buf, sizeof(buf), "位置：(%3d, %3d)", My, Mx);
-        std::string info = buf;
+        auto info = std::format("位置：({:3d}, {:3d})", My, Mx);
         DrawShadowText(info, 5, 5, ColColor(0x64), ColColor(0x66));
         UpdateAllScreen();
         CheckBasicEvent();
@@ -3574,18 +3573,17 @@ bool MenuItem()
                 if (listnum >= 0 && listnum < MAX_ITEM_AMOUNT && item >= 0 && RItemList[listnum].Amount > 0)
                 {
                     int amount = RItemList[listnum].Amount;
-                    char buf[32];
-                    snprintf(buf, sizeof(buf), "%8d", amount);
+                    auto buf = std::format("{:8d}", amount);
                     DrawShadowText(buf, 510 + xp, 3 + yp, ColColor(0x64), ColColor(0x66));
                     int len = DrawLength(std::string((char*)Ritem[item].Name));
                     DrawShadowText(std::string((char*)Ritem[item].Name), 290 - len * 5 + xp, 3 + yp, 0, 0x202020);
                     if (item == COMPASS_ID)
                     {
-                        snprintf(buf, sizeof(buf), "%3d,%3d", My, Mx);
+                        buf = std::format("{:3d},{:3d}", My, Mx);
                         std::string s1 = "你的位置：";
                         DrawShadowText(s1, 8 + xp, 48 + dt + yp, 0, 0x202020);
                         DrawShadowText(buf, 108 + xp, 48 + dt + yp, ColColor(0x64), ColColor(0x66));
-                        snprintf(buf, sizeof(buf), "%3d,%3d", ShipX, ShipY);
+                        buf = std::format("{:3d},{:3d}", ShipX, ShipY);
                         std::string s2 = "船的位置：";
                         DrawShadowText(s2, 188 + xp, 48 + dt + yp, 0, 0x202020);
                         DrawShadowText(buf, 288 + xp, 48 + dt + yp, ColColor(0x64), ColColor(0x66));
@@ -3652,14 +3650,12 @@ bool MenuItem()
                         std::string s = "需求：";
                         DrawShadowText(s, 8 + xp, 78 + dt + (len2 + l1) / l * 28 + yp, ColColor(0x21), ColColor(0x23));
                     }
-                    char buf[32];
                     int i1 = 0;
                     for (int i = 0; i <= 22; i++)
                     {
                         if (p2[i])
                         {
-                            snprintf(buf, sizeof(buf), "%d", Ritem[item].Data[45 + i]);
-                            std::string str2 = buf;
+                            std::string str2 = std::format("{}", Ritem[item].Data[45 + i]);
                             if (i == 4)
                             {
                                 switch (Ritem[item].ChangeMPType)
@@ -3690,8 +3686,7 @@ bool MenuItem()
                     {
                         if (p3[i])
                         {
-                            snprintf(buf, sizeof(buf), "%d", Ritem[item].Data[69 + i]);
-                            std::string str2 = buf;
+                            std::string str2 = std::format("{}", Ritem[item].Data[69 + i]);
                             if (i == 0)
                             {
                                 switch (Ritem[item].NeedMPType)
@@ -3747,8 +3742,7 @@ bool MenuItem()
                         level = GetMagicLevel(TeamList[i], Ritem[curitem].Magic);
                         if (level > 0)
                         {
-                            char buf[32];
-                            snprintf(buf, sizeof(buf), "%2d級", level);    // %2d級
+                            auto buf = std::format("{:2d}級", level);    // %2d級
                             DrawShadowText(buf, ui_x + 220, ui_y + 80 * i + 60, ColColor(0x64), ColColor(0x66));
                         }
                     }
@@ -4754,7 +4748,7 @@ void ShowStatus(int rnum, int bnum)
     int item1y = CENTER_Y - 240 + 360;
     int item2y = item1y;
     int x, y;
-    char buf[64];
+    std::string buf;
     uint32 color1, color2;
 
     if (Where == 3)
@@ -4778,7 +4772,7 @@ void ShowStatus(int rnum, int bnum)
             DrawTextWithRect(strs[i], x - 10, y + 208 + h * i, 140, 0, 0x202020, 30, 0);
         }
 
-        snprintf(buf, sizeof(buf), "%4d", Rrole[rnum].Level);
+        buf = std::format("{:4d}", Rrole[rnum].Level);
         DrawEngShadowText(buf, x + 110, y + 211 + h * 0, ColColor(0x64), ColColor(0x66));
 
         if (Rrole[rnum].Hurt >= 67)
@@ -4796,7 +4790,7 @@ void ShowStatus(int rnum, int bnum)
             color1 = ColColor(5);
             color2 = ColColor(7);
         }
-        snprintf(buf, sizeof(buf), "%4d", Rrole[rnum].CurrentHP);
+        buf = std::format("{:4d}", Rrole[rnum].CurrentHP);
         DrawEngShadowText(buf, x + 60, y + 211 + h * 1, color1, color2);
         DrawEngShadowText("/", x + 100, y + 211 + h * 1, ColColor(0x64), ColColor(0x66));
 
@@ -4815,7 +4809,7 @@ void ShowStatus(int rnum, int bnum)
             color1 = ColColor(0x21);
             color2 = ColColor(0x23);
         }
-        snprintf(buf, sizeof(buf), "%4d", Rrole[rnum].MaxHP);
+        buf = std::format("{:4d}", Rrole[rnum].MaxHP);
         DrawEngShadowText(buf, x + 110, y + 211 + h * 1, color1, color2);
 
         if (Rrole[rnum].MPType == 0)
@@ -4833,15 +4827,15 @@ void ShowStatus(int rnum, int bnum)
             color1 = ColColor(0x64);
             color2 = ColColor(0x66);
         }
-        snprintf(buf, sizeof(buf), "%4d/%4d", Rrole[rnum].CurrentMP, Rrole[rnum].MaxMP);
+        buf = std::format("{:4d}/{:4d}", Rrole[rnum].CurrentMP, Rrole[rnum].MaxMP);
         DrawEngShadowText(buf, x + 60, y + 211 + h * 2, color1, color2);
 
-        snprintf(buf, sizeof(buf), "%4d/%4d", Rrole[rnum].PhyPower, MAX_PHYSICAL_POWER);
+        buf = std::format("{:4d}/{:4d}", Rrole[rnum].PhyPower, MAX_PHYSICAL_POWER);
         DrawEngShadowText(buf, x + 60, y + 211 + h * 3, ColColor(0x64), ColColor(0x66));
 
-        snprintf(buf, sizeof(buf), "%5d", (uint16_t)Rrole[rnum].Exp);
+        buf = std::format("{:5d}", (uint16_t)Rrole[rnum].Exp);
         DrawEngShadowText(buf, x + 100, y + 211 + h * 4, ColColor(0x64), ColColor(0x66));
-        snprintf(buf, sizeof(buf), "%5d", (uint16_t)LevelUpList[Rrole[rnum].Level - 1]);
+        buf = std::format("{:5d}", (uint16_t)LevelUpList[Rrole[rnum].Level - 1]);
         DrawEngShadowText(buf, x + 100, y + 211 + h * 5, ColColor(0x64), ColColor(0x66));
 
         if (Where != 2)
@@ -4887,11 +4881,11 @@ void ShowStatus(int rnum, int bnum)
                 DrawShadowText("->", x + 450, y + 5 + h * i, ColColor(0x64), ColColor(0x66));
             }
         }
-        snprintf(buf, sizeof(buf), "%4d", Rrole[rnum].Level);
+        buf = std::format("{:4d}", Rrole[rnum].Level);
         DrawEngShadowText(buf, x + 380, y + 5 + h * 0, ColColor(0x64), ColColor(0x66));
-        snprintf(buf, sizeof(buf), "%4d", Rrole[rnum].MaxHP);
+        buf = std::format("{:4d}", Rrole[rnum].MaxHP);
         DrawEngShadowText(buf, x + 380, y + 5 + h * 1, ColColor(0x64), ColColor(0x66));
-        snprintf(buf, sizeof(buf), "%4d", Rrole[rnum].MaxMP);
+        buf = std::format("{:4d}", Rrole[rnum].MaxMP);
         DrawEngShadowText(buf, x + 380, y + 5 + h * 2, ColColor(0x64), ColColor(0x66));
         y += 3 * h;
     }
@@ -4951,11 +4945,11 @@ void ShowStatus(int rnum, int bnum)
             {
                 if (addnum[i] > 0)
                 {
-                    snprintf(buf, sizeof(buf), " (+%d)", addnum[i]);
+                    buf = std::format(" (+{})", addnum[i]);
                 }
                 else
                 {
-                    snprintf(buf, sizeof(buf), " (%d)", addnum[i]);
+                    buf = std::format(" ({})", addnum[i]);
                 }
                 DrawEngShadowText(buf, x + 420, y + 5 + i * h, color1, color2);
             }
@@ -4964,51 +4958,51 @@ void ShowStatus(int rnum, int bnum)
 
     color1 = ColColor(0x64);
     color2 = ColColor(0x66);
-    snprintf(buf, sizeof(buf), "%4d", Rrole[rnum].Attack + addnum[0]);
+    buf = std::format("{:4d}", Rrole[rnum].Attack + addnum[0]);
     SetColorByPro(Rrole[rnum].Attack + addnum[0], 600, color1, color2);
     DrawEngShadowText(buf, x + 380, y + 5 + h * 0, color1, color2);
 
-    snprintf(buf, sizeof(buf), "%4d", Rrole[rnum].Defence + addnum[1]);
+    buf = std::format("{:4d}", Rrole[rnum].Defence + addnum[1]);
     SetColorByPro(Rrole[rnum].Defence + addnum[1], 600, color1, color2);
     DrawEngShadowText(buf, x + 380, y + 5 + h * 1, color1, color2);
 
-    snprintf(buf, sizeof(buf), "%4d", Rrole[rnum].Speed + addnum[2]);
+    buf = std::format("{:4d}", Rrole[rnum].Speed + addnum[2]);
     SetColorByPro(Rrole[rnum].Speed + addnum[2], 300, color1, color2);
     DrawEngShadowText(buf, x + 380, y + 5 + h * 2, color1, color2);
 
-    snprintf(buf, sizeof(buf), "%4d", Rrole[rnum].Movestep + addnum[3]);
+    buf = std::format("{:4d}", Rrole[rnum].Movestep + addnum[3]);
     SetColorByPro(Rrole[rnum].Movestep + addnum[3], 100, color1, color2);
     DrawEngShadowText(buf, x + 380, y + 5 + h * 3, color1, color2);
 
-    snprintf(buf, sizeof(buf), "%4d", Rrole[rnum].Medcine);
+    buf = std::format("{:4d}", Rrole[rnum].Medcine);
     SetColorByPro(Rrole[rnum].Medcine, 200, color1, color2);
     DrawEngShadowText(buf, x + 380, y + 5 + h * 4, color1, color2);
 
-    snprintf(buf, sizeof(buf), "%4d", Rrole[rnum].UsePoi);
+    buf = std::format("{:4d}", Rrole[rnum].UsePoi);
     SetColorByPro(Rrole[rnum].UsePoi, 100, color1, color2);
     DrawEngShadowText(buf, x + 380, y + 5 + h * 5, color1, color2);
 
-    snprintf(buf, sizeof(buf), "%4d", Rrole[rnum].MedPoi);
+    buf = std::format("{:4d}", Rrole[rnum].MedPoi);
     SetColorByPro(Rrole[rnum].MedPoi, 100, color1, color2);
     DrawEngShadowText(buf, x + 380, y + 5 + h * 6, color1, color2);
 
-    snprintf(buf, sizeof(buf), "%4d", Rrole[rnum].Fist);
+    buf = std::format("{:4d}", Rrole[rnum].Fist);
     SetColorByPro(Rrole[rnum].Fist, 300, color1, color2);
     DrawEngShadowText(buf, x + 380, y + 5 + h * 7, color1, color2);
 
-    snprintf(buf, sizeof(buf), "%4d", Rrole[rnum].Sword);
+    buf = std::format("{:4d}", Rrole[rnum].Sword);
     SetColorByPro(Rrole[rnum].Sword, 300, color1, color2);
     DrawEngShadowText(buf, x + 380, y + 5 + h * 8, color1, color2);
 
-    snprintf(buf, sizeof(buf), "%4d", Rrole[rnum].Knife);
+    buf = std::format("{:4d}", Rrole[rnum].Knife);
     SetColorByPro(Rrole[rnum].Knife, 300, color1, color2);
     DrawEngShadowText(buf, x + 380, y + 5 + h * 9, color1, color2);
 
-    snprintf(buf, sizeof(buf), "%4d", Rrole[rnum].Unusual);
+    buf = std::format("{:4d}", Rrole[rnum].Unusual);
     SetColorByPro(Rrole[rnum].Unusual, 300, color1, color2);
     DrawEngShadowText(buf, x + 380, y + 5 + h * 10, color1, color2);
 
-    snprintf(buf, sizeof(buf), "%4d", Rrole[rnum].HidWeapon);
+    buf = std::format("{:4d}", Rrole[rnum].HidWeapon);
     SetColorByPro(Rrole[rnum].HidWeapon, 300, color1, color2);
     DrawEngShadowText(buf, x + 380, y + 5 + h * 11, color1, color2);
 
@@ -5165,10 +5159,8 @@ void ShowSimpleStatus(int rnum, int x, int y, int forTeam)
     DrawShadowText(str, ox + 115, oy + 8, ColColor(0x64), ColColor(0x66), tex, sur);
 
     // Level
-    char buf[32];
-    snprintf(buf, sizeof(buf), "%d", Rrole[rnum].Level);
-    str = buf;
-    DrawEngShadowText(str, ox + 102 - (int)str.size() * 3, oy + 6, ColColor(5), ColColor(7), tex, sur);
+    std::string buf = std::format("{}", Rrole[rnum].Level);
+    DrawEngShadowText(buf, ox + 102 - (int)buf.size() * 3, oy + 6, ColColor(5), ColColor(7), tex, sur);
 
     // HP
     uint32 color1, color2;
@@ -5187,7 +5179,7 @@ void ShowSimpleStatus(int rnum, int x, int y, int forTeam)
         color1 = ColColor(5);
         color2 = ColColor(7);
     }
-    snprintf(buf, sizeof(buf), "%4d", Rrole[rnum].CurrentHP);
+    buf = std::format("{:4d}", Rrole[rnum].CurrentHP);
     DrawEngShadowText(buf, ox + 138, oy + 28, color1, color2, tex, sur);
     DrawEngShadowText("/", ox + 165, oy + 28, ColColor(0x64), ColColor(0x66), tex, sur);
 
@@ -5206,7 +5198,7 @@ void ShowSimpleStatus(int rnum, int x, int y, int forTeam)
         color1 = ColColor(0x21);
         color2 = ColColor(0x23);
     }
-    snprintf(buf, sizeof(buf), "%4d", Rrole[rnum].MaxHP);
+    buf = std::format("{:4d}", Rrole[rnum].MaxHP);
     DrawEngShadowText(buf, ox + 173, oy + 28, color1, color2, tex, sur);
 
     // MP
@@ -5225,14 +5217,14 @@ void ShowSimpleStatus(int rnum, int x, int y, int forTeam)
         color1 = ColColor(0x64);
         color2 = ColColor(0x66);
     }
-    snprintf(buf, sizeof(buf), "%4d", Rrole[rnum].CurrentMP);
+    buf = std::format("{:4d}", Rrole[rnum].CurrentMP);
     DrawEngShadowText(buf, ox + 138, oy + 44, color1, color2, tex, sur);
     DrawEngShadowText("/", ox + 165, oy + 44, color1, color2, tex, sur);
-    snprintf(buf, sizeof(buf), "%4d", Rrole[rnum].MaxMP);
+    buf = std::format("{:4d}", Rrole[rnum].MaxMP);
     DrawEngShadowText(buf, ox + 173, oy + 44, color1, color2, tex, sur);
 
     // PhyPower
-    snprintf(buf, sizeof(buf), "%3d", Rrole[rnum].PhyPower);
+    buf = std::format("{:3d}", Rrole[rnum].PhyPower);
     DrawEngShadowText(buf, ox + 148, oy + 61, ColColor(5), ColColor(7), tex, sur);
 
     ResetFontSize();
@@ -5495,8 +5487,8 @@ void ShowAbility(int rnum, int select, int showLeave)
         color1 = ColColor(0x68);
         color2 = ColColor(0x6F);
     }
-    char buf[64];
-    snprintf(buf, sizeof(buf), "%4d", Rrole[rnum].Medcine);
+    std::string buf;
+    buf = std::format("{:4d}", Rrole[rnum].Medcine);
     std::string str = strs1[0] + buf;
     DrawTextWithRect(str, x + 70, y + 50, 0, color1, color2, 20, 0);
 
@@ -5516,7 +5508,7 @@ void ShowAbility(int rnum, int select, int showLeave)
         color1 = ColColor(0x68);
         color2 = ColColor(0x6F);
     }
-    snprintf(buf, sizeof(buf), "%4d", Rrole[rnum].MedPoi);
+    buf = std::format("{:4d}", Rrole[rnum].MedPoi);
     str = strs1[1] + buf;
     DrawTextWithRect(str, x + 220, y + 50, 0, color1, color2, 20, 0);
 
@@ -5549,7 +5541,7 @@ void ShowAbility(int rnum, int select, int showLeave)
         if (magicnum > 0)
         {
             DrawShadowText(std::string((char*)Rmagic[magicnum].Name), x1 + 19, y1 + 3, 0, 0x202020);
-            snprintf(buf, sizeof(buf), "%2d", Rrole[rnum].MagLevel[i] / 100 + 1);
+            buf = std::format("{:2d}", Rrole[rnum].MagLevel[i] / 100 + 1);
             DrawEngShadowText(buf, x1 + 139, y1 + 3, 0, 0x202020);
         }
     }
@@ -5565,7 +5557,7 @@ void ShowAbility(int rnum, int select, int showLeave)
         if (magicnum > 0)
         {
             DrawShadowText(std::string((char*)Rmagic[magicnum].Name), x1 + 19, y1 + 3, 0, 0x202020);
-            snprintf(buf, sizeof(buf), "%2d", Rrole[rnum].NGLevel[i] / 100 + 1);
+            buf = std::format("{:2d}", Rrole[rnum].NGLevel[i] / 100 + 1);
             DrawEngShadowText(buf, x1 + 139, y1 + 3, 0, 0x202020);
         }
     }
@@ -5582,13 +5574,13 @@ void ShowAbility(int rnum, int select, int showLeave)
         DrawTextWithRect(std::string((char*)Ritem[Rrole[rnum].PracticeBook].Name), x + 70, y + 400, 0, 0, 0x202020, 20, 0);
         if (mlevel == 10)
         {
-            snprintf(buf, sizeof(buf), "%d/=", (uint16_t)Rrole[rnum].ExpForBook);
+            buf = std::format("{}/=", (uint16_t)Rrole[rnum].ExpForBook);
         }
         else
         {
-            snprintf(buf, sizeof(buf), "%d/%d", (uint16_t)Rrole[rnum].ExpForBook, needexp);
+            buf = std::format("{}/{}", (uint16_t)Rrole[rnum].ExpForBook, needexp);
         }
-        DrawTextWithRect(std::string(buf), x + 70, y + 428, 0, ColColor(0x64), ColColor(0x66), 20, 0);
+        DrawTextWithRect(buf, x + 70, y + 428, 0, ColColor(0x64), ColColor(0x66), 20, 0);
         DrawIPic(Rrole[rnum].PracticeBook, itemx, itemy, 0, 0, 0, 0);
     }
     else
@@ -5849,8 +5841,7 @@ void MenuSet()
                 }
                 if (i < 5)
                 {
-                    char buf[32];
-                    snprintf(buf, sizeof(buf), "%5d", Value[i]);
+                    auto buf = std::format("{:5d}", Value[i]);
                     str2[i] = buf;
                     mixalphal = 0;
                     mixalphar = 0;
@@ -6452,8 +6443,7 @@ void EffectMedcine(int role1, int role2)
         DrawShadowText(std::string(Rrole[role2].Name), CENTER_X - 150 + 35, 172, ColColor(0x23), ColColor(0x21));
         std::string word = "增加生命";
         DrawShadowText(word, CENTER_X - 150 + 35, 197, ColColor(0x7), ColColor(0x5));
-        char buf[32];
-        snprintf(buf, sizeof(buf), "%4d", addlife);
+        auto buf = std::format("{:4d}", addlife);
         DrawEngShadowText(buf, CENTER_X - 150 + 135, 197, ColColor(0x66), ColColor(0x64));
         ShowSimpleStatus(role2, CENTER_X - 150, 70);
         UpdateAllScreen();
@@ -6485,8 +6475,7 @@ void EffectMedPoison(int role1, int role2)
         std::string word = "減少中毒";
         DrawShadowText(word, CENTER_X - 150 + 35, 197, ColColor(0x7), ColColor(0x5));
         DrawShadowText(std::string(Rrole[role2].Name), CENTER_X - 150 + 35, 172, ColColor(0x23), ColColor(0x21));
-        char buf[32];
-        snprintf(buf, sizeof(buf), "%4d", minuspoi);
+        auto buf = std::format("{:4d}", minuspoi);
         DrawEngShadowText(buf, CENTER_X - 150 + 135, 197, ColColor(0x66), ColColor(0x64));
         ShowSimpleStatus(role2, CENTER_X - 150, 70);
         UpdateAllScreen();
@@ -6654,8 +6643,7 @@ void EatOneItem(int rnum, int inum)
             }
             DrawTextFrame(14 + xp, 127 + yp + y + p * 28, 18, 10, 0, 25);
             DrawShadowText(std::string(wordList[i]), 33 + xp + x, 130 + yp + y + p * 28, 0, 0x202020);
-            char buf[32];
-            snprintf(buf, sizeof(buf), "%5d", addvalue[i]);
+            auto buf = std::format("{:5d}", addvalue[i]);
             DrawEngShadowText(buf, 163 + xp + x, 130 + yp + y + p * 28, ColColor(0x64), ColColor(0x66));
             p++;
         }

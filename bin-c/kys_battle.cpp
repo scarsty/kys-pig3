@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstring>
+#include <format>
 #include <cstdlib>
 
 // 内部变量
@@ -186,8 +187,7 @@ void LoadBattleTiles()
             int actionnum = Rrole[Brole[i].rnum].ActionNum;
             if (FPNGIndex[actionnum].Loaded == 0)
             {
-                char buf[64];
-                snprintf(buf, sizeof(buf), "resource/fight/fight%03d", actionnum);
+                auto buf = std::format("resource/fight/fight{:03d}", actionnum);
                 LoadPNGTiles(buf, FPNGIndex[actionnum].PNGIndexArray, 1, &FPNGIndex[actionnum].FightFrame[0]);
                 FPNGIndex[actionnum].Loaded = 1;
             }
@@ -204,8 +204,7 @@ void LoadBattleTiles()
                 }
             }
             LoadFreshScreen(CENTER_X - 140, CENTER_Y);
-            char str[64];
-            snprintf(str, sizeof(str), "載入戰鬥人物貼圖 %2d/%2d", i + 1, BRoleAmount);
+            auto str = std::format("載入戰鬥人物貼圖 {:2d}/{:2d}", i + 1, BRoleAmount);
             DrawTextWithRect(str, CENTER_X - 120, CENTER_Y, 0, ColColor(0x64), ColColor(0x66), 30);
             UpdateAllScreen();
         }
@@ -581,7 +580,7 @@ void BattleMainControl()
             }
             CheckBasicEvent();
             // 战场序号保存至变量28005
-            x50[28005 + 0x8000] = i;
+            x50[28005] = i;
 
             // 混乱和控制状态, 临时修改其阵营
             Brole[i].PreTeam = Brole[i].Team;
@@ -777,7 +776,7 @@ void BattleMainControl()
             }
         }
         CalPoiHurtLife();
-        x50[28101 + 0x8000] = BRoleAmount;
+        x50[28101] = BRoleAmount;
         RoundOver();
     }
 }
@@ -961,9 +960,7 @@ int BattleMenu(int bnum)
     ShowSimpleStatus(Brole[bnum].rnum, 80, CENTER_Y * 2 - 150);
 
     // 显示回合数
-    char roundbuf[16];
-    snprintf(roundbuf, sizeof(roundbuf), "%d", BattleRound);
-    std::string roundStr(roundbuf);
+    auto roundStr = std::format("{}", BattleRound);
     int l = (int)roundStr.size();
     DrawTextFrame(x + 100, y, 4 + l * 2);
     for (int ii = 0; ii < l; ii++)
@@ -1851,10 +1848,26 @@ void AttackAction(int bnum, int mnum, int level)
 void ShowMagicName(int mnum, const std::string& str)
 {
     std::string name = str;
+    uint32 color1, color2;
+    Redraw();
     if (name.empty() && mnum >= 0 && mnum < 1000)
+    {
         name = Rmagic[mnum].Name;
-    DrawTextWithRect(name, CENTER_X - DrawLength(name) * 5, CENTER_Y - 30, 0, ColColor(0x14), ColColor(0x16));
-    SDL_Delay(500);
+        color1 = ColColor(0x14);
+        color2 = ColColor(0x16);
+    }
+    else
+    {
+        int mode = mnum;
+        std::string str0;
+        SelectColor(mode, color1, color2, str0);
+    }
+    int l = DrawLength(name);
+    DrawTextWithRect(name, CENTER_X - l * 5 - 24, CENTER_Y - 150, 0, color1, color2, 10);
+    UpdateAllScreen();
+    SDL_Delay(400);
+    event.key.key = 0;
+    event.button.button = 0;
 }
 
 int SelectMagic(int rnum)
@@ -1875,7 +1888,7 @@ int SelectMagic(int rnum)
             {
                 menuStatus |= (1 << i);
                 menuString[i] = Rmagic[mnum].Name;
-                char buf[16]; snprintf(buf, sizeof(buf), "%3d", Rrole[rnum].MagLevel[i] / 100 + 1);
+                auto buf = std::format("{:3d}", Rrole[rnum].MagLevel[i] / 100 + 1);
                 menuEngString[i] = buf;
                 maxi++;
             }
@@ -2156,8 +2169,7 @@ void PlayMagicAmination(int bnum, int eNum, int aimMode, int mode)
     {
         if (EPNGIndex[eNum].Loaded == 0)
         {
-            char buf[64];
-            snprintf(buf, sizeof(buf), "resource/eft/eft%03d", eNum);
+            auto buf = std::format("resource/eft/eft{:03d}", eNum);
             EPNGIndex[eNum].Amount = LoadPNGTiles(buf, EPNGIndex[eNum].PNGIndexArray, 1);
             EPNGIndex[eNum].Loaded = 1;
         }
@@ -2526,8 +2538,11 @@ void SelectColor(int mode, uint32& color1, uint32& color2, std::string& formatst
 {
     switch (mode)
     {
-    case 0: color1 = ColColor(0x10); color2 = ColColor(0x12); formatstr = "-"; break;
-    case 1: color1 = ColColor(0x07); color2 = ColColor(0x05); formatstr = "+"; break;
+    case 0: case 6: color1 = ColColor(0x10); color2 = ColColor(0x13); formatstr = "-{}"; break;
+    case 1: color1 = ColColor(0x50); color2 = ColColor(0x53); formatstr = "-{}"; break;
+    case 2: color1 = ColColor(0x30); color2 = ColColor(0x32); formatstr = "+{}"; break;
+    case 3: color1 = ColColor(0x07); color2 = ColColor(0x05); formatstr = "+{}"; break;
+    case 4: color1 = ColColor(0x91); color2 = ColColor(0x93); formatstr = "-{}"; break;
     default: color1 = ColColor(0x14); color2 = ColColor(0x16); formatstr = ""; break;
     }
 }
@@ -2544,15 +2559,13 @@ void ShowHurtValue(int mode, int team, const std::string& fstr)
     {
         if (Brole[i].ShowNumber > 0)
         {
-            char buf[32];
             std::string fmt = formatstr;
             if (mode == 5)
-                fmt = (Brole[i].Team == team) ? "+%d" : "-%d";
-            if (fmt.find("%d") != std::string::npos)
-                snprintf(buf, sizeof(buf), fmt.c_str(), Brole[i].ShowNumber);
+                fmt = (Brole[i].Team == team) ? "+{}" : "-{}";
+            if (fmt.find("{}") != std::string::npos)
+                word[i] = std::vformat(fmt, std::make_format_args(Brole[i].ShowNumber));
             else
-                snprintf(buf, sizeof(buf), "%s%d", fmt.c_str(), Brole[i].ShowNumber);
-            word[i] = buf;
+                word[i] = fmt + std::to_string(Brole[i].ShowNumber);
         }
         Brole[i].ShowNumber = -1;
     }
@@ -2820,8 +2833,7 @@ void AddExp()
             int y = CENTER_Y - 240 + 90 + (p / 2) * 110;
             Rrole[rnum].ExpForItem += basicvalue * 3 / 5;
             ShowSimpleStatus(rnum, x, y);
-            char str[64];
-            snprintf(str, sizeof(str), "經驗+%d", basicvalue);
+            auto str = std::format("經驗+{}", basicvalue);
             DrawTextWithRect(str, x, y + 70, 0, ColColor(0x64), ColColor(0x66), 40, 0);
             p++;
         }
@@ -5589,7 +5601,7 @@ void TSpecialAbility::SA_25(int bnum, int mnum, int level)
         }
     }
     PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
-    ShowHurtValue(1, 0, "+%d");
+    ShowHurtValue(1, 0, "+{}");
     Brole[bnum].Acted = 1;
 }
 
