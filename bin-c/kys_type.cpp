@@ -37,5 +37,5 @@ int16_t liney[480 * 480] = {};
 int Fway[480][480] = {};
 
 // 扩展地面
-int16_t ExGroundS[192][192] = {};
-int16_t ExGroundB[192][192] = {};
+int16_t ExGroundS[64][64] = {};
+int16_t ExGroundB[64][64] = {};

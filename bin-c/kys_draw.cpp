@@ -414,9 +414,9 @@ void DrawScene()
         {
             int i1 = Cx1 + i + sum / 2;
             int i2 = Cy1 - i + (sum - sum / 2);
-            if (i1 >= -64 && i1 <= 127 && i2 >= -64 && i2 <= 127)
+            if (i1 >= 0 && i1 <= 63 && i2 >= 0 && i2 <= 63)
             {
-                int num = ExGroundS[i1 + 64][i2 + 64] / 2;
+                int num = ExGroundS[i1][i2] / 2;
                 if (num > 0 && num < (int)SPNGIndex.size() && SPNGIndex[num].Frame > 1)
                 {
                     TPosition pos = GetPositionOnScreen(i1, i2, Cx1, Cy1);
@@ -507,7 +507,7 @@ void DrawRoleOnScene(int x, int y)
 
 void ExpandGroundOnImg()
 {
-    int16_t Ex[192][192];
+    int16_t Ex[64][64];
     memset(Ex, -1, sizeof(Ex));
     for (int i1 = 0; i1 < 64; i1++)
     {
@@ -515,51 +515,8 @@ void ExpandGroundOnImg()
         {
             switch (Where)
             {
-            case 1: Ex[i1 + 64][i2 + 64] = SData[CurScene][0][i1][i2]; break;
-            case 2: Ex[i1 + 64][i2 + 64] = BField[0][i1][i2]; break;
-            }
-        }
-    }
-    if (EXPAND_GROUND != 0 && (MODVersion != 13 || (CurScene != 81 && CurScene != 72)))
-    {
-        for (int i1 = 63; i1 >= 0; i1--)
-        {
-            for (int i2 = 0; i2 < 64; i2++)
-            {
-                if (Ex[i1][i2 + 64] <= 0)
-                {
-                    Ex[i1][i2 + 64] = Ex[i1 + 1][i2 + 64];
-                }
-            }
-        }
-        for (int i1 = 128; i1 < 192; i1++)
-        {
-            for (int i2 = 0; i2 < 64; i2++)
-            {
-                if (Ex[i1][i2 + 64] <= 0)
-                {
-                    Ex[i1][i2 + 64] = Ex[i1 - 1][i2 + 64];
-                }
-            }
-        }
-        for (int i1 = 0; i1 < 192; i1++)
-        {
-            for (int i2 = 63; i2 >= 0; i2--)
-            {
-                if (Ex[i1][i2] <= 0)
-                {
-                    Ex[i1][i2] = Ex[i1][i2 + 1];
-                }
-            }
-        }
-        for (int i1 = 0; i1 < 192; i1++)
-        {
-            for (int i2 = 128; i2 < 192; i2++)
-            {
-                if (Ex[i1][i2] <= 0)
-                {
-                    Ex[i1][i2] = Ex[i1][i2 - 1];
-                }
+            case 1: Ex[i1][i2] = SData[CurScene][0][i1][i2]; break;
+            case 2: Ex[i1][i2] = BField[0][i1][i2]; break;
             }
         }
     }
@@ -581,12 +538,12 @@ void ExpandGroundOnImg()
     }
     SDL_SetRenderDrawColor(render, 0, 0, 0, 0);
     SDL_RenderClear(render);
-    for (int i1 = 0; i1 < 192; i1++)
+    for (int i1 = 0; i1 < 64; i1++)
     {
-        for (int i2 = 0; i2 < 192; i2++)
+        for (int i2 = 0; i2 < 64; i2++)
         {
             int x, y;
-            CalPosOnImage(i1 - 64, i2 - 64, x, y);
+            CalPosOnImage(i1, i2, x, y);
             int num = Ex[i1][i2] / 2;
             if (num > 0)
             {
@@ -605,47 +562,12 @@ void ExpandGroundOnImg()
 
 void InitialScene(int Visible)
 {
-    // 设置场景角色贴图
-    int rnum = Rscene[CurScene].EntranceX;
-    if (rnum >= 0 && rnum < 1000)
-    {
-        CurSceneRolePic = Rrole[rnum].Data[14];    // WalkPic
-    }
-    else
-    {
-        CurSceneRolePic = BEGIN_WALKPIC;
-    }
-
-    // 初始化ExGroundS (扩展地面数据)
     memset(ExGroundS, 0, sizeof(ExGroundS));
-
-    // 从SData复制地面数据
     for (int i1 = 0; i1 < 64; i1++)
     {
         for (int i2 = 0; i2 < 64; i2++)
         {
-            ExGroundS[i1 + 64][i2 + 64] = (int16_t)SData[CurScene][0][i1][i2];
-        }
-    }
-
-    // 扩展地面 - 周围复制
-    if (EXPAND_GROUND == 1)
-    {
-        for (int i1 = 0; i1 < 64; i1++)
-        {
-            for (int i2 = 0; i2 < 64; i2++)
-            {
-                ExGroundS[i1][i2 + 64] = ExGroundS[64][i2 + 64];
-                ExGroundS[i1 + 128][i2 + 64] = ExGroundS[127][i2 + 64];
-            }
-        }
-        for (int i1 = 0; i1 < 192; i1++)
-        {
-            for (int i2 = 0; i2 < 64; i2++)
-            {
-                ExGroundS[i1][i2] = ExGroundS[i1][64];
-                ExGroundS[i1][i2 + 128] = ExGroundS[i1][127];
-            }
+            ExGroundS[i1][i2] = (int16_t)SData[CurScene][0][i1][i2];
         }
     }
     ExpandGroundOnImg();
@@ -653,13 +575,13 @@ void InitialScene(int Visible)
 
 int CalBlock(int x, int y)
 {
-    return x * 64 + y;
+    return 128 * (x + y) + y;
 }
 
 void CalPosOnImage(int i1, int i2, int& x, int& y)
 {
-    x = -(i1 - 32) * 18 + (i2 - 32) * 18 + ImageWidth / 2;
-    y = (i1 - 32) * 9 + (i2 - 32) * 9 + ImageHeight / 2;
+    x = -i1 * 18 + i2 * 18 + ImageWidth / 2;
+    y = i1 * 9 + i2 * 9 + 9 + CENTER_Y;
 }
 
 void CalLTPosOnImageByCenter(int i1, int i2, int& x, int& y)
@@ -689,10 +611,10 @@ void DrawBField()
         {
             int i1 = Bx1 + i + sum / 2;
             int i2 = By1 - i + (sum - sum / 2);
-            if (i1 >= -63 && i1 <= 127 && i2 >= -63 && i2 <= 127)
+            if (i1 >= 0 && i1 <= 63 && i2 >= 0 && i2 <= 63)
             {
                 TPosition pos = GetPositionOnScreen(i1, i2, Bx1, By1);
-                int num = ExGroundB[i1 + 64][i2 + 64] / 2;
+                int num = ExGroundB[i1][i2] / 2;
 
                 // 重画闪烁的地面贴图
                 if (num > 0 && SPNGIndex[num].Frame > 1)
@@ -944,7 +866,58 @@ void DrawBFieldWithCursor(int AttAreaType, int step, int range)
 
 void DrawBlackScreen()
 {
-    DrawRectangleWithoutFrame(0, 0, CENTER_X * 2, CENTER_Y * 2, MapRGBA(0, 0, 0), 50);
+    if (SW_SURFACE == 0)
+    {
+        if (BlackScreenTex == nullptr)
+        {
+            SDL_Surface* sur = SDL_CreateSurface(CENTER_X * 2, CENTER_Y * 2,
+                SDL_GetPixelFormatForMasks(32, RMask, GMask, BMask, AMask));
+            SDL_FillSurfaceRect(sur, nullptr, MapRGBA(0, 0, 0, 255));
+            for (int i1 = 0; i1 < CENTER_X * 2; i1++)
+            {
+                for (int i2 = 0; i2 < CENTER_Y * 2; i2++)
+                {
+                    int x = i1 - CENTER_X;
+                    int y = i2 - CENTER_Y + 20;
+                    double distance = (double)(x * x + y * y) / 15625.0;
+                    if (distance <= 1.0)
+                    {
+                        uint8_t alpha = (uint8_t)(distance * 255);
+                        PutPixel(sur, i1, i2, MapRGBA(0, 0, 0, alpha));
+                    }
+                }
+            }
+            BlackScreenTex = SDL_CreateTextureFromSurface(render, sur);
+            SDL_SetTextureBlendMode(BlackScreenTex, SDL_BLENDMODE_BLEND);
+            SDL_DestroySurface(sur);
+        }
+        SDL_SetRenderTarget(render, screenTex);
+        SDL_RenderTexture(render, BlackScreenTex, nullptr, nullptr);
+    }
+    else
+    {
+        if (BlackScreenSur == nullptr)
+        {
+            BlackScreenSur = SDL_CreateSurface(CENTER_X * 2, CENTER_Y * 2,
+                SDL_GetPixelFormatForMasks(32, RMask, GMask, BMask, AMask));
+            SDL_FillSurfaceRect(BlackScreenSur, nullptr, MapRGBA(0, 0, 0, 255));
+            for (int i1 = 0; i1 < CENTER_X * 2; i1++)
+            {
+                for (int i2 = 0; i2 < CENTER_Y * 2; i2++)
+                {
+                    int x = i1 - CENTER_X;
+                    int y = i2 - CENTER_Y + 20;
+                    double distance = (double)(x * x + y * y) / 15625.0;
+                    if (distance <= 1.0)
+                    {
+                        uint8_t alpha = (uint8_t)(distance * 255);
+                        PutPixel(BlackScreenSur, i1, i2, MapRGBA(0, 0, 0, alpha));
+                    }
+                }
+            }
+        }
+        SDL_BlitSurface(BlackScreenSur, nullptr, screen, nullptr);
+    }
 }
 
 void DrawBFieldWithEft(int Epicnum, int beginpic, int endpic, int curlevel, int bnum, int SelectAimMode, int flash,

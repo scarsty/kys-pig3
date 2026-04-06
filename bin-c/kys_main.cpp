@@ -389,22 +389,22 @@ void ReadFiles()
     }
 
     // 最大属性值表
-    MaxProList[0] = 999;     // 攻击
-    MaxProList[1] = 500;     // 轻功
-    MaxProList[2] = 999;     // 防御
-    MaxProList[3] = 200;     // 医疗
-    MaxProList[4] = 100;     // 用毒
-    MaxProList[5] = 100;     // 解毒
-    MaxProList[6] = 100;     // 抗毒
-    MaxProList[7] = 999;     // 拳掌
-    MaxProList[8] = 999;     // 御剑
-    MaxProList[9] = 999;     // 耍刀
-    MaxProList[10] = 999;    // 特殊
-    MaxProList[11] = 999;    // 暗器
-    MaxProList[12] = 100;    // 常识
-    MaxProList[13] = 100;    // 品德
-    MaxProList[14] = 100;    // 带毒
-    MaxProList[15] = 200;    // 移动
+    MaxProList[43] = 999;    // 攻击 (Data[43])
+    MaxProList[44] = 500;    // 轻功 (Data[44])
+    MaxProList[45] = 999;    // 防御 (Data[45])
+    MaxProList[46] = 200;    // 医疗 (Data[46])
+    MaxProList[47] = 100;    // 用毒 (Data[47])
+    MaxProList[48] = 100;    // 解毒 (Data[48])
+    MaxProList[49] = 100;    // 抗毒 (Data[49])
+    MaxProList[50] = 999;    // 拳掌 (Data[50])
+    MaxProList[51] = 999;    // 御剑 (Data[51])
+    MaxProList[52] = 999;    // 耍刀 (Data[52])
+    MaxProList[53] = 999;    // 特殊 (Data[53])
+    MaxProList[54] = 999;    // 暗器 (Data[54])
+    MaxProList[55] = 100;    // 常识 (Data[55])
+    MaxProList[56] = 100;    // 品德 (Data[56])
+    MaxProList[57] = 100;    // 带毒 (Data[57])
+    MaxProList[58] = 200;    // 移动 (Data[58])
 
     // 读取调色板
     ReadFileToBuffer((char*)&ACol[0], AppPath + "resource/mmap.col", 768, 0);
@@ -1147,13 +1147,14 @@ bool LoadR(int num)
         BufferRead(p, (char*)&RItemList[0], (int)(sizeof(TItemList) * MAX_ITEM_AMOUNT));
     }
 
+    std::vector<int> temp32;
     if (isold)
     {
         // 旧版16位数据转32位
         int remain = LenR - RoleOffset;
         std::vector<int16_t> temp16(remain / 2);
         memcpy(temp16.data(), p, remain);
-        std::vector<int> temp32(remain / 4);
+        temp32.resize(remain / 4);
         for (int i = 0; i < (int)temp32.size(); i++)
         {
             temp32[i] = (i < (int)temp16.size()) ? temp16[i] : 0;
@@ -1206,7 +1207,7 @@ bool LoadR(int num)
 
     if (MODVersion == 13)
     {
-        BEGIN_MISSION_NUM = Rrole[651].Data[0];
+        BEGIN_MISSION_NUM = Rrole[650].Data[0];
         MissionStr.resize(MISSION_AMOUNT);
         for (int i = 0; i < MISSION_AMOUNT; i++)
         {
@@ -1243,10 +1244,10 @@ bool LoadR(int num)
     {
         if (MODVersion == 13)
         {
-            Rrole[169].Data[73] = 97;
-            Rrole[169].Data[63] = 121;
-            Rrole[9].AmiFrameNum[0] = 3;
-            Rrole[14].AmiFrameNum[0] = 5;
+            Rrole[168].Data[73] = 97;
+            Rrole[168].Data[63] = 121;
+            Rrole[8].AmiFrameNum[0] = 3;
+            Rrole[13].AmiFrameNum[0] = 5;
         }
         if (MODVersion != 13)
         {

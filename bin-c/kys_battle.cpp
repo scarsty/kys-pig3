@@ -2616,38 +2616,124 @@ void CalPoiHurtLife()
 {
     for (int i = 0; i < BRoleAmount; i++)
     {
+        Brole[i].ShowNumber = -1;
         if (Brole[i].Dead != 0) continue;
         int rnum = Brole[i].rnum;
         if (rnum < 0 || rnum >= 1000) continue;
-        TRole& r = Rrole[rnum];
-        if (r.Data[72] > 0)  // Poison
+        if (Rrole[rnum].Poison > 0 && Brole[i].Acted == 1)
         {
-            int hurt = r.Data[72] / 10;
-            r.Data[22] -= hurt;  // CurrentHP
-            if (r.Data[22] <= 0)
-            {
-                r.Data[22] = 0;
-                Brole[i].Dead = 1;
-            }
+            Rrole[rnum].CurrentHP -= Rrole[rnum].Poison + 5 - rand() % 5;
+            if (Rrole[rnum].CurrentHP <= 0)
+                Rrole[rnum].CurrentHP = 1;
         }
     }
 }
 
 void ClearDeadRolePic()
 {
+    // 检测是否有角色需要阵亡效果
+    bool needeffect = false;
     for (int i = 0; i < BRoleAmount; i++)
     {
-        if (Brole[i].Dead != 0) continue;
-        int rnum = Brole[i].rnum;
-        if (rnum < 0 || rnum >= 1000) continue;
-        if (Rrole[rnum].Data[22] <= 0)
+        if (Rrole[Brole[i].rnum].CurrentHP <= 0 && Brole[i].Dead == 0)
+        {
+            needeffect = true;
+            break;
+        }
+    }
+    // 阵亡渐隐效果
+    int j = 0;
+    while ((SDL_PollEvent(&event) || true) && needeffect)
+    {
+        CheckBasicEvent();
+        for (int i = 0; i < BRoleAmount; i++)
+        {
+            if (Rrole[Brole[i].rnum].CurrentHP <= 0 && Brole[i].Dead == 0)
+            {
+                Brole[i].mixColor = 0;
+                Brole[i].mixAlpha = j;
+                Brole[i].alpha = j;
+            }
+        }
+        DrawBField();
+        UpdateAllScreen();
+        SDL_Delay(BATTLE_SPEED / 2);
+        j += 5;
+        if (j > 100) break;
+    }
+    // 标记阵亡, 清除BField, 处理状态效果
+    for (int i = 0; i < BRoleAmount; i++)
+    {
+        if (Rrole[Brole[i].rnum].CurrentHP <= 0)
+        {
             Brole[i].Dead = 1;
+            BField[2][Brole[i].X][Brole[i].Y] = -1;
+            // 伤逝状态: 死亡时敌方攻击防御下降
+            if (Brole[i].StateLevel[21] > 0)
+            {
+                Brole[i].StateLevel[21] = 0;
+                for (int j2 = 0; j2 < BRoleAmount; j2++)
+                {
+                    if (Brole[j2].Team != Brole[i].Team && Brole[j2].Dead == 0)
+                    {
+                        if (Brole[j2].StateLevel[0] > 0)
+                        {
+                            Brole[j2].StateLevel[0] = -20;
+                            Brole[j2].StateRound[0] = 3;
+                        }
+                        else
+                        {
+                            Brole[j2].StateLevel[0] -= 20;
+                            Brole[j2].StateRound[0] += 3;
+                        }
+                        if (Brole[j2].StateLevel[1] > 0)
+                        {
+                            Brole[j2].StateLevel[1] = -20;
+                            Brole[j2].StateRound[1] = 3;
+                        }
+                        else
+                        {
+                            Brole[j2].StateLevel[1] -= 20;
+                            Brole[j2].StateRound[1] += 3;
+                        }
+                        Rrole[Brole[j2].rnum].Hurt += 10;
+                    }
+                }
+            }
+            // 去掉慈悲状态
+            for (int j2 = 0; j2 < BRoleAmount; j2++)
+            {
+                if (Brole[j2].StateLevel[23] == Brole[i].rnum)
+                {
+                    Brole[j2].StateLevel[23] = 0;
+                    Brole[j2].StateRound[23] = 0;
+                }
+            }
+        }
+    }
+    // 更新存活角色的BField
+    for (int i = 0; i < BRoleAmount; i++)
+    {
+        if (Brole[i].Dead == 0)
+            BField[2][Brole[i].X][Brole[i].Y] = (int16_t)i;
     }
 }
 
 void Wait(int bnum)
 {
-    Brole[bnum].Acted = 1;
+    Brole[bnum].Acted = 0;
+    Brole[BRoleAmount] = Brole[bnum];
+
+    for (int i = bnum; i < BRoleAmount; i++)
+        Brole[i] = Brole[i + 1];
+
+    for (int i = 0; i < BRoleAmount; i++)
+    {
+        if (Brole[i].Dead == 0)
+            BField[2][Brole[i].X][Brole[i].Y] = i;
+        else
+            BField[2][Brole[i].X][Brole[i].Y] = -1;
+    }
 }
 
 void RestoreRoleStatus()
@@ -2940,7 +3026,7 @@ void UsePoison(int bnum)
         select = SelectAim(bnum, step);
     else
     {
-        int minDefPoi = MaxProList[49 < 16 ? 49 : 0];
+        int minDefPoi = MaxProList[49];
         for (int i = 0; i < BRoleAmount; i++)
         {
             if (Brole[i].Dead == 0 && Brole[i].Team != Brole[bnum].Team)
@@ -3262,39 +3348,7 @@ void Rest(int bnum)
 //----------------------------------------------------------------------
 void AutoBattle(int bnum)
 {
-    // 简单AI: 移向最近敌人并攻击
-    int mindis = 999, nearest = -1;
-    for (int i = 0; i < BRoleAmount; i++)
-    {
-        if (i == bnum || Brole[i].Dead != 0) continue;
-        if (Brole[i].Team == Brole[bnum].Team) continue;
-        int dis = CalBroleDistance(bnum, i);
-        if (dis < mindis) { mindis = dis; nearest = i; }
-    }
-
-    if (nearest >= 0 && mindis <= 1)
-    {
-        // 近身攻击
-        AttackAction(bnum, -1, -1, 0);
-    }
-    else if (nearest >= 0)
-    {
-        // 移向敌人
-        int dx = (Brole[nearest].X > Brole[bnum].X) ? 1 : -1;
-        int dy = (Brole[nearest].Y > Brole[bnum].Y) ? 1 : -1;
-        int step = Brole[bnum].Step;
-        for (int s = 0; s < step; s++)
-        {
-            int nx = Brole[bnum].X + dx;
-            int ny = Brole[bnum].Y + dy;
-            if (nx >= 0 && nx < 64 && ny >= 0 && ny < 64)
-            {
-                Brole[bnum].X = nx;
-                Brole[bnum].Y = ny;
-            }
-        }
-    }
-    Brole[bnum].Acted = 1;
+    // Pascal版此函数体已全部注释, 保持空实现
 }
 
 bool AutoUseItem(int bnum, int list, int test)
@@ -3350,8 +3404,234 @@ bool AutoUseItem(int bnum, int list, int test)
     return p >= 0;
 }
 
-void AutoBattle2(int bnum) { AutoBattle(bnum); }
-void AutoBattle3(int bnum) { AutoBattle(bnum); }
+void AutoBattle2(int bnum)
+{
+    // Pascal版此函数体已全部注释, 保持空实现
+}
+
+void AutoBattle3(int bnum)
+{
+    int rnum = Brole[bnum].rnum;
+    ShowSimpleStatus(rnum, 80, CENTER_Y * 2 - 150);
+    UpdateAllScreen();
+    SDL_Delay(450);
+
+    if (Brole[bnum].AutoMode == 3)
+    {
+        // 呆子型, 直接调息
+        Rest(bnum);
+    }
+    else
+    {
+        Brole[bnum].Acted = 0;
+
+        // 生命低于30%, 70%可能医疗或吃药
+        if (Brole[bnum].Acted != 1 && Rrole[rnum].CurrentHP < Rrole[rnum].MaxHP * 3 / 10)
+        {
+            if (Brole[bnum].AutoMode > 0 || Brole[bnum].Team != 0)
+            {
+                if (rand() % 100 < 70)
+                {
+                    if (Rrole[rnum].Medcine >= 60 && Rrole[rnum].PhyPower >= 50)
+                    {
+                        int Movex, Movey;
+                        FarthestMove(Movex, Movey, bnum);
+                        Ax = Movex;
+                        Ay = Movey;
+                        MoveAmination(bnum);
+                        Medcine(bnum);
+                    }
+                    else if (Brole[bnum].Team != 0 || (Brole[bnum].Team == 0 && Brole[bnum].AutoMode == 2))
+                    {
+                        if (AutoUseItem(bnum, 45, 1))
+                        {
+                            int Movex, Movey;
+                            FarthestMove(Movex, Movey, bnum);
+                            Ax = Movex;
+                            Ay = Movey;
+                            MoveAmination(bnum);
+                            AutoUseItem(bnum, 45);
+                        }
+                    }
+                }
+            }
+        }
+
+        // 内力低于30%, 60%可能吃药
+        if (Brole[bnum].Acted != 1 && Rrole[rnum].CurrentMP < Rrole[rnum].MaxMP * 3 / 10)
+        {
+            if (Brole[bnum].Team != 0 || (Brole[bnum].Team == 0 && Brole[bnum].AutoMode == 2))
+            {
+                if (rand() % 100 < 60 && AutoUseItem(bnum, 50, 1))
+                {
+                    int Movex, Movey;
+                    FarthestMove(Movex, Movey, bnum);
+                    Ax = Movex;
+                    Ay = Movey;
+                    MoveAmination(bnum);
+                    AutoUseItem(bnum, 50);
+                }
+            }
+        }
+
+        // 体力低于30%, 50%可能吃药 (仅敌方)
+        if (Brole[bnum].Acted != 1 && Brole[bnum].Team != 0 && Rrole[rnum].PhyPower < MAX_PHYSICAL_POWER * 3 / 10)
+        {
+            if (Brole[bnum].Team != 0 || (Brole[bnum].Team == 0 && Brole[bnum].AutoMode == 2))
+            {
+                if (rand() % 100 < 50 && AutoUseItem(bnum, 48, 1))
+                {
+                    int Movex, Movey;
+                    FarthestMove(Movex, Movey, bnum);
+                    Ax = Movex;
+                    Ay = Movey;
+                    MoveAmination(bnum);
+                    AutoUseItem(bnum, 48);
+                }
+            }
+        }
+
+        if (AI_USE_SPECIAL != 0)
+        {
+            // 尝试使用特技
+            int mnum0 = Rrole[rnum].Magic[0];
+            if (Brole[bnum].Acted != 1 && Rrole[rnum].PhyPower >= 10 && Rrole[rnum].Poison < 100)
+                SpecialAttack(bnum);
+            // 再次尝试 (森罗万象不占用行动)
+            if (Rrole[rnum].Magic[0] != mnum0 && Brole[bnum].Acted != 1 && Rrole[rnum].PhyPower >= 10 && Rrole[rnum].Poison < 100)
+                SpecialAttack(bnum);
+
+            // 医疗大于70, 寻找生命最低队友医疗
+            if (Brole[bnum].Acted != 1 && Rrole[rnum].Medcine > 70 && Rrole[rnum].PhyPower >= 70)
+            {
+                if (rand() % 100 < 30)
+                {
+                    int Ax1, Ay1;
+                    NearestMoveByPro(Ax, Ay, Ax1, Ay1, bnum, 1, 0, 17, -1, 1);
+                    if (Ax1 != -1)
+                    {
+                        MoveAmination(bnum);
+                        Ax = Ax1;
+                        Ay = Ay1;
+                        Medcine(bnum);
+                    }
+                }
+            }
+
+            // 用毒大于80, 尝试用毒
+            if (Brole[bnum].Acted != 1 && Rrole[rnum].UsePoi > 80 && Rrole[rnum].PhyPower >= 60)
+            {
+                if (rand() % 100 < 15)
+                {
+                    int Ax1, Ay1;
+                    NearestMove(Ax1, Ay1, bnum);
+                    if (Ax1 != -1)
+                    {
+                        MoveAmination(bnum);
+                        Ax = Ax1;
+                        Ay = Ay1;
+                        UsePoison(bnum);
+                    }
+                }
+            }
+
+            // 有可能尝试解毒
+            if (Brole[bnum].Acted != 1 && Rrole[rnum].MedPoi > 50 && Rrole[rnum].PhyPower >= 70)
+            {
+                if (rand() % 100 < 30)
+                {
+                    int Ax1, Ay1;
+                    NearestMoveByPro(Ax, Ay, Ax1, Ay1, bnum, 1, 0, 20, 1, 2);
+                    if (Ax1 != -1)
+                    {
+                        MoveAmination(bnum);
+                        Ax = Ax1;
+                        Ay = Ay1;
+                        MedPoison(bnum);
+                    }
+                }
+            }
+        }
+
+        // 尝试攻击 (不使用HurtType==2的特技)
+        if (Brole[bnum].Acted != 1 && Rrole[rnum].PhyPower >= 10 && Rrole[rnum].Poison < 100)
+        {
+            // 判断主系, 若为暗器系则计算预留范围
+            int tempMaxMType = 0, mainMType = 0;
+            for (int i = 1; i <= 5; i++)
+            {
+                if (Rrole[rnum].Data[49 + i] > tempMaxMType)
+                {
+                    mainMType = i;
+                    tempMaxMType = Rrole[rnum].Data[49 + i];
+                }
+            }
+            int minstep = 1;
+            if (mainMType == 5)
+            {
+                for (int i = 0; i < HaveMagicAmount(rnum); i++)
+                    minstep = std::max(minstep, Rmagic[Rrole[rnum].Magic[i]].MinStep + 1);
+            }
+
+            int Movex, Movey, temp1, temp2;
+            NearestMoveByPro(Movex, Movey, temp1, temp2, bnum, 0, minstep, 0, 0, 0);
+            int Ax1, Ay1, magicid, Cmlevel;
+            TryAttack(Ax1, Ay1, magicid, Cmlevel, Movex, Movey, bnum);
+
+            if (magicid > -1)
+            {
+                // 移动
+                Ax = Movex;
+                Ay = Movey;
+                MoveAmination(bnum);
+                // 攻击
+                Ax = Ax1;
+                Ay = Ay1;
+                int Cmnum = Rrole[Brole[bnum].rnum].Magic[magicid];
+                int Cmdis = Rmagic[Cmnum].MoveDistance[Cmlevel - 1];
+                int Cmrange = Rmagic[Cmnum].AttDistance[Cmlevel - 1];
+                ModifyRange(bnum, Cmnum, Cmdis, Cmrange);
+                Brole[bnum].Acted = 1;
+                SetAminationPosition(Rmagic[Cmnum].AttAreaType, Cmdis, Cmrange);
+                AttackAction(bnum, magicid, Cmnum, Cmlevel);
+            }
+        }
+
+        // 攻击失败, 再次尝试使用特技
+        if (Brole[bnum].Acted != 1 && Rrole[rnum].PhyPower >= 10 && Rrole[rnum].Poison < 100)
+            SpecialAttack(bnum);
+
+        // 所有行动失败
+        if (Brole[bnum].Acted != 1)
+        {
+            if (Rrole[rnum].CurrentHP > Rrole[rnum].MaxHP / 2 || Rrole[rnum].CurrentMP > Rrole[rnum].MaxMP / 2)
+            {
+                // 生命或内力 > 50%, 移向敌人并调息
+                int Movex, Movey;
+                NearestMove(Movex, Movey, bnum);
+                Ax = Movex;
+                Ay = Movey;
+                MoveAmination(bnum);
+                Rest(bnum);
+            }
+            else if (Rrole[rnum].CurrentHP < Rrole[rnum].MaxHP / 10 && Rrole[rnum].CurrentMP < Rrole[rnum].MaxMP / 10)
+            {
+                // 生命且内力 < 10%, 远离敌人并调息
+                int Movex, Movey;
+                FarthestMove(Movex, Movey, bnum);
+                Ax = Movex;
+                Ay = Movey;
+                MoveAmination(bnum);
+                Rest(bnum);
+            }
+            else
+            {
+                // 原地调息
+                Rest(bnum);
+            }
+        }
+    }
+}
 
 void TryMoveAttack(int& Mx1, int& My1, int& Ax1, int& Ay1, int& tempmaxhurt, int bnum, int mnum, int level)
 {

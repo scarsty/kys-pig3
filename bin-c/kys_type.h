@@ -308,7 +308,7 @@ inline int MIN_KNOWLEDGE = 80;
 inline int MAX_ITEM_AMOUNT = 304;
 inline int MAX_HP = 9999;
 inline int MAX_MP = 9999;
-inline int MaxProList[16] = { 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100 };
+inline int MaxProList[59] = {};
 inline int LIFE_HURT = 100;
 inline int NOVEL_BOOK = 144;
 inline int MAX_HEAD_NUM = 189;
@@ -510,9 +510,9 @@ inline std::string versionstr = "  108 Brothers and Sisters";
 
 inline std::vector<std::string> BattleNames, loverstrs, statestrs;
 
-inline int EXPAND_GROUND = 1;
-extern int16_t ExGroundS[192][192];
-extern int16_t ExGroundB[192][192];
+inline int EXPAND_GROUND = 0;
+extern int16_t ExGroundS[64][64];
+extern int16_t ExGroundB[64][64];
 
 inline int AI_USE_SPECIAL = 1;
 inline int BattleRound = 0;
