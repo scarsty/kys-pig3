@@ -113,6 +113,7 @@ bool InRegion(int x, int x1, int x2);
 bool MouseInRegion(int x, int y, int w, int h);
 bool MouseInRegion(int x, int y, int w, int h, int& x1, int& y1);
 int RegionParameter(int x, int x1, int x2);
+int utf8follow(char c1);
 
 // 系统
 uint32 CheckBasicEvent();

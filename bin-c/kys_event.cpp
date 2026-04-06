@@ -1935,17 +1935,44 @@ void DivideName(const std::string& fullname, std::string& surname, std::string& 
     }
     else if (len <= 4)
     {
-        // 单姓
-        surname = fullname.substr(0, 3); // UTF-8 one CJK char = 3 bytes
+        surname = fullname.substr(0, 3);
         givenname = fullname.substr(3);
+    }
+    else if (len <= 6)
+    {
+        // 复姓列表
+        static const char* surname2[] = {
+            "歐陽","太史","端木","上官","司馬","東方","獨孤","南宮","萬俟","聞人",
+            "夏侯","諸葛","尉遲","公羊","赫連","澹台","皇甫","宗政","濮陽","公冶",
+            "太叔","申屠","公孫","慕容","仲孫","鍾離","長孫","宇文","司徒","鮮於",
+            "司空","閭丘","子車","亓官","司寇","巫馬","公西","顓孫","壤駟","公良",
+            "漆雕","樂正","宰父","穀梁","拓跋","夾穀","軒轅","令狐","段幹","百裏",
+            "呼延","東郭","南門","羊舌","微生","公戶","公玉","公儀","梁丘","公仲",
+            "公上","公門","公山","公堅","左丘","公伯","西門","公祖","第五","公乘",
+            "貫丘","公皙","南榮","東裏","東宮","仲長","子書","子桑","即墨","達奚",
+            "褚師","第二"
+        };
+        std::string prefix = fullname.substr(0, 6);
+        bool isDoubleSurname = false;
+        for (auto& s : surname2)
+        {
+            if (prefix == s) { isDoubleSurname = true; break; }
+        }
+        if (isDoubleSurname)
+        {
+            surname = fullname.substr(0, 6);
+            givenname = fullname.substr(6, 3);
+        }
+        else
+        {
+            surname = fullname.substr(0, 3);
+            givenname = fullname.substr(3, 6);
+        }
     }
     else
     {
-        // 尝试复姓
         surname = fullname.substr(0, 6);
-        // 简化处理：默认单姓
-        surname = fullname.substr(0, 3);
-        givenname = fullname.substr(3);
+        givenname = fullname.substr(6);
     }
 }
 
@@ -2282,20 +2309,285 @@ void TeammateList()
 
 void NewTeammateList()
 {
-    // 简化版 - 基本交互框架
-    TeammateList(); // 复用基本逻辑
+    int xStar = 220, yStar = 75;
+    int CurrentStar = 0, CurrentTeam = 1;
+    int xTeam = 500, yTeam = 75;
+    int xState = 450, yState = 300;
+    int Show = 12, h = 28;
+    std::vector<std::string> StarMenu(Show);
+    std::vector<std::string> TeamMenu(6);
+    std::vector<int> StateList(Show);
+    int menuid = 0;
+    bool escape = false, refresh = true;
+
+    Redraw();
+    TransBlackScreen();
+    RecordFreshScreen();
+    while (!escape)
+    {
+        int page = CurrentStar / Show;
+        int numStar = CurrentStar - page * Show;
+        for (int i = page * Show; i < page * Show + Show; i++)
+        {
+            int n = i - (i / Show) * Show;
+            std::string temp;
+            if (i == CurrentStar && menuid == 0)
+                temp = ">";
+            else
+                temp = " ";
+            temp += std::string(Star[i]) + " ";
+            StateList[n] = GetStarState(i);
+            if (StateList[n] > 0)
+            {
+                temp += RoleName[i];
+                if (StateList[n] != 2)
+                {
+                    int pad = 16 - DrawLength(temp.c_str());
+                    if (pad > 0) temp += std::string(pad, ' ');
+                    char buf[16]; snprintf(buf, sizeof(buf), "%d", Rrole[StarToRole(i)].Level);
+                    temp += buf;
+                }
+            }
+            else
+                temp += "-- -- --";
+            StarMenu[n] = temp;
+        }
+
+        for (int i = 0; i < 6; i++)
+        {
+            std::string temp;
+            if (menuid == 1 && CurrentTeam == i)
+                temp = " >";
+            else
+                temp = "  ";
+            if (TeamList[i] != -1)
+            {
+                temp += Rrole[TeamList[i]].Name;
+                int pad = 12 - DrawLength(temp.c_str());
+                if (pad > 0) temp += std::string(pad, ' ');
+                char buf[16]; snprintf(buf, sizeof(buf), "%d", Rrole[TeamList[i]].Level);
+                temp += buf;
+            }
+            else
+                temp += "  --------";
+            TeamMenu[i] = temp;
+        }
+
+        if (refresh)
+        {
+            refresh = false;
+            LoadFreshScreen();
+            for (int i = 0; i < Show; i++)
+            {
+                DrawTextFrame(xStar - 16, yStar + h * i, 18, 10);
+                if (i == numStar && menuid == 0)
+                {
+                    DrawTextFrame(xStar - 16, yStar + h * i, 18);
+                    DrawShadowText(StarMenu[i].c_str(), xStar + 3, yStar + 3 + h * i, ColColor(0x64), ColColor(0x66));
+                }
+                else if (StateList[i] == 2)
+                {
+                    DrawShadowText(StarMenu[i].c_str(), xStar + 3, yStar + 3 + h * i, ColColor(0x78), ColColor(0x7A));
+                }
+                else if (StateList[i] > 2)
+                {
+                    DrawShadowText(StarMenu[i].c_str(), xStar + 3, yStar + 3 + h * i, 0xE02020, 0xA04040);
+                }
+                else
+                    DrawShadowText(StarMenu[i].c_str(), xStar + 3, yStar + 3 + h * i, 0, 0x202020);
+            }
+
+            DrawTextFrame(xTeam - 16, yTeam, 16);
+            DrawShadowText(TeamMenu[0].c_str(), xTeam + 3, yTeam + 3, 0, 0x202020);
+
+            DrawRectangle(xTeam, yTeam + 38, 200, 4 * 22 + 28, 0, ColColor(0xFF), 50);
+            for (int i = 1; i <= 5; i++)
+            {
+                if (i == CurrentTeam && menuid == 1)
+                {
+                    DrawTextFrame(xTeam - 16, yTeam + 37 + h * (i - 1), 16);
+                    DrawShadowText(TeamMenu[i].c_str(), xTeam + 3, yTeam + 40 + h * (i - 1), ColColor(0x64), ColColor(0x66));
+                }
+                else
+                {
+                    DrawTextFrame(xTeam - 16, yTeam + 37 + h * (i - 1), 16, 10);
+                    DrawShadowText(TeamMenu[i].c_str(), xTeam + 3, yTeam + 40 + h * (i - 1), 0, 0x202020);
+                }
+            }
+
+            // 显示当前人物的状态
+            int state, headn;
+            if (menuid == 0)
+            {
+                state = GetStarState(CurrentStar);
+                headn = StarToRole(CurrentStar);
+            }
+            else
+            {
+                state = 3;
+                headn = TeamList[CurrentTeam];
+            }
+            if (state > 0 && state != 2 && headn >= 0)
+            {
+                ShowSimpleStatus(headn, xState, yState - 3);
+            }
+            UpdateAllScreen();
+        }
+
+        SDL_Event ev = {};
+        if (SDL_WaitEvent(&ev))
+        {
+            CheckBasicEvent();
+            int pstar = CurrentStar;
+            int pteam = CurrentTeam;
+            if (ev.type == SDL_EVENT_KEY_DOWN)
+            {
+                if (ev.key.key == SDLK_PAGEDOWN)
+                {
+                    if (menuid == 0 && CurrentStar < 108 - Show)
+                        CurrentStar += Show;
+                }
+                if (ev.key.key == SDLK_PAGEUP)
+                {
+                    if (menuid == 0 && CurrentStar > Show - 1)
+                        CurrentStar -= Show;
+                }
+                if (ev.key.key == SDLK_DOWN)
+                {
+                    if (menuid == 0) { if (CurrentStar < 107) CurrentStar++; }
+                    else { if (CurrentTeam < 5) CurrentTeam++; }
+                }
+                if (ev.key.key == SDLK_UP)
+                {
+                    if (menuid == 0) { if (CurrentStar > 0) CurrentStar--; }
+                    else { if (CurrentTeam > 1) CurrentTeam--; }
+                }
+            }
+            if (ev.type == SDL_EVENT_KEY_UP)
+            {
+                if (ev.key.key == SDLK_LEFT)
+                {
+                    menuid = 0; refresh = true;
+                }
+                if (ev.key.key == SDLK_RIGHT)
+                {
+                    menuid = 1; refresh = true;
+                }
+                if (ev.key.key == SDLK_ESCAPE)
+                {
+                    escape = true; Redraw();
+                }
+                if (ev.key.key == SDLK_RETURN || ev.key.key == SDLK_SPACE)
+                {
+                    if (menuid == 0)
+                    {
+                        if (StateList[numStar] == 1 && TeamList[5] < 0)
+                        {
+                            x50[0x7100] = CurrentStar;
+                            CallEvent(230);
+                            refresh = true;
+                        }
+                    }
+                    if (menuid == 1)
+                    {
+                        for (int i = 0; i < 100; i++)
+                        {
+                            if (LeaveList[i] == TeamList[CurrentTeam])
+                            {
+                                CallEvent(BEGIN_LEAVE_EVENT + i * 2);
+                                refresh = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            if (ev.type == SDL_EVENT_MOUSE_BUTTON_UP)
+            {
+                if (ev.button.button == SDL_BUTTON_RIGHT && Where <= 2)
+                {
+                    escape = true; Redraw();
+                }
+                if (ev.button.button == SDL_BUTTON_LEFT)
+                {
+                    int x1, y1;
+                    if (MouseInRegion(xStar, yStar, 200, Show * h + 32, x1, y1))
+                    {
+                        if (StateList[numStar] == 1 && TeamList[5] < 0)
+                        {
+                            x50[0x7100] = CurrentStar;
+                            CallEvent(230);
+                            refresh = true;
+                        }
+                    }
+                    if (MouseInRegion(xTeam, yTeam, 200, 5 * h + 32, x1, y1))
+                    {
+                        for (int i = 0; i < 100; i++)
+                        {
+                            if (LeaveList[i] == TeamList[CurrentTeam])
+                            {
+                                CallEvent(BEGIN_LEAVE_EVENT + i * 2);
+                                refresh = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            if (ev.type == SDL_EVENT_MOUSE_WHEEL)
+            {
+                if (ev.wheel.y < 0)
+                {
+                    if (menuid == 0) { if (CurrentStar < 107) CurrentStar++; }
+                    else { if (CurrentTeam < 5) CurrentTeam++; }
+                }
+                if (ev.wheel.y > 0)
+                {
+                    if (menuid == 0) { if (CurrentStar > 0) CurrentStar--; }
+                    else { if (CurrentTeam > 1) CurrentTeam--; }
+                }
+            }
+            if (ev.type == SDL_EVENT_MOUSE_MOTION)
+            {
+                int x1, y1;
+                if (MouseInRegion(xStar, yStar, 200, Show * h + 32, x1, y1))
+                {
+                    menuid = 0;
+                    int menu = (y1 - yStar - 2) / h;
+                    if (menu > Show - 1) menu = Show - 1;
+                    if (menu < 0) menu = 0;
+                    CurrentStar = menu + CurrentStar / Show * Show;
+                }
+                if (MouseInRegion(xTeam, yTeam, 200, 5 * h + 32, x1, y1))
+                {
+                    menuid = 1;
+                    int menu = (y1 - yTeam - 40) / h + 1;
+                    if (menu > 5) menu = 5;
+                    if (menu < 0) menu = 0;
+                    CurrentTeam = menu;
+                }
+            }
+            refresh = refresh || (pstar != CurrentStar) || (pteam != CurrentTeam);
+            CleanKeyValue();
+        }
+    }
+    FreeFreshScreen();
+    event.key.key = 0;
+    event.button.button = 0;
 }
 
 void ShowTeamMate(int position, int headnum, int Count)
 {
     if (Count == 0) Count = 1;
-    int hx = CENTER_X - 85;
+    int hx = 263 - Count * 29;
     int hy = 55;
     DrawRectangleWithoutFrame(0, 40, CENTER_X * 2, 230, 0, 40);
+
+    hx = CENTER_X - 85;
     for (int i = 1; i <= Count; i++)
         DrawHeadPic(headnum, hx, hy + 8);
 
-    std::string str = std::string(Star[position]) + " " + RoleName[position] + " 成為夥伴"; // 成為夥伴
+    std::string str = std::string(Star[position]) + " " + RoleName[position] + " 成為夥伴";
     int l = DrawLength(str.c_str());
     DrawShadowText(str.c_str(), CENTER_X - 10 * (l / 2) - 10, 230, ColColor(0x5), ColColor(0x8));
     UpdateAllScreen();
@@ -2305,23 +2597,181 @@ void ShowTeamMate(int position, int headnum, int Count)
 
 void ShowStarList()
 {
-    // 简化版：显示星将列表
-    std::vector<std::string> menuStr(108);
+    static const int StarHeadMap[108] = {
+        0, 1, 2, 8, 4, 7, 6, 21, 34, 11, 3, 14, 12, 13, 23, 31,
+        16, 17, 18, 5, 20, 22, 26, 27, 24, 25, 19, 30, 28, 29, 15, 32,
+        10, 33, 9, 35, 36, 38, 46, 39, 40, 41, 48, 43, 49, 45, 89, 47,
+        37, 50, 51, 74, 52, 92, 93, 77, 44, 57, 58, 59, 69, 64, 65, 66,
+        85, 55, 54, 72, 73, 88, 102, 71, 96, 76, 68, 78, 79, 42, 81, 82,
+        83, 84, 53, 80, 56, 95, 70, 90, 97, 104, 105, 91, 67, 75, 369, 430,
+        99, 100, 101, 98, 103, 87, 86, 107, 106, 431, 114, 432
+    };
+    int head[108];
+    for (int i = 0; i < 108; i++) head[i] = StarHeadMap[i];
+    head[0] = Rrole[0].HeadNum;
+
+    std::string menuString[108];
     for (int i = 0; i < 108; i++)
     {
-        menuStr[i] = Star[i];
-        int st = GetStarState(i);
-        if (st != 0)
-            menuStr[i] += "  " + std::string(RoleName[i]);
+        menuString[i] = Star[i];
+        if (GetStarState(i) != 0)
+            menuString[i] += "  " + std::string(RoleName[i]);
     }
+
     int x = CENTER_X - 384 + 84;
     int y = CENTER_Y - 240 + 15;
-    Redraw();
-    TransBlackScreen();
-    int menu = CommonScrollMenu(x, y, 200, 107, 15, menuStr);
-    (void)menu;
-    Redraw();
-    UpdateAllScreen();
+    int w = 200;
+    int max = 107;
+    int h = 28;
+    int maxshow = 15;
+    int menu = 0, menutop = 0;
+
+    // 内嵌绘制函数
+    auto ShowCommonScrollMenu_starlist = [&](int headn)
+    {
+        int ms = maxshow;
+        if (max + 1 < ms) ms = max + 1;
+        Redraw();
+        TransBlackScreen();
+
+        for (int i = menutop; i < menutop + ms; i++)
+        {
+            if (i == menu)
+            {
+                DrawTextFrame(x - 16, y + h * (i - menutop), 16);
+                DrawShadowText(menuString[i].c_str(), x + 3, y + 3 + h * (i - menutop), ColColor(0x64), ColColor(0x66));
+            }
+            else
+            {
+                DrawTextFrame(x - 16, y + h * (i - menutop), 16, 10);
+                DrawShadowText(menuString[i].c_str(), x + 3, y + 3 + h * (i - menutop), 0, 0x202020);
+            }
+        }
+
+        if (GetStarState(menu) > 0)
+        {
+            int Count = 1;
+            int hx = CENTER_X - 384 + 383 - Count * 29;
+            int hy = CENTER_Y - 240 + 55;
+
+            std::string str2 = std::string(Star[menu]) + " " + std::string(RoleName[menu]);
+            int len = DrawLength(str2.c_str());
+            DrawShadowText(str2.c_str(), CENTER_X - 384 + 484 - 10 * (len / 2), CENTER_Y - 240 + 220, ColColor(0x21), ColColor(0x23));
+
+            for (int i = 0; i < Count; i++)
+                DrawHeadPic(headn + i, hx + 57 * (i + 1), hy - 10);
+
+            // 简介
+            std::vector<uint8_t> talkarray;
+            ReadTalk(menu + 600, talkarray);
+            if (!talkarray.empty())
+            {
+                std::string str1 = " " + std::string((char*)talkarray.data());
+                // 将 '*' 替换为 '\0'
+                for (size_t j = 0; j < str1.size(); j++)
+                    if (str1[j] == 0x2A) str1[j] = 0;
+
+                int idx = 0;
+                int r1 = 0, c1 = 0;
+                int slen = (int)strlen(str1.c_str());
+                while (idx < slen)
+                {
+                    int lenutf8 = utf8follow(str1[idx]);
+                    std::string pword = str1.substr(idx, lenutf8);
+                    DrawShadowText(pword.c_str(), CENTER_X - 320 + 250 + 20 * c1, CENTER_Y - 240 + 270 + 23 * r1, ColColor(5), ColColor(7));
+                    c1++;
+                    if (c1 == 18) { c1 = 0; r1++; }
+                    idx += lenutf8;
+                }
+            }
+        }
+        UpdateAllScreen();
+    };
+
+    ShowCommonScrollMenu_starlist(head[menu]);
+
+    SDL_Event ev = {};
+    while (SDL_WaitEvent(&ev))
+    {
+        CheckBasicEvent();
+        if (ev.type == SDL_EVENT_KEY_DOWN)
+        {
+            if (ev.key.key == SDLK_DOWN)
+            {
+                menu++;
+                if (menu - menutop >= maxshow) menutop++;
+                if (menu > max) { menu = 0; menutop = 0; }
+                ShowCommonScrollMenu_starlist(head[menu]);
+            }
+            if (ev.key.key == SDLK_UP)
+            {
+                menu--;
+                if (menu <= menutop) menutop = menu;
+                if (menu < 0) { menu = max; menutop = menu - maxshow + 1; if (menutop < 0) menutop = 0; }
+                ShowCommonScrollMenu_starlist(head[menu]);
+            }
+            if (ev.key.key == SDLK_PAGEDOWN)
+            {
+                menu += maxshow; menutop += maxshow;
+                if (menu > max) menu = max;
+                if (menutop > max - maxshow + 1) menutop = max - maxshow + 1;
+                ShowCommonScrollMenu_starlist(head[menu]);
+            }
+            if (ev.key.key == SDLK_PAGEUP)
+            {
+                menu -= maxshow; menutop -= maxshow;
+                if (menu < 0) menu = 0;
+                if (menutop < 0) menutop = 0;
+                ShowCommonScrollMenu_starlist(head[menu]);
+            }
+        }
+        if (ev.type == SDL_EVENT_KEY_UP)
+        {
+            if (ev.key.key == SDLK_ESCAPE && Where <= 2)
+            {
+                Redraw(); UpdateAllScreen(); break;
+            }
+        }
+        if (ev.type == SDL_EVENT_MOUSE_BUTTON_UP)
+        {
+            if (ev.button.button == SDL_BUTTON_RIGHT && Where <= 2)
+            {
+                Redraw(); UpdateAllScreen(); break;
+            }
+        }
+        if (ev.type == SDL_EVENT_MOUSE_WHEEL)
+        {
+            if (ev.wheel.y < 0)
+            {
+                menu++; menutop++;
+                if (menu > max) menu = 107;
+                if (menutop > 108 - maxshow) menutop = 108 - maxshow;
+                ShowCommonScrollMenu_starlist(head[menu]);
+            }
+            if (ev.wheel.y > 0)
+            {
+                menu--; menutop--;
+                if (menu < 0) menu = 0;
+                if (menutop < 0) menutop = 0;
+                ShowCommonScrollMenu_starlist(head[menu]);
+            }
+        }
+        if (ev.type == SDL_EVENT_MOUSE_MOTION)
+        {
+            int x1, y1;
+            if (MouseInRegion(x, y, w, max * h + 32, x1, y1))
+            {
+                int menup = menu;
+                menu = (y1 - y - 2) / h + menutop;
+                if (menu > max) menu = max;
+                if (menu < 0) menu = 0;
+                if (menup != menu)
+                    ShowCommonScrollMenu_starlist(head[menu]);
+            }
+        }
+    }
+    event.key.key = 0;
+    event.button.button = 0;
 }
 
 // ---- 任务系统 ----
@@ -2488,6 +2938,8 @@ int Digging(int beginPic, int goal, int shovel, int restrict_val)
 void ShowSurface(int x, int y, int blank, const std::vector<int>& surface)
 {
     DrawRectangle(x, y, 200, 200, 0, ColColor(0xFF), 40);
+    DrawRectangle(x, y - 30, 120, 30, 0, ColColor(0xFF), 40);
+    DrawRectangle(x - 32, y - 30, 32, 230, 0, ColColor(0xFF), 40);
     for (int i = 0; i < 81; i++)
     {
         DrawSPic(blank / 2, (i % 9) * 20 + 10 + x, (i / 9) * 20 + 10 + y);
@@ -3033,6 +3485,7 @@ int DancerAfter90S()
 void RoleEnding(int starnum, int headnum, int talknum)
 {
     int status = GetStarState(starnum);
+    int cell = 23;
     int framex = CENTER_X - 384;
     int framey = CENTER_Y - 240 + 160 * (starnum % 3);
     int h = 160, w = 768;
@@ -3042,11 +3495,14 @@ void RoleEnding(int starnum, int headnum, int talknum)
     uint32_t clr = MapRGBA(r, g, b);
     DrawRectangleWithoutFrame(framex, framey, w, h - 1, clr, 50);
 
+    uint32_t color1 = 0x5, color2 = 0x7;
     int ty = framey + 10, hy = framey;
-    int hx, tx, nx, sy2;
+    int sy2 = ty, ny;
+    int hx, tx, nx;
+    ny = ty + 22;
     if (starnum % 2 == 0)
     {
-        tx = framex + 250; hx = framex + 10; nx = hx + 200; sy2 = nx;
+        tx = framex + 250; hx = framex + 10; nx = hx + 160 + 40; sy2 = nx;
     }
     else
     {
@@ -3055,26 +3511,48 @@ void RoleEnding(int starnum, int headnum, int talknum)
 
     std::string str1 = Star[starnum];
     std::string str2;
-    if (status == 0) str2 = "？？？"; // ？？？
+    if (status == 0)
+    {
+        str2 = "？？？";
+    }
     else
     {
-        DrawHeadPic(headnum, hx, hy);
+        if (status == 5)
+        {
+            // gray rendering - draw with dark tint
+            DrawHeadPic(headnum, hx, hy, 0, 0, 0x404040, 80);
+        }
+        else
+        {
+            DrawHeadPic(headnum, hx, hy);
+        }
         str2 = RoleName[starnum];
     }
     int l = DrawLength(str1.c_str());
     DrawShadowText(str1.c_str(), sy2 - (10 * l) / 2, ty, ColColor(0x64), ColColor(0x66));
     l = DrawLength(str2.c_str());
-    DrawShadowText(str2.c_str(), nx - (10 * l) / 2, ty + 22, ColColor(0x64), ColColor(0x66));
+    DrawShadowText(str2.c_str(), nx - (10 * l) / 2, ny, ColColor(0x64), ColColor(0x66));
 
     if (status > 0)
     {
         std::vector<uint8_t> talkarray;
         ReadTalk(talknum, talkarray);
-        std::string talkstr = " " + std::string((char*)talkarray.data());
         std::string namestr = Rrole[0].Name;
+        std::string talkstr = " " + std::string((char*)talkarray.data());
         talkstr = ReplaceStr(talkstr, "&&", namestr);
-        // 简化显示
-        DrawShadowText(talkstr.c_str(), tx, ty, ColColor(5), ColColor(7));
+
+        int ch = 0;
+        int c1 = 0, r1 = 0;
+        int tlen = (int)talkstr.size();
+        while (ch < tlen)
+        {
+            int lenutf8 = utf8follow(talkstr[ch]);
+            std::string pword = talkstr.substr(ch, lenutf8);
+            DrawShadowText(pword.c_str(), tx + 20 * c1, ty + 20 * r1, ColColor(color1), ColColor(color2));
+            c1++;
+            if (c1 == cell) { c1 = 0; r1++; }
+            ch += lenutf8;
+        }
     }
     UpdateAllScreen();
 }

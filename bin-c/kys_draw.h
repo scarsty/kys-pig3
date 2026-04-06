@@ -63,7 +63,7 @@ void DrawProgress();
 void DrawVirtualKey();
 int DrawTextFrame(int x, int y, int len, int alpha = 0, uint32 mixColor = 0, int mixAlpha = 0);
 void DrawTextWithRect(const std::string& word, int x, int y, int w, uint32 color1, uint32 color2,
-    int alpha = 0, int Refresh = 0);
+    int alpha = 0, int Refresh = 1);
 
 // 贴图销毁
 void DestroyAllTextures(int all = 0);

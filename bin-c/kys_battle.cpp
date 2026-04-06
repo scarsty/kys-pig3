@@ -3899,7 +3899,7 @@ void SetEnemyAttribute()
 {
     for (int i = 0; i < 20; i++)
     {
-        int rnum = WarStaList[CurrentBattle].Enemy[i];
+        int rnum = WarSta.Enemy[i];
         if (rnum >= 0)
         {
             switch (MODVersion)
