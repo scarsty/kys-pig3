@@ -34,6 +34,8 @@ Android版本需要先用CodeTyphon编译出so文件，再在SDL的java层调用
 
 本垃圾也曾经在这个游戏的制作中投入了大量精力，所以还是有一定感情的。希望它能给大家带来一些乐趣。
 
+当年招募制作组的时候，很多人说不会Pascal。现在借助AI的帮助，将其完整转换过去，也算是了解了一件心事。不过这个游戏还会再更新吗？估计不会了吧。
+
 ## License
 
 The codes are distributed under zlib license.
