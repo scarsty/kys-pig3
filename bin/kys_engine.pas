@@ -2187,6 +2187,7 @@ begin
   Result := 0;
   p := nil;
   z := nil;
+  po := nil;
   if PNG_TILE = 2 then
   begin
     kyslog('Searching file %s.zip', [path]);
@@ -2366,7 +2367,8 @@ begin
     end;
     kyslog('end');
   end;
-  zip_close(z);
+  if z <> nil then
+    zip_close(z);
   //FreeFileBuffer(p);
 
 end;
@@ -3748,35 +3750,51 @@ end;
 
 function readnumbersformstring(str: utf8string): IntegerArray; overload;
 var
-  i, n, k: integer;
-  s: utf8string;
-  //numbers1: array of integer;
+  i, n, Count, cap: integer;
+  neg: boolean;
+  v: integer;
 begin
-  i := 1;
   n := length(str);
-  //k:=0;
-  //setlength(numbers1, 10);
+  Count := 0;
+  cap := 64;
+  setlength(Result, cap);
+  i := 1;
   while i <= n do
   begin
-    if (str[i] >= '0') and (str[i] <= '9') then
+    // 跳过非数字非负号字符
+    while (i <= n) and not ((str[i] >= '0') and (str[i] <= '9')) and (str[i] <> '-') do
+      Inc(i);
+    if i > n then
+      break;
+    // 处理负号
+    neg := False;
+    if (str[i] = '-') then
     begin
-      s := s + str[i];
-    end
-    else if (str[i] = ',') or (str[i] = #10) then
-    begin
-      //s[j] := #0;
-      setlength(Result, length(Result) + 1);
-      Result[length(Result) - 1] := StrToInt(s);
-      //Inc(Result);
-      s := '';
+      neg := True;
+      Inc(i);
+      // 独立的负号后面没有数字则跳过
+      if (i > n) or not ((str[i] >= '0') and (str[i] <= '9')) then
+        continue;
     end;
-    Inc(i);
+    // 解析数字
+    v := 0;
+    while (i <= n) and (str[i] >= '0') and (str[i] <= '9') do
+    begin
+      v := v * 10 + Ord(str[i]) - Ord('0');
+      Inc(i);
+    end;
+    if neg then
+      v := -v;
+    // 存入结果，按倍增策略扩容
+    if Count >= cap then
+    begin
+      cap := cap * 2;
+      setlength(Result, cap);
+    end;
+    Result[Count] := v;
+    Inc(Count);
   end;
-  if (s <> '') then
-  begin
-    setlength(Result, length(Result) + 1);
-    Result[length(Result) - 1] := StrToInt(s);
-  end;
+  setlength(Result, Count);
 end;
 
 function Rect2f(r: tsdl_rect): tsdl_frect;
