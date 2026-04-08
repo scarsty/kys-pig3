@@ -2005,6 +2005,10 @@ void ReadTalk(int talknum, std::vector<uint8_t>& talk, int needxor)
 void NewTalk(int headnum, int talknum, int namenum, int place, int showhead, int color, int frame,
     const std::string& content, const std::string& disname)
 {
+    const std::string WaitAnyKeyCode = "@@";
+    const std::string DelayCode = "##";
+    const std::string NextLineCode = "**";
+    const std::string ChangeColorCode = "^";
     const int RowSpacing = 25;
     const int ColSpacing = 20;
     const int MaxRow = 5;
@@ -2140,25 +2144,72 @@ void NewTalk(int headnum, int talknum, int namenum, int place, int showhead, int
             if (!(ix < Talk_W && iy < Talk_H && I < len))
                 break;
 
-            // 检查换行
-            if (I + 1 < len && TalkStr[I] == '*' && TalkStr[I + 1] == '*')
+            if (TalkStr.compare(I, WaitAnyKeyCode.size(), WaitAnyKeyCode) == 0)
+            {
+                I += (int)WaitAnyKeyCode.size();
+                WaitAnyKey();
+                continue;
+            }
+
+            if (TalkStr.compare(I, DelayCode.size(), DelayCode) == 0)
+            {
+                I += (int)DelayCode.size();
+                SDL_Delay(500);
+                continue;
+            }
+
+            if (TalkStr.compare(I, NextLineCode.size(), NextLineCode) == 0)
             {
                 iy++;
                 ix = 0;
-                I += 2;
+                I += (int)NextLineCode.size();
                 if (iy >= Talk_H) { if (I < len) WaitAnyKey(); break; }
+                continue;
+            }
+
+            bool changed = false;
+            for (int colorIndex = 0; colorIndex <= 5; ++colorIndex)
+            {
+                std::string code = ChangeColorCode + std::to_string(colorIndex);
+                if (TalkStr.compare(I, code.size(), code) == 0)
+                {
+                    DrawBackCol = ColColor(0x6F);
+                    switch (colorIndex)
+                    {
+                    case 0: DrawForeCol = ColColor(0x63); break;
+                    case 1: DrawForeCol = ColColor(0x05); break;
+                    case 2: DrawForeCol = ColColor(0x13); break;
+                    case 3: DrawForeCol = ColColor(0x93); break;
+                    case 4: DrawForeCol = ColColor(0x32); break;
+                    case 5: DrawForeCol = ColColor(0x22); break;
+                    }
+                    I += (int)code.size();
+                    changed = true;
+                    break;
+                }
+            }
+            if (changed)
+            {
+                continue;
+            }
+
+            if (TalkStr.compare(I, ChangeColorCode.size() * 2, ChangeColorCode + ChangeColorCode) == 0)
+            {
+                DrawBackCol = ColColor(BackGroundCol);
+                DrawForeCol = ColColor(ForeGroundCol);
+                I += (int)ChangeColorCode.size() * 2;
                 continue;
             }
 
             // 写字符
             if (I < len)
             {
-                int charlen = 1;
-                uint8_t ch = (uint8_t)TalkStr[I];
-                if (ch >= 0xE0) charlen = 3;
-                else if (ch >= 0xC0) charlen = 2;
+                int charlen = utf8follow(TalkStr[I]);
+                if (charlen <= 0)
+                    charlen = 1;
                 std::string tempstr = TalkStr.substr(I, charlen);
                 int xtemp = Talk_X + ColSpacing * ix;
+                uint8_t ch = (uint8_t)TalkStr[I];
                 if (ch < 0x80) xtemp += 5;
                 DrawShadowText(tempstr.c_str(), xtemp, Talk_Y + RowSpacing * iy, DrawForeCol, DrawBackCol);
                 I += charlen;

@@ -1782,46 +1782,93 @@ void Walk()
 //----------------------------------------------------------------------
 bool CanWalk(int x, int y)
 {
-    if (x < 0 || y < 0 || x >= 480 || y >= 480)
+    if (MODVersion == 13)
     {
-        return false;
-    }
-    if (BuildX[x][y] != 0)
-    {
-        return false;
-    }
-    if (x <= 0 || x >= 479 || y <= 0 || y >= 479)
-    {
-        return false;
-    }
-    if (Surface[x][y] >= 1692 && Surface[x][y] <= 1700)
-    {
-        return false;
-    }
-    if (Earth[x][y] == 838 || (Earth[x][y] >= 612 && Earth[x][y] <= 670))
-    {
-        return false;
+        bool result = false;
+        if (x >= 0 && y >= 0 && x < 480 && y < 480)
+        {
+            result = (BuildX[x][y] == 0);
+            if (x <= 0 || x >= 479 || y <= 0 || y >= 479 ||
+                (Surface[x][y] >= 1692 && Surface[x][y] <= 1700))
+            {
+                result = false;
+            }
+            if (Earth[x][y] == 838 || (Earth[x][y] >= 612 && Earth[x][y] <= 670))
+            {
+                result = false;
+            }
+            if (((Earth[x][y] >= 358 && Earth[x][y] <= 362) ||
+                (Earth[x][y] >= 506 && Earth[x][y] <= 670) ||
+                (Earth[x][y] >= 1016 && Earth[x][y] <= 1022)))
+            {
+                if (InShip == 1)
+                {
+                    if (Earth[x][y] == 838 || (Earth[x][y] >= 612 && Earth[x][y] <= 670))
+                    {
+                        result = false;
+                    }
+                    else if (Surface[x][y] >= 1746 && Surface[x][y] <= 1788)
+                    {
+                        result = false;
+                    }
+                    else
+                    {
+                        result = true;
+                    }
+                }
+                else if (x == ShipY && y == ShipX)
+                {
+                    InShip = 0;
+                    result = true;
+                }
+                else if (Mx == ShipY && My == ShipX)
+                {
+                    InShip = 1;
+                    result = true;
+                }
+                else
+                {
+                    result = false;
+                }
+            }
+            else
+            {
+                if (InShip == 1)
+                {
+                    ShipY = Mx;
+                    ShipX = My;
+                    ShipFace = MFace;
+                }
+                InShip = 0;
+            }
+        }
+        return result;
     }
 
-    // 在船上时的特殊处理
-    if (InShip != 0)
+    bool result;
+    if (x <= 0 || x >= 479 || y <= 0 || y >= 479)
     {
-        // 水面可走
-        if (Earth[x][y] >= 358 && Earth[x][y] <= 362)
-        {
-            return true;
-        }
-        if (Earth[x][y] >= 506 && Earth[x][y] <= 670)
-        {
-            return true;
-        }
-        if (Earth[x][y] >= 1016 && Earth[x][y] <= 1022)
-        {
-            return true;
-        }
-        return false;
+        result = false;
     }
-    return true;
+    else
+    {
+        result = (BuildX[x][y] == 0);
+        if (Earth[x][y] == 838 || (Earth[x][y] >= 612 && Earth[x][y] <= 670))
+        {
+            result = false;
+        }
+    }
+    if ((Earth[Mx][My] >= 358 && Earth[Mx][My] <= 362) ||
+        (Earth[Mx][My] >= 506 && Earth[Mx][My] <= 670) ||
+        (Earth[Mx][My] >= 1016 && Earth[Mx][My] <= 1022))
+    {
+        InShip = 1;
+    }
+    else
+    {
+        InShip = 0;
+    }
+    return result;
 }
 
 //----------------------------------------------------------------------
