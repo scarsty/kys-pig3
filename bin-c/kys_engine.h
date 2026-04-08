@@ -7,9 +7,6 @@
 #include <vector>
 
 // 音频系统
-bool EnsureMixerCreated();
-bool EnsureTrackForAudio(MIX_Track*& track, MIX_Audio* audio);
-MIX_Track* AcquireSfxTrack(MIX_Audio* audio);
 void InitialMusic();
 void FreeAllMusic();
 void PlayMP3(int MusicNum, int times, int frombeginning = 1);
@@ -35,9 +32,6 @@ bool JudgeInScreen(int px, int py, int w, int h, int xs, int ys, int xx, int yy,
 TPosition GetPositionOnScreen(int x, int y, int CenterX, int CenterY);
 
 // 字符编码
-std::string Big5ToUnicode(const char* str);
-std::string GBKToUnicode(const char* str);
-std::string UnicodeToGBK(const char* str);
 std::string Traditional2Simplified(const std::string& str);
 std::string Simplified2Traditional(const std::string& str);
 bool IsStringUTF8(const std::string& strtmp);

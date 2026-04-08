@@ -42,6 +42,8 @@ android {
     if (!project.hasProperty('EXCLUDE_NATIVE_LIBS')) {
         sourceSets.main {
             jniLibs.srcDir 'lib'
+            // 只打包game目录, 资源在APK中位于 assets/ 根下
+            assets.srcDirs = ['src/main/assets', 'D:/kys-all/pig3/发布版游戏/game']
         }
         externalNativeBuild {
                 cmake {
@@ -49,6 +51,11 @@ android {
                 }
         }
 
+    }
+    // 不压缩游戏资源文件, 避免解压开销
+    aaptOptions {
+        noCompress 'grp', 'idx', 'col', 'sta', '002', 'bin', 'imz', 'ka',
+                   'mp3', 'ogg', 'wav', 'wmv', 'zip', 'ini', 'png'
     }
     lint {
         abortOnError = false

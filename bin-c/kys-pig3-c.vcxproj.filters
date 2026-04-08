@@ -42,13 +42,13 @@
     <ClCompile Include="C:\project\mlcc\filefunc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\project\mlcc\PotConv.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="C:\project\mlcc\SimpleCC.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="C:\project\mlcc\strfunc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\project\mlcc\ZipFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -78,9 +78,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="C:\project\mlcc\INIReader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\project\mlcc\PotConv.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="C:\project\mlcc\SimpleCC.h">

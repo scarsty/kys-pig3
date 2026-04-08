@@ -6,7 +6,9 @@
 #include "kys_main.h"
 #include "kys_draw.h"
 
+#ifndef KYS_NO_MOVIE
 #include "PotDll.h"
+#endif
 
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
@@ -14,7 +16,6 @@
 
 #include "filefunc.h"
 #include "strfunc.h"
-#include "PotConv.h"
 #include "ZipFile.h"
 #include "SimpleCC.h"
 #include <zip.h>
@@ -304,21 +305,6 @@ TPosition GetPositionOnScreen(int x, int y, int cx, int cy)
 //----------------------------------------------------------------------
 // 文字编码
 //----------------------------------------------------------------------
-std::string Big5ToUnicode(const char* str)
-{
-    return PotConv::conv(str, "BIG5", "UTF-8");
-}
-
-std::string GBKToUnicode(const char* str)
-{
-    return PotConv::conv(str, "GBK", "UTF-8");
-}
-
-std::string UnicodeToGBK(const char* str)
-{
-    return PotConv::conv(str, "UTF-8", "GBK");
-}
-
 bool IsStringUTF8(const std::string& str)
 {
     int nBytes = 0;
@@ -1928,11 +1914,13 @@ void DrawPNGTileS(SDL_Surface* scr, TPNGIndex& PNGIndex, int FrameNum, int px, i
 
 bool PlayMovie(const std::string& filename)
 {
+#ifndef KYS_NO_MOVIE
     if (smallpot != nullptr)
     {
         PotPlayVideo(smallpot, (char*)filename.c_str(), VOLUME / 100.0f);
         return true;
     }
+#endif
     return false;
 }
 

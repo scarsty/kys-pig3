@@ -7,7 +7,7 @@
 #include <vector>
 
 // 程序入口
-void Run();
+extern "C" void Run();
 void Quit();
 void SetMODVersion();
 void ReadFiles();

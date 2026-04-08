@@ -18,7 +18,9 @@
 #include "ZipFile.h"
 #include "filefunc.h"
 #include "strfunc.h"
+#ifndef KYS_NO_MOVIE
 #include "PotDll.h"
+#endif
 #include <zip.h>
 
 // 在kys_engine.cpp中定义
@@ -29,6 +31,99 @@ extern std::string zip_express(zip_t* z, const std::string& filename);
 #include <cstring>
 #include <format>
 #include <fstream>
+
+#ifdef __ANDROID__
+#include <android/asset_manager.h>
+#include <android/asset_manager_jni.h>
+#include <android/log.h>
+#include <jni.h>
+#include <sys/stat.h>
+
+static void mkdirp(const std::string& path)
+{
+    size_t pos = 0;
+    while ((pos = path.find('/', pos + 1)) != std::string::npos)
+        mkdir(path.substr(0, pos).c_str(), 0755);
+    mkdir(path.c_str(), 0755);
+}
+
+// 递归提取APK assets到目标目录
+static void extractAssetsRecursive(JNIEnv* env, jobject jAssetMgr, AAssetManager* nativeMgr,
+    const std::string& assetPath, const std::string& outDir)
+{
+    jclass cls = env->GetObjectClass(jAssetMgr);
+    jmethodID listMid = env->GetMethodID(cls, "list", "(Ljava/lang/String;)[Ljava/lang/String;");
+    jstring jPath = env->NewStringUTF(assetPath.c_str());
+    auto files = (jobjectArray)env->CallObjectMethod(jAssetMgr, listMid, jPath);
+    env->DeleteLocalRef(jPath);
+    if (!files) return;
+
+    mkdirp(outDir);
+    int count = env->GetArrayLength(files);
+    for (int i = 0; i < count; i++)
+    {
+        auto jName = (jstring)env->GetObjectArrayElement(files, i);
+        const char* name = env->GetStringUTFChars(jName, nullptr);
+        std::string childAsset = assetPath.empty() ? std::string(name) : assetPath + "/" + name;
+        std::string childOut = outDir + "/" + name;
+
+        AAsset* asset = AAssetManager_open(nativeMgr, childAsset.c_str(), AASSET_MODE_STREAMING);
+        if (asset)
+        {
+            FILE* f = fopen(childOut.c_str(), "wb");
+            if (f)
+            {
+                char buf[65536];
+                int nb;
+                while ((nb = AAsset_read(asset, buf, sizeof(buf))) > 0)
+                    fwrite(buf, 1, nb, f);
+                fclose(f);
+            }
+            AAsset_close(asset);
+        }
+        else
+        {
+            extractAssetsRecursive(env, jAssetMgr, nativeMgr, childAsset, childOut);
+        }
+        env->ReleaseStringUTFChars(jName, name);
+        env->DeleteLocalRef(jName);
+    }
+    env->DeleteLocalRef(files);
+}
+
+// 从APK assets提取game目录到内部存储
+static void extractGameAssets(const std::string& targetDir, const std::string& versionName)
+{
+    JNIEnv* env = (JNIEnv*)SDL_GetAndroidJNIEnv();
+    jobject activity = (jobject)SDL_GetAndroidActivity();
+    jclass cls = env->GetObjectClass(activity);
+    jmethodID mid = env->GetMethodID(cls, "getAssets", "()Landroid/content/res/AssetManager;");
+    jobject jAssetMgr = env->CallObjectMethod(activity, mid);
+    AAssetManager* nativeMgr = AAssetManager_fromJava(env, jAssetMgr);
+
+    __android_log_print(ANDROID_LOG_INFO, "kys", "Extracting game assets to %s ...", targetDir.c_str());
+    // assets根目录即为game内容, 从asset根提取
+    extractAssetsRecursive(env, jAssetMgr, nativeMgr, "", targetDir);
+
+    // 写版本标记
+    std::string verFile = targetDir + "/.asset_version";
+    FILE* vf = fopen(verFile.c_str(), "w");
+    if (vf) { fputs(versionName.c_str(), vf); fclose(vf); }
+    __android_log_print(ANDROID_LOG_INFO, "kys", "Asset extraction complete.");
+}
+
+// 检查是否需要提取assets
+static bool needExtractAssets(const std::string& targetDir, const std::string& versionName)
+{
+    std::string verFile = targetDir + "/.asset_version";
+    FILE* f = fopen(verFile.c_str(), "r");
+    if (!f) return true;
+    char buf[128] = {};
+    fgets(buf, sizeof(buf), f);
+    fclose(f);
+    return std::string(buf) != versionName;
+}
+#endif // __ANDROID__
 
 // potdll前向声明 (动态加载)
 //static void* (*PotCreateFromWindow)(SDL_Window*) = nullptr;
@@ -44,8 +139,19 @@ void Run()
     // macOS: 从bundle中获取路径
     AppPath = "../game/";
 #elif defined(__ANDROID__)
-    AppPath = "/sdcard/kys-pig3/game/";
-    CellPhone = 1;
+    {
+        // 资源文件已打包在APK assets中, 首次运行时提取到app内部存储
+        const char* intPath = SDL_GetAndroidInternalStoragePath();
+        std::string basePath(intPath);
+        AppPath = basePath + "/game/";
+        CellPhone = 1;
+
+        std::string assetVer = "1.0";  // 更新资源时修改此版本号
+        if (needExtractAssets(AppPath, assetVer))
+        {
+            extractGameAssets(AppPath, assetVer);
+        }
+    }
 #else
     AppPath = "../game/";
 #endif
@@ -162,7 +268,9 @@ void Run()
     }
 
     kyslog("Initial ended, start game");
+#ifndef KYS_NO_MOVIE
     smallpot = PotCreateFromWindow(window);
+#endif
     Start();
     Quit();
 }
