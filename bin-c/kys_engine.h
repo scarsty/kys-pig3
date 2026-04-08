@@ -75,9 +75,6 @@ void DrawPNGTile(SDL_Renderer* r, TPNGIndex& PNGIndex, int FrameNum, int px, int
 void DrawPNGTile(SDL_Renderer* r, TPNGIndex& PNGIndex, int FrameNum, int px, int py,
     SDL_Rect* region, int shadow, int alpha, uint32 mixColor, int mixAlpha,
     double scalex, double scaley, double angle, SDL_Point* center);
-void DrawPNGTileS(SDL_Surface* scr, TPNGIndex& PNGIndex, int FrameNum, int px, int py,
-    SDL_Rect* region, int shadow, int alpha, uint32 mixColor, int mixAlpha,
-    double scalex, double scaley, double angle);
 void DrawSimpleStatusByTeam(int i, int px, int py, uint32 mixColor = 0, int mixAlpha = 0);
 
 // 内存压缩读取

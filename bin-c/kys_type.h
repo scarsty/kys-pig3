@@ -371,8 +371,6 @@ inline int BIG_PNG_TILE = 0;
 inline int FULLSCREEN = 0;
 inline int RESOLUTIONX = 0, RESOLUTIONY = 0;
 inline int RENDERER = -1;
-inline int SW_SURFACE = 0;
-inline int SW_OUTPUT = 0;
 inline int SMOOTH = 1;
 
 inline int ImageWidth = 0, ImageHeight = 0;
@@ -560,18 +558,8 @@ inline int AUTO_LEVELUP = 0;
 
 inline uint32 SurfaceFlag = 0;
 
-inline SDL_Surface* CurTargetSurface = nullptr;
-inline SDL_Surface* RealScreen = nullptr;
-inline SDL_Surface* screen = nullptr;
-inline SDL_Surface* ImgSGround = nullptr;
-inline SDL_Surface* ImgBGround = nullptr;
-inline SDL_Surface* TextScreen = nullptr;
-inline SDL_Surface* BlackScreenSur = nullptr;
-inline SDL_Surface* SimpleState = nullptr;
 inline std::vector<SDL_Surface*> FreshScreen;
 
-inline SDL_Surface* SimpleStatus[6] = {};
-inline SDL_Surface* SimpleText[6] = {};
 
 inline int SkipTalk = 0;
 

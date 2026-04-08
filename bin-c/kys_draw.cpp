@@ -520,21 +520,10 @@ void ExpandGroundOnImg()
             }
         }
     }
-    if (SW_SURFACE == 0)
+    switch (Where)
     {
-        switch (Where)
-        {
-        case 1: SDL_SetRenderTarget(render, ImgSGroundTex); break;
-        case 2: SDL_SetRenderTarget(render, ImgBGroundTex); break;
-        }
-    }
-    else
-    {
-        switch (Where)
-        {
-        case 1: CurTargetSurface = ImgSGround; break;
-        case 2: CurTargetSurface = ImgBGround; break;
-        }
+    case 1: SDL_SetRenderTarget(render, ImgSGroundTex); break;
+    case 2: SDL_SetRenderTarget(render, ImgBGroundTex); break;
     }
     SDL_SetRenderDrawColor(render, 0, 0, 0, 0);
     SDL_RenderClear(render);
@@ -552,7 +541,6 @@ void ExpandGroundOnImg()
         }
     }
     SDL_SetRenderTarget(render, screenTex);
-    CurTargetSurface = screen;
     switch (Where)
     {
     case 1: memcpy(ExGroundS, Ex, sizeof(Ex)); break;
@@ -691,23 +679,9 @@ void InitialBFieldImage(int layer)
 void DrawBFieldWithCursor(int AttAreaType, int step, int range)
 {
     CleanTextScreen();
-    if (SW_SURFACE == 0)
-    {
-        SDL_SetTextureColorMod(ImgBGroundTex, 128, 128, 128);
-    }
-    else
-    {
-        SDL_SetSurfaceColorMod(ImgBGround, 128, 128, 128);
-    }
+    SDL_SetTextureColorMod(ImgBGroundTex, 128, 128, 128);
     LoadGroundTex(Bx, By);
-    if (SW_SURFACE == 0)
-    {
-        SDL_SetTextureColorMod(ImgBGroundTex, 255, 255, 255);
-    }
-    else
-    {
-        SDL_SetSurfaceColorMod(ImgBGround, 255, 255, 255);
-    }
+    SDL_SetTextureColorMod(ImgBGroundTex, 255, 255, 255);
     SetAminationPosition(AttAreaType, step, range);
     for (int i1 = 0; i1 < 64; i1++)
     {
@@ -870,58 +844,31 @@ void DrawBFieldWithCursor(int AttAreaType, int step, int range)
 
 void DrawBlackScreen()
 {
-    if (SW_SURFACE == 0)
+    if (BlackScreenTex == nullptr)
     {
-        if (BlackScreenTex == nullptr)
+        SDL_Surface* sur = SDL_CreateSurface(CENTER_X * 2, CENTER_Y * 2,
+            SDL_GetPixelFormatForMasks(32, RMask, GMask, BMask, AMask));
+        SDL_FillSurfaceRect(sur, nullptr, MapRGBA(0, 0, 0, 255));
+        for (int i1 = 0; i1 < CENTER_X * 2; i1++)
         {
-            SDL_Surface* sur = SDL_CreateSurface(CENTER_X * 2, CENTER_Y * 2,
-                SDL_GetPixelFormatForMasks(32, RMask, GMask, BMask, AMask));
-            SDL_FillSurfaceRect(sur, nullptr, MapRGBA(0, 0, 0, 255));
-            for (int i1 = 0; i1 < CENTER_X * 2; i1++)
+            for (int i2 = 0; i2 < CENTER_Y * 2; i2++)
             {
-                for (int i2 = 0; i2 < CENTER_Y * 2; i2++)
+                int x = i1 - CENTER_X;
+                int y = i2 - CENTER_Y + 20;
+                double distance = (double)(x * x + y * y) / 15625.0;
+                if (distance <= 1.0)
                 {
-                    int x = i1 - CENTER_X;
-                    int y = i2 - CENTER_Y + 20;
-                    double distance = (double)(x * x + y * y) / 15625.0;
-                    if (distance <= 1.0)
-                    {
-                        uint8_t alpha = (uint8_t)(distance * 255);
-                        PutPixel(sur, i1, i2, MapRGBA(0, 0, 0, alpha));
-                    }
-                }
-            }
-            BlackScreenTex = SDL_CreateTextureFromSurface(render, sur);
-            SDL_SetTextureBlendMode(BlackScreenTex, SDL_BLENDMODE_BLEND);
-            SDL_DestroySurface(sur);
-        }
-        SDL_SetRenderTarget(render, screenTex);
-        SDL_RenderTexture(render, BlackScreenTex, nullptr, nullptr);
-    }
-    else
-    {
-        if (BlackScreenSur == nullptr)
-        {
-            BlackScreenSur = SDL_CreateSurface(CENTER_X * 2, CENTER_Y * 2,
-                SDL_GetPixelFormatForMasks(32, RMask, GMask, BMask, AMask));
-            SDL_FillSurfaceRect(BlackScreenSur, nullptr, MapRGBA(0, 0, 0, 255));
-            for (int i1 = 0; i1 < CENTER_X * 2; i1++)
-            {
-                for (int i2 = 0; i2 < CENTER_Y * 2; i2++)
-                {
-                    int x = i1 - CENTER_X;
-                    int y = i2 - CENTER_Y + 20;
-                    double distance = (double)(x * x + y * y) / 15625.0;
-                    if (distance <= 1.0)
-                    {
-                        uint8_t alpha = (uint8_t)(distance * 255);
-                        PutPixel(BlackScreenSur, i1, i2, MapRGBA(0, 0, 0, alpha));
-                    }
+                    uint8_t alpha = (uint8_t)(distance * 255);
+                    PutPixel(sur, i1, i2, MapRGBA(0, 0, 0, alpha));
                 }
             }
         }
-        SDL_BlitSurface(BlackScreenSur, nullptr, screen, nullptr);
+        BlackScreenTex = SDL_CreateTextureFromSurface(render, sur);
+        SDL_SetTextureBlendMode(BlackScreenTex, SDL_BLENDMODE_BLEND);
+        SDL_DestroySurface(sur);
     }
+    SDL_SetRenderTarget(render, screenTex);
+    SDL_RenderTexture(render, BlackScreenTex, nullptr, nullptr);
 }
 
 void DrawBFieldWithEft(int Epicnum, int beginpic, int endpic, int curlevel, int bnum, int SelectAimMode, int flash,
@@ -984,14 +931,7 @@ void DrawBFieldWithEft(int Epicnum, int beginpic, int endpic, int curlevel, int 
                         MixColor2 = MapRGBA(255 - Rrole[rnum].AttPoi * 2, 255, 255 - Rrole[rnum].AttPoi * 2);
                         MixAlpha2 = -1 * (rand() % 2);
                     }
-                    if (SW_SURFACE == 0)
-                    {
-                        DrawEPic(k, pos.x, pos.y, shadow, 25, MixColor2, MixAlpha2, index);
-                    }
-                    else
-                    {
-                        DrawEPic(k, pos.x, pos.y, 0, 0, 0, 0, index);
-                    }
+                    DrawEPic(k, pos.x, pos.y, shadow, 25, MixColor2, MixAlpha2, index);
                 }
             }
         }
@@ -1073,21 +1013,10 @@ void LoadGroundTex(int x, int y)
     CalLTPosOnImageByCenter(x, y, dx, dy);
     SDL_Rect dest = { dx, dy, CENTER_X * 2, CENTER_Y * 2 };
     SDL_FRect destf = rect2f(dest);
-    if (SW_SURFACE == 0)
+    switch (Where)
     {
-        switch (Where)
-        {
-        case 1: SDL_RenderTexture(render, ImgSGroundTex, &destf, nullptr); break;
-        case 2: SDL_RenderTexture(render, ImgBGroundTex, &destf, nullptr); break;
-        }
-    }
-    else
-    {
-        switch (Where)
-        {
-        case 1: SDL_BlitSurface(ImgSGround, &dest, screen, nullptr); break;
-        case 2: SDL_BlitSurface(ImgBGround, &dest, screen, nullptr); break;
-        }
+    case 1: SDL_RenderTexture(render, ImgSGroundTex, &destf, nullptr); break;
+    case 2: SDL_RenderTexture(render, ImgBGroundTex, &destf, nullptr); break;
     }
 }
 

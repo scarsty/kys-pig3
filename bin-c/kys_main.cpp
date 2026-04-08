@@ -213,18 +213,12 @@ void Run()
         }
     }
 
-    if (SW_OUTPUT != 0)
-    {
-        RealScreen = SDL_GetWindowSurface(window);
-    }
-
     kyslog("Creating renderer");
     render = SDL_CreateRenderer(window, render_str);
 
     SDL_RenderClear(render);
     SDL_RenderPresent(render);
 
-    kyslog("All pictures will be loaded as surface: %d", SW_SURFACE);
     kyslog("Text will be drawn on single layer: %d", TEXT_LAYER);
 
     ImageWidth = (36 * 32 + CENTER_X) * 2;
@@ -442,8 +436,6 @@ void ReadFiles()
     PRESENT_SYNC = ini.getInt("system", "PRESENT_SYNC", 1);
     FONT_MEMERY = ini.getInt("system", "FONT_VIDEOMEMERY", 1);
     FULL_DESKTOP = ini.getInt("system", "FULL_DESKTOP", 0);
-    SW_SURFACE = ini.getInt("system", "SW_SURFACE", 0);
-    SW_OUTPUT = ini.getInt("system", "SW_OUTPUT", 0);
     AUTO_LEVELUP = ini.getInt("system", "AUTO_LEVELUP", 0);
 
     VOLUME = ini.getInt("music", "VOLUME", 30);
@@ -473,10 +465,6 @@ void ReadFiles()
     }
 
     if (KEEP_SCREEN_RATIO == 0)
-    {
-        TEXT_LAYER = 0;
-    }
-    if (SW_OUTPUT == 1)
     {
         TEXT_LAYER = 0;
     }
@@ -5219,18 +5207,10 @@ void ShowSimpleStatus(int rnum, int x, int y, int forTeam)
 
     if (forTeam == -1)
     {
-        if (SW_SURFACE == 0)
-        {
-            SDL_SetRenderTarget(render, SimpleStateTex);
-            SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_NONE);
-            SDL_SetRenderDrawColor(render, 0, 0, 0, 0);
-            SDL_RenderClear(render);
-        }
-        else
-        {
-            CurTargetSurface = SimpleState;
-            SDL_FillSurfaceRect(SimpleState, nullptr, 0);
-        }
+        SDL_SetRenderTarget(render, SimpleStateTex);
+        SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_NONE);
+        SDL_SetRenderDrawColor(render, 0, 0, 0, 0);
+        SDL_RenderClear(render);
     }
     else
     {
@@ -5300,12 +5280,10 @@ void ShowSimpleStatus(int rnum, int x, int y, int forTeam)
         if (forTeam == -1)
         {
             tex = TextScreenTex;
-            sur = TextScreen;
         }
         else
         {
             tex = SimpleTextTex[forTeam];
-            sur = SimpleText[forTeam];
         }
     }
 
@@ -5386,17 +5364,9 @@ void ShowSimpleStatus(int rnum, int x, int y, int forTeam)
 
     if (forTeam == -1)
     {
-        if (SW_SURFACE == 0)
-        {
-            SDL_SetRenderTarget(render, screenTex);
-            SDL_FRect destf = { (float)dest2.x, (float)dest2.y, (float)dest2.w, (float)dest2.h };
-            SDL_RenderTexture(render, SimpleStateTex, nullptr, &destf);
-        }
-        else
-        {
-            CurTargetSurface = screen;
-            SDL_BlitSurface(SimpleState, nullptr, screen, &dest2);
-        }
+        SDL_SetRenderTarget(render, screenTex);
+        SDL_FRect destf = { (float)dest2.x, (float)dest2.y, (float)dest2.w, (float)dest2.h };
+        SDL_RenderTexture(render, SimpleStateTex, nullptr, &destf);
     }
 }
 
@@ -7422,35 +7392,19 @@ void ScrollTextAmi(std::vector<std::string>& words, int chnsize, int engsize, in
 
     SDL_Texture* tex = nullptr;
     SDL_Surface* sur = nullptr;
-    if (SW_SURFACE == 0)
+    tex = SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, texw, texh);
+    SDL_SetRenderTarget(render, tex);
+    SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_NONE);
+    SDL_SetRenderDrawColor(render, 0, 0, 0, 255);
+    SDL_RenderFillRect(render, nullptr);
+    SDL_SetRenderTarget(render, screenTex);
+    if (TEXT_LAYER == 0)
     {
-        tex = SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, texw, texh);
-        SDL_SetRenderTarget(render, tex);
-        SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_NONE);
-        SDL_SetRenderDrawColor(render, 0, 0, 0, 255);
-        SDL_RenderFillRect(render, nullptr);
-        SDL_SetRenderTarget(render, screenTex);
-        if (TEXT_LAYER == 0)
-        {
-            SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
-        }
-        else
-        {
-            SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_NONE);
-        }
+        SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
     }
     else
     {
-        sur = SDL_CreateSurface(texw, texh, SDL_GetPixelFormatForMasks(32, RMask, GMask, BMask, AMask));
-        if (TEXT_LAYER == 0)
-        {
-            SDL_SetSurfaceBlendMode(sur, SDL_BLENDMODE_BLEND);
-        }
-        else
-        {
-            SDL_SetSurfaceBlendMode(sur, SDL_BLENDMODE_NONE);
-        }
-        SDL_FillSurfaceRect(sur, nullptr, MapRGBA(0, 0, 0, 255));
+        SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_NONE);
     }
 
     for (int l = 0; l < (int)words.size(); l++)
@@ -7478,20 +7432,7 @@ void ScrollTextAmi(std::vector<std::string>& words, int chnsize, int engsize, in
     }
     ResetFontSize();
 
-    if (SW_SURFACE == 0)
-    {
-        SDL_SetTextureAlphaMod(tex, 192);
-    }
-    else
-    {
-        SDL_SetSurfaceAlphaMod(sur, 192);
-    }
-
-    SDL_Surface* target = screen;
-    if (TEXT_LAYER == 1)
-    {
-        target = TextScreen;
-    }
+    SDL_SetTextureAlphaMod(tex, 192);
 
     int i = 0;
     CleanTextScreen();
@@ -7502,23 +7443,15 @@ void ScrollTextAmi(std::vector<std::string>& words, int chnsize, int engsize, in
         if (picnum < 0)
         {
             LoadFreshScreen();
-            if (SW_SURFACE == 0)
+            if (TEXT_LAYER == 1)
             {
-                if (TEXT_LAYER == 1)
-                {
-                    SDL_SetRenderTarget(render, TextScreenTex);
-                }
-                else
-                {
-                    SDL_SetRenderTarget(render, screenTex);
-                }
-                SDL_RenderTexture(render, tex, &dest, nullptr);
+                SDL_SetRenderTarget(render, TextScreenTex);
             }
             else
             {
-                SDL_Rect dr = { (int)dest.x, (int)dest.y, (int)dest.w, (int)dest.h };
-                SDL_BlitSurface(sur, &dr, target, nullptr);
+                SDL_SetRenderTarget(render, screenTex);
             }
+            SDL_RenderTexture(render, tex, &dest, nullptr);
         }
         else
         {
@@ -7531,36 +7464,20 @@ void ScrollTextAmi(std::vector<std::string>& words, int chnsize, int engsize, in
                 src.y = 0;
                 src.w = (float)(CENTER_X * 2);
                 src.h = (float)h;
-                if (SW_SURFACE == 0)
-                {
-                    SDL_SetRenderTarget(render, screenTex);
-                }
+                SDL_SetRenderTarget(render, screenTex);
                 SDL_Rect src1 = Rectf2(src);
                 DrawTPic(picnum, 0, 0, &src1);
                 SDL_FRect destpic = { 0, 240, (float)texw, (float)(texh0 - 240) };
                 SDL_FRect tempdest = { 0, (float)(-i + texh0 / 2), (float)texw, (float)(texh0 / 2) };
-                if (SW_SURFACE == 0)
+                if (TEXT_LAYER != 0)
                 {
-                    if (TEXT_LAYER != 0)
-                    {
-                        SDL_SetRenderTarget(render, TextScreenTex);
-                    }
-                    else
-                    {
-                        SDL_SetTextureAlphaMod(tex, 255);
-                    }
-                    SDL_RenderTexture(render, tex, &tempdest, &destpic);
+                    SDL_SetRenderTarget(render, TextScreenTex);
                 }
                 else
                 {
-                    if (TEXT_LAYER == 0)
-                    {
-                        SDL_SetSurfaceAlphaMod(sur, 255);
-                    }
-                    SDL_Rect td = Rectf2(tempdest);
-                    SDL_Rect dp = Rectf2(destpic);
-                    SDL_BlitSurface(sur, &td, target, &dp);
+                    SDL_SetTextureAlphaMod(tex, 255);
                 }
+                SDL_RenderTexture(render, tex, &tempdest, &destpic);
             }
         }
         UpdateAllScreen();
@@ -7582,14 +7499,7 @@ void ScrollTextAmi(std::vector<std::string>& words, int chnsize, int engsize, in
         SDL_Delay(delay);
     }
 
-    if (SW_SURFACE == 0)
-    {
-        SDL_DestroyTexture(tex);
-    }
-    else
-    {
-        SDL_DestroySurface(sur);
-    }
+    SDL_DestroyTexture(tex);
 
     if (picnum < 0)
     {

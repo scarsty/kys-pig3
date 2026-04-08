@@ -496,36 +496,20 @@ void DrawText(const std::string& word, int x_pos, int y_pos, uint32 color, int e
 
         // 使用CreateFontTile渲染单个字符
         int cw, charh;
-        void* tile = CreateFontTile(k, SW_SURFACE, cw, charh);
+        void* tile = CreateFontTile(k, 0, cw, charh);
         if (tile)
         {
-            if (SW_SURFACE == 0)
+            SDL_Texture* tex = (SDL_Texture*)tile;
+            SDL_SetTextureColorMod(tex, r, g, b);
+            dest.w = (float)cw;
+            dest.h = (float)charh;
+            if (TEXT_LAYER == 1)
             {
-                SDL_Texture* tex = (SDL_Texture*)tile;
-                SDL_SetTextureColorMod(tex, r, g, b);
-                dest.w = (float)cw;
-                dest.h = (float)charh;
-                if (TEXT_LAYER == 1)
-                {
-                    SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_MOD);
-                    SDL_RenderTexture(render, tex, nullptr, &dest);
-                    SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
-                }
+                SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_MOD);
                 SDL_RenderTexture(render, tex, nullptr, &dest);
+                SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
             }
-            else
-            {
-                SDL_Surface* sur = (SDL_Surface*)tile;
-                SDL_SetSurfaceColorMod(sur, r, g, b);
-                SDL_Rect destrect = { (int)dest.x, (int)dest.y, cw, charh };
-                if (TEXT_LAYER == 1)
-                {
-                    SDL_SetSurfaceBlendMode(sur, SDL_BLENDMODE_MOD);
-                    SDL_BlitSurface(sur, nullptr, CurTargetSurface, &destrect);
-                }
-                SDL_SetSurfaceBlendMode(sur, SDL_BLENDMODE_BLEND);
-                SDL_BlitSurface(sur, nullptr, CurTargetSurface, &destrect);
-            }
+            SDL_RenderTexture(render, tex, nullptr, &dest);
         }
         if (k >= 128)
             dest.x += CHINESE_FONT_REALSIZE;
@@ -547,30 +531,15 @@ void DrawShadowText(const std::string& word, int x_pos, int y_pos, uint32 color1
     SDL_Texture* Tex, SDL_Surface* Sur, int realPosition, int eng)
 {
     SDL_Texture* ptex = nullptr;
-    SDL_Surface* pscreen = nullptr;
 
-    if (SW_SURFACE == 0)
+    ptex = SDL_GetRenderTarget(render);
+    if (Tex == nullptr)
     {
-        ptex = SDL_GetRenderTarget(render);
-        if (Tex == nullptr)
-        {
-            if (TEXT_LAYER != 0)
-                SDL_SetRenderTarget(render, TextScreenTex);
-        }
-        else
-            SDL_SetRenderTarget(render, Tex);
+        if (TEXT_LAYER != 0)
+            SDL_SetRenderTarget(render, TextScreenTex);
     }
     else
-    {
-        pscreen = CurTargetSurface;
-        if (Sur == nullptr)
-        {
-            if (TEXT_LAYER != 0)
-                CurTargetSurface = TextScreen;
-        }
-        else
-            CurTargetSurface = Sur;
-    }
+        SDL_SetRenderTarget(render, Tex);
 
     int w, h;
     if (realPosition == 0)
@@ -587,10 +556,7 @@ void DrawShadowText(const std::string& word, int x_pos, int y_pos, uint32 color1
         DrawEngText(word, x_pos, y_pos, color1);
     }
 
-    if (SW_SURFACE == 0)
-        SDL_SetRenderTarget(render, ptex);
-    else
-        CurTargetSurface = pscreen;
+    SDL_SetRenderTarget(render, ptex);
 }
 
 void DrawEngShadowText(const std::string& word, int x_pos, int y_pos, uint32 color1, uint32 color2,
@@ -610,7 +576,7 @@ void DrawRectangle(int x, int y, int w, int h, uint32 colorin, uint32 colorframe
         return;
     }
 
-    if (SW_SURFACE == 0)
+    if (true)
     {
         uint8_t r, g, b, r1, g1, b1;
         GetRGBA(colorin, &r, &g, &b);
@@ -644,39 +610,13 @@ void DrawRectangle(int x, int y, int w, int h, uint32 colorin, uint32 colorframe
         SDL_RenderTexture(render, tex, nullptr, &destf);
         SDL_DestroyTexture(tex);
     }
-    else
-    {
-        w = abs(w);
-        h = abs(h);
-        uint8_t r, g, b;
-        GetRGBA(colorin, &r, &g, &b);
-
-        SDL_Surface* tempscr = SDL_CreateSurface(w + 1, h + 1,
-            SDL_GetPixelFormatForMasks(32, RMask, GMask, BMask, AMask));
-        SDL_FillSurfaceRect(tempscr, nullptr, MapRGBA(r, g, b, (uint8_t)(alpha * 255 / 100)));
-
-        for (int i1 = 0; i1 <= w; i1++)
-            for (int i2 = 0; i2 <= h; i2++)
-            {
-                int l1 = i1 + i2;
-                int l2 = -(i1 - w) + i2;
-                int l3 = i1 - (i2 - h);
-                int l4 = -(i1 - w) - (i2 - h);
-                if (!((l1 >= 4) && (l2 >= 4) && (l3 >= 4) && (l4 >= 4)))
-                    PutPixel(tempscr, i1, i2, 0);
-            }
-
-        SDL_Rect dest = { x, y, 0, 0 };
-        SDL_BlitSurface(tempscr, nullptr, CurTargetSurface, &dest);
-        SDL_DestroySurface(tempscr);
-    }
 }
 
 void DrawRectangleWithoutFrame(int x, int y, int w, int h, uint32 colorin, int alpha)
 {
     uint8_t r, g, b;
     GetRGBA(colorin, &r, &g, &b);
-    if (SW_SURFACE == 0 && alpha >= 0)
+    if (alpha >= 0)
     {
         SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_BLEND);
         SDL_SetRenderDrawColor(render, r, g, b, (uint8_t)(255 - 255 * alpha / 100));
@@ -691,39 +631,28 @@ void DrawRectangleWithoutFrame(int x, int y, int w, int h, uint32 colorin, int a
                 SDL_GetPixelFormatForMasks(32, RMask, GMask, BMask, AMask));
             SDL_FillSurfaceRect(tempsur, nullptr, MapRGBA(r, g, b, (uint8_t)(255 - alpha * 255 / 100)));
             SDL_SetSurfaceBlendMode(tempsur, SDL_BLENDMODE_BLEND);
-            if (CurTargetSurface == TextScreen)
-                SDL_SetSurfaceBlendMode(tempsur, SDL_BLENDMODE_MOD);
 
-            if (alpha < 0)
-            {
-                for (int i1 = 0; i1 < w; i1++)
-                    for (int i2 = 0; i2 < h; i2++)
+            for (int i1 = 0; i1 < w; i1++)
+                for (int i2 = 0; i2 < h; i2++)
+                {
+                    uint8_t a = 255;
+                    switch (alpha)
                     {
-                        uint8_t a = 255;
-                        switch (alpha)
-                        {
-                        case -1:
-                            a = (uint8_t)std::round(250 - std::abs((double)i2 / h - 0.5) * 150);
-                            break;
-                        case -2:
-                            a = (uint8_t)std::round(150 + std::abs((double)i2 / h - 0.5) * 100);
-                            break;
-                        }
-                        PutPixel(tempsur, i1, i2, MapRGBA(r, g, b, a));
+                    case -1:
+                        a = (uint8_t)std::round(250 - std::abs((double)i2 / h - 0.5) * 150);
+                        break;
+                    case -2:
+                        a = (uint8_t)std::round(150 + std::abs((double)i2 / h - 0.5) * 100);
+                        break;
                     }
-            }
+                    PutPixel(tempsur, i1, i2, MapRGBA(r, g, b, a));
+                }
 
-            SDL_Rect dest = { x, y, w, h };
-            if (SW_SURFACE == 0)
-            {
-                SDL_Texture* temptex = SDL_CreateTextureFromSurface(render, tempsur);
-                SDL_SetTextureBlendMode(temptex, SDL_BLENDMODE_BLEND);
-                SDL_FRect destf = { (float)x, (float)y, (float)w, (float)h };
-                SDL_RenderTexture(render, temptex, nullptr, &destf);
-                SDL_DestroyTexture(temptex);
-            }
-            else
-                SDL_BlitSurface(tempsur, nullptr, CurTargetSurface, &dest);
+            SDL_Texture* temptex = SDL_CreateTextureFromSurface(render, tempsur);
+            SDL_SetTextureBlendMode(temptex, SDL_BLENDMODE_BLEND);
+            SDL_FRect destf = { (float)x, (float)y, (float)w, (float)h };
+            SDL_RenderTexture(render, temptex, nullptr, &destf);
+            SDL_DestroyTexture(temptex);
             SDL_DestroySurface(tempsur);
         }
     }
@@ -745,17 +674,14 @@ void DrawItemFrame(int x, int y, int realcoord)
         y -= 1;
     }
 
-    if (SW_SURFACE == 0)
+    for (int i = 0; i <= d2; i++)
     {
-        for (int i = 0; i <= d2; i++)
-        {
-            uint8_t t = (uint8_t)(250 - i * 2);
-            SDL_SetRenderDrawColor(render, t, t, t, 255);
-            SDL_RenderPoint(render, (float)(x + i), (float)y);
-            SDL_RenderPoint(render, (float)(x + d2 - i), (float)(y + d2));
-            SDL_RenderPoint(render, (float)x, (float)(y + i));
-            SDL_RenderPoint(render, (float)(x + d2), (float)(y + d2 - i));
-        }
+        uint8_t t = (uint8_t)(250 - i * 2);
+        SDL_SetRenderDrawColor(render, t, t, t, 255);
+        SDL_RenderPoint(render, (float)(x + i), (float)y);
+        SDL_RenderPoint(render, (float)(x + d2 - i), (float)(y + d2));
+        SDL_RenderPoint(render, (float)x, (float)(y + i));
+        SDL_RenderPoint(render, (float)(x + d2), (float)(y + d2 - i));
     }
 }
 
@@ -764,14 +690,7 @@ void DrawPartPic(void* pic, int x, int y, int w, int h, int x1, int y1)
     if (pic == nullptr) return;
     SDL_FRect src = { (float)x, (float)y, (float)w, (float)h };
     SDL_FRect dst = { (float)x1, (float)y1, (float)w, (float)h };
-    if (SW_SURFACE == 0)
-        SDL_RenderTexture(render, (SDL_Texture*)pic, &src, &dst);
-    else
-    {
-        SDL_Rect srci = { x, y, w, h };
-        SDL_Rect dsti = { x1, y1, w, h };
-        SDL_BlitSurface((SDL_Surface*)pic, &srci, screen, &dsti);
-    }
+    SDL_RenderTexture(render, (SDL_Texture*)pic, &src, &dst);
 }
 
 //----------------------------------------------------------------------
@@ -809,8 +728,6 @@ void DestroyRenderTextures()
     if (TEXT_LAYER == 1)
     {
         SDL_DestroyTexture(TextScreenTex);
-        if (SW_SURFACE != 0)
-            SDL_DestroySurface(TextScreen);
     }
 }
 
@@ -818,19 +735,9 @@ void CreateAssistantRenderTextures()
 {
     if (TEXT_LAYER == 1)
     {
-        if (SW_SURFACE == 0)
-        {
-            TextScreenTex = SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, RESOLUTIONX, RESOLUTIONY);
-            SDL_SetTextureBlendMode(TextScreenTex, SDL_BLENDMODE_BLEND);
-            CleanTextScreen();
-        }
-        else
-        {
-            TextScreen = SDL_CreateSurface(RESOLUTIONX, RESOLUTIONY,
-                SDL_GetPixelFormatForMasks(32, RMask, GMask, BMask, AMask));
-            TextScreenTex = SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, RESOLUTIONX, RESOLUTIONY);
-            SDL_SetTextureBlendMode(TextScreenTex, SDL_BLENDMODE_BLEND);
-        }
+        TextScreenTex = SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, RESOLUTIONX, RESOLUTIONY);
+        SDL_SetTextureBlendMode(TextScreenTex, SDL_BLENDMODE_BLEND);
+        CleanTextScreen();
         ResizeSimpleText(1);
         TTF_CloseFont(Font);
         TTF_CloseFont(EngFont);
@@ -840,38 +747,18 @@ void CreateAssistantRenderTextures()
 
 void CreateMainRenderTextures()
 {
-    if (SW_SURFACE == 0)
-    {
-        screenTex = SDL_CreateTexture(render, SDL_PIXELFORMAT_UNKNOWN, SDL_TEXTUREACCESS_TARGET, CENTER_X * 2, CENTER_Y * 2);
-        ImgSGroundTex = SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, ImageWidth, ImageHeight);
-        ImgBGroundTex = SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, ImageWidth, ImageHeight);
-        SimpleStateTex = SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, 960, 90);
-        for (int i = 0; i < 6; i++)
-            SimpleStatusTex[i] = SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, 270, 90);
+    screenTex = SDL_CreateTexture(render, SDL_PIXELFORMAT_UNKNOWN, SDL_TEXTUREACCESS_TARGET, CENTER_X * 2, CENTER_Y * 2);
+    ImgSGroundTex = SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, ImageWidth, ImageHeight);
+    ImgBGroundTex = SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, ImageWidth, ImageHeight);
+    SimpleStateTex = SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, 960, 90);
+    for (int i = 0; i < 6; i++)
+        SimpleStatusTex[i] = SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, 270, 90);
 
-        SDL_SetTextureBlendMode(screenTex, SDL_BLENDMODE_NONE);
-        SDL_SetTextureBlendMode(ImgSGroundTex, SDL_BLENDMODE_NONE);
-        SDL_SetTextureBlendMode(ImgBGroundTex, SDL_BLENDMODE_NONE);
-        SDL_SetTextureBlendMode(SimpleStateTex, SDL_BLENDMODE_BLEND);
-        SDL_SetRenderTarget(render, screenTex);
-    }
-    else
-    {
-        screen = SDL_CreateSurface(CENTER_X * 2, CENTER_Y * 2,
-            SDL_GetPixelFormatForMasks(32, RMask, GMask, BMask, AMask));
-        ImgSGround = SDL_CreateSurface(ImageWidth, ImageHeight,
-            SDL_GetPixelFormatForMasks(32, RMask, GMask, BMask, AMask));
-        ImgBGround = SDL_CreateSurface(ImageWidth, ImageHeight,
-            SDL_GetPixelFormatForMasks(32, RMask, GMask, BMask, AMask));
-        SimpleState = SDL_CreateSurface(270, 90,
-            SDL_GetPixelFormatForMasks(32, RMask, GMask, BMask, AMask));
-        for (int i = 0; i < 6; i++)
-            SimpleStatus[i] = SDL_CreateSurface(270, 90,
-                SDL_GetPixelFormatForMasks(32, RMask, GMask, BMask, AMask));
-        CurTargetSurface = screen;
-        screenTex = SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, CENTER_X * 2, CENTER_Y * 2);
-        SDL_SetTextureBlendMode(screenTex, SDL_BLENDMODE_NONE);
-    }
+    SDL_SetTextureBlendMode(screenTex, SDL_BLENDMODE_NONE);
+    SDL_SetTextureBlendMode(ImgSGroundTex, SDL_BLENDMODE_NONE);
+    SDL_SetTextureBlendMode(ImgBGroundTex, SDL_BLENDMODE_NONE);
+    SDL_SetTextureBlendMode(SimpleStateTex, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderTarget(render, screenTex);
 }
 
 void ResizeWindow(int w, int h)
@@ -898,18 +785,9 @@ void ResizeSimpleText(int initial)
         GetRealRect(x, y, w1, h1);
         for (int i = 0; i < 6; i++)
         {
-            if (SW_SURFACE == 0)
-            {
-                if (SimpleTextTex[i] != nullptr) SDL_DestroyTexture(SimpleTextTex[i]);
-                SimpleTextTex[i] = SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, w1 + x, y + h1);
-                SDL_SetTextureBlendMode(SimpleTextTex[i], SDL_BLENDMODE_NONE);
-            }
-            else
-            {
-                if (SimpleText[i] != nullptr) SDL_DestroySurface(SimpleText[i]);
-                SimpleText[i] = SDL_CreateSurface(w1 + x, y + h1,
-                    SDL_GetPixelFormatForMasks(32, RMask, GMask, BMask, AMask));
-            }
+            if (SimpleTextTex[i] != nullptr) SDL_DestroyTexture(SimpleTextTex[i]);
+            SimpleTextTex[i] = SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, w1 + x, y + h1);
+            SDL_SetTextureBlendMode(SimpleTextTex[i], SDL_BLENDMODE_NONE);
         }
     }
 }
@@ -1143,10 +1021,10 @@ uint32 CheckBasicEvent()
     return result;
 }
 
-int AngleToDirection(double y, double x)
+int AngleToDirection(double y, double double_x)
 {
     int result = 0;
-    double angle = atan2(-y, x);
+    double angle = atan2(-y, double_x);
     double ar = M_PI / 4;
     if (fabs(angle + M_PI / 8) < ar) result = SDLK_RIGHT;
     if (fabs(angle - M_PI * 3 / 8) < ar) result = SDLK_UP;
@@ -1559,7 +1437,7 @@ void LoadOnePNGTexture(const std::string& path, void* z, TPNGIndex& PNGIndex, in
             std::string buf = zip_express((zip_t*)z, std::to_string(idx.FileNum) + ".png");
             if (!buf.empty())
             {
-                LoadTileFromMem(buf.data(), (int)buf.size(), idx.Pointers[0], SW_SURFACE, idx.w, idx.h);
+                LoadTileFromMem(buf.data(), (int)buf.size(), idx.Pointers[0], 0, idx.w, idx.h);
             }
             else
             {
@@ -1569,7 +1447,7 @@ void LoadOnePNGTexture(const std::string& path, void* z, TPNGIndex& PNGIndex, in
                     buf = zip_express((zip_t*)z, std::to_string(idx.FileNum) + "_" + std::to_string(i) + ".png");
                     if (!buf.empty())
                     {
-                        LoadTileFromMem(buf.data(), (int)buf.size(), idx.Pointers[i], SW_SURFACE, idx.w, idx.h);
+                        LoadTileFromMem(buf.data(), (int)buf.size(), idx.Pointers[i], 0, idx.w, idx.h);
                     }
                     else
                     {
@@ -1586,10 +1464,10 @@ void LoadOnePNGTexture(const std::string& path, void* z, TPNGIndex& PNGIndex, in
             if (idx.Frame == 1)
             {
                 if (!LoadTileFromFile(AppPath + localpath + std::to_string(idx.FileNum) + ".png",
-                    idx.Pointers[0], SW_SURFACE, idx.w, idx.h))
+                    idx.Pointers[0], 0, idx.w, idx.h))
                 {
                     LoadTileFromFile(AppPath + localpath + std::to_string(idx.FileNum) + "_0.png",
-                        idx.Pointers[0], SW_SURFACE, idx.w, idx.h);
+                        idx.Pointers[0], 0, idx.w, idx.h);
                 }
             }
             if (idx.Frame > 1)
@@ -1598,7 +1476,7 @@ void LoadOnePNGTexture(const std::string& path, void* z, TPNGIndex& PNGIndex, in
                 for (int j = 0; j < idx.Frame; j++)
                 {
                     LoadTileFromFile(AppPath + localpath + std::to_string(idx.FileNum) + "_" + std::to_string(j) + ".png",
-                        idx.Pointers[j], SW_SURFACE, w1, h1);
+                        idx.Pointers[j], 0, w1, h1);
                     if (j == 0) { idx.w = w1; idx.h = h1; }
                 }
             }
@@ -1611,34 +1489,18 @@ bool LoadTileFromFile(const std::string& filename, void*& pt, int usesur, int& w
 {
     pt = nullptr;
     if (!filefunc::fileExist(filename)) return false;
-    if (usesur == 0)
+    SDL_Surface* tempscr = SDL_LoadPNG(filename.c_str());
+    if (!tempscr) return false;
+    pt = SDL_CreateTextureFromSurface(render, tempscr);
+    SDL_DestroySurface(tempscr);
+    if (pt)
     {
-        SDL_Surface* tempscr = SDL_LoadPNG(filename.c_str());
-        if (!tempscr) return false;
-        pt = SDL_CreateTextureFromSurface(render, tempscr);
-        SDL_DestroySurface(tempscr);
-        if (pt)
-        {
-            SDL_SetTextureBlendMode((SDL_Texture*)pt, SDL_BLENDMODE_BLEND);
-            float wf, hf;
-            SDL_GetTextureSize((SDL_Texture*)pt, &wf, &hf);
-            w = (int)wf;
-            h = (int)hf;
-            return true;
-        }
-    }
-    else
-    {
-        SDL_Surface* tempscr = SDL_LoadPNG(filename.c_str());
-        if (!tempscr) return false;
-        pt = SDL_ConvertSurface(tempscr, screen->format);
-        SDL_DestroySurface(tempscr);
-        if (pt)
-        {
-            w = ((SDL_Surface*)pt)->w;
-            h = ((SDL_Surface*)pt)->h;
-            return true;
-        }
+        SDL_SetTextureBlendMode((SDL_Texture*)pt, SDL_BLENDMODE_BLEND);
+        float wf, hf;
+        SDL_GetTextureSize((SDL_Texture*)pt, &wf, &hf);
+        w = (int)wf;
+        h = (int)hf;
+        return true;
     }
     return false;
 }
@@ -1648,34 +1510,18 @@ bool LoadTileFromMem(const char* p, int len, void*& pt, int usesur, int& w, int&
     pt = nullptr;
     SDL_IOStream* rwops = SDL_IOFromMem((void*)p, len);
     if (!rwops) return false;
-    if (usesur == 0)
+    SDL_Surface* tempscr = SDL_LoadPNG_IO(rwops, true);
+    if (!tempscr) return false;
+    pt = SDL_CreateTextureFromSurface(render, tempscr);
+    SDL_DestroySurface(tempscr);
+    if (pt)
     {
-        SDL_Surface* tempscr = SDL_LoadPNG_IO(rwops, true);
-        if (!tempscr) return false;
-        pt = SDL_CreateTextureFromSurface(render, tempscr);
-        SDL_DestroySurface(tempscr);
-        if (pt)
-        {
-            SDL_SetTextureBlendMode((SDL_Texture*)pt, SDL_BLENDMODE_BLEND);
-            float wf, hf;
-            SDL_GetTextureSize((SDL_Texture*)pt, &wf, &hf);
-            w = (int)wf;
-            h = (int)hf;
-            return true;
-        }
-    }
-    else
-    {
-        SDL_Surface* tempscr = SDL_LoadPNG_IO(rwops, true);
-        if (!tempscr) return false;
-        pt = SDL_ConvertSurface(tempscr, screen->format);
-        SDL_DestroySurface(tempscr);
-        if (pt)
-        {
-            w = ((SDL_Surface*)pt)->w;
-            h = ((SDL_Surface*)pt)->h;
-            return true;
-        }
+        SDL_SetTextureBlendMode((SDL_Texture*)pt, SDL_BLENDMODE_BLEND);
+        float wf, hf;
+        SDL_GetTextureSize((SDL_Texture*)pt, &wf, &hf);
+        w = (int)wf;
+        h = (int)hf;
+        return true;
     }
     return false;
 }
@@ -1703,10 +1549,7 @@ void DestroyAllTextures(int all)
     }
     for (auto& pair : CharTex)
     {
-        if (SW_SURFACE == 0)
-            SDL_DestroyTexture((SDL_Texture*)pair.second);
-        else
-            SDL_DestroySurface((SDL_Surface*)pair.second);
+        SDL_DestroyTexture((SDL_Texture*)pair.second);
     }
     CharTex.clear();
 }
@@ -1725,11 +1568,6 @@ void DrawPNGTile(SDL_Renderer* r, TPNGIndex& PNGIndex, int FrameNum, int px, int
     SDL_Rect* region, int shadow, int alpha, uint32 mixColor, int mixAlpha,
     double scalex, double scaley, double angle, SDL_Point* center)
 {
-    if (SW_SURFACE != 0)
-    {
-        DrawPNGTileS(CurTargetSurface, PNGIndex, FrameNum, px, py, region, shadow, alpha, mixColor, mixAlpha, scalex, scaley, angle);
-        return;
-    }
     if (PNGIndex.Frame == 0) return;
     if (PNGIndex.Pointers.empty()) return;
 
@@ -1843,79 +1681,6 @@ void DrawPNGTile(SDL_Renderer* r, TPNGIndex& PNGIndex, int FrameNum, int px, int
     SDL_RenderTextureRotated(r, tex, pr, &dest, angle, pc, SDL_FLIP_NONE);
     if (newtex)
         SDL_DestroyTexture(tex);
-}
-
-void DrawPNGTileS(SDL_Surface* scr, TPNGIndex& PNGIndex, int FrameNum, int px, int py,
-    SDL_Rect* region, int shadow, int alpha, uint32 mixColor, int mixAlpha,
-    double scalex, double scaley, double angle)
-{
-    if (PNGIndex.Frame == 0) return;
-    SDL_Surface* sur = (SDL_Surface*)PNGIndex.Pointers[0];
-    if (PNGIndex.Frame > 1)
-        sur = (SDL_Surface*)PNGIndex.Pointers[FrameNum % PNGIndex.Frame];
-    if (!sur) return;
-
-    SDL_Rect rect;
-    rect.x = px - PNGIndex.x;
-    rect.y = py - PNGIndex.y;
-    if (region == nullptr) { rect.w = PNGIndex.w; rect.h = PNGIndex.h; }
-    else { rect.w = region->w; rect.h = region->h; }
-    if (scalex != 1 || scaley != 1)
-    {
-        rect.w = (int)(rect.w * scalex);
-        rect.h = (int)(rect.h * scaley);
-    }
-
-    bool newsur = false;
-
-    if (shadow < 0 && mixAlpha == 0)
-    {
-        mixColor = 0;
-        mixAlpha = -25 * shadow;
-    }
-    if (shadow > 0 && mixAlpha == 0)
-    {
-        mixColor = 0xFFFFFFFF;
-        mixAlpha = shadow * 25;
-    }
-
-    SDL_SetSurfaceColorMod(sur, 255, 255, 255);
-    SDL_SetSurfaceAlphaMod(sur, 255);
-
-    uint8_t r, g, b;
-    if (mixAlpha > 0 && shadow <= 0)
-    {
-        GetRGBA(mixColor, &r, &g, &b);
-        uint8_t r1 = (uint8_t)std::max(0, 255 - (255 + (int)g + (int)b) * mixAlpha / 100);
-        uint8_t g1 = (uint8_t)std::max(0, 255 - (255 + (int)r + (int)b) * mixAlpha / 100);
-        uint8_t b1 = (uint8_t)std::max(0, 255 - (255 + (int)r + (int)g) * mixAlpha / 100);
-        SDL_SetSurfaceColorMod(sur, r1, g1, b1);
-    }
-    if (mixAlpha < 0)
-    {
-        SDL_GetRGB(mixColor, SDL_GetPixelFormatDetails(scr->format), SDL_GetSurfacePalette(scr), &r, &g, &b);
-        SDL_SetSurfaceColorMod(sur, r, g, b);
-    }
-    if (mixAlpha > 0 && shadow > 0)
-    {
-        GetRGBA(mixColor, &r, &g, &b);
-        SDL_Surface* sur1 = sur;
-        sur = SDL_ConvertSurface(sur1, screen->format);
-        SDL_Surface* sur2 = SDL_ConvertSurface(sur1, screen->format);
-        newsur = true;
-        SDL_SetSurfaceColorMod(sur2, r, g, b);
-        SDL_SetSurfaceAlphaMod(sur2, (uint8_t)(255 * mixAlpha / 100));
-        SDL_SetSurfaceBlendMode(sur2, SDL_BLENDMODE_ADD);
-        SDL_BlitSurface(sur2, nullptr, sur, nullptr);
-        SDL_DestroySurface(sur2);
-    }
-    if (alpha > 0)
-    {
-        SDL_SetSurfaceAlphaMod(sur, (uint8_t)(255 * (100 - alpha) / 100));
-    }
-
-    SDL_BlitSurface(sur, region, scr, &rect);
-    if (newsur) SDL_DestroySurface(sur);
 }
 
 bool PlayMovie(const std::string& filename)
@@ -2032,41 +1797,23 @@ void LoadTeamSimpleStatus(int& max)
     {
         if (TeamList[i] >= 0)
         {
-            if (SW_SURFACE == 0)
+            if (TEXT_LAYER != 0)
             {
-                if (TEXT_LAYER != 0)
-                {
-                    SDL_SetRenderTarget(render, SimpleTextTex[i]);
-                    SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_NONE);
-                    SDL_SetRenderDrawColor(render, 255, 255, 255, 0);
-                    SDL_RenderFillRect(render, nullptr);
-                }
-                SDL_SetRenderTarget(render, SimpleStatusTex[i]);
+                SDL_SetRenderTarget(render, SimpleTextTex[i]);
                 SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_NONE);
-                SDL_SetRenderDrawColor(render, 0, 0, 0, 0);
-                SDL_RenderClear(render);
-                ShowSimpleStatus(TeamList[i], 0, 0, i);
-                SDL_SetTextureBlendMode(SimpleStatusTex[i], SDL_BLENDMODE_BLEND);
+                SDL_SetRenderDrawColor(render, 255, 255, 255, 0);
+                SDL_RenderFillRect(render, nullptr);
             }
-            else
-            {
-                if (TEXT_LAYER != 0)
-                {
-                    SDL_FillSurfaceRect(SimpleText[i], nullptr, MapRGBA(255, 255, 255, 0));
-                    SDL_SetSurfaceBlendMode(SimpleText[i], SDL_BLENDMODE_NONE);
-                }
-                CurTargetSurface = SimpleStatus[i];
-                SDL_FillSurfaceRect(CurTargetSurface, nullptr, 0);
-                ShowSimpleStatus(TeamList[i], 0, 0, i);
-                SDL_SetSurfaceBlendMode(SimpleStatus[i], SDL_BLENDMODE_BLEND);
-            }
+            SDL_SetRenderTarget(render, SimpleStatusTex[i]);
+            SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_NONE);
+            SDL_SetRenderDrawColor(render, 0, 0, 0, 0);
+            SDL_RenderClear(render);
+            ShowSimpleStatus(TeamList[i], 0, 0, i);
+            SDL_SetTextureBlendMode(SimpleStatusTex[i], SDL_BLENDMODE_BLEND);
             max = i;
         }
     }
-    if (SW_SURFACE == 0)
-        SDL_SetRenderTarget(render, screenTex);
-    else
-        CurTargetSurface = screen;
+    SDL_SetRenderTarget(render, screenTex);
 }
 
 void DrawSimpleStatusByTeam(int i, int px, int py, uint32 mixColor, int mixAlpha)
@@ -2084,51 +1831,25 @@ void DrawSimpleStatusByTeam(int i, int px, int py, uint32 mixColor, int mixAlpha
     g1 = (uint8_t)std::max(0, 255 - (255 + (int)r + (int)b) * mixAlpha / 100);
     b1 = (uint8_t)std::max(0, 255 - (255 + (int)r + (int)g) * mixAlpha / 100);
 
-    if (SW_SURFACE == 0)
-    {
-        if (mixAlpha > 0)
-            SDL_SetTextureColorMod(SimpleStatusTex[i], r1, g1, b1);
-        else
-            SDL_SetTextureColorMod(SimpleStatusTex[i], 255, 255, 255);
-        SDL_FRect destf = rect2f(dest);
-        SDL_RenderTexture(render, SimpleStatusTex[i], nullptr, &destf);
-
-        if (TEXT_LAYER == 1)
-        {
-            if (mixAlpha > 0)
-                SDL_SetTextureColorMod(SimpleTextTex[i], r1, g1, b1);
-            else
-                SDL_SetTextureColorMod(SimpleTextTex[i], 255, 255, 255);
-            SDL_SetRenderTarget(render, TextScreenTex);
-            SDL_FRect destf2 = rect2f(dest2);
-            SDL_FRect rectcutf = rect2f(rectcut);
-            SDL_RenderTexture(render, SimpleTextTex[i], &rectcutf, &destf2);
-            SDL_SetRenderTarget(render, screenTex);
-        }
-    }
+    if (mixAlpha > 0)
+        SDL_SetTextureColorMod(SimpleStatusTex[i], r1, g1, b1);
     else
+        SDL_SetTextureColorMod(SimpleStatusTex[i], 255, 255, 255);
+    SDL_FRect destf = rect2f(dest);
+    SDL_RenderTexture(render, SimpleStatusTex[i], nullptr, &destf);
+
+    if (TEXT_LAYER == 1)
     {
         if (mixAlpha > 0)
-            SDL_SetSurfaceColorMod(SimpleStatus[i], r1, g1, b1);
+            SDL_SetTextureColorMod(SimpleTextTex[i], r1, g1, b1);
         else
-            SDL_SetSurfaceColorMod(SimpleStatus[i], 255, 255, 255);
-        SDL_BlitSurface(SimpleStatus[i], nullptr, screen, &dest);
-
-        if (TEXT_LAYER == 1)
-        {
-            if (mixAlpha > 0)
-                SDL_SetSurfaceColorMod(SimpleText[i], r1, g1, b1);
-            else
-                SDL_SetSurfaceColorMod(SimpleText[i], 255, 255, 255);
-            SDL_BlitSurface(SimpleText[i], &rectcut, TextScreen, &dest2);
-        }
+            SDL_SetTextureColorMod(SimpleTextTex[i], 255, 255, 255);
+        SDL_SetRenderTarget(render, TextScreenTex);
+        SDL_FRect destf2 = rect2f(dest2);
+        SDL_FRect rectcutf = rect2f(rectcut);
+        SDL_RenderTexture(render, SimpleTextTex[i], &rectcutf, &destf2);
+        SDL_SetRenderTarget(render, screenTex);
     }
-}
-
-void FreeTeamSimpleStatus(SDL_Surface** SimpleStatusArr, int count)
-{
-    for (int i = 0; i < count; i++)
-        if (SimpleStatusArr[i]) { SDL_DestroySurface(SimpleStatusArr[i]); SimpleStatusArr[i] = nullptr; }
 }
 
 void TransBlackScreen()
@@ -2136,20 +1857,11 @@ void TransBlackScreen()
     DrawRectangleWithoutFrame(0, 0, CENTER_X * 2, CENTER_Y * 2, 0, 50);
     if (TEXT_LAYER == 1)
     {
-        if (SW_SURFACE == 0)
-        {
-            SDL_SetRenderTarget(render, TextScreenTex);
-            SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_MOD);
-            SDL_SetRenderDrawColor(render, 128, 128, 128, 0);
-            SDL_RenderClear(render);
-            SDL_SetRenderTarget(render, screenTex);
-        }
-        else
-        {
-            CurTargetSurface = TextScreen;
-            DrawRectangleWithoutFrame(0, 0, RESOLUTIONX, RESOLUTIONY, MapRGBA(128, 128, 128, 0), 50);
-            CurTargetSurface = screen;
-        }
+        SDL_SetRenderTarget(render, TextScreenTex);
+        SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_MOD);
+        SDL_SetRenderDrawColor(render, 128, 128, 128, 0);
+        SDL_RenderClear(render);
+        SDL_SetRenderTarget(render, screenTex);
     }
 }
 
@@ -2166,21 +1878,12 @@ void LoadFreshScreen()
 void RecordFreshScreen(int x, int y, int w, int h)
 {
     SDL_Rect dest = { x, y, w, h };
-    if (SW_SURFACE == 0)
-    {
-        SDL_Texture* tex = SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, w, h);
-        SDL_SetRenderTarget(render, tex);
-        SDL_FRect destf = rect2f(dest);
-        SDL_RenderTexture(render, screenTex, &destf, nullptr);
-        SDL_SetRenderTarget(render, screenTex);
-        FreshScreen.push_back(reinterpret_cast<SDL_Surface*>(tex));
-    }
-    else
-    {
-        SDL_Surface* sur = SDL_CreateSurface(w, h, SDL_GetPixelFormatForMasks(32, RMask, GMask, BMask, AMask));
-        SDL_BlitSurface(screen, &dest, sur, nullptr);
-        FreshScreen.push_back(sur);
-    }
+    SDL_Texture* tex = SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, w, h);
+    SDL_SetRenderTarget(render, tex);
+    SDL_FRect destf = rect2f(dest);
+    SDL_RenderTexture(render, screenTex, &destf, nullptr);
+    SDL_SetRenderTarget(render, screenTex);
+    FreshScreen.push_back(reinterpret_cast<SDL_Surface*>(tex));
     kyslog("Now the amount of fresh screens is %d", (int)FreshScreen.size());
 }
 
@@ -2189,37 +1892,20 @@ void LoadFreshScreen(int x, int y)
     int i = (int)FreshScreen.size() - 1;
     if (i >= 0)
     {
-        if (SW_SURFACE == 0)
+        if (FreshScreen[i] != nullptr)
         {
-            if (FreshScreen[i] != nullptr)
-            {
-                SDL_Texture* tex = reinterpret_cast<SDL_Texture*>(FreshScreen[i]);
-                SDL_Rect dest;
-                dest.x = x;
-                dest.y = y;
-                float wf, hf;
-                SDL_GetTextureSize(tex, &wf, &hf);
-                dest.w = (int)wf;
-                dest.h = (int)hf;
-                CleanTextScreenRect(x, y, dest.w, dest.h);
-                SDL_FRect destf = rect2f(dest);
-                SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_NONE);
-                SDL_RenderTexture(render, tex, nullptr, &destf);
-            }
-        }
-        else
-        {
-            if (FreshScreen[i] != nullptr)
-            {
-                SDL_Surface* sur = FreshScreen[i];
-                SDL_Rect dest;
-                dest.x = x;
-                dest.y = y;
-                dest.w = sur->w;
-                dest.h = sur->h;
-                SDL_BlitSurface(sur, nullptr, screen, &dest);
-                CleanTextScreenRect(x, y, dest.w, dest.h);
-            }
+            SDL_Texture* tex = reinterpret_cast<SDL_Texture*>(FreshScreen[i]);
+            SDL_Rect dest;
+            dest.x = x;
+            dest.y = y;
+            float wf, hf;
+            SDL_GetTextureSize(tex, &wf, &hf);
+            dest.w = (int)wf;
+            dest.h = (int)hf;
+            CleanTextScreenRect(x, y, dest.w, dest.h);
+            SDL_FRect destf = rect2f(dest);
+            SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_NONE);
+            SDL_RenderTexture(render, tex, nullptr, &destf);
         }
     }
 }
@@ -2229,18 +1915,9 @@ void FreeFreshScreen()
     int i = (int)FreshScreen.size() - 1;
     if (i >= 0)
     {
-        if (SW_SURFACE == 0)
-        {
-            SDL_DestroyTexture(reinterpret_cast<SDL_Texture*>(FreshScreen[i]));
-            FreshScreen[i] = nullptr;
-            FreshScreen.erase(FreshScreen.begin() + i);
-        }
-        else
-        {
-            SDL_DestroySurface(FreshScreen[i]);
-            FreshScreen[i] = nullptr;
-            FreshScreen.erase(FreshScreen.begin() + i);
-        }
+        SDL_DestroyTexture(reinterpret_cast<SDL_Texture*>(FreshScreen[i]));
+        FreshScreen[i] = nullptr;
+        FreshScreen.erase(FreshScreen.begin() + i);
     }
 }
 
@@ -2254,100 +1931,55 @@ void UpdateAllScreen()
     case 2: r = 200; g = 152; b = 20; break;
     }
 
-    if (SW_SURFACE == 0)
+    SDL_SetRenderTarget(render, nullptr);
+    SDL_SetRenderDrawColor(render, 0, 0, 0, 0);
+    SDL_RenderClear(render);
+    SDL_SetTextureColorMod(screenTex, r, g, b);
+    if (KEEP_SCREEN_RATIO == 1)
     {
-        SDL_SetRenderTarget(render, nullptr);
-        SDL_SetRenderDrawColor(render, 0, 0, 0, 0);
-        SDL_RenderClear(render);
-        SDL_SetTextureColorMod(screenTex, r, g, b);
-        if (KEEP_SCREEN_RATIO == 1)
-        {
-            SDL_Rect src = { 0, 0, CENTER_X * 2, CENTER_Y * 2 };
-            SDL_Rect dest = GetRealRect(src, 1);
-            SDL_FRect destf = rect2f(dest);
-            SDL_RenderTexture(render, screenTex, nullptr, &destf);
-        }
-        else
-        {
-            if (ScreenRotate == 0)
-            {
-                SDL_RenderTexture(render, screenTex, nullptr, nullptr);
-            }
-            else
-            {
-                SDL_Rect dest;
-                dest.x = RESOLUTIONX;
-                dest.y = 0;
-                dest.w = RESOLUTIONY;
-                dest.h = RESOLUTIONX;
-                SDL_FRect destf = rect2f(dest);
-                SDL_FPoint mid = { 0, 0 };
-                SDL_RenderTextureRotated(render, screenTex, nullptr, &destf, 90, &mid, SDL_FLIP_NONE);
-            }
-        }
-        SDL_SetTextureColorMod(screenTex, 255, 255, 255);
-        if (TEXT_LAYER == 1 && HaveText == 1)
-        {
-            SDL_SetTextureColorMod(TextScreenTex, r, g, b);
-            SDL_RenderTexture(render, TextScreenTex, nullptr, nullptr);
-            SDL_SetTextureColorMod(TextScreenTex, 255, 255, 255);
-        }
-        SDL_RenderPresent(render);
-        SDL_SetRenderTarget(render, screenTex);
+        SDL_Rect src = { 0, 0, CENTER_X * 2, CENTER_Y * 2 };
+        SDL_Rect dest = GetRealRect(src, 1);
+        SDL_FRect destf = rect2f(dest);
+        SDL_RenderTexture(render, screenTex, nullptr, &destf);
     }
     else
     {
-        if (Where < 5)
+        if (ScreenRotate == 0)
         {
-            SDL_Rect* prect = nullptr;
+            SDL_RenderTexture(render, screenTex, nullptr, nullptr);
+        }
+        else
+        {
             SDL_Rect dest;
-            if (KEEP_SCREEN_RATIO == 1)
-            {
-                SDL_Rect src = { 0, 0, CENTER_X * 2, CENTER_Y * 2 };
-                dest = GetRealRect(src, 1);
-                prect = &dest;
-            }
-            if (SW_OUTPUT == 0)
-            {
-                SDL_UpdateTexture(screenTex, nullptr, screen->pixels, screen->pitch);
-                SDL_RenderClear(render);
-                SDL_SetTextureColorMod(screenTex, r, g, b);
-                SDL_RenderTexture(render, screenTex, nullptr, nullptr);
-                SDL_SetTextureColorMod(screenTex, 255, 255, 255);
-                if (TEXT_LAYER == 1 && HaveText == 1)
-                {
-                    SDL_UpdateTexture(TextScreenTex, nullptr, TextScreen->pixels, TextScreen->pitch);
-                    SDL_SetTextureColorMod(TextScreenTex, r, g, b);
-                    SDL_RenderTexture(render, TextScreenTex, nullptr, nullptr);
-                    SDL_SetTextureColorMod(TextScreenTex, 255, 255, 255);
-                }
-                SDL_RenderPresent(render);
-            }
-            else
-            {
-                SDL_BlitSurface(screen, nullptr, RealScreen, prect);
-                SDL_UpdateWindowSurface(window);
-            }
+            dest.x = RESOLUTIONX;
+            dest.y = 0;
+            dest.w = RESOLUTIONY;
+            dest.h = RESOLUTIONX;
+            SDL_FRect destf = rect2f(dest);
+            SDL_FPoint mid = { 0, 0 };
+            SDL_RenderTextureRotated(render, screenTex, nullptr, &destf, 90, &mid, SDL_FLIP_NONE);
         }
     }
+    SDL_SetTextureColorMod(screenTex, 255, 255, 255);
+    if (TEXT_LAYER == 1 && HaveText == 1)
+    {
+        SDL_SetTextureColorMod(TextScreenTex, r, g, b);
+        SDL_RenderTexture(render, TextScreenTex, nullptr, nullptr);
+        SDL_SetTextureColorMod(TextScreenTex, 255, 255, 255);
+    }
+    SDL_RenderPresent(render);
+    SDL_SetRenderTarget(render, screenTex);
 }
 
 void CleanTextScreen()
 {
     if (TEXT_LAYER == 1 && HaveText == 1)
     {
-        if (SW_SURFACE == 0)
-        {
-            SDL_SetRenderTarget(render, TextScreenTex);
-            SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_NONE);
-            SDL_SetRenderDrawColor(render, 255, 255, 255, 0);
-            SDL_RenderClear(render);
-            SDL_SetRenderTarget(render, screenTex);
-        }
-        else if (TextScreen)
-        {
-            SDL_FillSurfaceRect(TextScreen, nullptr, MapRGBA(255, 255, 255, 0));
-        }
+        SDL_SetRenderTarget(render, TextScreenTex);
+        SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_NONE);
+        SDL_SetRenderDrawColor(render, 255, 255, 255, 0);
+        SDL_RenderClear(render);
+        SDL_SetRenderTarget(render, screenTex);
         HaveText = 0;
     }
 }
@@ -2363,19 +1995,12 @@ void CleanTextScreenRect(int x, int y, int w, int h)
         else
         {
             SDL_Rect dest = GetRealRect(SDL_Rect{ x, y, w, h }, 0);
-            if (SW_SURFACE == 0)
-            {
-                SDL_SetRenderTarget(render, TextScreenTex);
-                SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_NONE);
-                SDL_SetRenderDrawColor(render, 255, 255, 255, 0);
-                SDL_FRect destf = rect2f(dest);
-                SDL_RenderFillRect(render, &destf);
-                SDL_SetRenderTarget(render, screenTex);
-            }
-            else
-            {
-                SDL_FillSurfaceRect(TextScreen, &dest, MapRGBA(255, 255, 255, 0));
-            }
+            SDL_SetRenderTarget(render, TextScreenTex);
+            SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_NONE);
+            SDL_SetRenderDrawColor(render, 255, 255, 255, 0);
+            SDL_FRect destf = rect2f(dest);
+            SDL_RenderFillRect(render, &destf);
+            SDL_SetRenderTarget(render, screenTex);
         }
     }
 }
