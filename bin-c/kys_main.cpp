@@ -145,7 +145,7 @@ void Run()
         std::string basePath(intPath);
         AppPath = basePath + "/game/";
         CellPhone = 1;
-
+        SDL_SetHint(SDL_HINT_ORIENTATIONS, "LandscapeLeft LandscapeRight");
         std::string assetVer = "1.0";  // 更新资源时修改此版本号
         if (needExtractAssets(AppPath, assetVer))
         {

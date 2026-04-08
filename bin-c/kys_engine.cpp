@@ -1028,8 +1028,11 @@ uint32 CheckBasicEvent()
         StopMP3(0);
         break;
     case SDL_EVENT_MOUSE_BUTTON_DOWN:
-        if (CellPhone == 1 && ShowVirtualKey != 0)
+        if (CellPhone == 1)
         {
+            FingerCount = 0;
+            if (ShowVirtualKey != 0)
+            {
             int x, y;
             SDL_GetMouseState2(x, y);
             auto inVirtualKey = [&](int mx, int my, uint32& key) -> uint32 {
@@ -1051,6 +1054,7 @@ uint32 CheckBasicEvent()
             {
                 event.type = SDL_EVENT_KEY_DOWN;
                 event.key.key = VirtualKeyValue;
+            }
             }
         }
         break;
@@ -1123,8 +1127,10 @@ uint32 CheckBasicEvent()
             {
                 event.button.button = 0;
             }
-            if (FingerCount >= 1)
+            else if (FingerCount >= 1)
+            {
                 event.button.button = 0;
+            }
         }
         if (Where == 2 && (event.key.key == SDLK_ESCAPE || event.button.button == SDL_BUTTON_RIGHT))
         {
