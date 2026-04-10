@@ -11,6 +11,7 @@
 #endif
 
 #include <SDL3/SDL.h>
+#include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3_mixer/SDL_mixer.h>
 
@@ -35,6 +36,60 @@
 void CleanTextScreenRect(int x, int y, int w, int h);
 SDL_Rect GetRealRect(SDL_Rect rect, int force);
 SDL_FRect rect2f(const SDL_Rect& r);
+
+namespace
+{
+const char* kDefaultTileExt = ".png";
+const char* const kSupportedTileExts[] = { ".png", ".webp" };
+
+std::string BuildTileFileName(int fileNum, const std::string& fileExt, int frameNum = -1)
+{
+    if (frameNum < 0)
+        return std::to_string(fileNum) + fileExt;
+    return std::to_string(fileNum) + "_" + std::to_string(frameNum) + fileExt;
+}
+
+std::string DetectTileExtensionInZip(zip_t* z, int maxCount)
+{
+    for (int i = 0; i <= maxCount; i++)
+    {
+        for (const char* fileExt : kSupportedTileExts)
+        {
+            if (zip_name_locate(z, BuildTileFileName(i, fileExt).c_str(), 0) >= 0 ||
+                zip_name_locate(z, BuildTileFileName(i, fileExt, 0).c_str(), 0) >= 0)
+            {
+                return fileExt;
+            }
+        }
+    }
+    return kDefaultTileExt;
+}
+
+std::string DetectTileExtensionInDirectory(const std::string& localpath, int maxCount)
+{
+    for (int i = 0; i <= maxCount; i++)
+    {
+        for (const char* fileExt : kSupportedTileExts)
+        {
+            if (filefunc::fileExist(AppPath + localpath + BuildTileFileName(i, fileExt)) ||
+                filefunc::fileExist(AppPath + localpath + BuildTileFileName(i, fileExt, 0)))
+            {
+                return fileExt;
+            }
+        }
+    }
+    return kDefaultTileExt;
+}
+
+SDL_Surface* LoadSurfaceByExtension(SDL_IOStream* io, bool closeio, const std::string& fileExt)
+{
+    if (fileExt == ".png")
+        return SDL_LoadPNG_IO(io, closeio);
+    if (fileExt == ".webp")
+        return IMG_LoadTyped_IO(io, closeio, "WEBP");
+    return IMG_Load_IO(io, closeio);
+}
+}
 
 // 内部变量
 static MIX_Mixer* gMixer = nullptr;
@@ -1210,6 +1265,7 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
     std::vector<int16_t> offset;
     zip_t* z = nullptr;
     std::string localpath = path;
+    std::string fileExt = kDefaultTileExt;
 
     // 从index文本/二进制中解析偏移，返回最大索引+1
     auto FillOffsetsFromNumbers = [&](const std::vector<int>& values) {
@@ -1263,11 +1319,13 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
                     frame[nums[i * 2]] = (int16_t)nums[i * 2 + 1];
             }
 
+            fileExt = DetectTileExtensionInZip(z, maxCount);
+
             // 扫描zip中最大文件编号
             for (int i = std::max(std::max(result - 1, 0), maxCount); i >= 0; i--)
             {
-                if (zip_name_locate(z, (std::to_string(i) + ".png").c_str(), 0) >= 0 ||
-                    zip_name_locate(z, (std::to_string(i) + "_0.png").c_str(), 0) >= 0)
+                if (zip_name_locate(z, BuildTileFileName(i, fileExt).c_str(), 0) >= 0 ||
+                    zip_name_locate(z, BuildTileFileName(i, fileExt, 0).c_str(), 0) >= 0)
                 {
                     if (i + 1 > result) result = i + 1;
                     break;
@@ -1284,7 +1342,8 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
                 idx.FileNum = i;
                 idx.PointerNum = 1;
                 idx.Frame = 1;
-                if (zip_name_locate(z, (std::to_string(i) + ".png").c_str(), 0) >= 0)
+                idx.FileExt = fileExt;
+                if (zip_name_locate(z, BuildTileFileName(i, fileExt).c_str(), 0) >= 0)
                 {
                     idx.PointerNum = count;
                     idx.Frame = 1;
@@ -1293,7 +1352,7 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
                 else
                 {
                     int k = 0;
-                    while (zip_name_locate(z, (std::to_string(i) + "_" + std::to_string(k) + ".png").c_str(), 0) >= 0)
+                    while (zip_name_locate(z, BuildTileFileName(i, fileExt, k).c_str(), 0) >= 0)
                     {
                         k++;
                         if (k == 1) idx.PointerNum = count;
@@ -1348,10 +1407,11 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
         }
 
         // 扫描文件夹中最大文件编号
+        fileExt = DetectTileExtensionInDirectory(localpath, maxCount);
         for (int i = maxCount; i >= 0; i--)
         {
-            if (filefunc::fileExist(AppPath + localpath + std::to_string(i) + ".png") ||
-                filefunc::fileExist(AppPath + localpath + std::to_string(i) + "_0.png"))
+            if (filefunc::fileExist(AppPath + localpath + BuildTileFileName(i, fileExt)) ||
+                filefunc::fileExist(AppPath + localpath + BuildTileFileName(i, fileExt, 0)))
             {
                 if (i + 1 > result) result = i + 1;
                 break;
@@ -1369,7 +1429,8 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
             idx.FileNum = i;
             idx.PointerNum = -1;
             idx.Frame = 0;
-            if (filefunc::fileExist(AppPath + localpath + std::to_string(i) + ".png"))
+            idx.FileExt = fileExt;
+            if (filefunc::fileExist(AppPath + localpath + BuildTileFileName(i, fileExt)))
             {
                 idx.PointerNum = count;
                 idx.Frame = 1;
@@ -1378,7 +1439,7 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
             else
             {
                 int k = 0;
-                while (filefunc::fileExist(AppPath + localpath + std::to_string(i) + "_" + std::to_string(k) + ".png"))
+                while (filefunc::fileExist(AppPath + localpath + BuildTileFileName(i, fileExt, k)))
                 {
                     k++;
                     if (k == 1) idx.PointerNum = count;
@@ -1408,8 +1469,8 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
 }
 
 // 前置声明
-bool LoadTileFromFile(const std::string& filename, void*& pt, int usesur, int& w, int& h);
-bool LoadTileFromMem(const char* p, int len, void*& pt, int usesur, int& w, int& h);
+bool LoadTileFromFile(const std::string& filename, const std::string& fileExt, void*& pt, int usesur, int& w, int& h);
+bool LoadTileFromMem(const char* p, int len, const std::string& fileExt, void*& pt, int usesur, int& w, int& h);
 
 void LoadOnePNGTexture(const std::string& path, void* z, TPNGIndex& PNGIndex, int forceLoad)
 {
@@ -1427,35 +1488,36 @@ void LoadOnePNGTexture(const std::string& path, void* z, TPNGIndex& PNGIndex, in
     auto& idx = PNGIndex;
     if ((idx.Loaded == 0 || forceLoad == 1) && idx.PointerNum >= 0 && idx.Frame > 0)
     {
+        const std::string& fileExt = idx.FileExt.empty() ? std::string(kDefaultTileExt) : idx.FileExt;
         idx.Loaded = 1;
         idx.w = 0;
         idx.h = 0;
 
         if (frommem)
         {
-            idx.Frame = 1;
-            std::string buf = zip_express((zip_t*)z, std::to_string(idx.FileNum) + ".png");
+            std::string buf = zip_express((zip_t*)z, BuildTileFileName(idx.FileNum, fileExt));
             if (!buf.empty())
             {
-                LoadTileFromMem(buf.data(), (int)buf.size(), idx.Pointers[0], 0, idx.w, idx.h);
+                idx.Frame = 1;
+                LoadTileFromMem(buf.data(), (int)buf.size(), fileExt, idx.Pointers[0], 0, idx.w, idx.h);
             }
             else
             {
-                idx.Pointers.resize(10, nullptr);
-                for (int i = 0; i < 10; i++)
+                int loadedFrame = 0;
+                for (int i = 0; i < idx.Frame; i++)
                 {
-                    buf = zip_express((zip_t*)z, std::to_string(idx.FileNum) + "_" + std::to_string(i) + ".png");
+                    buf = zip_express((zip_t*)z, BuildTileFileName(idx.FileNum, fileExt, i));
                     if (!buf.empty())
                     {
-                        LoadTileFromMem(buf.data(), (int)buf.size(), idx.Pointers[i], 0, idx.w, idx.h);
+                        LoadTileFromMem(buf.data(), (int)buf.size(), fileExt, idx.Pointers[i], 0, idx.w, idx.h);
+                        loadedFrame = i + 1;
                     }
                     else
                     {
-                        idx.Frame = i;
-                        idx.PointerNum = 0;
                         break;
                     }
                 }
+                idx.Frame = loadedFrame;
                 idx.Pointers.resize(idx.Frame);
             }
         }
@@ -1463,10 +1525,10 @@ void LoadOnePNGTexture(const std::string& path, void* z, TPNGIndex& PNGIndex, in
         {
             if (idx.Frame == 1)
             {
-                if (!LoadTileFromFile(AppPath + localpath + std::to_string(idx.FileNum) + ".png",
+                if (!LoadTileFromFile(AppPath + localpath + BuildTileFileName(idx.FileNum, fileExt), fileExt,
                     idx.Pointers[0], 0, idx.w, idx.h))
                 {
-                    LoadTileFromFile(AppPath + localpath + std::to_string(idx.FileNum) + "_0.png",
+                    LoadTileFromFile(AppPath + localpath + BuildTileFileName(idx.FileNum, fileExt, 0), fileExt,
                         idx.Pointers[0], 0, idx.w, idx.h);
                 }
             }
@@ -1475,7 +1537,7 @@ void LoadOnePNGTexture(const std::string& path, void* z, TPNGIndex& PNGIndex, in
                 int w1, h1;
                 for (int j = 0; j < idx.Frame; j++)
                 {
-                    LoadTileFromFile(AppPath + localpath + std::to_string(idx.FileNum) + "_" + std::to_string(j) + ".png",
+                    LoadTileFromFile(AppPath + localpath + BuildTileFileName(idx.FileNum, fileExt, j), fileExt,
                         idx.Pointers[j], 0, w1, h1);
                     if (j == 0) { idx.w = w1; idx.h = h1; }
                 }
@@ -1485,11 +1547,21 @@ void LoadOnePNGTexture(const std::string& path, void* z, TPNGIndex& PNGIndex, in
     idx.Loaded = 1;
 }
 
-bool LoadTileFromFile(const std::string& filename, void*& pt, int usesur, int& w, int& h)
+bool LoadTileFromFile(const std::string& filename, const std::string& fileExt, void*& pt, int usesur, int& w, int& h)
 {
     pt = nullptr;
     if (!filefunc::fileExist(filename)) return false;
-    SDL_Surface* tempscr = SDL_LoadPNG(filename.c_str());
+    SDL_Surface* tempscr = nullptr;
+    if (fileExt == ".png")
+    {
+        tempscr = SDL_LoadPNG(filename.c_str());
+    }
+    else
+    {
+        SDL_IOStream* io = SDL_IOFromFile(filename.c_str(), "rb");
+        if (!io) return false;
+        tempscr = LoadSurfaceByExtension(io, true, fileExt);
+    }
     if (!tempscr) return false;
     pt = SDL_CreateTextureFromSurface(render, tempscr);
     SDL_DestroySurface(tempscr);
@@ -1505,12 +1577,12 @@ bool LoadTileFromFile(const std::string& filename, void*& pt, int usesur, int& w
     return false;
 }
 
-bool LoadTileFromMem(const char* p, int len, void*& pt, int usesur, int& w, int& h)
+bool LoadTileFromMem(const char* p, int len, const std::string& fileExt, void*& pt, int usesur, int& w, int& h)
 {
     pt = nullptr;
-    SDL_IOStream* rwops = SDL_IOFromMem((void*)p, len);
+    SDL_IOStream* rwops = SDL_IOFromConstMem(p, len);
     if (!rwops) return false;
-    SDL_Surface* tempscr = SDL_LoadPNG_IO(rwops, true);
+    SDL_Surface* tempscr = LoadSurfaceByExtension(rwops, true, fileExt);
     if (!tempscr) return false;
     pt = SDL_CreateTextureFromSurface(render, tempscr);
     SDL_DestroySurface(tempscr);

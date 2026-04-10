@@ -10,6 +10,11 @@ set(MLCC_PATH "C:/project/mlcc")
 set(VCPKG_INSTALLED "D:/project/vcpkg/installed/arm64-android-dynamic")
 set(PREBUILT_LIB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../lib/${ANDROID_ABI}")
 
+file(MAKE_DIRECTORY ${PREBUILT_LIB_PATH})
+foreach(extra_lib libSDL3_image.so libwebp.so libwebpdecoder.so libwebpdemux.so libwebpmux.so libsharpyuv.so)
+    file(COPY ${VCPKG_INSTALLED}/lib/${extra_lib} DESTINATION ${PREBUILT_LIB_PATH})
+endforeach()
+
 # --- 游戏源文件 ---
 set(GAME_SOURCES
     ${BIN_C_PATH}/main.cpp
@@ -58,6 +63,10 @@ set_target_properties(SDL3_mixer PROPERTIES IMPORTED_LOCATION ${PREBUILT_LIB_PAT
 add_library(SDL3_ttf SHARED IMPORTED)
 set_target_properties(SDL3_ttf PROPERTIES IMPORTED_LOCATION ${PREBUILT_LIB_PATH}/libSDL3_ttf.so)
 
+# SDL3_image
+add_library(SDL3_image SHARED IMPORTED)
+set_target_properties(SDL3_image PROPERTIES IMPORTED_LOCATION ${PREBUILT_LIB_PATH}/libSDL3_image.so)
+
 # Lua
 add_library(lua SHARED IMPORTED)
 set_target_properties(lua PROPERTIES IMPORTED_LOCATION ${PREBUILT_LIB_PATH}/liblua.so)
@@ -76,6 +85,7 @@ set_target_properties(z_lib PROPERTIES IMPORTED_LOCATION ${PREBUILT_LIB_PATH}/li
 # --- 链接 ---
 target_link_libraries(kys_pig3_c PRIVATE
     SDL3
+    SDL3_image
     SDL3_mixer
     SDL3_ttf
     lua

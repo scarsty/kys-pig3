@@ -658,7 +658,30 @@ void ReadFiles()
     }
 
     // 简繁转换
-    // cct2s, ccs2t 的初始化 (使用SimpleCC)
+    if (cct2s)
+    {
+        delete (SimpleCC*)cct2s;
+        cct2s = nullptr;
+    }
+    if (ccs2t)
+    {
+        delete (SimpleCC*)ccs2t;
+        ccs2t = nullptr;
+    }
+
+    auto* t2s = new SimpleCC();
+    t2s->init({
+        AppPath + "cc/TSCharacters.txt",
+        AppPath + "cc/TSPhrases.txt"
+        });
+    cct2s = t2s;
+
+    auto* s2t = new SimpleCC();
+    s2t->init({
+        AppPath + "cc/STCharacters.txt",
+        AppPath + "cc/STPhrases.txt"
+        });
+    ccs2t = s2t;
 }
 
 //----------------------------------------------------------------------

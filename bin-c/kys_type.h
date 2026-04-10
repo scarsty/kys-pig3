@@ -69,6 +69,7 @@ struct TPNGIndex
 {
     int FileNum = 0, PointerNum = 0, Frame = 0, x = 0, y = 0, w = 0, h = 0, Loaded = 0, UseGRP = 0;
     void* BeginPointer = nullptr;
+    std::string FileExt = ".png";
     std::vector<void*> Pointers;
 };
 

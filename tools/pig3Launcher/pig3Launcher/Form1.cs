@@ -211,7 +211,7 @@ namespace pig3Launcher
             try{
                 if (canStartGame)
                 {
-                    Process.ShellExecute(@".\bin\kys_pig3.exe");
+                    Process.ShellExecute(@".\bin\kys-pig3-c.exe");
                     Application.Exit();
                 }
                 else
@@ -291,7 +291,7 @@ namespace pig3Launcher
             {
                 if (canStartGame)
                 {
-                    Process.ShellExecute(@".\bin\kys_pig3.exe 0");
+                    Process.ShellExecute(@".\bin\kys-pig3-c.exe 0");
                     Application.Exit();
                 }
                 else
