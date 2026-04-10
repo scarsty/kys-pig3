@@ -1036,7 +1036,7 @@ bool InitialRole()
             DrawTextWithRect("選定屬性后按回車或這裡確認", 175, CENTER_Y + 171, 260, 0, 0);
             UpdateAllScreen();
             int i = WaitAnyKey();
-            if (MouseInRegion(175, CENTER_Y + 171, 260, 22) && i != SDLK_ESCAPE)
+            if (i == SDLK_RETURN || i == SDLK_Y || (MouseInRegion(175, CENTER_Y + 171, 260, 22) && i != SDLK_ESCAPE))
             {
                 break;
             }
@@ -1662,6 +1662,11 @@ void Walk()
             }
             if (event.button.button == SDL_BUTTON_LEFT)
             {
+                if (CellPhone == 1)
+                {
+                    event.button.button = 0;
+                    break;
+                }
                 walking = 2;
                 GetMousePosition(axp, ayp, Mx, My);
                 if (axp >= 0 && axp <= 479 && ayp >= 0 && ayp <= 479)
@@ -1878,7 +1883,7 @@ void Walk()
 //----------------------------------------------------------------------
 bool CanWalk(int x, int y)
 {
-    if (MODVersion == 13)
+    if (MODVersion == 13 && CellPhone == 0)
     {
         bool result = false;
         if (x >= 0 && y >= 0 && x < 480 && y < 480)
@@ -2274,6 +2279,11 @@ int WalkInScene(int Open)
             }
             if (event.button.button == SDL_BUTTON_LEFT)
             {
+                if (CellPhone == 1)
+                {
+                    event.button.button = 0;
+                    break;
+                }
                 if (walking == 0)
                 {
                     walking = 2;
@@ -2283,21 +2293,6 @@ int WalkInScene(int Open)
                         memset(Fway, -1, sizeof(Fway));
                         FindWay(Sx, Sy);
                         gotoEvent = -1;
-                        if (CellPhone == 1 && InRegion(axp, 0, 64) && InRegion(ayp, 0, 64) &&
-                            SData[CurScene][3][axp][ayp] < 0)
-                        {
-                            for (int i1 = axp + 1; i1 >= axp; i1--)
-                            {
-                                for (int i2 = ayp + 1; i2 >= ayp; i2--)
-                                {
-                                    if (SData[CurScene][3][i1][i2] > 0 && !CanWalkInScene(i1, i2))
-                                    {
-                                        axp = i1;
-                                        ayp = i2;
-                                    }
-                                }
-                            }
-                        }
                         if (InRegion(axp, 0, 64) && InRegion(ayp, 0, 64) &&
                             SData[CurScene][3][axp][ayp] >= 0)
                         {

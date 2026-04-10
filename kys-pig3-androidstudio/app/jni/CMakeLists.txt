@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 project(kys_pig3_c LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # --- 路径配置 ---
