@@ -731,22 +731,22 @@ void Start()
     LoadR(0);
     int menu = 0;
     bool Selected = false;
-    int headnum = 0, alpha = 100, alphastep = -2;
+    int headnum = 0, alpha = 255, alphastep = -5;
 
     while (SDL_PollEvent(&event) || true)
     {
         Redraw();
 
-        if (alpha >= 100)
+        if (alpha >= 255)
         {
-            alphastep = -2;
+            alphastep = -5;
         }
         if (alpha <= 0)
         {
-            alphastep = 2;
+            alphastep = 5;
         }
         alpha += alphastep;
-        if (alpha >= 100)
+        if (alpha >= 255)
         {
             headnum = rand() % (MODVersion == 13 ? 412 : std::max(1, HPicAmount));
         }
@@ -756,7 +756,7 @@ void Start()
         int maxm = 3;
         for (int i = 0; i <= maxm; i++)
         {
-            DrawTPic(16, x - 40, y + i * 50, nullptr, 0, 25, 0, 0);
+            DrawTPic(16, x - 40, y + i * 50, nullptr, 0, 191, 0, 0);
             if (i != menu)
             {
                 DrawTPic(3 + i, x, y + 50 * i);
@@ -866,7 +866,7 @@ void NewStartAmi()
     for (int i = 0; i <= 20; i++)
     {
         Redraw();
-        DrawTPic(9, x, y, nullptr, 0, 100 - i * 5);
+        DrawTPic(9, x, y, nullptr, 0, i * 255 / 20);
         UpdateAllScreen();
         SDL_Delay(20);
         SDL_PollEvent(&event);
@@ -924,10 +924,10 @@ void NewStartAmi()
     for (int i = 0; i <= 2; i++)
     {
         Redraw();
-        DrawTPic(14 + i, x - 40, CENTER_Y - 30, nullptr, 0, 75);
-        DrawTPic(14 + i, x - 40, CENTER_Y - 30 + 50, nullptr, 0, 50);
-        DrawTPic(14 + i, x - 40, CENTER_Y - 30 + 100, nullptr, 0, 25);
-        DrawTPic(14 + i, x - 40, CENTER_Y - 30 + 150, nullptr, 0, 0);
+        DrawTPic(14 + i, x - 40, CENTER_Y - 30, nullptr, 0, 64);
+        DrawTPic(14 + i, x - 40, CENTER_Y - 30 + 50, nullptr, 0, 128);
+        DrawTPic(14 + i, x - 40, CENTER_Y - 30 + 100, nullptr, 0, 191);
+        DrawTPic(14 + i, x - 40, CENTER_Y - 30 + 150, nullptr, 0, 255);
         UpdateAllScreen();
         SDL_Delay(20);
         SDL_PollEvent(&event);
@@ -943,8 +943,8 @@ void NewStartAmi()
         Redraw();
         for (int j = 0; j <= 3; j++)
         {
-            DrawTPic(16, x - 40, CENTER_Y - 30 + j * 50, nullptr, 0, 25);
-            DrawTPic(3 + j, x, CENTER_Y - 30 + j * 50, nullptr, 0, 100 - i * 5, 0, 0);
+            DrawTPic(16, x - 40, CENTER_Y - 30 + j * 50, nullptr, 0, 191);
+            DrawTPic(3 + j, x, CENTER_Y - 30 + j * 50, nullptr, 0, i * 255 / 20, 0, 0);
         }
         UpdateAllScreen();
         SDL_Delay(20);
@@ -984,7 +984,7 @@ void StartAmi()
         for (int i = 20; i >= 0; i--)
         {
             Redraw();
-            DrawTPic(18, -TitlePNGIndex[18].w + CENTER_X * 2, 0, nullptr, 0, i * 5);
+            DrawTPic(18, -TitlePNGIndex[18].w + CENTER_X * 2, 0, nullptr, 0, 255 - i * 255 / 20);
             UpdateAllScreen();
             SDL_Delay(20);
             SDL_PollEvent(&event);
@@ -1053,10 +1053,10 @@ bool InitialRole()
             }
             Redraw();
             ShowStatus(0);
-            DrawTextWithRect("資質", 150, CENTER_Y + 120, 80, 0, 0x202020, 30, 0);
+            DrawTextWithRect("資質", 150, CENTER_Y + 120, 80, 0, 0x202020, 179, 0);
             auto buf = std::format("{:4d}", Rrole[0].Aptitude);
             DrawEngShadowText(buf, 200, CENTER_Y + 123, ColColor(0x64), ColColor(0x66));
-            DrawTextWithRect("選定屬性后按回車或這裡確認", 175, CENTER_Y + 171, 260, 0, 0);
+            DrawTextWithRect("選定屬性后按回車或這裡確認", 175, CENTER_Y + 171, 260, 0, 0, 255);
             UpdateAllScreen();
             int i = WaitAnyKey();
             if (i == SDLK_RETURN || i == SDLK_Y || (MouseInRegion(175, CENTER_Y + 171, 260, 22) && i != SDLK_ESCAPE))
@@ -1878,16 +1878,16 @@ void Walk()
                 DrawMMap();
                 GetMousePosition(axp, ayp, Mx, My);
                 TPosition pos = GetPositionOnScreen(axp, ayp, Mx, My);
-                DrawMPic(1, pos.x, pos.y, -1, 0, 50, 0, 0);
+                DrawMPic(1, pos.x, pos.y, -1, 0, 128, 0, 0);
                 if (!CanWalk(axp, ayp))
                 {
                     if (InRegion(axp, 0, 479) && InRegion(ayp, 0, 479) && Entrance[axp][ayp] >= 0)
                     {
-                        DrawMPic(2001, pos.x, pos.y, -1, 0, 75, 0, 0);
+                        DrawMPic(2001, pos.x, pos.y, -1, 0, 64, 0, 0);
                     }
                     else
                     {
-                        DrawMPic(2001, pos.x, pos.y, -1, 0, 50, 0, 0);
+                        DrawMPic(2001, pos.x, pos.y, -1, 0, 128, 0, 0);
                     }
                 }
                 UpdateAllScreen();
@@ -2491,16 +2491,16 @@ int WalkInScene(int Open)
                     if (axp >= 0 && axp < 64 && ayp >= 0 && ayp < 64)
                     {
                         TPosition pos = GetPositionOnScreen(axp, ayp, Sx, Sy);
-                        DrawMPic(1, pos.x, pos.y - SData[CurScene][4][axp][ayp], 0, 0, 50, 0, 0);
+                        DrawMPic(1, pos.x, pos.y - SData[CurScene][4][axp][ayp], 0, 0, 128, 0, 0);
                         if (!CanWalkInScene(axp, ayp))
                         {
                             if (SData[CurScene][3][axp][ayp] >= 0)
                             {
-                                DrawMPic(2001, pos.x, pos.y - SData[CurScene][4][axp][ayp], 0, 0, 75, 0, 0);
+                                DrawMPic(2001, pos.x, pos.y - SData[CurScene][4][axp][ayp], 0, 0, 64, 0, 0);
                             }
                             else
                             {
-                                DrawMPic(2001, pos.x, pos.y - SData[CurScene][4][axp][ayp], 0, 0, 50, 0, 0);
+                                DrawMPic(2001, pos.x, pos.y - SData[CurScene][4][axp][ayp], 0, 0, 128, 0, 0);
                             }
                         }
                     }
@@ -2871,13 +2871,13 @@ int CommonMenu(int x, int y, int w, int max, int default_, const std::string men
             uint32 c1, c2;
             if (i == menu)
             {
-                alpha = 0;
+                alpha = 255;
                 c1 = menucolor1;
                 c2 = menucolor2;
             }
             else
             {
-                alpha = 10;
+                alpha = 230;
                 c1 = color1;
                 c2 = color2;
             }
@@ -3018,13 +3018,13 @@ int CommonScrollMenu(int x, int y, int w, int max, int maxshow, const std::strin
             int alpha;
             if (i == menu)
             {
-                alpha = 0;
+                alpha = 255;
                 c1 = ColColor(0x64);
                 c2 = ColColor(0x66);
             }
             else
             {
-                alpha = 10;
+                alpha = 230;
                 c1 = 0;
                 c2 = 0x202020;
             }
@@ -3235,7 +3235,7 @@ int SelectOneTeamMember(int x, int y, const std::string& str, int list1, int lis
         if (menu != premenu)
         {
             LoadFreshScreen(CENTER_X - 275, CENTER_Y - 160);
-            DrawRectangle(CENTER_X - 275, CENTER_Y - 160, 550, 310, 0, ColColor(0x64), 50);
+            DrawRectangle(CENTER_X - 275, CENTER_Y - 160, 550, 310, 0, ColColor(0x64), 128);
             for (int i = 0; i <= max; i++)
             {
                 if (i == menu)
@@ -3351,13 +3351,13 @@ void MenuEsc()
     for (int i = DISABLE_MENU_AMI; i <= 25; i++)
     {
         LoadFreshScreen();
-        DrawMPic(2020, CENTER_X - 193, CENTER_Y - 182, 0, 0, 100 - i * 4, 0, 0);
+        DrawMPic(2020, CENTER_X - 193, CENTER_Y - 182, 0, 0, i * 255 / 25, 0, 0);
         for (int j = 0; j < 4; j++)
         {
             int x1 = LinearInsert(i, 0, 25, CENTER_X, pos[j].x);
             int y1 = LinearInsert(i, 0, 25, CENTER_Y, pos[j].y);
-            DrawMPic(2021, x1 - 65, y1 - 70, 0, 0, 100 - i * 4, 0, 0);
-            DrawMPic(2022 + j, x1 - 30, y1 - 25, 0, 0, 100 - i * 4, 0, 0);
+            DrawMPic(2021, x1 - 65, y1 - 70, 0, 0, i * 255 / 25, 0, 0);
+            DrawMPic(2022 + j, x1 - 30, y1 - 25, 0, 0, i * 255 / 25, 0, 0);
         }
         UpdateAllScreen();
         SDL_PollEvent(&event);
@@ -3414,7 +3414,7 @@ void MenuEsc()
                 dest.x = pos[i].x - MPNGIndex[2021].w / 2;
                 dest.y = pos[i].y - MPNGIndex[2021].h / 2;
                 int k = 45 - abs(j / 4 - 45);
-                DrawMPic(2021, dest.x, dest.y, 0, 0, k, 0, k, 1, 1, j);
+                DrawMPic(2021, dest.x, dest.y, 0, 0, 255 - k * 255 / 100, 0, k, 1, 1, j);
             }
             DrawMPic(2022 + i, pos[i].x - 30, pos[i].y - 25);
         }
@@ -3531,13 +3531,13 @@ menuesc_exit:
     for (int i = 25; i >= DISABLE_MENU_AMI; i--)
     {
         LoadFreshScreen();
-        DrawMPic(2020, CENTER_X - 193, CENTER_Y - 182, 0, 0, 100 - i * 4, 0, 0);
+        DrawMPic(2020, CENTER_X - 193, CENTER_Y - 182, 0, 0, i * 255 / 25, 0, 0);
         for (int j2 = 0; j2 < 4; j2++)
         {
             int x1 = LinearInsert(i, 0, 25, CENTER_X, pos[j2].x);
             int y1 = LinearInsert(i, 0, 25, CENTER_Y, pos[j2].y);
-            DrawMPic(2021, x1 - 65, y1 - 70, 0, 0, 100 - i * 4, 0, 0);
-            DrawMPic(2022 + j2, x1 - 30, y1 - 25, 0, 0, 100 - i * 4, 0, 0);
+            DrawMPic(2021, x1 - 65, y1 - 70, 0, 0, i * 255 / 25, 0, 0);
+            DrawMPic(2022 + j2, x1 - 30, y1 - 25, 0, 0, i * 255 / 25, 0, 0);
         }
         UpdateAllScreen();
         SDL_PollEvent(&event);
@@ -3557,11 +3557,11 @@ void DrawTitleMenu(int menu)
         {
             if (i == menu)
             {
-                DrawMPic(2022 + i, TitleMenu[i].x, TitleMenu[i].y, 0, 0, 0, 0, 0, 0.75, 0.75);
+                DrawMPic(2022 + i, TitleMenu[i].x, TitleMenu[i].y, 0, 0, 255, 0, 0, 0.75, 0.75);
             }
             else
             {
-                DrawMPic(2022 + i, TitleMenu[i].x, TitleMenu[i].y, 0, 0, 0, 0, 50, 0.75, 0.75);
+                DrawMPic(2022 + i, TitleMenu[i].x, TitleMenu[i].y, 0, 0, 255, 0, 50, 0.75, 0.75);
             }
         }
     }
@@ -3704,8 +3704,8 @@ bool MenuItem()
             {
                 int dt = d * row, l = 6, w2 = 90;
                 int lostfocus = (dragitem >= 0) ? 1 : intitle;
-                DrawTextFrame(xp - 8, yp, 60, 10);
-                DrawTextFrame(xp - 8, 45 + dt + yp, 60, 10, 0, 20);
+                DrawTextFrame(xp - 8, yp, 60, 230);
+                DrawTextFrame(xp - 8, 45 + dt + yp, 60, 230, 0, 20);
                 for (int i1 = 0; i1 < row; i1++)
                 {
                     for (int i2 = 0; i2 < col; i2++)
@@ -3716,7 +3716,7 @@ bool MenuItem()
                             int item = RItemList[listnum].Number;
                             if (item >= 0)
                             {
-                                DrawIPic(item, i2 * d + 5 + xp, i1 * d + 35 + yp, 0, 10, 0, 10);
+                                DrawIPic(item, i2 * d + 5 + xp, i1 * d + 35 + yp, 0, 230, 0, 10);
                             }
                         }
                     }
@@ -3726,7 +3726,7 @@ bool MenuItem()
                 if (listnum >= 0 && listnum < MAX_ITEM_AMOUNT && lostfocus == 0)
                 {
                     item = RItemList[listnum].Number;
-                    DrawIPic(item, x * d + 5 + xp + 1, y * d + 35 + yp + 1, 0, 0, 0, 0);
+                    DrawIPic(item, x * d + 5 + xp + 1, y * d + 35 + yp + 1, 0, 255, 0, 0);
                 }
                 curitem = (dragitem >= 0) ? dragitem : item;
                 CurItem = curitem;
@@ -3798,7 +3798,7 @@ bool MenuItem()
                     {
                         for (int i = 0; i < (len2 + l1) / l + (len3 + l1) / l; i++)
                         {
-                            DrawTextFrame(xp - 8, 75 + dt + yp + i * 28, 60, 20, 0, 50);
+                            DrawTextFrame(xp - 8, 75 + dt + yp + i * 28, 60, 204, 0, 50);
                         }
                     }
                     if (len2 > 0)
@@ -3896,7 +3896,7 @@ bool MenuItem()
                     if (curitem >= 0 && TeamList[i] == Ritem[curitem].User)
                     {
                         std::string s = "使用中";
-                        DrawTextWithRect(s, ui_x + 15, ui_y + i * 80 + 50, 0, ColColor(0x64), ColColor(0x66), 50, 0);
+                        DrawTextWithRect(s, ui_x + 15, ui_y + i * 80 + 50, 0, ColColor(0x64), ColColor(0x66), 128, 0);
                     }
                     if (Ritem[curitem].Magic > 0)
                     {
@@ -3929,7 +3929,7 @@ bool MenuItem()
             if (dragitem >= 0)
             {
                 SDL_GetMouseState2(dragitemx, dragitemy);
-                DrawIPic(dragitem, dragitemx - d / 2, dragitemy - d / 2, 0, 0, 0, 0);
+                DrawIPic(dragitem, dragitemx - d / 2, dragitemy - d / 2, 0, 255, 0, 0);
             }
             UpdateAllScreen();
             px = x;
@@ -4926,11 +4926,11 @@ void ShowStatus(int rnum, int bnum)
         x = xp + 60;
         y = yp - 15;
         std::string name = Rrole[rnum].Name;
-        DrawTextWithRect(name, x + 58 - DrawLength((const char*)Rrole[rnum].Name) * 5, y + 180, 0, 0, 0, 0, 0);
+        DrawTextWithRect(name, x + 58 - DrawLength((const char*)Rrole[rnum].Name) * 5, y + 180, 0, 0, 0, 255, 0);
 
         for (int i = 0; i <= 5; i++)
         {
-            DrawTextWithRect(strs[i], x - 10, y + 208 + h * i, 140, 0, 0x202020, 30, 0);
+            DrawTextWithRect(strs[i], x - 10, y + 208 + h * i, 140, 0, 0x202020, 179, 0);
         }
 
         buf = std::format("{:4d}", Rrole[rnum].Level);
@@ -5001,16 +5001,16 @@ void ShowStatus(int rnum, int bnum)
 
         if (Where != 2)
         {
-            DrawTextWithRect(strs[18], item1x + 85, item1y, 0, 0, 0x202020, 0, 0);
-            DrawTextWithRect(strs[19], item2x + 85, item2y, 0, 0, 0x202020, 0, 0);
+            DrawTextWithRect(strs[18], item1x + 85, item1y, 0, 0, 0x202020, 255, 0);
+            DrawTextWithRect(strs[19], item2x + 85, item2y, 0, 0, 0x202020, 255, 0);
             if (Rrole[rnum].Equip[0] >= 0)
             {
-                DrawTextWithRect(Ritem[Rrole[rnum].Equip[0]].Name, item1x + 85, item1y + 30, 0, ColColor(0x64), ColColor(0x66), 30, 0);
+                DrawTextWithRect(Ritem[Rrole[rnum].Equip[0]].Name, item1x + 85, item1y + 30, 0, ColColor(0x64), ColColor(0x66), 179, 0);
                 DrawIPic(Rrole[rnum].Equip[0], item1x, item1y);
             }
             if (Rrole[rnum].Equip[1] >= 0)
             {
-                DrawTextWithRect(Ritem[Rrole[rnum].Equip[1]].Name, item2x + 85, item2y + 30, 0, ColColor(0x64), ColColor(0x66), 30, 0);
+                DrawTextWithRect(Ritem[Rrole[rnum].Equip[1]].Name, item2x + 85, item2y + 30, 0, ColColor(0x64), ColColor(0x66), 179, 0);
                 DrawIPic(Rrole[rnum].Equip[1], item2x, item2y);
             }
         }
@@ -5035,7 +5035,7 @@ void ShowStatus(int rnum, int bnum)
         {
             for (int i = 0; i <= 2; i++)
             {
-                DrawTextWithRect(strs[i], x + 280, y + 2 + h * i, 240, 0, 0x202020, 40, 0);
+                DrawTextWithRect(strs[i], x + 280, y + 2 + h * i, 240, 0, 0x202020, 153, 0);
             }
             for (int i = 0; i <= 14; i++)
             {
@@ -5092,7 +5092,7 @@ void ShowStatus(int rnum, int bnum)
         }
         if (bnum != -2)
         {
-            DrawTextWithRect(strs[i], x + 280, y + 2 + h * (i - 6), w, 0, 0x202020, 40, 0);
+            DrawTextWithRect(strs[i], x + 280, y + 2 + h * (i - 6), w, 0, 0x202020, 153, 0);
         }
     }
 
@@ -5243,9 +5243,9 @@ void ShowSimpleStatus(int rnum, int x, int y, int forTeam)
 
     uint32 mixColor = MapRGBA(255 - Rrole[rnum].Poison * 2, 255, 255 - Rrole[rnum].Poison * 2);
     int mixAlpha = -1;
-    DrawHeadPic(Rrole[rnum].HeadNum, ox + 10, oy, 0, 0, mixColor, mixAlpha, 0.5, 0.5);
+    DrawHeadPic(Rrole[rnum].HeadNum, ox + 10, oy, 0, 255, mixColor, mixAlpha, 0.5, 0.5);
 
-    int alpha = 80;
+    int alpha = 51;
     int w;
     uint32 color;
 
@@ -5612,7 +5612,7 @@ void ShowAbility(int rnum, int select, int showLeave)
     int itemy = y + 380;
     uint32 color1, color2;
 
-    DrawTextWithRect(strs[0], x + 70, y + 20, 10, 0, 0x202020, 0, 0);
+    DrawTextWithRect(strs[0], x + 70, y + 20, 10, 0, 0x202020, 255, 0);
 
     // 醫療
     if (Rrole[rnum].Medcine > 0)
@@ -5633,7 +5633,7 @@ void ShowAbility(int rnum, int select, int showLeave)
     std::string buf;
     buf = std::format("{:4d}", Rrole[rnum].Medcine);
     std::string str = strs1[0] + buf;
-    DrawTextWithRect(str, x + 70, y + 50, 0, color1, color2, 20, 0);
+    DrawTextWithRect(str, x + 70, y + 50, 0, color1, color2, 204, 0);
 
     // 解毒
     if (Rrole[rnum].MedPoi > 0)
@@ -5653,7 +5653,7 @@ void ShowAbility(int rnum, int select, int showLeave)
     }
     buf = std::format("{:4d}", Rrole[rnum].MedPoi);
     str = strs1[1] + buf;
-    DrawTextWithRect(str, x + 220, y + 50, 0, color1, color2, 20, 0);
+    DrawTextWithRect(str, x + 220, y + 50, 0, color1, color2, 204, 0);
 
     // 離隊
     if (showLeave != 0)
@@ -5670,17 +5670,17 @@ void ShowAbility(int rnum, int select, int showLeave)
             color1 = ColColor(0x68);
             color2 = ColColor(0x6F);
         }
-        DrawTextWithRect(strs1[2], x + 370, y + 50, 0, color1, color2, 20, 0);
+        DrawTextWithRect(strs1[2], x + 370, y + 50, 0, color1, color2, 204, 0);
     }
 
     // 武功
-    DrawTextWithRect(strs[1], x + 70, y + 90, 0, 0, 0x202020, 0, 0);
+    DrawTextWithRect(strs[1], x + 70, y + 90, 0, 0, 0x202020, 255, 0);
     for (int i = 0; i <= 9; i++)
     {
         int magicnum = Rrole[rnum].Magic[i];
         int x1 = x + 70 + (i % 2) * 200;
         int y1 = y + 120 + 28 * (i / 2);
-        DrawTextFrame(x1, y1, 14, 20);
+        DrawTextFrame(x1, y1, 14, 204);
         if (magicnum > 0)
         {
             DrawShadowText(std::string((char*)Rmagic[magicnum].Name), x1 + 19, y1 + 3, 0, 0x202020);
@@ -5690,13 +5690,13 @@ void ShowAbility(int rnum, int select, int showLeave)
     }
 
     // 内功
-    DrawTextWithRect(strs[2], x + 70, y + 270, 10, 0, 0x202020, 0, 0);
+    DrawTextWithRect(strs[2], x + 70, y + 270, 10, 0, 0x202020, 255, 0);
     for (int i = 0; i <= 3; i++)
     {
         int magicnum = Rrole[rnum].NeiGong[i];
         int x1 = x + 70 + (i % 2) * 200;
         int y1 = y + 300 + 28 * (i / 2);
-        DrawTextFrame(x1, y1, 14, 20);
+        DrawTextFrame(x1, y1, 14, 204);
         if (magicnum > 0)
         {
             DrawShadowText(std::string((char*)Rmagic[magicnum].Name), x1 + 19, y1 + 3, 0, 0x202020);
@@ -5705,7 +5705,7 @@ void ShowAbility(int rnum, int select, int showLeave)
         }
     }
 
-    DrawTextWithRect(strs[3], x + 70, y + 370, 0, 0, 0x202020, 0, 0);
+    DrawTextWithRect(strs[3], x + 70, y + 370, 0, 0, 0x202020, 255, 0);
 
     // 秘笈
     if (Rrole[rnum].PracticeBook >= 0)
@@ -5714,7 +5714,7 @@ void ShowAbility(int rnum, int select, int showLeave)
         int magicnum = Ritem[Rrole[rnum].PracticeBook].Magic;
         mlevel = std::max(1, GetMagicLevel(rnum, magicnum));
         int needexp = std::min(30000, (int)((1 + (mlevel - 1) * 0.5) * Ritem[Rrole[rnum].PracticeBook].NeedExp * (1 + (7 - Rrole[rnum].Aptitude / 15) * 0.5)));
-        DrawTextWithRect(std::string((char*)Ritem[Rrole[rnum].PracticeBook].Name), x + 70, y + 400, 0, 0, 0x202020, 20, 0);
+        DrawTextWithRect(std::string((char*)Ritem[Rrole[rnum].PracticeBook].Name), x + 70, y + 400, 0, 0, 0x202020, 204, 0);
         if (mlevel == 10)
         {
             buf = std::format("{}/=", (uint16_t)Rrole[rnum].ExpForBook);
@@ -5723,12 +5723,12 @@ void ShowAbility(int rnum, int select, int showLeave)
         {
             buf = std::format("{}/{}", (uint16_t)Rrole[rnum].ExpForBook, needexp);
         }
-        DrawTextWithRect(buf, x + 70, y + 428, 0, ColColor(0x64), ColColor(0x66), 20, 0);
-        DrawIPic(Rrole[rnum].PracticeBook, itemx, itemy, 0, 0, 0, 0);
+        DrawTextWithRect(buf, x + 70, y + 428, 0, ColColor(0x64), ColColor(0x66), 204, 0);
+        DrawIPic(Rrole[rnum].PracticeBook, itemx, itemy, 0, 255, 0, 0);
     }
     else
     {
-        DrawTextFrame(x + 70, y + 400, 1, 20, 0);
+        DrawTextFrame(x + 70, y + 400, 1, 204, 0);
     }
     if (select == 2)
     {
@@ -5789,7 +5789,7 @@ void MenuSystem()
                     DrawSimpleStatusByTeam(i, ui_x, ui_y + i * 80, 0, 0);
                 }
             }
-            DrawTextFrame(titlex1 - 20, titley1 - 3, max * 8, 0);
+            DrawTextFrame(titlex1 - 20, titley1 - 3, max * 8, 255);
             for (int i = 0; i <= max; i++)
             {
                 uint32 color1 = 0, color2 = 0x202020;
@@ -5980,7 +5980,7 @@ void MenuSet()
                 {
                     color1 = 0;
                     color2 = 0x202020;
-                    DrawTextFrame(x + 10 - 29, y + 5 + i * h0 - 3, 26, 10);
+                    DrawTextFrame(x + 10 - 29, y + 5 + i * h0 - 3, 26, 230);
                 }
                 if (i < 5)
                 {
@@ -6011,8 +6011,8 @@ void MenuSet()
                         mixcolorr = 0;
                         mixalphar = 50;
                     }
-                    DrawMPic(2004, arrowlx, y + 5 + i * h0 + arrowy, -1, 0, 0, mixcolorl, mixalphal);
-                    DrawMPic(2005, arrowrx, y + 5 + i * h0 + arrowy, -1, 0, 0, mixcolorr, mixalphar);
+                    DrawMPic(2004, arrowlx, y + 5 + i * h0 + arrowy, -1, 0, 255, mixcolorl, mixalphal);
+                    DrawMPic(2005, arrowrx, y + 5 + i * h0 + arrowy, -1, 0, 255, mixcolorr, mixalphar);
                 }
                 else
                 {
@@ -6582,7 +6582,7 @@ void EffectMedcine(int role1, int role2)
     if (Where != 2)
     {
         TransBlackScreen();
-        DrawRectangle(CENTER_X - 150 + 30, 170, 155, 52, 0, ColColor(255), 30);
+        DrawRectangle(CENTER_X - 150 + 30, 170, 155, 52, 0, ColColor(255), 77);
         DrawShadowText(std::string(Rrole[role2].Name), CENTER_X - 150 + 35, 172, ColColor(0x23), ColColor(0x21));
         std::string word = "增加生命";
         DrawShadowText(word, CENTER_X - 150 + 35, 197, ColColor(0x7), ColColor(0x5));
@@ -6614,7 +6614,7 @@ void EffectMedPoison(int role1, int role2)
     if (Where != 2)
     {
         TransBlackScreen();
-        DrawRectangle(CENTER_X - 150 + 30, 170, 155, 52, 0, ColColor(255), 30);
+        DrawRectangle(CENTER_X - 150 + 30, 170, 155, 52, 0, ColColor(255), 77);
         std::string word = "減少中毒";
         DrawShadowText(word, CENTER_X - 150 + 35, 197, ColColor(0x7), ColColor(0x5));
         DrawShadowText(std::string(Rrole[role2].Name), CENTER_X - 150 + 35, 172, ColColor(0x23), ColColor(0x21));
@@ -6784,7 +6784,7 @@ void EatOneItem(int rnum, int inum)
             {
                 Rrole[rnum].Data[rolelist[i]] += addvalue[i];
             }
-            DrawTextFrame(14 + xp, 127 + yp + y + p * 28, 18, 10, 0, 25);
+            DrawTextFrame(14 + xp, 127 + yp + y + p * 28, 18, 230, 0, 25);
             DrawShadowText(std::string(wordList[i]), 33 + xp + x, 130 + yp + y + p * 28, 0, 0x202020);
             auto buf = std::format("{:5d}", addvalue[i]);
             DrawEngShadowText(buf, 163 + xp + x, 130 + yp + y + p * 28, ColColor(0x64), ColColor(0x66));
@@ -6795,7 +6795,7 @@ void EatOneItem(int rnum, int inum)
             if (Rrole[rnum].Data[rolelist[i]] != 2)
             {
                 Rrole[rnum].Data[rolelist[i]] = 2;
-                DrawTextFrame(14 + xp, 127 + yp + y + p * 28, 18, 10, 0, 25);
+                DrawTextFrame(14 + xp, 127 + yp + y + p * 28, 18, 230, 0, 25);
                 DrawShadowText(std::string(wordList[i]), 33 + xp + x, 130 + yp + y + p * 28, 0, 0x202020);
                 p++;
             }
@@ -7584,7 +7584,7 @@ void CloudCreate(int num)
     Cloud[num].Speedy = 0;
     Cloud[num].Picnum = rand() % std::max(1, CPicAmount);
     Cloud[num].Shadow = 0;
-    Cloud[num].Alpha = rand() % 50 + 30;
+    Cloud[num].Alpha = 255 - (rand() % 50 + 30) * 255 / 100;
     Cloud[num].mixColor = 0;
     Cloud[num].mixAlpha = 0;
 }

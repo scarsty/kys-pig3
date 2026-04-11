@@ -482,7 +482,7 @@ int Lua_ShowString(lua_State* L)
 
 int Lua_ShowStringWithBox(lua_State* L)
 {
-    int alpha = 0;
+    int alpha = 255;
     uint32_t color1 = 0, color2 = 0x202020;
     uint32_t incolor = 0, framecolor = ColColor(255);
     int n = lua_gettop(L);
@@ -1378,7 +1378,7 @@ int Lua_SetScreenBlendMode(lua_State* L)
 
 int Lua_PlayMovie(lua_State* L)
 {
-    DrawRectangleWithoutFrame(0, 0, CENTER_X * 2, CENTER_Y * 2, 0, 0);
+    DrawRectangleWithoutFrame(0, 0, CENTER_X * 2, CENTER_Y * 2, 0, 255);
     if (PlayMovie(lua_tostring(L, -1)))
     {
         CleanKeyValue();

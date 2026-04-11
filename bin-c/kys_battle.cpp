@@ -34,6 +34,8 @@ bool Battle(int battlenum, int getexp, int forceSingle)
     SkipTalk = 0;
     CurrentBattle = battlenum;
     memset(Brole, 0, sizeof(TBattleRole) * MAX_BATTLE_ROLE);
+    for (int i = 0; i < MAX_BATTLE_ROLE; i++)
+        Brole[i].alpha = 255;
 
     bool autoselect = InitialBField();
 
@@ -205,7 +207,7 @@ void LoadBattleTiles()
             }
             LoadFreshScreen(CENTER_X - 140, CENTER_Y);
             auto str = std::format("載入戰鬥人物貼圖 {:2d}/{:2d}", i + 1, BRoleAmount);
-            DrawTextWithRect(str, CENTER_X - 120, CENTER_Y, 0, ColColor(0x64), ColColor(0x66), 30);
+            DrawTextWithRect(str, CENTER_X - 120, CENTER_Y, 0, ColColor(0x64), ColColor(0x66), 179);
             UpdateAllScreen();
         }
     }
@@ -948,7 +950,7 @@ int BattleMenu(int bnum)
             }
             else if ((p != menu_idx) && (ms & (1 << ii)))
             {
-                DrawTextFrame(x + 5, y + h * p, 4, 20);
+                DrawTextFrame(x + 5, y + h * p, 4, 204);
                 DrawShadowText(word[ii], x + 24, y + h * p + 3, 0, 0x202020);
                 p++;
             }
@@ -1863,7 +1865,7 @@ void ShowMagicName(int mnum, const std::string& str)
         SelectColor(mode, color1, color2, str0);
     }
     int l = DrawLength(name);
-    DrawTextWithRect(name, CENTER_X - l * 5 - 24, CENTER_Y - 150, 0, color1, color2, 10);
+    DrawTextWithRect(name, CENTER_X - l * 5 - 24, CENTER_Y - 150, 0, color1, color2, 230);
     UpdateAllScreen();
     SDL_Delay(400);
     event.key.key = 0;
@@ -1905,7 +1907,7 @@ int SelectMagic(int rnum)
     if (maxi < 0)
     {
         std::string str = "內力不足以發動任何武學！";
-        DrawTextWithRect(str, 100, 50, 0, 0, 0x202020, 0, 0);
+        DrawTextWithRect(str, 100, 50, 0, 0, 0x202020, 255, 0);
         UpdateAllScreen();
         WaitAnyKey();
         FreeFreshScreen();
@@ -1928,7 +1930,7 @@ int SelectMagic(int rnum)
                 }
                 else
                 {
-                    DrawTextFrame(103, 50 + h * p, 15, 20);
+                    DrawTextFrame(103, 50 + h * p, 15, 204);
                     DrawShadowText(menuString[i], 122, 53 + h * p, 0, 0x202020);
                     DrawEngShadowText(menuEngString[i], 242, 53 + h * p, 0, 0x202020);
                 }
@@ -2665,7 +2667,7 @@ void ClearDeadRolePic()
             {
                 Brole[i].mixColor = 0;
                 Brole[i].mixAlpha = j;
-                Brole[i].alpha = j;
+                Brole[i].alpha = 255 - j * 255 / 100;
             }
         }
         DrawBField();
@@ -2834,7 +2836,7 @@ void AddExp()
             Rrole[rnum].ExpForItem += basicvalue * 3 / 5;
             ShowSimpleStatus(rnum, x, y);
             auto str = std::format("經驗+{}", basicvalue);
-            DrawTextWithRect(str, x, y + 70, 0, ColColor(0x64), ColColor(0x66), 40, 0);
+            DrawTextWithRect(str, x, y + 70, 0, ColColor(0x64), ColColor(0x66), 153, 0);
             p++;
         }
     }
@@ -4077,7 +4079,7 @@ bool SelectAutoMode()
             }
             else
             {
-                DrawTextFrame(x, y + h * i, 13, 20);
+                DrawTextFrame(x, y + h * i, 13, 204);
                 DrawShadowText(namestr[i].c_str(), x + 19, y + 3 + h * i, 0, 0x202020);
                 DrawShadowText(modestring[Brole[a[i]].AutoMode].c_str(), x + 109, y + 3 + h * i, 0, 0x202020);
             }
@@ -5292,7 +5294,7 @@ void TSpecialAbility::SA_18(int bnum, int mnum, int level)
             Rrole[rnum2].CurrentHP = newlife;
             if (Rrole[rnum2].CurrentHP > Rrole[rnum2].MaxHP) Rrole[rnum2].CurrentHP = Rrole[rnum2].MaxHP;
             Brole[bnum2].X = Ax; Brole[bnum2].Y = Ay;
-            Brole[bnum2].alpha = 0; Brole[bnum2].mixAlpha = 0;
+            Brole[bnum2].alpha = 255; Brole[bnum2].mixAlpha = 0;
             BField[2][Ax][Ay] = bnum2;
         }
         else

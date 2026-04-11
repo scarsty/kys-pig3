@@ -641,7 +641,7 @@ void DrawRectangle(int x, int y, int w, int h, uint32 colorin, uint32 colorframe
         SDL_Texture* tex = SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, w + 1, h + 1);
         SDL_SetRenderTarget(render, tex);
         SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_NONE);
-        SDL_SetRenderDrawColor(render, r, g, b, (uint8_t)(alpha * 255 / 100));
+        SDL_SetRenderDrawColor(render, r, g, b, (uint8_t)std::clamp(alpha, 0, 255));
         SDL_RenderFillRect(render, nullptr);
 
         // 圆角处理
@@ -674,7 +674,7 @@ void DrawRectangleWithoutFrame(int x, int y, int w, int h, uint32 colorin, int a
     if (alpha >= 0)
     {
         SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_BLEND);
-        SDL_SetRenderDrawColor(render, r, g, b, (uint8_t)(255 - 255 * alpha / 100));
+        SDL_SetRenderDrawColor(render, r, g, b, (uint8_t)std::clamp(alpha, 0, 255));
         SDL_FRect destf = { (float)x, (float)y, (float)w, (float)h };
         SDL_RenderFillRect(render, &destf);
     }
@@ -684,7 +684,7 @@ void DrawRectangleWithoutFrame(int x, int y, int w, int h, uint32 colorin, int a
         {
             SDL_Surface* tempsur = SDL_CreateSurface(w, h,
                 SDL_GetPixelFormatForMasks(32, RMask, GMask, BMask, AMask));
-            SDL_FillSurfaceRect(tempsur, nullptr, MapRGBA(r, g, b, (uint8_t)(255 - alpha * 255 / 100)));
+            SDL_FillSurfaceRect(tempsur, nullptr, MapRGBA(r, g, b, 255));
             SDL_SetSurfaceBlendMode(tempsur, SDL_BLENDMODE_BLEND);
 
             for (int i1 = 0; i1 < w; i1++)
@@ -1633,7 +1633,7 @@ void DestroyFontTextures()
 
 void DrawPNGTile(SDL_Renderer* r, TPNGIndex& PNGIndex, int FrameNum, int px, int py)
 {
-    DrawPNGTile(r, PNGIndex, FrameNum, px, py, nullptr, 0, 0, 0, 0, 1.0, 1.0, 0, nullptr);
+    DrawPNGTile(r, PNGIndex, FrameNum, px, py, nullptr, 0, 255, 0, 0, 1.0, 1.0, 0, nullptr);
 }
 
 void DrawPNGTile(SDL_Renderer* r, TPNGIndex& PNGIndex, int FrameNum, int px, int py,
@@ -1724,9 +1724,8 @@ void DrawPNGTile(SDL_Renderer* r, TPNGIndex& PNGIndex, int FrameNum, int px, int
         SDL_SetRenderTarget(r, ptex);
     }
 
-    // alpha 透明度 (百分比: 0=不透明, 100=全透明)
-    if (alpha > 0)
-        SDL_SetTextureAlphaMod(tex, (uint8_t)(255 * (100 - alpha) / 100));
+    // alpha 透明度 (标准 SDL 语义: 0=全透明, 255=不透明)
+    SDL_SetTextureAlphaMod(tex, (uint8_t)std::clamp(alpha, 0, 255));
 
     // 转换 region 为 src rect
     SDL_FRect regionf;
@@ -1926,7 +1925,7 @@ void DrawSimpleStatusByTeam(int i, int px, int py, uint32 mixColor, int mixAlpha
 
 void TransBlackScreen()
 {
-    DrawRectangleWithoutFrame(0, 0, CENTER_X * 2, CENTER_Y * 2, 0, 50);
+    DrawRectangleWithoutFrame(0, 0, CENTER_X * 2, CENTER_Y * 2, 0, 128);
     if (TEXT_LAYER == 1)
     {
         SDL_SetRenderTarget(render, TextScreenTex);

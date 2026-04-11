@@ -165,7 +165,7 @@ void DrawHeadPic(int num, int px, int py, int shadow, int alpha, uint32 mixColor
 //----------------------------------------------------------------------
 void DrawEPic(int num, int px, int py, int eNum)
 {
-    DrawEPic(num, px, py, 0, 0, 0, 0, eNum);
+    DrawEPic(num, px, py, 0, 255, 0, 0, eNum);
 }
 
 void DrawEPic(int num, int px, int py, int shadow, int alpha, uint32 mixColor, int mixAlpha, int eNum, double scalex, double scaley, double angle, SDL_Point* center)
@@ -187,7 +187,7 @@ void DrawEPic(int num, int px, int py, int shadow, int alpha, uint32 mixColor, i
 //----------------------------------------------------------------------
 void DrawFPic(int num, int px, int py, int index)
 {
-    DrawFPic(num, px, py, index, 0, 0, 0, 0);
+    DrawFPic(num, px, py, index, 0, 255, 0, 0);
 }
 
 void DrawFPic(int num, int px, int py, int index, int shadow, int alpha, uint32 mixColor, int mixAlpha)
@@ -793,11 +793,11 @@ void DrawBFieldWithCursor(int AttAreaType, int step, int range)
                 }
                 if (shadow == 0)
                 {
-                    DrawSPic(BField[0][i1][i2] / 2, pos.x, pos.y, nullptr, shadow, 0, 0, 0);
+                    DrawSPic(BField[0][i1][i2] / 2, pos.x, pos.y, nullptr, shadow, 255, 0, 0);
                 }
                 if (shadow > 0)
                 {
-                    DrawSPic(BField[0][i1][i2] / 2, pos.x, pos.y, nullptr, shadow, 0, 0, 0);
+                    DrawSPic(BField[0][i1][i2] / 2, pos.x, pos.y, nullptr, shadow, 255, 0, 0);
                 }
             }
         }
@@ -810,7 +810,7 @@ void DrawBFieldWithCursor(int AttAreaType, int step, int range)
             TPosition pos = GetPositionOnScreen(i1, i2, Bx, By);
             if (BField[1][i1][i2] > 0)
             {
-                DrawSPic(BField[1][i1][i2] / 2, pos.x, pos.y, nullptr, 0, 30, 0, 0);
+                DrawSPic(BField[1][i1][i2] / 2, pos.x, pos.y, nullptr, 0, 179, 0, 0);
             }
             int bnum = BField[2][i1][i2];
             if (bnum >= 0 && Brole[bnum].Dead == 0)
@@ -931,7 +931,7 @@ void DrawBFieldWithEft(int Epicnum, int beginpic, int endpic, int curlevel, int 
                         MixColor2 = MapRGBA(255 - Rrole[rnum].AttPoi * 2, 255, 255 - Rrole[rnum].AttPoi * 2);
                         MixAlpha2 = -1 * (rand() % 2);
                     }
-                    DrawEPic(k, pos.x, pos.y, shadow, 25, MixColor2, MixAlpha2, index);
+                    DrawEPic(k, pos.x, pos.y, shadow, 191, MixColor2, MixAlpha2, index);
                 }
             }
         }
@@ -1001,7 +1001,7 @@ void DrawProgress()
         {
             if (Brole[rangeArr[i]].Dead == 0)
             {
-                DrawHeadPic(Rrole[Brole[rangeArr[i]].rnum].HeadNum, p[i] + x, y, 0, 0, 0, 0, 0.25f, 0.25f);
+                DrawHeadPic(Rrole[Brole[rangeArr[i]].rnum].HeadNum, p[i] + x, y, 0, 255, 0, 0, 0.25f, 0.25f);
             }
         }
     }
@@ -1048,20 +1048,20 @@ void DrawVirtualKey()
     {
         return;
     }
-    int u = 50, d = 50, l = 50, r = 50;
+    int u = 128, d = 128, l = 128, r = 128;
     switch (VirtualKeyValue)
     {
-    case SDLK_UP: u = 0; break;
-    case SDLK_LEFT: l = 0; break;
-    case SDLK_DOWN: d = 0; break;
-    case SDLK_RIGHT: r = 0; break;
+    case SDLK_UP: u = 255; break;
+    case SDLK_LEFT: l = 255; break;
+    case SDLK_DOWN: d = 255; break;
+    case SDLK_RIGHT: r = 255; break;
     }
     DrawTPic(51, VirtualKeyX, VirtualKeyY, nullptr, 0, u);
     DrawTPic(53, VirtualKeyX - VirtualKeySize - VirtualKeySpace, VirtualKeyY + VirtualKeySize + VirtualKeySpace, nullptr, 0, l);
     DrawTPic(52, VirtualKeyX, VirtualKeyY + VirtualKeySize * 2 + VirtualKeySpace * 2, nullptr, 0, d);
     DrawTPic(54, VirtualKeyX + VirtualKeySize + VirtualKeySpace, VirtualKeyY + VirtualKeySize + VirtualKeySpace, nullptr, 0, r);
-    DrawTPic(56, CENTER_X * 2 - 100, CENTER_Y * 2 - 200, nullptr, 0, 50);
-    DrawTPic(57, CENTER_X * 2 - 200, CENTER_Y * 2 - 100, nullptr, 0, 50);
-    DrawTPic(55, CENTER_X - 120, CENTER_Y * 2 - 70, nullptr, 0, 50);
-    DrawTPic(58, CENTER_X + 50, CENTER_Y * 2 - 70, nullptr, 0, 50);
+    DrawTPic(56, CENTER_X * 2 - 100, CENTER_Y * 2 - 200, nullptr, 0, 128);
+    DrawTPic(57, CENTER_X * 2 - 200, CENTER_Y * 2 - 100, nullptr, 0, 128);
+    DrawTPic(55, CENTER_X - 120, CENTER_Y * 2 - 70, nullptr, 0, 128);
+    DrawTPic(58, CENTER_X + 50, CENTER_Y * 2 - 70, nullptr, 0, 128);
 }

@@ -77,7 +77,7 @@ void instruct_2(int inum, int amount)
         amount = -amount;
     }
     DrawShadowText(w2.c_str(), x, 3 + y, 0, 0x202020);
-    DrawIPic(inum, CENTER_X - 40, y - 90, 0, 0, 0, 0);
+    DrawIPic(inum, CENTER_X - 40, y - 90, 0, 255, 0, 0);
     DrawShadowText(Ritem[inum].Name, x + 40, 3 + y, ColColor(0x64), ColColor(0x66));
     UpdateAllScreen();
     if (Where == 2)
@@ -324,7 +324,7 @@ void instruct_14()
     for (int i = 10; i >= 0; i--)
     {
         SDL_Delay(10);
-        DrawRectangleWithoutFrame(0, 0, CENTER_X * 2, CENTER_Y * 2, 0, i * 10);
+        DrawRectangleWithoutFrame(0, 0, CENTER_X * 2, CENTER_Y * 2, 0, 255 - i * 255 / 10);
         UpdateAllScreen();
     }
     SDL_Delay(50);
@@ -336,7 +336,7 @@ void instruct_15()
 {
     Where = 3;
     Redraw();
-    DrawRectangleWithoutFrame(0, 0, CENTER_X * 2, CENTER_Y * 2, MapRGBA(196, 25, 16), 60);
+    DrawRectangleWithoutFrame(0, 0, CENTER_X * 2, CENTER_Y * 2, MapRGBA(196, 25, 16), 102);
     std::string str1 = " 小村的傳說失敗了…";
     DrawShadowText(str1.c_str(), CENTER_X - 120, CENTER_Y - 25, ColColor(255), ColColor(255));
     std::string str2 = "但是遊戲是可以重來的！";
@@ -1112,7 +1112,7 @@ void TextAmi(const std::string& filename)
     fclose(f);
 
     int x = 70, y = 190;
-    DrawRectangleWithoutFrame(0, 0, CENTER_X * 2, CENTER_Y * 2, 0, 60);
+    DrawRectangleWithoutFrame(0, 0, CENTER_X * 2, CENTER_Y * 2, 0, 102);
     std::string line;
     for (int i = 0; i < (int)str.size(); i++)
     {
@@ -1129,7 +1129,7 @@ void TextAmi(const std::string& filename)
             y = 190;
             Redraw();
             WaitAnyKey();
-            DrawRectangleWithoutFrame(0, 0, CENTER_X * 2, CENTER_Y * 2, 0, 60);
+            DrawRectangleWithoutFrame(0, 0, CENTER_X * 2, CENTER_Y * 2, 0, 102);
         }
         else
         {
@@ -1540,7 +1540,7 @@ int instruct_50e(int code, int e1, int e2, int e3, int e4, int e5, int e6)
         e4 = e_GetValue(2, e1, e4);
         e5 = e_GetValue(3, e1, e5);
         e6 = e_GetValue(4, e1, e6);
-        DrawRectangle(e2, e3, e4, e5, 0, ColColor(0xFF), std::max(e6, 40));
+        DrawRectangle(e2, e3, e4, e5, 0, ColColor(0xFF), std::max(e6 * 255 / 100, 102));
         break;
     case 35: // 等待按键
     {
@@ -1811,7 +1811,7 @@ int instruct_50e(int code, int e1, int e2, int e3, int e4, int e5, int e6)
         break;
     case 55: // 播放视频
     {
-        DrawRectangleWithoutFrame(0, 0, CENTER_X * 2, CENTER_Y * 2, 0, 0);
+        DrawRectangleWithoutFrame(0, 0, CENTER_X * 2, CENTER_Y * 2, 0, 255);
         auto vname = std::format("{}.wmv", e_GetValue(0, e1, e2));
         if (PlayMovie(vname))
         {
@@ -1906,7 +1906,7 @@ void StudyMagic(int rnum, int magicnum, int newmagicnum, int level, int dismode)
     }
     if (dismode == 0)
     {
-        DrawRectangle(CENTER_X - 75, 98, 145, 76, 0, ColColor(255), 30);
+        DrawRectangle(CENTER_X - 75, 98, 145, 76, 0, ColColor(255), 77);
         std::string word = "學會";
         DrawShadowText(word.c_str(), CENTER_X - 90, 125, ColColor(5), ColColor(7));
         DrawShadowText(Rrole[rnum].Name, CENTER_X - 90, 100, ColColor(0x21), ColColor(0x23));
@@ -2115,7 +2115,7 @@ void NewTalk(int headnum, int talknum, int namenum, int place, int showhead, int
     while (true)
     {
         LoadFreshScreen();
-        DrawRectangleWithoutFrame(0, Frame_Y, CENTER_X * 2, 170, 0, 40);
+        DrawRectangleWithoutFrame(0, Frame_Y, CENTER_X * 2, 170, 0, 153);
         if (showhead == 0 && headnum >= 0)
             DrawHeadPic(headnum, Head_X, Head_Y);
         if (!NameStr.empty() || showhead != 0)
@@ -2422,7 +2422,7 @@ void NewTeammateList()
             LoadFreshScreen();
             for (int i = 0; i < Show; i++)
             {
-                DrawTextFrame(xStar - 16, yStar + h * i, 18, 10);
+                DrawTextFrame(xStar - 16, yStar + h * i, 18, 230);
                 if (i == numStar && menuid == 0)
                 {
                     DrawTextFrame(xStar - 16, yStar + h * i, 18);
@@ -2443,7 +2443,7 @@ void NewTeammateList()
             DrawTextFrame(xTeam - 16, yTeam, 16);
             DrawShadowText(TeamMenu[0].c_str(), xTeam + 3, yTeam + 3, 0, 0x202020);
 
-            DrawRectangle(xTeam, yTeam + 38, 200, 4 * 22 + 28, 0, ColColor(0xFF), 50);
+            DrawRectangle(xTeam, yTeam + 38, 200, 4 * 22 + 28, 0, ColColor(0xFF), 128);
             for (int i = 1; i <= 5; i++)
             {
                 if (i == CurrentTeam && menuid == 1)
@@ -2453,7 +2453,7 @@ void NewTeammateList()
                 }
                 else
                 {
-                    DrawTextFrame(xTeam - 16, yTeam + 37 + h * (i - 1), 16, 10);
+                    DrawTextFrame(xTeam - 16, yTeam + 37 + h * (i - 1), 16, 230);
                     DrawShadowText(TeamMenu[i].c_str(), xTeam + 3, yTeam + 40 + h * (i - 1), 0, 0x202020);
                 }
             }
@@ -2624,7 +2624,7 @@ void ShowTeamMate(int position, int headnum, int Count)
     if (Count == 0) Count = 1;
     int hx = 263 - Count * 29;
     int hy = 55;
-    DrawRectangleWithoutFrame(0, 40, CENTER_X * 2, 230, 0, 40);
+    DrawRectangleWithoutFrame(0, 40, CENTER_X * 2, 230, 0, 153);
 
     hx = CENTER_X - 85;
     for (int i = 1; i <= Count; i++)
@@ -2686,7 +2686,7 @@ void ShowStarList()
             }
             else
             {
-                DrawTextFrame(x - 16, y + h * (i - menutop), 16, 10);
+                DrawTextFrame(x - 16, y + h * (i - menutop), 16, 230);
                 DrawShadowText(menuString[i].c_str(), x + 3, y + 3 + h * (i - menutop), 0, 0x202020);
             }
         }
@@ -2897,9 +2897,9 @@ int Digging(int beginPic, int goal, int shovel, int restrict_val)
     cnt = 0;
     while (cnt < 10) { int n = rand() % 81; if (outcome[n] == holepic) { outcome[n] = moneypic; cnt++; } }
 
-    DrawRectangle(x, y, 200, 200, 0, ColColor(0xFF), 40);
-    DrawRectangle(x, y - 30, 120, 30, 0, ColColor(0xFF), 40);
-    DrawRectangle(x - 32, y - 30, 32, 230, 0, ColColor(0xFF), 40);
+    DrawRectangle(x, y, 200, 200, 0, ColColor(0xFF), 102);
+    DrawRectangle(x, y - 30, 120, 30, 0, ColColor(0xFF), 102);
+    DrawRectangle(x - 32, y - 30, 32, 230, 0, ColColor(0xFF), 102);
     for (int i = 0; i < 81; i++)
     {
         DrawSPic(blankpic / 2, (i % 9) * 20 + 10 + x, (i / 9) * 20 + 10 + y);
@@ -2980,9 +2980,9 @@ int Digging(int beginPic, int goal, int shovel, int restrict_val)
 
 void ShowSurface(int x, int y, int blank, const std::vector<int>& surface)
 {
-    DrawRectangle(x, y, 200, 200, 0, ColColor(0xFF), 40);
-    DrawRectangle(x, y - 30, 120, 30, 0, ColColor(0xFF), 40);
-    DrawRectangle(x - 32, y - 30, 32, 230, 0, ColColor(0xFF), 40);
+    DrawRectangle(x, y, 200, 200, 0, ColColor(0xFF), 102);
+    DrawRectangle(x, y - 30, 120, 30, 0, ColColor(0xFF), 102);
+    DrawRectangle(x - 32, y - 30, 32, 230, 0, ColColor(0xFF), 102);
     for (int i = 0; i < 81; i++)
     {
         DrawSPic(blank / 2, (i % 9) * 20 + 10 + x, (i / 9) * 20 + 10 + y);
@@ -3020,7 +3020,7 @@ bool Lamp(int c, int beginpic, int whitecount, int chance)
 
     auto drawAll = [&]()
     {
-        DrawRectangleWithoutFrame(x - 10, y - 10, c * 50 + 20, r * 50 + 20, 0, 60);
+        DrawRectangleWithoutFrame(x - 10, y - 10, c * 50 + 20, r * 50 + 20, 0, 102);
         for (int i = 0; i < total; i++)
         {
             DrawSPic(gamearray[0][i], x + (i % c) * 50, y + (i / c) * 50);
@@ -3096,7 +3096,7 @@ bool SpellPicture(int num, int chance)
     Redraw();
     RecordFreshScreen(x - 5, y - 5, w + 1, h + 1);
     // 先显示正确图 2 秒
-    DrawRectangle(x - 5, y - 5, w, h, 0, ColColor(255), 50);
+    DrawRectangle(x - 5, y - 5, w, h, 0, ColColor(255), 128);
     for (int i = 0; i < 25; i++)
         DrawPartPic(pic, ((24 - i) % 5) * 80, ((24 - i) / 5) * 80, 80, 80, (i % 5) * 80 + x, (i / 5) * 80 + y + 30);
     UpdateAllScreen();
@@ -3106,13 +3106,13 @@ bool SpellPicture(int num, int chance)
     auto drawPuzzle = [&]()
     {
         LoadFreshScreen(x - 5, y - 5);
-        DrawRectangle(x - 5, y - 5, w, h, 0, ColColor(255), 50);
+        DrawRectangle(x - 5, y - 5, w, h, 0, ColColor(255), 128);
         for (int i = 0; i < 25; i++)
             DrawPartPic(pic, ((24 - gamearray[0][i]) % 5) * 80, ((24 - gamearray[0][i]) / 5) * 80, 80, 80, (i % 5) * 80 + x, (i / 5) * 80 + y + 30);
         if (menu2 > -1)
-            DrawRectangle((menu2 % 5) * 80 + x, (menu2 / 5) * 80 + y + 30, 80, 80, 0, ColColor(0x64), 0);
+            DrawRectangle((menu2 % 5) * 80 + x, (menu2 / 5) * 80 + y + 30, 80, 80, 0, ColColor(0x64), 255);
         if (menu > -1)
-            DrawRectangle((menu % 5) * 80 + x, (menu / 5) * 80 + y + 30, 80, 80, 0, ColColor(0xFF), 0);
+            DrawRectangle((menu % 5) * 80 + x, (menu / 5) * 80 + y + 30, 80, 80, 0, ColColor(0xFF), 255);
         auto wordStr = std::format("機會{}", chance);
         auto word1Str = std::format("命中{}", right);
         DrawShadowText(wordStr, x + 25, y + 5, ColColor(5), ColColor(7));
@@ -3471,8 +3471,8 @@ int DancerAfter90S()
     uint32_t demand_time = 10000;
     bool iskey = true;
     int16_t DanceList[10];
-    DrawRectangle((320 - 43 * (DanceLong / 2)) - 5, 120 - 62, (DanceLong + 1) * 43 + 5, 45, ColColor(0), ColColor(0xFF), 25);
-    DrawRectangle(0, 420, 640, 14, ColColor(47), ColColor(0xFF), 0);
+    DrawRectangle((320 - 43 * (DanceLong / 2)) - 5, 120 - 62, (DanceLong + 1) * 43 + 5, 45, ColColor(0), ColColor(0xFF), 64);
+    DrawRectangle(0, 420, 640, 14, ColColor(47), ColColor(0xFF), 255);
     UpdateAllScreen();
     for (int i = 0; i <= DanceLong; i++)
     {
@@ -3486,9 +3486,9 @@ int DancerAfter90S()
         uint32_t now = SDL_GetTicks();
         uint32_t elapsed = now - ori_time;
         if (elapsed < (uint32_t)(demand_time * 0.7))
-            DrawRectangle(0, 420, 640 * elapsed / demand_time, 14, ColColor(47), ColColor(0xFF), 100);
+            DrawRectangle(0, 420, 640 * elapsed / demand_time, 14, ColColor(47), ColColor(0xFF), 255);
         else if (elapsed <= demand_time)
-            DrawRectangle(0, 420, 640 * elapsed / demand_time, 14, ColColor(70), ColColor(0xFF), 100);
+            DrawRectangle(0, 420, 640 * elapsed / demand_time, 14, ColColor(70), ColColor(0xFF), 255);
         else { WaitAnyKey(); result = 0; break; }
         UpdateAllScreen();
         if (event.type == SDL_EVENT_KEY_DOWN)
@@ -3535,7 +3535,7 @@ void RoleEnding(int starnum, int headnum, int talknum)
 
     uint8_t r = rand() % 128, g = rand() % 128, b = rand() % 128;
     uint32_t clr = MapRGBA(r, g, b);
-    DrawRectangleWithoutFrame(framex, framey, w, h - 1, clr, 50);
+    DrawRectangleWithoutFrame(framex, framey, w, h - 1, clr, 128);
 
     uint32_t color1 = 0x5, color2 = 0x7;
     int ty = framey + 10, hy = framey;
@@ -3562,7 +3562,7 @@ void RoleEnding(int starnum, int headnum, int talknum)
         if (status == 5)
         {
             // gray rendering - draw with dark tint
-            DrawHeadPic(headnum, hx, hy, 0, 0, 0x404040, 80);
+            DrawHeadPic(headnum, hx, hy, 0, 255, 0x404040, 80);
         }
         else
         {
@@ -3903,7 +3903,7 @@ void NewShop(int shop_num)
     }
 
     int x = CENTER_X - 190, y = 200;
-    DrawRectangleWithoutFrame(0, 20, CENTER_X * 2, 120, 0, 40);
+    DrawRectangleWithoutFrame(0, 20, CENTER_X * 2, 120, 0, 153);
     std::string shopStr = "需要買什麼？";
     DrawShadowText(shopStr.c_str(), CENTER_X - 70, 55, ColColor(0xFF), ColColor(0x0));
 
@@ -3919,7 +3919,7 @@ void NewShop(int shop_num)
             totalprice += sell.Price[i] * buyAmount[i];
 
         // 绘制
-        DrawRectangle(x, y, 420, 116, 0, ColColor(255), 50);
+        DrawRectangle(x, y, 420, 116, 0, ColColor(255), 128);
         for (int i = 0; i < 5; i++)
         {
             auto buf = std::format("{:5d}{:7d}{:6d}{:9d}", sell.Price[i], sell.Amount[i], holdAmount[i], buyAmount[i]);
@@ -3936,11 +3936,10 @@ void NewShop(int shop_num)
         }
 
         auto moneyBuf = std::format("現有銀兩：{:5d}", money);
-        DrawTextWithRect(moneyBuf, x, y + 140, 160, 0, 0x202020, 0, 0);
+        DrawTextWithRect(moneyBuf, x, y + 140, 160, 0, 0x202020, 255, 0);
         moneyBuf = std::format("花費估算：{:5d}", totalprice);
-        DrawTextWithRect(moneyBuf, x, y + 180, 160, 0, 0x202020, 0, 0);
+        DrawTextWithRect(moneyBuf, x, y + 180, 160, 0, 0x202020, 255, 0);
         UpdateAllScreen();
-
         if (SDL_WaitEvent(&ev))
         {
             CheckBasicEvent();
@@ -4031,14 +4030,14 @@ void ShowMap()
         {
             SDL_Rect dest1;
             dest1.x = 0; dest1.y = 30; dest1.w = 640; dest1.h = 380;
-            DrawSPic(picnum, xp, yp + 30, &dest1, 0, 0, 0, 0);
+            DrawSPic(picnum, xp, yp + 30, &dest1, 0, 255, 0, 0);
             for (int i = 0; i < u; i++)
             {
                 int tx = 313 + ((sceney[i] - scenex[i]) * 5) / 8;
                 int ty = 63 + ((sceney[i] + scenex[i]) * 5) / 16;
                 TransCoord(tx, ty);
                 dest1.x = 15; dest1.y = 0; dest1.w = 15; dest1.h = 15;
-                DrawSPic(picnum, tx, ty, &dest1, 0, 0, 0, 0);
+                DrawSPic(picnum, tx, ty, &dest1, 0, 255, 0, 0);
                 if (MouseInRegion(tx, ty, 15, 15)) p = i;
             }
             // 选中场景标记
@@ -4046,13 +4045,13 @@ void ShowMap()
             int ty = 63 + ((sceney[p] + scenex[p]) * 5) / 16;
             TransCoord(tx, ty);
             dest1.x = 30; dest1.y = 0; dest1.w = 15; dest1.h = 15;
-            DrawSPic(picnum, tx, ty, &dest1, 0, 0, 0, 0);
+            DrawSPic(picnum, tx, ty, &dest1, 0, 255, 0, 0);
             // 船
             tx = 313 + ((ShipX - ShipY) * 5) / 8;
             ty = 63 + ((ShipX + ShipY) * 5) / 16;
             TransCoord(tx, ty);
             dest1.x = 45; dest1.y = 0; dest1.w = 15; dest1.h = 15;
-            DrawSPic(picnum, tx, ty, &dest1, 0, 0, 0, 0);
+            DrawSPic(picnum, tx, ty, &dest1, 0, 255, 0, 0);
             CleanTextScreen();
             DrawShadowText(str2[p].c_str(), 37 + xp, 80 + yp, ColColor(21), ColColor(25));
             DrawEngShadowText(str3[p], 37 + xp, 100 + yp, ColColor(255), ColColor(254));
@@ -4070,7 +4069,7 @@ void ShowMap()
             TransCoord(tx, ty);
             SDL_Rect dest1;
             dest1.x = 0; dest1.y = 0; dest1.w = 15; dest1.h = 15;
-            DrawSPic(picnum, tx, ty, &dest1, 0, 0, 0, 0);
+            DrawSPic(picnum, tx, ty, &dest1, 0, 255, 0, 0);
         }
         UpdateAllScreen();
         SDL_Delay(20);
@@ -4147,12 +4146,12 @@ int16_t EnterNumber(int MinValue, int MaxValue, int x, int y, int Default)
 
     auto bufStr = std::format("範圍{}~{}", MinValue, MaxValue);
     DrawTextWithRect(bufStr, x, y - 35, DrawLength(bufStr.c_str()) * 10 + 8, 0, ColColor(0x27));
-    DrawRectangle(x, y, 180, 180, 0, ColColor(255), 50, 0);
-    DrawRectangle(x + 20, y + 10, 140, 23, 0, ColColor(255), 75, 0);
+    DrawRectangle(x, y, 180, 180, 0, ColColor(255), 128, 0);
+    DrawRectangle(x + 20, y + 10, 140, 23, 0, ColColor(255), 191, 0);
     const int highButton = 13;
     for (int i = 0; i <= highButton; i++)
     {
-        DrawRectangle(buttons[i].x, buttons[i].y, buttons[i].w, buttons[i].h, 0, ColColor(255), 50, 0);
+        DrawRectangle(buttons[i].x, buttons[i].y, buttons[i].w, buttons[i].h, 0, ColColor(255), 128, 0);
     }
     UpdateAllScreen();
     RecordFreshScreen(x, y, 181, 181);
@@ -4303,7 +4302,7 @@ bool EnterString(std::string& str, int x, int y, int w, int h)
         std::string display = "請輸入主角之姓名：" + str; // 請輸入主角之姓名：
         if (tick % 16 < 8) display += "_";
         else display += " ";
-        DrawTextWithRect(display.c_str(), x, y, 280, 0, 0, 0, 1);
+        DrawTextWithRect(display.c_str(), x, y, 280, 0, 0, 255, 1);
         SDL_PollEvent(&ev);
         CheckBasicEvent();
         if (ev.type == SDL_EVENT_TEXT_INPUT)

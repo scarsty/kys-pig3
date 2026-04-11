@@ -7,13 +7,13 @@
 
 // 绘制各类图片
 void DrawPic(SDL_Surface* sur, int Pictype, int num, int px, int py, int shadow, int alpha, uint32 mixColor, int mixAlpha);
-void DrawTPic(int imgnum, int px, int py, SDL_Rect* region = nullptr, int shadow = 0, int Alpha = 0,
+void DrawTPic(int imgnum, int px, int py, SDL_Rect* region = nullptr, int shadow = 0, int Alpha = 255,
     uint32 mixColor = 0, int mixAlpha = 0, double scalex = 1, double scaley = 1, double angle = 0);
-void DrawMPic(int num, int px, int py, int Framenum = -1, int shadow = 0, int alpha = 0,
+void DrawMPic(int num, int px, int py, int Framenum = -1, int shadow = 0, int alpha = 255,
     uint32 mixColor = 0, int mixAlpha = 0, double scalex = 1, double scaley = 1, double angle = 0);
 void DrawSPic(int num, int px, int py);
 void DrawSPic(int num, int px, int py, SDL_Rect* region, int shadow, int alpha, uint32 mixColor, int mixAlpha);
-void DrawHeadPic(int num, int px, int py, int shadow = 0, int alpha = 0,
+void DrawHeadPic(int num, int px, int py, int shadow = 0, int alpha = 255,
     uint32 mixColor = 0, int mixAlpha = 0, double scalex = 1, double scaley = 1);
 void DrawEPic(int num, int px, int py, int eNum = 0);
 void DrawEPic(int num, int px, int py, int shadow, int alpha,
@@ -21,9 +21,9 @@ void DrawEPic(int num, int px, int py, int shadow, int alpha,
     double scalex = 1, double scaley = 1, double angle = 0, SDL_Point* center = nullptr);
 void DrawFPic(int num, int px, int py, int index);
 void DrawFPic(int num, int px, int py, int index, int shadow, int alpha, uint32 mixColor, int mixAlpha);
-void DrawCPic(int num, int px, int py, int shadow = 0, int alpha = 0,
+void DrawCPic(int num, int px, int py, int shadow = 0, int alpha = 255,
     uint32 mixColor = 0, int mixAlpha = 0);
-void DrawIPic(int num, int px, int py, int shadow = 0, int alpha = 0,
+void DrawIPic(int num, int px, int py, int shadow = 0, int alpha = 255,
     uint32 mixColor = 0, int mixAlpha = 0);
 
 // 屏幕绘制
@@ -61,9 +61,9 @@ void DrawBlackScreen();
 void DrawClouds();
 void DrawProgress();
 void DrawVirtualKey();
-int DrawTextFrame(int x, int y, int len, int alpha = 0, uint32 mixColor = 0, int mixAlpha = 0);
+int DrawTextFrame(int x, int y, int len, int alpha = 255, uint32 mixColor = 0, int mixAlpha = 0);
 void DrawTextWithRect(const std::string& word, int x, int y, int w, uint32 color1, uint32 color2,
-    int alpha = 0, int Refresh = 1);
+    int alpha = 255, int Refresh = 1);
 
 // 贴图销毁
 void DestroyAllTextures(int all = 0);

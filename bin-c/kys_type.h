@@ -55,7 +55,7 @@ struct TCloud
 {
     int Picnum = 0;
     int Shadow = 0;
-    int Alpha = 0;
+    int Alpha = 255;
     uint32 mixColor = 0;
     int mixAlpha = 0;
     int Positionx = 0, Positiony = 0, Speedx = 0, Speedy = 0;
