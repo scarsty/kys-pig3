@@ -100,17 +100,6 @@ static int SfxNextTrack = 0;
 //----------------------------------------------------------------------
 // Mixer 辅助
 //----------------------------------------------------------------------
-static bool EnsureMixerCreated()
-{
-    if (gMixer != nullptr) return true;
-    if (!MIX_Init()) return false;
-    SDL_AudioSpec spec;
-    spec.freq = 22500;
-    spec.format = SDL_AUDIO_S16;
-    spec.channels = 2;
-    gMixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec);
-    return gMixer != nullptr;
-}
 
 static MIX_Track* AcquireSfxTrack(MIX_Audio* audio)
 {
@@ -169,7 +158,15 @@ void SendKeyEvent(int keyvalue)
 //----------------------------------------------------------------------
 void InitialMusic()
 {
-    if (!EnsureMixerCreated()) return;
+    if (!MIX_Init())
+    {
+        return;
+    }
+    SDL_AudioSpec spec;
+    spec.freq = 22500;
+    spec.format = SDL_AUDIO_S16;
+    spec.channels = 2;
+    gMixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec);
     if (MusicTrack == nullptr)
         MusicTrack = MIX_CreateTrack(gMixer);
     for (int i = 0; i < 10; i++)
@@ -231,7 +228,10 @@ void FreeAllMusic()
 
 void PlayMP3(int MusicNum, int times, int frombeginning)
 {
-    if (!EnsureMixerCreated()) return;
+    if (gMixer == nullptr)
+    {
+        return;
+    }
     if (MusicNum >= 0 && MusicNum < (int)Music.size() && VOLUME > 0)
     {
         if (Music[MusicNum] != nullptr)
