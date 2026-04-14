@@ -28,6 +28,8 @@
 #define M_PI 3.14159265358979323846
 #endif
 #include <cstring>
+#include <cctype>
+#include <filesystem>
 #include <fstream>
 #include <format>
 #include <map>
@@ -42,11 +44,171 @@ namespace
 const char* kDefaultTileExt = ".png";
 const char* const kSupportedTileExts[] = { ".png", ".webp" };
 
+struct TilePresenceEntry
+{
+    bool hasBase = false;
+    int maxFrame = -1;
+};
+
+struct TileScanInfo
+{
+    std::string fileExt = kDefaultTileExt;
+    int maxIndex = -1;
+    int matchedFiles = 0;
+    std::vector<TilePresenceEntry> entries;
+
+    bool HasAny() const
+    {
+        return matchedFiles > 0;
+    }
+};
+
 std::string BuildTileFileName(int fileNum, const std::string& fileExt, int frameNum = -1)
 {
     if (frameNum < 0)
         return std::to_string(fileNum) + fileExt;
     return std::to_string(fileNum) + "_" + std::to_string(frameNum) + fileExt;
+}
+
+bool TryParseTileName(const std::string& filename, const std::string& fileExt, int& fileNum, int& frameNum)
+{
+    fileNum = -1;
+    frameNum = -1;
+    if (filename.size() <= fileExt.size())
+        return false;
+    if (filename.compare(filename.size() - fileExt.size(), fileExt.size(), fileExt) != 0)
+        return false;
+
+    std::string stem = filename.substr(0, filename.size() - fileExt.size());
+    if (stem.empty())
+        return false;
+
+    size_t split = stem.find('_');
+    std::string filePart = stem;
+    std::string framePart;
+    if (split != std::string::npos)
+    {
+        filePart = stem.substr(0, split);
+        framePart = stem.substr(split + 1);
+        if (framePart.empty())
+            return false;
+    }
+
+    if (filePart.empty() || !std::all_of(filePart.begin(), filePart.end(), [](unsigned char c) { return std::isdigit(c) != 0; }))
+        return false;
+    if (!framePart.empty() && !std::all_of(framePart.begin(), framePart.end(), [](unsigned char c) { return std::isdigit(c) != 0; }))
+        return false;
+
+    fileNum = std::stoi(filePart);
+    if (!framePart.empty())
+        frameNum = std::stoi(framePart);
+    return true;
+}
+
+void RegisterTileFile(TileScanInfo& info, int fileNum, int frameNum)
+{
+    if (fileNum < 0)
+        return;
+    if ((int)info.entries.size() <= fileNum)
+        info.entries.resize(fileNum + 1);
+
+    auto& entry = info.entries[fileNum];
+    if (frameNum < 0)
+        entry.hasBase = true;
+    else
+        entry.maxFrame = std::max(entry.maxFrame, frameNum);
+
+    info.maxIndex = std::max(info.maxIndex, fileNum);
+    info.matchedFiles++;
+}
+
+TileScanInfo ChooseBestTileScan(const std::map<std::string, TileScanInfo>& scans)
+{
+    TileScanInfo best;
+    int bestScore = -1;
+    for (const char* fileExt : kSupportedTileExts)
+    {
+        auto it = scans.find(fileExt);
+        if (it == scans.end())
+            continue;
+        if (it->second.matchedFiles > bestScore)
+        {
+            best = it->second;
+            bestScore = it->second.matchedFiles;
+        }
+    }
+    return best;
+}
+
+TileScanInfo ScanTileEntriesInZip(zip_t* z)
+{
+    std::map<std::string, TileScanInfo> scans;
+    for (const char* fileExt : kSupportedTileExts)
+        scans[fileExt].fileExt = fileExt;
+
+    zip_int64_t entryCount = zip_get_num_entries(z, 0);
+    for (zip_uint64_t i = 0; i < (zip_uint64_t)entryCount; i++)
+    {
+        const char* rawName = zip_get_name(z, i, 0);
+        if (!rawName)
+            continue;
+
+        std::string name = rawName;
+        size_t slash = name.find_last_of("\\/");
+        if (slash != std::string::npos)
+            name = name.substr(slash + 1);
+        if (name.empty())
+            continue;
+
+        for (const char* fileExt : kSupportedTileExts)
+        {
+            int fileNum, frameNum;
+            if (TryParseTileName(name, fileExt, fileNum, frameNum))
+            {
+                RegisterTileFile(scans[fileExt], fileNum, frameNum);
+                break;
+            }
+        }
+    }
+
+    return ChooseBestTileScan(scans);
+}
+
+TileScanInfo ScanTileEntriesInDirectory(const std::string& fullPath)
+{
+    std::map<std::string, TileScanInfo> scans;
+    for (const char* fileExt : kSupportedTileExts)
+        scans[fileExt].fileExt = fileExt;
+
+    try
+    {
+        std::filesystem::path dir(fullPath);
+        if (!std::filesystem::exists(dir))
+            return {};
+
+        for (const auto& entry : std::filesystem::directory_iterator(dir))
+        {
+            if (!entry.is_regular_file())
+                continue;
+
+            std::string name = entry.path().filename().string();
+            for (const char* fileExt : kSupportedTileExts)
+            {
+                int fileNum, frameNum;
+                if (TryParseTileName(name, fileExt, fileNum, frameNum))
+                {
+                    RegisterTileFile(scans[fileExt], fileNum, frameNum);
+                    break;
+                }
+            }
+        }
+    }
+    catch (...)
+    {
+        return {};
+    }
+
+    return ChooseBestTileScan(scans);
 }
 
 std::string DetectTileExtensionInZip(zip_t* z, int maxCount)
@@ -1260,7 +1422,6 @@ TIDXGRP LoadIdxGrp(const std::string& stridx, const std::string& strgrp)
 
 int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int LoadPic, int16_t* frame)
 {
-    const int maxCount = 9999;
     int result = 0;
     std::vector<int16_t> offset;
     zip_t* z = nullptr;
@@ -1319,17 +1480,12 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
                     frame[nums[i * 2]] = (int16_t)nums[i * 2 + 1];
             }
 
-            fileExt = DetectTileExtensionInZip(z, maxCount);
-
-            // 扫描zip中最大文件编号
-            for (int i = std::max(std::max(result - 1, 0), maxCount); i >= 0; i--)
+            TileScanInfo scanInfo = ScanTileEntriesInZip(z);
+            if (scanInfo.HasAny())
             {
-                if (zip_name_locate(z, BuildTileFileName(i, fileExt).c_str(), 0) >= 0 ||
-                    zip_name_locate(z, BuildTileFileName(i, fileExt, 0).c_str(), 0) >= 0)
-                {
-                    if (i + 1 > result) result = i + 1;
-                    break;
-                }
+                fileExt = scanInfo.fileExt;
+                if (scanInfo.maxIndex + 1 > result)
+                    result = scanInfo.maxIndex + 1;
             }
             offset.resize(result * 2, 0);
 
@@ -1340,25 +1496,20 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
             {
                 auto& idx = PNGIndexArray[i];
                 idx.FileNum = i;
-                idx.PointerNum = 1;
-                idx.Frame = 1;
+                idx.PointerNum = -1;
+                idx.Frame = 0;
                 idx.FileExt = fileExt;
-                if (zip_name_locate(z, BuildTileFileName(i, fileExt).c_str(), 0) >= 0)
+                if (scanInfo.HasAny() && i < (int)scanInfo.entries.size() && scanInfo.entries[i].hasBase)
                 {
                     idx.PointerNum = count;
                     idx.Frame = 1;
                     count++;
                 }
-                else
+                else if (scanInfo.HasAny() && i < (int)scanInfo.entries.size() && scanInfo.entries[i].maxFrame >= 0)
                 {
-                    int k = 0;
-                    while (zip_name_locate(z, BuildTileFileName(i, fileExt, k).c_str(), 0) >= 0)
-                    {
-                        k++;
-                        if (k == 1) idx.PointerNum = count;
-                        count++;
-                    }
-                    idx.Frame = k;
+                    idx.PointerNum = count;
+                    idx.Frame = scanInfo.entries[i].maxFrame + 1;
+                    count += idx.Frame;
                 }
                 idx.x = offset[i * 2];
                 idx.y = offset[i * 2 + 1];
@@ -1407,15 +1558,12 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
         }
 
         // 扫描文件夹中最大文件编号
-        fileExt = DetectTileExtensionInDirectory(localpath, maxCount);
-        for (int i = maxCount; i >= 0; i--)
+        TileScanInfo scanInfo = ScanTileEntriesInDirectory(AppPath + localpath);
+        if (scanInfo.HasAny())
         {
-            if (filefunc::fileExist(AppPath + localpath + BuildTileFileName(i, fileExt)) ||
-                filefunc::fileExist(AppPath + localpath + BuildTileFileName(i, fileExt, 0)))
-            {
-                if (i + 1 > result) result = i + 1;
-                break;
-            }
+            fileExt = scanInfo.fileExt;
+            if (scanInfo.maxIndex + 1 > result)
+                result = scanInfo.maxIndex + 1;
         }
 
         PNGIndexArray.resize(result);
@@ -1430,22 +1578,17 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
             idx.PointerNum = -1;
             idx.Frame = 0;
             idx.FileExt = fileExt;
-            if (filefunc::fileExist(AppPath + localpath + BuildTileFileName(i, fileExt)))
+            if (scanInfo.HasAny() && i < (int)scanInfo.entries.size() && scanInfo.entries[i].hasBase)
             {
                 idx.PointerNum = count;
                 idx.Frame = 1;
                 count++;
             }
-            else
+            else if (scanInfo.HasAny() && i < (int)scanInfo.entries.size() && scanInfo.entries[i].maxFrame >= 0)
             {
-                int k = 0;
-                while (filefunc::fileExist(AppPath + localpath + BuildTileFileName(i, fileExt, k)))
-                {
-                    k++;
-                    if (k == 1) idx.PointerNum = count;
-                    count++;
-                }
-                idx.Frame = k;
+                idx.PointerNum = count;
+                idx.Frame = scanInfo.entries[i].maxFrame + 1;
+                count += idx.Frame;
             }
             idx.x = offset[i * 2];
             idx.y = offset[i * 2 + 1];
