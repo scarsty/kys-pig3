@@ -1,12 +1,12 @@
 # Pig3 (金庸水浒传)
 
-<img src='https://raw.githubusercontent.com/scarsty/kys-pig3/master/logo.png' width='20%'/>
+<img src='logo.png' width='20%'/>
 
 All heros in Kam Yung stories - 108 brothers and sisters
 
 这是小小猪的第三部作品《金庸水浒传》的源代码。
 
-<img src='https://raw.githubusercontent.com/scarsty/kys-pig3/master/13.png'/>
+<img src='13.png'/>
 
 ## Pascal version
 
@@ -40,5 +40,5 @@ Android版本需要先用CodeTyphon编译出so文件，再在SDL的java层调用
 
 The codes are distributed under zlib license.
 
-<img src='https://raw.githubusercontent.com/scarsty/kys-pig3/master/12.jpg'/>
+<img src='12.jpg'/>
 
