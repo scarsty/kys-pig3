@@ -15,65 +15,13 @@
 #include <format>
 
 //----------------------------------------------------------------------
-// DrawPic - 画单个图片
-//----------------------------------------------------------------------
-void DrawPic(SDL_Surface* sur, int Pictype, int num, int px, int py, int shadow, int alpha, uint32 mixColor, int mixAlpha)
-{
-    if (num < 0)
-    {
-        return;
-    }
-    if (PNG_TILE > 0)
-    {
-        TPNGIndex* pIndex = nullptr;
-        int maxNum = 0;
-        switch (Pictype)
-        {
-        case 0:
-            if (num < (int)MPNGIndex.size())
-            {
-                pIndex = &MPNGIndex[num];
-            }
-            break;
-        case 1:
-            if (num < (int)SPNGIndex.size())
-            {
-                pIndex = &SPNGIndex[num];
-            }
-            break;
-        case 3:
-            if (num < (int)TitlePNGIndex.size())
-            {
-                pIndex = &TitlePNGIndex[num];
-            }
-            break;
-        case 4:
-            if (num < (int)HPNGIndex.size())
-            {
-                pIndex = &HPNGIndex[num];
-            }
-            break;
-        case 6:
-            if (num < (int)CPNGIndex.size())
-            {
-                pIndex = &CPNGIndex[num];
-            }
-            break;
-        }
-    }
-}
-
-//----------------------------------------------------------------------
 // DrawTPic - 标题贴图
 //----------------------------------------------------------------------
 void DrawTPic(int imgnum, int px, int py, SDL_Rect* region, int shadow, int Alpha, uint32 mixColor, int mixAlpha, double scalex, double scaley, double angle)
 {
-    if (PNG_TILE > 0)
+    if (imgnum >= 0 && imgnum < (int)TitlePNGIndex.size())
     {
-        if (imgnum >= 0 && imgnum < (int)TitlePNGIndex.size())
-        {
-            DrawPNGTile(render, TitlePNGIndex[imgnum], 0, px, py, region, shadow, Alpha, mixColor, mixAlpha, scalex, scaley, angle, nullptr);
-        }
+        DrawPNGTile(render, TitlePNGIndex[imgnum], 0, px, py, region, shadow, Alpha, mixColor, mixAlpha, scalex, scaley, angle, nullptr);
     }
 }
 
@@ -84,22 +32,19 @@ void DrawMPic(int num, int px, int py, int Framenum, int shadow, int alpha, uint
 {
     if (num >= 0 && num < MPicAmount)
     {
-        if (PNG_TILE > 0)
+        if (Framenum == -1)
         {
-            if (Framenum == -1)
-            {
-                Framenum = SDL_GetTicks() / 200 + rand() % 3;
-            }
-            if (num == 1377 || num == 1388 || num == 1404 || num == 1417)
-            {
-                Framenum = SDL_GetTicks() / 200;
-            }
-            if (PNG_LOAD_ALL == 0 && MPNGIndex[num].Loaded == 0)
-            {
-                LoadOnePNGTexture("resource/mmap/", pMPic, MPNGIndex[num]);
-            }
-            DrawPNGTile(render, MPNGIndex[num], Framenum, px, py, nullptr, shadow, alpha, mixColor, mixAlpha, scalex, scaley, angle, nullptr);
+            Framenum = SDL_GetTicks() / 200 + rand() % 3;
         }
+        if (num == 1377 || num == 1388 || num == 1404 || num == 1417)
+        {
+            Framenum = SDL_GetTicks() / 200;
+        }
+        if (MPNGIndex[num].Loaded == 0)
+        {
+            LoadOnePNGTexture("resource/mmap/", pMPic, MPNGIndex[num]);
+        }
+        DrawPNGTile(render, MPNGIndex[num], Framenum, px, py, nullptr, shadow, alpha, mixColor, mixAlpha, scalex, scaley, angle, nullptr);
     }
 }
 
@@ -110,15 +55,12 @@ void DrawSPic(int num, int px, int py)
 {
     if (num >= 0 && num < SPicAmount)
     {
-        if (PNG_TILE > 0)
+        if (SPNGIndex[num].Loaded == 0)
         {
-            if (PNG_LOAD_ALL == 0 && SPNGIndex[num].Loaded == 0)
-            {
-                LoadOnePNGTexture("resource/smap/", pSPic, SPNGIndex[num]);
-            }
-            int f = SDL_GetTicks() / 300 + rand() % 3;
-            DrawPNGTile(render, SPNGIndex[num], f, px, py);
+            LoadOnePNGTexture("resource/smap/", pSPic, SPNGIndex[num]);
         }
+        int f = SDL_GetTicks() / 300 + rand() % 3;
+        DrawPNGTile(render, SPNGIndex[num], f, px, py);
     }
 }
 
@@ -131,14 +73,11 @@ void DrawSPic(int num, int px, int py, SDL_Rect* region, int shadow, int alpha, 
             num = 0;
             py -= 50;
         }
-        if (PNG_TILE > 0)
+        if (SPNGIndex[num].Loaded == 0)
         {
-            if (PNG_LOAD_ALL == 0 && SPNGIndex[num].Loaded == 0)
-            {
-                LoadOnePNGTexture("resource/smap/", pSPic, SPNGIndex[num]);
-            }
-            DrawPNGTile(render, SPNGIndex[num], 0, px, py, region, shadow, alpha, mixColor, mixAlpha, 1, 1, 0, nullptr);
+            LoadOnePNGTexture("resource/smap/", pSPic, SPNGIndex[num]);
         }
+        DrawPNGTile(render, SPNGIndex[num], 0, px, py, region, shadow, alpha, mixColor, mixAlpha, 1, 1, 0, nullptr);
     }
 }
 
@@ -149,14 +88,11 @@ void DrawHeadPic(int num, int px, int py, int shadow, int alpha, uint32 mixColor
 {
     if (num >= 0 && num < HPicAmount)
     {
-        if (PNG_TILE > 0)
+        if (HPNGIndex[num].Loaded == 0)
         {
-            if (PNG_LOAD_ALL == 0 && HPNGIndex[num].Loaded == 0)
-            {
-                LoadOnePNGTexture("resource/head", pHPic, HPNGIndex[num]);
-            }
-            DrawPNGTile(render, HPNGIndex[num], 0, px, py, nullptr, shadow, alpha, mixColor, mixAlpha, scalex, scaley, 0, nullptr);
+            LoadOnePNGTexture("resource/head", pHPic, HPNGIndex[num]);
         }
+        DrawPNGTile(render, HPNGIndex[num], 0, px, py, nullptr, shadow, alpha, mixColor, mixAlpha, scalex, scaley, 0, nullptr);
     }
 }
 
@@ -174,10 +110,7 @@ void DrawEPic(int num, int px, int py, int shadow, int alpha, uint32 mixColor, i
     {
         if (num < EPNGIndex[eNum].Amount)
         {
-            if (PNG_TILE > 0)
-            {
-                DrawPNGTile(render, EPNGIndex[eNum].PNGIndexArray[num], 0, px, py, nullptr, shadow, alpha, mixColor, mixAlpha, scalex, scaley, angle, center);
-            }
+            DrawPNGTile(render, EPNGIndex[eNum].PNGIndexArray[num], 0, px, py, nullptr, shadow, alpha, mixColor, mixAlpha, scalex, scaley, angle, center);
         }
     }
 }
@@ -192,20 +125,17 @@ void DrawFPic(int num, int px, int py, int index)
 
 void DrawFPic(int num, int px, int py, int index, int shadow, int alpha, uint32 mixColor, int mixAlpha)
 {
-    if (PNG_TILE > 0)
+    if (index >= 0 && index < MAX_FPNG)
     {
-        if (index >= 0 && index < MAX_FPNG)
+        if (FPNGIndex[index].Loaded == 0)
         {
-            if (FPNGIndex[index].Loaded == 0)
-            {
-                auto buf = std::format("resource/fight/fight{:03d}", index);
-                LoadPNGTiles(buf, FPNGIndex[index].PNGIndexArray, 1);
-                FPNGIndex[index].Loaded = 1;
-            }
-            if (num >= 0 && num < (int)FPNGIndex[index].PNGIndexArray.size())
-            {
-                DrawPNGTile(render, FPNGIndex[index].PNGIndexArray[num], 0, px, py, nullptr, shadow, alpha, mixColor, mixAlpha, 1, 1, 0, nullptr);
-            }
+            auto buf = std::format("resource/fight/fight{:03d}", index);
+            LoadPNGTiles(buf, FPNGIndex[index].PNGIndexArray, 1);
+            FPNGIndex[index].Loaded = 1;
+        }
+        if (num >= 0 && num < (int)FPNGIndex[index].PNGIndexArray.size())
+        {
+            DrawPNGTile(render, FPNGIndex[index].PNGIndexArray[num], 0, px, py, nullptr, shadow, alpha, mixColor, mixAlpha, 1, 1, 0, nullptr);
         }
     }
 }
@@ -215,7 +145,7 @@ void DrawFPic(int num, int px, int py, int index, int shadow, int alpha, uint32 
 //----------------------------------------------------------------------
 void DrawCPic(int num, int px, int py, int shadow, int alpha, uint32 mixColor, int mixAlpha)
 {
-    if (PNG_TILE > 0 && num >= 0 && num < (int)CPNGIndex.size())
+    if (num >= 0 && num < (int)CPNGIndex.size())
     {
         DrawPNGTile(render, CPNGIndex[num], 0, px, py, nullptr, shadow, alpha, mixColor, mixAlpha, 1, 1, 0, nullptr);
     }
@@ -228,14 +158,11 @@ void DrawIPic(int num, int px, int py, int shadow, int alpha, uint32 mixColor, i
 {
     if (num >= 0 && num < IPicAmount)
     {
-        if (PNG_TILE > 0)
+        if (pIPic && IPNGIndex[num].Loaded == 0)
         {
-            if (PNG_LOAD_ALL == 0 && IPNGIndex[num].Loaded == 0)
-            {
-                LoadOnePNGTexture("resource/item/", pIPic, IPNGIndex[num]);
-            }
-            DrawPNGTile(render, IPNGIndex[num], 0, px, py, nullptr, shadow, alpha, mixColor, mixAlpha, 1, 1, 0, nullptr);
+            LoadOnePNGTexture("resource/item/", pIPic, IPNGIndex[num]);
         }
+        DrawPNGTile(render, IPNGIndex[num], 0, px, py, nullptr, shadow, alpha, mixColor, mixAlpha, 1, 1, 0, nullptr);
     }
 }
 
@@ -348,13 +275,10 @@ void DrawMMap()
                     BuildArray[k].y = i2;
                     BuildArray[k].b = num;
                     int Width = 0, yoffset = 0;
-                    if (PNG_TILE > 0)
-                    {
-                        Width = MPNGIndex[num].w;
-                        yoffset = MPNGIndex[num].y;
-                        int Height = MPNGIndex[num].h;
-                        BuildArray[k].c = ((i1 + i2) - (Width + 35) / 36 - (yoffset - Height + 1) / 9) * 1024 + i2;
-                    }
+                    Width = MPNGIndex[num].w;
+                    yoffset = MPNGIndex[num].y;
+                    int Height = MPNGIndex[num].h;
+                    BuildArray[k].c = ((i1 + i2) - (Width + 35) / 36 - (yoffset - Height + 1) / 9) * 1024 + i2;
                     k++;
                 }
             }
@@ -560,9 +484,13 @@ void InitialScene(int Visible)
     }
     ExpandGroundOnImg();
     if (IsCave(CurScene))
+    {
         showBlackScreen = true;
+    }
     else
+    {
         showBlackScreen = false;
+    }
 }
 
 int CalBlock(int x, int y)

@@ -8,6 +8,7 @@
 
 int main(int argc, char* argv[])
 {
+    SetLaunchArgs(argc, argv);
     Run();
     return 0;
 }

@@ -183,11 +183,8 @@ void instruct_3(std::vector<int> list)
 
     if (CurEvent > 0 && DData[CurScene][CurEvent][5] != curPic)
     {
-        if (PNG_TILE > 0)
-        {
-            int idx = DData[CurScene][CurEvent][5] / 2;
-            LoadOnePNGTexture("resource/smap/", pSPic, SPNGIndex[idx]);
-        }
+        int idx = DData[CurScene][CurEvent][5] / 2;
+        LoadOnePNGTexture("resource/smap/", pSPic, SPNGIndex[idx]);
         Redraw();
     }
     if (list[0] == CurScene && preEventPic != DData[list[0]][list[1]][5])

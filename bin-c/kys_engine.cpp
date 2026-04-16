@@ -2,9 +2,9 @@
 // 对应 kys_engine.pas
 
 #include "kys_engine.h"
-#include "kys_type.h"
-#include "kys_main.h"
 #include "kys_draw.h"
+#include "kys_main.h"
+#include "kys_type.h"
 
 #ifndef KYS_NO_MOVIE
 #include "PotDll.h"
@@ -12,13 +12,13 @@
 
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
-#include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3_mixer/SDL_mixer.h>
+#include <SDL3_ttf/SDL_ttf.h>
 
+#include "SimpleCC.h"
+#include "ZipFile.h"
 #include "filefunc.h"
 #include "strfunc.h"
-#include "ZipFile.h"
-#include "SimpleCC.h"
 #include <zip.h>
 
 #include <algorithm>
@@ -28,8 +28,8 @@
 #define M_PI 3.14159265358979323846
 #endif
 #include <cstring>
-#include <fstream>
 #include <format>
+#include <fstream>
 #include <map>
 
 // 前置声明
@@ -45,7 +45,9 @@ const char* const kSupportedTileExts[] = { ".png", ".webp" };
 std::string BuildTileFileName(int fileNum, const std::string& fileExt, int frameNum = -1)
 {
     if (frameNum < 0)
+    {
         return std::to_string(fileNum) + fileExt;
+    }
     return std::to_string(fileNum) + "_" + std::to_string(frameNum) + fileExt;
 }
 
@@ -55,8 +57,7 @@ std::string DetectTileExtensionInZip(zip_t* z, int maxCount)
     {
         for (const char* fileExt : kSupportedTileExts)
         {
-            if (zip_name_locate(z, BuildTileFileName(i, fileExt).c_str(), 0) >= 0 ||
-                zip_name_locate(z, BuildTileFileName(i, fileExt, 0).c_str(), 0) >= 0)
+            if (zip_name_locate(z, BuildTileFileName(i, fileExt).c_str(), 0) >= 0 || zip_name_locate(z, BuildTileFileName(i, fileExt, 0).c_str(), 0) >= 0)
             {
                 return fileExt;
             }
@@ -71,8 +72,7 @@ std::string DetectTileExtensionInDirectory(const std::string& localpath, int max
     {
         for (const char* fileExt : kSupportedTileExts)
         {
-            if (filefunc::fileExist(AppPath + localpath + BuildTileFileName(i, fileExt)) ||
-                filefunc::fileExist(AppPath + localpath + BuildTileFileName(i, fileExt, 0)))
+            if (filefunc::fileExist(AppPath + localpath + BuildTileFileName(i, fileExt)) || filefunc::fileExist(AppPath + localpath + BuildTileFileName(i, fileExt, 0)))
             {
                 return fileExt;
             }
@@ -84,12 +84,16 @@ std::string DetectTileExtensionInDirectory(const std::string& localpath, int max
 SDL_Surface* LoadSurfaceByExtension(SDL_IOStream* io, bool closeio, const std::string& fileExt)
 {
     if (fileExt == ".png")
+    {
         return SDL_LoadPNG_IO(io, closeio);
+    }
     if (fileExt == ".webp")
+    {
         return IMG_LoadTyped_IO(io, closeio, "WEBP");
+    }
     return IMG_Load_IO(io, closeio);
 }
-}
+}    //namespace
 
 // 内部变量
 static MIX_Mixer* gMixer = nullptr;
@@ -103,11 +107,20 @@ static int SfxNextTrack = 0;
 
 static MIX_Track* AcquireSfxTrack(MIX_Audio* audio)
 {
-    if (audio == nullptr) return nullptr;
+    if (audio == nullptr)
+    {
+        return nullptr;
+    }
     int idx = SfxNextTrack;
     SfxNextTrack++;
-    if (SfxNextTrack > 9) SfxNextTrack = 0;
-    if (!MIX_SetTrackAudio(SfxTracks[idx], audio)) return nullptr;
+    if (SfxNextTrack > 9)
+    {
+        SfxNextTrack = 0;
+    }
+    if (!MIX_SetTrackAudio(SfxTracks[idx], audio))
+    {
+        return nullptr;
+    }
     return SfxTracks[idx];
 }
 
@@ -125,7 +138,10 @@ bool EventFilter(void* p, SDL_Event* e)
     case SDL_EVENT_GAMEPAD_BUTTON_UP:
         return false;
     case SDL_EVENT_FINGER_MOTION:
-        if (CellPhone == 0) return false;
+        if (CellPhone == 0)
+        {
+            return false;
+        }
         break;
     }
     return true;
@@ -168,18 +184,30 @@ void InitialMusic()
     spec.channels = 2;
     gMixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec);
     if (MusicTrack == nullptr)
+    {
         MusicTrack = MIX_CreateTrack(gMixer);
+    }
     for (int i = 0; i < 10; i++)
+    {
         if (SfxTracks[i] == nullptr)
+        {
             SfxTracks[i] = MIX_CreateTrack(gMixer);
+        }
+    }
     SfxNextTrack = 0;
 
     for (int i = 0; i < (int)Music.size(); i++)
     {
-        if (Music[i] != nullptr) { MIX_DestroyAudio(Music[i]); Music[i] = nullptr; }
+        if (Music[i] != nullptr)
+        {
+            MIX_DestroyAudio(Music[i]);
+            Music[i] = nullptr;
+        }
         std::string str = AppPath + "music/" + std::to_string(i) + ".mp3";
         if (filefunc::fileExist(str))
+        {
             Music[i] = MIX_LoadAudio(nullptr, str.c_str(), false);
+        }
         else
         {
             str = AppPath + "music/" + std::to_string(i) + ".mid";
@@ -200,30 +228,80 @@ void InitialMusic()
 
     for (int i = 0; i < (int)ESound.size(); i++)
     {
-        if (ESound[i] != nullptr) { MIX_DestroyAudio(ESound[i]); ESound[i] = nullptr; }
+        if (ESound[i] != nullptr)
+        {
+            MIX_DestroyAudio(ESound[i]);
+            ESound[i] = nullptr;
+        }
         std::string str = AppPath + "sound/e" + std::to_string(i) + ".wav";
         if (filefunc::fileExist(str))
+        {
             ESound[i] = MIX_LoadAudio(nullptr, str.c_str(), false);
+        }
     }
     for (int i = 0; i < (int)ASound.size(); i++)
     {
-        if (ASound[i] != nullptr) { MIX_DestroyAudio(ASound[i]); ASound[i] = nullptr; }
+        if (ASound[i] != nullptr)
+        {
+            MIX_DestroyAudio(ASound[i]);
+            ASound[i] = nullptr;
+        }
         auto buf = std::format("sound/atk{:02d}.wav", i);
         std::string str = AppPath + buf;
         if (filefunc::fileExist(str))
+        {
             ASound[i] = MIX_LoadAudio(nullptr, str.c_str(), false);
+        }
     }
 }
 
 void FreeAllMusic()
 {
-    if (MusicTrack) { MIX_StopTrack(MusicTrack, 0); MIX_DestroyTrack(MusicTrack); MusicTrack = nullptr; }
+    if (MusicTrack)
+    {
+        MIX_StopTrack(MusicTrack, 0);
+        MIX_DestroyTrack(MusicTrack);
+        MusicTrack = nullptr;
+    }
     for (int i = 0; i < 10; i++)
-        if (SfxTracks[i]) { MIX_StopTrack(SfxTracks[i], 0); MIX_DestroyTrack(SfxTracks[i]); SfxTracks[i] = nullptr; }
-    for (auto& m : Music) if (m) { MIX_DestroyAudio(m); m = nullptr; }
-    for (auto& s : ASound) if (s) { MIX_DestroyAudio(s); s = nullptr; }
-    for (auto& s : ESound) if (s) { MIX_DestroyAudio(s); s = nullptr; }
-    if (gMixer) { MIX_DestroyMixer(gMixer); gMixer = nullptr; MIX_Quit(); }
+    {
+        if (SfxTracks[i])
+        {
+            MIX_StopTrack(SfxTracks[i], 0);
+            MIX_DestroyTrack(SfxTracks[i]);
+            SfxTracks[i] = nullptr;
+        }
+    }
+    for (auto& m : Music)
+    {
+        if (m)
+        {
+            MIX_DestroyAudio(m);
+            m = nullptr;
+        }
+    }
+    for (auto& s : ASound)
+    {
+        if (s)
+        {
+            MIX_DestroyAudio(s);
+            s = nullptr;
+        }
+    }
+    for (auto& s : ESound)
+    {
+        if (s)
+        {
+            MIX_DestroyAudio(s);
+            s = nullptr;
+        }
+    }
+    if (gMixer)
+    {
+        MIX_DestroyMixer(gMixer);
+        gMixer = nullptr;
+        MIX_Quit();
+    }
 }
 
 void PlayMP3(int MusicNum, int times, int frombeginning)
@@ -238,7 +316,10 @@ void PlayMP3(int MusicNum, int times, int frombeginning)
         {
             MIX_StopTrack(MusicTrack, 0);
             MIX_SetTrackAudio(MusicTrack, Music[MusicNum]);
-            if (frombeginning == 1) MIX_SetTrackPlaybackPosition(MusicTrack, 0);
+            if (frombeginning == 1)
+            {
+                MIX_SetTrackPlaybackPosition(MusicTrack, 0);
+            }
             MIX_SetTrackGain(MusicTrack, VOLUME / 100.0f);
             MIX_SetTrackLoops(MusicTrack, -1);
             SDL_PropertiesID id = SDL_CreateProperties();
@@ -258,7 +339,10 @@ void StopMP3(int frombeginning)
     if (MusicTrack != nullptr)
     {
         MIX_StopTrack(MusicTrack, 0);
-        if (frombeginning == 1) MIX_SetTrackPlaybackPosition(MusicTrack, 0);
+        if (frombeginning == 1)
+        {
+            MIX_SetTrackPlaybackPosition(MusicTrack, 0);
+        }
     }
 }
 
@@ -270,7 +354,10 @@ void PlaySound(int SoundNum, int times)
         if (ESound[SoundNum] != nullptr)
         {
             MIX_Track* track = AcquireSfxTrack(ESound[SoundNum]);
-            if (track == nullptr) return;
+            if (track == nullptr)
+            {
+                return;
+            }
             MIX_SetTrackGain(track, VOLUMEWAV / 100.0f);
             MIX_SetTrackLoops(track, loops);
             MIX_PlayTrack(track, 0);
@@ -286,7 +373,10 @@ void PlaySound(int SoundNum, int times, int x, int y, int z)
         if (ESound[SoundNum] != nullptr)
         {
             MIX_Track* track = AcquireSfxTrack(ESound[SoundNum]);
-            if (track == nullptr) return;
+            if (track == nullptr)
+            {
+                return;
+            }
             if (SOUND3D == 1)
             {
                 MIX_Point3D pos;
@@ -310,7 +400,10 @@ void PlaySoundA(int SoundNum, int times)
         if (ASound[SoundNum] != nullptr)
         {
             MIX_Track* track = AcquireSfxTrack(ASound[SoundNum]);
-            if (track == nullptr) return;
+            if (track == nullptr)
+            {
+                return;
+            }
             MIX_SetTrackGain(track, VOLUMEWAV / 100.0f);
             MIX_SetTrackLoops(track, loops);
             MIX_PlayTrack(track, 0);
@@ -367,41 +460,72 @@ bool IsStringUTF8(const std::string& str)
     for (size_t i = 0; i < str.size(); i++)
     {
         unsigned char c = (unsigned char)str[i];
-        if (c & 0x80) bAllAscii = false;
+        if (c & 0x80)
+        {
+            bAllAscii = false;
+        }
         if (nBytes == 0)
         {
             if (c >= 0x80)
             {
-                if (c >= 0xFC) nBytes = 6;
-                else if (c >= 0xF8) nBytes = 5;
-                else if (c >= 0xF0) nBytes = 4;
-                else if (c >= 0xE0) nBytes = 3;
-                else if (c >= 0xC0) nBytes = 2;
-                else return false;
+                if (c >= 0xFC)
+                {
+                    nBytes = 6;
+                }
+                else if (c >= 0xF8)
+                {
+                    nBytes = 5;
+                }
+                else if (c >= 0xF0)
+                {
+                    nBytes = 4;
+                }
+                else if (c >= 0xE0)
+                {
+                    nBytes = 3;
+                }
+                else if (c >= 0xC0)
+                {
+                    nBytes = 2;
+                }
+                else
+                {
+                    return false;
+                }
                 nBytes--;
             }
         }
         else
         {
-            if ((c & 0xC0) != 0x80) return false;
+            if ((c & 0xC0) != 0x80)
+            {
+                return false;
+            }
             nBytes--;
         }
     }
-    if (nBytes > 0) return false;
+    if (nBytes > 0)
+    {
+        return false;
+    }
     return true;
 }
 
 std::string Simplified2Traditional(const std::string& str)
 {
     if (ccs2t)
+    {
         return ((SimpleCC*)ccs2t)->conv(str);
+    }
     return str;
 }
 
 std::string Traditional2Simplified(const std::string& str)
 {
     if (cct2s)
+    {
         return ((SimpleCC*)cct2s)->conv(str);
+    }
     return str;
 }
 
@@ -411,10 +535,22 @@ std::string Traditional2Simplified(const std::string& str)
 int utf8follow(char c1)
 {
     unsigned char c = (unsigned char)c1;
-    if (c < 0x80) return 1;
-    if (c < 0xC0) return 1;
-    if (c < 0xE0) return 2;
-    if (c < 0xF0) return 3;
+    if (c < 0x80)
+    {
+        return 1;
+    }
+    if (c < 0xC0)
+    {
+        return 1;
+    }
+    if (c < 0xE0)
+    {
+        return 2;
+    }
+    if (c < 0xF0)
+    {
+        return 3;
+    }
     return 4;
 }
 
@@ -515,14 +651,23 @@ void* CreateFontTile(int num, int usesur, int& w, int& h)
 
 void DrawText(const std::string& word, int x_pos, int y_pos, uint32 color, int engwidth)
 {
-    if (word.empty()) return;
+    if (word.empty())
+    {
+        return;
+    }
     uint8_t r, g, b;
     GetRGBA(color, &r, &g, &b);
 
     std::string text = word;
-    if (SIMPLE == 1) text = Traditional2Simplified(text.c_str());
+    if (SIMPLE == 1)
+    {
+        text = Traditional2Simplified(text.c_str());
+    }
 
-    if (engwidth <= 0) engwidth = CHINESE_FONT_REALSIZE / 2;
+    if (engwidth <= 0)
+    {
+        engwidth = CHINESE_FONT_REALSIZE / 2;
+    }
 
     SDL_FRect dest;
     dest.x = (float)x_pos;
@@ -545,7 +690,9 @@ void DrawText(const std::string& word, int x_pos, int y_pos, uint32 color, int e
             int len = utf8follow(text[i]);
             k = (unsigned char)text[i] + (unsigned char)text[i + 1] * 256;
             if (len == 3 && i + 2 < text.size())
+            {
                 k += (unsigned char)text[i + 2] * 65536;
+            }
             i += len;
         }
 
@@ -567,9 +714,13 @@ void DrawText(const std::string& word, int x_pos, int y_pos, uint32 color, int e
             SDL_RenderTexture(render, tex, nullptr, &dest);
         }
         if (k >= 128)
+        {
             dest.x += CHINESE_FONT_REALSIZE;
+        }
         else
+        {
             dest.x += engwidth;
+        }
     }
     HaveText = 1;
 }
@@ -577,9 +728,13 @@ void DrawText(const std::string& word, int x_pos, int y_pos, uint32 color, int e
 void DrawEngText(const std::string& word, int x_pos, int y_pos, uint32 color)
 {
     if (ENGLISH_FONT_SIZE == ENGLISH_FONT_REALSIZE)
+    {
         DrawText(word, x_pos, y_pos - 4, color, -1);
+    }
     else
+    {
         DrawText(word, x_pos, y_pos - 4, color, (ENGLISH_FONT_REALSIZE / 2) + 1);
+    }
 }
 
 void DrawShadowText(const std::string& word, int x_pos, int y_pos, uint32 color1, uint32 color2,
@@ -591,14 +746,20 @@ void DrawShadowText(const std::string& word, int x_pos, int y_pos, uint32 color1
     if (Tex == nullptr)
     {
         if (TEXT_LAYER != 0)
+        {
             SDL_SetRenderTarget(render, TextScreenTex);
+        }
     }
     else
+    {
         SDL_SetRenderTarget(render, Tex);
+    }
 
     int w, h;
     if (realPosition == 0)
+    {
         GetRealRect(x_pos, y_pos, w, h);
+    }
 
     if (eng == 0)
     {
@@ -646,6 +807,7 @@ void DrawRectangle(int x, int y, int w, int h, uint32 colorin, uint32 colorframe
 
         // 圆角处理
         for (int i1 = 0; i1 <= w; i1++)
+        {
             for (int i2 = 0; i2 <= h; i2++)
             {
                 int l1 = i1 + i2;
@@ -658,6 +820,7 @@ void DrawRectangle(int x, int y, int w, int h, uint32 colorin, uint32 colorframe
                     SDL_RenderPoint(render, (float)i1, (float)i2);
                 }
             }
+        }
 
         SDL_SetRenderTarget(render, ptex);
         SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
@@ -688,6 +851,7 @@ void DrawRectangleWithoutFrame(int x, int y, int w, int h, uint32 colorin, int a
             SDL_SetSurfaceBlendMode(tempsur, SDL_BLENDMODE_BLEND);
 
             for (int i1 = 0; i1 < w; i1++)
+            {
                 for (int i2 = 0; i2 < h; i2++)
                 {
                     uint8_t a = 255;
@@ -702,6 +866,7 @@ void DrawRectangleWithoutFrame(int x, int y, int w, int h, uint32 colorin, int a
                     }
                     PutPixel(tempsur, i1, i2, MapRGBA(r, g, b, a));
                 }
+            }
 
             SDL_Texture* temptex = SDL_CreateTextureFromSurface(render, tempsur);
             SDL_SetTextureBlendMode(temptex, SDL_BLENDMODE_BLEND);
@@ -742,7 +907,10 @@ void DrawItemFrame(int x, int y, int realcoord)
 
 void DrawPartPic(void* pic, int x, int y, int w, int h, int x1, int y1)
 {
-    if (pic == nullptr) return;
+    if (pic == nullptr)
+    {
+        return;
+    }
     SDL_FRect src = { (float)x, (float)y, (float)w, (float)h };
     SDL_FRect dst = { (float)x1, (float)y1, (float)w, (float)h };
     SDL_RenderTexture(render, (SDL_Texture*)pic, &src, &dst);
@@ -807,7 +975,9 @@ void CreateMainRenderTextures()
     ImgBGroundTex = SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, ImageWidth, ImageHeight);
     SimpleStateTex = SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, 960, 90);
     for (int i = 0; i < 6; i++)
+    {
         SimpleStatusTex[i] = SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, 270, 90);
+    }
 
     SDL_SetTextureBlendMode(screenTex, SDL_BLENDMODE_NONE);
     SDL_SetTextureBlendMode(ImgSGroundTex, SDL_BLENDMODE_NONE);
@@ -828,7 +998,10 @@ void ResizeWindow(int w, int h)
     CreateAssistantRenderTextures();
     SDL_SetRenderTarget(render, screenTex);
     int temp;
-    if (MenuEscType >= 0) LoadTeamSimpleStatus(temp);
+    if (MenuEscType >= 0)
+    {
+        LoadTeamSimpleStatus(temp);
+    }
     UpdateAllScreen();
 }
 
@@ -840,7 +1013,10 @@ void ResizeSimpleText(int initial)
         GetRealRect(x, y, w1, h1);
         for (int i = 0; i < 6; i++)
         {
-            if (SimpleTextTex[i] != nullptr) SDL_DestroyTexture(SimpleTextTex[i]);
+            if (SimpleTextTex[i] != nullptr)
+            {
+                SDL_DestroyTexture(SimpleTextTex[i]);
+            }
             SimpleTextTex[i] = SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, w1 + x, y + h1);
             SDL_SetTextureBlendMode(SimpleTextTex[i], SDL_BLENDMODE_NONE);
         }
@@ -855,7 +1031,9 @@ void SwitchFullscreen()
 void QuitConfirm()
 {
     if (EXIT_GAME == 0 || AskingQuit)
+    {
         return;
+    }
 
     AskingQuit = true;
     RecordFreshScreen();
@@ -863,7 +1041,9 @@ void QuitConfirm()
     UpdateAllScreen();
     std::string menuStr[] = { "取消", "確認" };
     if (CommonMenu(CENTER_X * 2 - 100, 10, 47, 1, 0, menuStr, 2) == 1)
+    {
         Quit();
+    }
     LoadFreshScreen();
     FreeFreshScreen();
     UpdateAllScreen();
@@ -894,31 +1074,64 @@ uint32 CheckBasicEvent()
     SDL_FlushEvent(SDL_EVENT_MOUSE_WHEEL);
     SDL_FlushEvent(SDL_EVENT_JOYSTICK_AXIS_MOTION);
     SDL_FlushEvent(SDL_EVENT_FINGER_MOTION);
-    if (CellPhone == 1) SDL_FlushEvent(SDL_EVENT_MOUSE_MOTION);
+    if (CellPhone == 1)
+    {
+        SDL_FlushEvent(SDL_EVENT_MOUSE_MOTION);
+    }
 
     uint32 result = event.type;
     switch (event.type)
     {
     case SDL_EVENT_JOYSTICK_BUTTON_UP:
         event.type = SDL_EVENT_KEY_UP;
-        if (event.jbutton.button == JOY_ESCAPE) event.key.key = SDLK_ESCAPE;
-        else if (event.jbutton.button == JOY_RETURN) event.key.key = SDLK_RETURN;
+        if (event.jbutton.button == JOY_ESCAPE)
+        {
+            event.key.key = SDLK_ESCAPE;
+        }
+        else if (event.jbutton.button == JOY_RETURN)
+        {
+            event.key.key = SDLK_RETURN;
+        }
         else if (event.jbutton.button == JOY_MOUSE_LEFT)
         {
             event.button.button = SDL_BUTTON_LEFT;
             event.type = SDL_EVENT_MOUSE_BUTTON_UP;
         }
-        else if (event.jbutton.button == JOY_UP) event.key.key = SDLK_UP;
-        else if (event.jbutton.button == JOY_DOWN) event.key.key = SDLK_DOWN;
-        else if (event.jbutton.button == JOY_LEFT) event.key.key = SDLK_LEFT;
-        else if (event.jbutton.button == JOY_RIGHT) event.key.key = SDLK_RIGHT;
+        else if (event.jbutton.button == JOY_UP)
+        {
+            event.key.key = SDLK_UP;
+        }
+        else if (event.jbutton.button == JOY_DOWN)
+        {
+            event.key.key = SDLK_DOWN;
+        }
+        else if (event.jbutton.button == JOY_LEFT)
+        {
+            event.key.key = SDLK_LEFT;
+        }
+        else if (event.jbutton.button == JOY_RIGHT)
+        {
+            event.key.key = SDLK_RIGHT;
+        }
         break;
     case SDL_EVENT_JOYSTICK_BUTTON_DOWN:
         event.type = SDL_EVENT_KEY_DOWN;
-        if (event.jbutton.button == JOY_UP) event.key.key = SDLK_UP;
-        else if (event.jbutton.button == JOY_DOWN) event.key.key = SDLK_DOWN;
-        else if (event.jbutton.button == JOY_LEFT) event.key.key = SDLK_LEFT;
-        else if (event.jbutton.button == JOY_RIGHT) event.key.key = SDLK_RIGHT;
+        if (event.jbutton.button == JOY_UP)
+        {
+            event.key.key = SDLK_UP;
+        }
+        else if (event.jbutton.button == JOY_DOWN)
+        {
+            event.key.key = SDLK_DOWN;
+        }
+        else if (event.jbutton.button == JOY_LEFT)
+        {
+            event.key.key = SDLK_LEFT;
+        }
+        else if (event.jbutton.button == JOY_RIGHT)
+        {
+            event.key.key = SDLK_RIGHT;
+        }
         break;
     case SDL_EVENT_JOYSTICK_HAT_MOTION:
         event.type = SDL_EVENT_KEY_DOWN;
@@ -937,7 +1150,10 @@ uint32 CheckBasicEvent()
             {
                 uint32 msCount = SDL_GetTicks() - FingerTick;
                 uint32 msWait = BattleSelecting ? 100 : 50;
-                if (msCount > 500) FingerCount = 1;
+                if (msCount > 500)
+                {
+                    FingerCount = 1;
+                }
                 if ((FingerCount <= 2 && msCount > 200) || (FingerCount > 2 && msCount > msWait))
                 {
                     FingerCount++;
@@ -966,28 +1182,37 @@ uint32 CheckBasicEvent()
             FingerCount = 0;
             if (ShowVirtualKey != 0)
             {
-            int x, y;
-            SDL_GetMouseState2(x, y);
-            auto inVirtualKey = [&](int mx, int my, uint32& key) -> uint32 {
-                key = 0;
-                if (InRegion(mx, my, VirtualKeyX, VirtualKeyY, VirtualKeySize, VirtualKeySize))
-                    key = SDLK_UP;
-                if (InRegion(mx, my, VirtualKeyX - VirtualKeySize - VirtualKeySpace, VirtualKeyY + VirtualKeySize + VirtualKeySpace, VirtualKeySize, VirtualKeySize))
-                    key = SDLK_LEFT;
-                if (InRegion(mx, my, VirtualKeyX, VirtualKeyY + VirtualKeySize * 2 + VirtualKeySpace * 2, VirtualKeySize, VirtualKeySize))
-                    key = SDLK_DOWN;
-                if (InRegion(mx, my, VirtualKeyX + VirtualKeySize + VirtualKeySpace, VirtualKeyY + VirtualKeySize, VirtualKeySize + VirtualKeySpace, VirtualKeySize))
-                    key = SDLK_RIGHT;
-                return key;
-            };
-            uint32 vk = 0;
-            inVirtualKey(x, y, vk);
-            VirtualKeyValue = vk;
-            if (VirtualKeyValue != 0)
-            {
-                event.type = SDL_EVENT_KEY_DOWN;
-                event.key.key = VirtualKeyValue;
-            }
+                int x, y;
+                SDL_GetMouseState2(x, y);
+                auto inVirtualKey = [&](int mx, int my, uint32& key) -> uint32
+                {
+                    key = 0;
+                    if (InRegion(mx, my, VirtualKeyX, VirtualKeyY, VirtualKeySize, VirtualKeySize))
+                    {
+                        key = SDLK_UP;
+                    }
+                    if (InRegion(mx, my, VirtualKeyX - VirtualKeySize - VirtualKeySpace, VirtualKeyY + VirtualKeySize + VirtualKeySpace, VirtualKeySize, VirtualKeySize))
+                    {
+                        key = SDLK_LEFT;
+                    }
+                    if (InRegion(mx, my, VirtualKeyX, VirtualKeyY + VirtualKeySize * 2 + VirtualKeySpace * 2, VirtualKeySize, VirtualKeySize))
+                    {
+                        key = SDLK_DOWN;
+                    }
+                    if (InRegion(mx, my, VirtualKeyX + VirtualKeySize + VirtualKeySpace, VirtualKeyY + VirtualKeySize, VirtualKeySize + VirtualKeySpace, VirtualKeySize))
+                    {
+                        key = SDLK_RIGHT;
+                    }
+                    return key;
+                };
+                uint32 vk = 0;
+                inVirtualKey(x, y, vk);
+                VirtualKeyValue = vk;
+                if (VirtualKeyValue != 0)
+                {
+                    event.type = SDL_EVENT_KEY_DOWN;
+                    event.key.key = VirtualKeyValue;
+                }
             }
         }
         break;
@@ -997,29 +1222,42 @@ uint32 CheckBasicEvent()
         {
             int x, y;
             SDL_GetMouseState2(x, y);
-            auto inEscape = [](int mx, int my) -> bool {
+            auto inEscape = [](int mx, int my) -> bool
+            {
                 return InRegion(mx, my, CENTER_X * 2 - 100, CENTER_Y * 2 - 200, 100, 100)
                     || InRegion(mx, my, CENTER_X + 50, CENTER_Y * 2 - 70, 60, 60);
             };
-            auto inReturn = [](int mx, int my) -> bool {
+            auto inReturn = [](int mx, int my) -> bool
+            {
                 return InRegion(mx, my, CENTER_X * 2 - 200, CENTER_Y * 2 - 100, 100, 100);
             };
-            auto inTab = [](int mx, int my) -> bool {
+            auto inTab = [](int mx, int my) -> bool
+            {
                 return InRegion(mx, my, CENTER_X - 120, CENTER_Y * 2 - 70, 60, 60);
             };
-            auto inSwitchShowVirtualKey = [](int mx, int my) -> bool {
+            auto inSwitchShowVirtualKey = [](int mx, int my) -> bool
+            {
                 return (mx < 100) && (my > CENTER_Y * 2 - 100);
             };
-            auto inVirtualKey = [&](int mx, int my, uint32& key) -> uint32 {
+            auto inVirtualKey = [&](int mx, int my, uint32& key) -> uint32
+            {
                 key = 0;
                 if (InRegion(mx, my, VirtualKeyX, VirtualKeyY, VirtualKeySize, VirtualKeySize))
+                {
                     key = SDLK_UP;
+                }
                 if (InRegion(mx, my, VirtualKeyX - VirtualKeySize - VirtualKeySpace, VirtualKeyY + VirtualKeySize + VirtualKeySpace, VirtualKeySize, VirtualKeySize))
+                {
                     key = SDLK_LEFT;
+                }
                 if (InRegion(mx, my, VirtualKeyX, VirtualKeyY + VirtualKeySize * 2 + VirtualKeySpace * 2, VirtualKeySize, VirtualKeySize))
+                {
                     key = SDLK_DOWN;
+                }
                 if (InRegion(mx, my, VirtualKeyX + VirtualKeySize + VirtualKeySpace, VirtualKeyY + VirtualKeySize, VirtualKeySize + VirtualKeySpace, VirtualKeySize))
+                {
                     key = SDLK_RIGHT;
+                }
                 return key;
             };
             if (inEscape(x, y))
@@ -1068,9 +1306,17 @@ uint32 CheckBasicEvent()
         if (Where == 2 && (event.key.key == SDLK_ESCAPE || event.button.button == SDL_BUTTON_RIGHT))
         {
             for (int i = 0; i < BRoleAmount; i++)
-                if (Brole[i].Team == 0) Brole[i].Auto = 0;
+            {
+                if (Brole[i].Team == 0)
+                {
+                    Brole[i].Auto = 0;
+                }
+            }
         }
-        if (event.key.key == SDLK_KP_ENTER) event.key.key = SDLK_RETURN;
+        if (event.key.key == SDLK_KP_ENTER)
+        {
+            event.key.key = SDLK_RETURN;
+        }
         break;
     }
     return result;
@@ -1081,10 +1327,22 @@ int AngleToDirection(double y, double double_x)
     int result = 0;
     double angle = atan2(-y, double_x);
     double ar = M_PI / 4;
-    if (fabs(angle + M_PI / 8) < ar) result = SDLK_RIGHT;
-    if (fabs(angle - M_PI * 3 / 8) < ar) result = SDLK_UP;
-    if (fabs(angle - M_PI * 7 / 8) < ar || angle < -M_PI * 7 / 8) result = SDLK_LEFT;
-    if (fabs(angle + M_PI * 5 / 8) < ar) result = SDLK_DOWN;
+    if (fabs(angle + M_PI / 8) < ar)
+    {
+        result = SDLK_RIGHT;
+    }
+    if (fabs(angle - M_PI * 3 / 8) < ar)
+    {
+        result = SDLK_UP;
+    }
+    if (fabs(angle - M_PI * 7 / 8) < ar || angle < -M_PI * 7 / 8)
+    {
+        result = SDLK_LEFT;
+    }
+    if (fabs(angle + M_PI * 5 / 8) < ar)
+    {
+        result = SDLK_DOWN;
+    }
     if (ScreenRotate == 1)
     {
         switch (result)
@@ -1100,36 +1358,6 @@ int AngleToDirection(double y, double double_x)
 
 void ChangeCol()
 {
-    if (PNG_TILE == 0)
-    {
-        uint32 now = SDL_GetTicks();
-        if (NIGHT_EFFECT == 1 && Where == 0)
-        {
-            now_time += 0.3f;
-            if (now_time > 1440) now_time = 0;
-            float p = now_time / 1440.0f;
-            if (p > 0.5f) p = 1 - p;
-            float p0 = 0.6f + p, p1 = 0.6f + p, p2 = 1 - 0.4f / 1.3f + p / 1.3f;
-            for (int i = 0; i < 256; i++)
-            {
-                int b = i * 3;
-                ACol1[b] = (uint8_t)std::min((int)(ACol2[b] * p0), 63);
-                ACol1[b + 1] = (uint8_t)std::min((int)(ACol2[b + 1] * p1), 63);
-                ACol1[b + 2] = (uint8_t)std::min((int)(ACol2[b + 2] * p2), 63);
-            }
-            memcpy(ACol, ACol1, 768);
-        }
-
-        int add0 = 0xE0, len = 8;
-        int a = now / 200 % len;
-        memcpy(&ACol[add0 * 3 + a * 3], &ACol1[add0 * 3], (len - a) * 3);
-        memcpy(&ACol[add0 * 3], &ACol1[add0 * 3 + (len - a) * 3], a * 3);
-
-        add0 = 0xF4; len = 9;
-        a = now / 200 % len;
-        memcpy(&ACol[add0 * 3 + a * 3], &ACol1[add0 * 3], (len - a) * 3);
-        memcpy(&ACol[add0 * 3], &ACol1[add0 * 3 + (len - a) * 3], a * 3);
-    }
 }
 
 //----------------------------------------------------------------------
@@ -1138,11 +1366,17 @@ void ChangeCol()
 
 // 从zip中读取文件内容（返回string）
 std::string zip_express(zip_t* z, const std::string& filename)
-{
+    {
     std::string result;
-    if (!z) return result;
+    if (!z)
+    {
+        return result;
+    }
     zip_file_t* zf = zip_fopen(z, filename.c_str(), ZIP_FL_UNCHANGED);
-    if (!zf) return result;
+    if (!zf)
+    {
+        return result;
+    }
     zip_stat_t zs;
     zip_stat_init(&zs);
     if (zip_stat(z, filename.c_str(), ZIP_FL_UNCHANGED, &zs) != 0)
@@ -1153,41 +1387,45 @@ std::string zip_express(zip_t* z, const std::string& filename)
     int len = (int)zs.size;
     result.resize(len);
     zip_int64_t bytes_read = zip_fread(zf, &result[0], len);
-    if (bytes_read < 0) result.clear();
+    if (bytes_read < 0)
+    {
+        result.clear();
+    }
     zip_fclose(zf);
     return result;
 }
 
 void InitialPicArrays()
 {
-    if (PNG_TILE > 0)
-    {
-        MPicAmount = LoadPNGTiles("resource/mmap", MPNGIndex, PNG_LOAD_ALL);
-        SPicAmount = LoadPNGTiles("resource/smap", SPNGIndex, PNG_LOAD_ALL);
-        HPicAmount = LoadPNGTiles("resource/head", HPNGIndex, PNG_LOAD_ALL);
-        IPicAmount = LoadPNGTiles("resource/item", IPNGIndex, PNG_LOAD_ALL);
-        CPicAmount = LoadPNGTiles("resource/cloud", CPNGIndex, 1);
-        pMPic = nullptr; pSPic = nullptr; pHPic = nullptr; pIPic = nullptr;
+    MPicAmount = LoadPNGTiles("resource/mmap", MPNGIndex, 0);
+    SPicAmount = LoadPNGTiles("resource/smap", SPNGIndex, 0);
+    HPicAmount = LoadPNGTiles("resource/head", HPNGIndex, 0);
+    IPicAmount = LoadPNGTiles("resource/item", IPNGIndex, 0);
+    CPicAmount = LoadPNGTiles("resource/cloud", CPNGIndex, 1);
+    pMPic = nullptr;
+    pSPic = nullptr;
+    pHPic = nullptr;
+    pIPic = nullptr;
 
-        if (PNG_TILE == 2 && PNG_LOAD_ALL == 0)
-        {
-            pMPic = zip_open((AppPath + "resource/mmap.zip").c_str(), ZIP_RDONLY, nullptr);
-            pSPic = zip_open((AppPath + "resource/smap.zip").c_str(), ZIP_RDONLY, nullptr);
-            pHPic = zip_open((AppPath + "resource/head.zip").c_str(), ZIP_RDONLY, nullptr);
-            pIPic = zip_open((AppPath + "resource/item.zip").c_str(), ZIP_RDONLY, nullptr);
-        }
-        ReadTiles();
+    //if (PNG_TILE == 2)
+    {
+        pMPic = zip_open((AppPath + "resource/mmap.zip").c_str(), ZIP_RDONLY, nullptr);
+        pSPic = zip_open((AppPath + "resource/smap.zip").c_str(), ZIP_RDONLY, nullptr);
+        pHPic = zip_open((AppPath + "resource/head.zip").c_str(), ZIP_RDONLY, nullptr);
+        pIPic = zip_open((AppPath + "resource/item.zip").c_str(), ZIP_RDONLY, nullptr);
     }
+    ReadTiles();
 }
 
 void ReadTiles()
 {
-    if (PNG_TILE > 0 && PNG_LOAD_ALL == 0)
+    for (int i = 2001; i < MPicAmount; i++)
     {
-        for (int i = 2001; i < MPicAmount; i++)
-            LoadOnePNGTexture("resource/mmap", pMPic, MPNGIndex[i]);
-        for (int i = 2501; i <= 2528; i++)
-            LoadOnePNGTexture("resource/smap", pSPic, SPNGIndex[i]);
+        LoadOnePNGTexture("resource/mmap", pMPic, MPNGIndex[i]);
+    }
+    for (int i = 2501; i <= 2528; i++)
+    {
+        LoadOnePNGTexture("resource/smap", pSPic, SPNGIndex[i]);
     }
     ReadingTiles = false;
 }
@@ -1231,11 +1469,17 @@ void ReadTxtFileToBuffer(char* p, const std::string& filename)
     std::string content = filefunc::readFileToString(filename);
     auto nums = strfunc::findNumbers<int>(content);
     if (!nums.empty())
+    {
         memcpy(p, nums.data(), nums.size() * 4);
+    }
 }
 
 int FileGetlength(const std::string& filename) { return 0; }
-void FreeFileBuffer(char*& p) { delete[] p; p = nullptr; }
+void FreeFileBuffer(char*& p)
+{
+    delete[] p;
+    p = nullptr;
+}
 
 TIDXGRP LoadIdxGrp(const std::string& stridx, const std::string& strgrp)
 {
@@ -1268,12 +1512,22 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
     std::string fileExt = kDefaultTileExt;
 
     // 从index文本/二进制中解析偏移，返回最大索引+1
-    auto FillOffsetsFromNumbers = [&](const std::vector<int>& values) {
+    auto FillOffsetsFromNumbers = [&](const std::vector<int>& values)
+    {
         int maxIndex = -1;
         for (size_t idx = 0; idx < values.size() / 3; idx++)
+        {
             if (values[idx * 3] > maxIndex)
+            {
                 maxIndex = values[idx * 3];
-        if (maxIndex < 0) { result = 0; offset.clear(); return; }
+            }
+        }
+        if (maxIndex < 0)
+        {
+            result = 0;
+            offset.clear();
+            return;
+        }
         result = maxIndex + 1;
         offset.assign(result * 2, 0);
         for (size_t idx = 0; idx < values.size() / 3; idx++)
@@ -1286,6 +1540,7 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
             }
         }
     };
+    int count = 0;
 
     // 尝试从zip加载
     if (PNG_TILE == 2)
@@ -1307,7 +1562,9 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
                 std::string buf = zip_express(z, "index.ka");
                 offset.resize(buf.size() / 2 + 2, 0);
                 if (!buf.empty())
+                {
                     memcpy(offset.data(), buf.data(), buf.size());
+                }
                 result = (int)(buf.size() / 4);
             }
 
@@ -1316,57 +1573,67 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
             {
                 auto nums = strfunc::findNumbers<int>(zip_express(z, "fightframe.txt"));
                 for (size_t i = 0; i < nums.size() / 2; i++)
+                {
                     frame[nums[i * 2]] = (int16_t)nums[i * 2 + 1];
+                }
             }
 
             fileExt = DetectTileExtensionInZip(z, maxCount);
 
-            // 扫描zip中最大文件编号
-            //for (int i = std::max(std::max(result - 1, 0), maxCount); i >= 0; i--)
-            //{
-            //    if (zip_name_locate(z, BuildTileFileName(i, fileExt).c_str(), 0) >= 0 ||
-            //        zip_name_locate(z, BuildTileFileName(i, fileExt, 0).c_str(), 0) >= 0)
-            //    {
-            //        if (i + 1 > result) result = i + 1;
-            //        break;
-            //    }
-            //}
-            result = 9999;
-            offset.resize(result * 2, 0);
+                        PNGIndexArray.resize(9999);
+            offset.resize(9999 * 2, 0);
 
-            // 初始化贴图索引, 计算全部帧数和
-            PNGIndexArray.resize(result);
-            int count = 0;
-            for (int i = 0; i < result; i++)
+            std::vector<std::string> files;
+            zip_int64_t numEntries = zip_get_num_entries(z, 0);
+            //get all files in zip
+            for (zip_uint64_t i = 0; i < numEntries; i++)
             {
+                //get file name
+                const char* name = zip_get_name(z, i, 0);
+                files.push_back(name);
+            }
+            // 初始化贴图索引, 计算全部帧数和
+            result = 0;
+            for (auto& file : files)
+            {
+                auto nums = strfunc::findNumbers<int>(file);
+                int i = -1, j = -1;
+                if (nums.size() >= 1)
+                {
+                    i = nums[0];
+                }
+                if (nums.size() >= 2)
+                {
+                    j = nums[1];
+                }
+                if (i < 0)
+                {
+                    continue;
+                }
                 auto& idx = PNGIndexArray[i];
                 idx.FileNum = i;
-                idx.PointerNum = 1;
-                idx.Frame = 1;
+                idx.PointerNum = -1;
+                idx.Frame = 0;
                 idx.FileExt = fileExt;
-                if (zip_name_locate(z, BuildTileFileName(i, fileExt).c_str(), 0) >= 0)
+                count++;
+                if (j < 0)
                 {
                     idx.PointerNum = count;
                     idx.Frame = 1;
-                    count++;
                 }
                 else
                 {
-                    int k = 0;
-                    while (zip_name_locate(z, BuildTileFileName(i, fileExt, k).c_str(), 0) >= 0)
-                    {
-                        k++;
-                        if (k == 1) idx.PointerNum = count;
-                        count++;
-                    }
-                    idx.Frame = k;
+                    idx.PointerNum = count;
+                    idx.Frame = j + 1;
                 }
                 idx.x = offset[i * 2];
                 idx.y = offset[i * 2 + 1];
                 idx.Loaded = 0;
                 idx.UseGRP = 0;
                 idx.Pointers.assign(idx.Frame, nullptr);
+                result = std::max(result, i);
             }
+            PNGIndexArray.resize(result);
         }
         else
         {
@@ -1386,7 +1653,9 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
             memset(frame, 0, 10);
             auto nums = strfunc::findNumbers<int>(filefunc::readFileToString(AppPath + localpath + "fightframe.txt"));
             for (size_t i = 0; i < nums.size() / 2; i++)
+            {
                 frame[nums[i * 2]] = (int16_t)nums[i * 2 + 1];
+            }
         }
 
         // 先尝试 index.txt，再 fallback index.ka
@@ -1403,70 +1672,78 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
             std::string data = filefunc::readFileToString(AppPath + localpath + "index.ka");
             offset.resize(data.size() / 2 + 2, 0);
             if (!data.empty())
+            {
                 memcpy(offset.data(), data.data(), data.size());
+            }
             result = (int)(data.size() / 4);
         }
-
-        // 扫描文件夹中最大文件编号
         fileExt = DetectTileExtensionInDirectory(localpath, maxCount);
-        //for (int i = maxCount; i >= 0; i--)
-        //{
-        //    if (filefunc::fileExist(AppPath + localpath + BuildTileFileName(i, fileExt)) ||
-        //        filefunc::fileExist(AppPath + localpath + BuildTileFileName(i, fileExt, 0)))
-        //    {
-        //        if (i + 1 > result) result = i + 1;
-        //        break;
-        //    }
-        //}
-        result = 9999;
 
-        PNGIndexArray.resize(result);
-        offset.resize(result * 2, 0);
+        auto files =  filefunc::getFilesInPath(AppPath + localpath);
+
+        PNGIndexArray.resize(9999);
+        offset.resize(9999 * 2, 0);
 
         // 计算合法贴图文件总数, 并指定索引数据
         int count = 0;
-        for (int i = 0; i < result; i++)
+        result = 0;
+        for (auto& file: files)
         {
+            auto nums = strfunc::findNumbers<int>(file);
+            int i = -1, j = -1;
+            if (nums.size() >= 1)
+            {
+                i = nums[0];                
+            }
+            if (nums.size() >= 2)
+            {
+                j = nums[1];
+            }
+            if (i < 0)
+            {
+                continue;
+            }
             auto& idx = PNGIndexArray[i];
             idx.FileNum = i;
             idx.PointerNum = -1;
             idx.Frame = 0;
             idx.FileExt = fileExt;
-            if (filefunc::fileExist(AppPath + localpath + BuildTileFileName(i, fileExt)))
+            count++;
+            if (j<0)
             {
-                idx.PointerNum = count;
-                idx.Frame = 1;
-                count++;
+                idx.PointerNum = count;                
+                idx.Frame = 1;                
             }
             else
             {
-                int k = 0;
-                while (filefunc::fileExist(AppPath + localpath + BuildTileFileName(i, fileExt, k)))
-                {
-                    k++;
-                    if (k == 1) idx.PointerNum = count;
-                    count++;
-                }
-                idx.Frame = k;
+                idx.PointerNum = count;
+                idx.Frame = j+1;
             }
             idx.x = offset[i * 2];
             idx.y = offset[i * 2 + 1];
             idx.Loaded = 0;
             idx.UseGRP = 0;
             idx.Pointers.assign(idx.Frame, nullptr);
+            result = std::max(result, i);            
         }
+        PNGIndexArray.resize(result);
     }
 
-    kyslog("%d index, %d real tiles", result, (int)PNGIndexArray.size());
+    kyslog("%d index, %d real tiles", result, count);
 
     if (LoadPic == 1)
     {
         kyslog("Now loading...");
         for (int i = 0; i < result; i++)
+        {
             LoadOnePNGTexture(localpath, z, PNGIndexArray[i], 1);
+        }
         kyslog("end");
     }
-    if (z) zip_close(z);
+    if (z)
+    {
+        zip_close(z);
+    }
     return result;
 }
 
@@ -1476,8 +1753,11 @@ bool LoadTileFromMem(const char* p, int len, const std::string& fileExt, void*& 
 
 void LoadOnePNGTexture(const std::string& path, void* z, TPNGIndex& PNGIndex, int forceLoad)
 {
-    if (PNGIndex.Loaded != 0 && forceLoad == 0) return;
-    bool frommem = (PNG_TILE == 2) && (z != nullptr);
+    if (PNGIndex.Loaded != 0 && forceLoad == 0)
+    {
+        return;
+    }
+    bool frommem = z != nullptr;
     std::string localpath = path;
     if (!frommem)
     {
@@ -1528,7 +1808,7 @@ void LoadOnePNGTexture(const std::string& path, void* z, TPNGIndex& PNGIndex, in
             if (idx.Frame == 1)
             {
                 if (!LoadTileFromFile(AppPath + localpath + BuildTileFileName(idx.FileNum, fileExt), fileExt,
-                    idx.Pointers[0], 0, idx.w, idx.h))
+                        idx.Pointers[0], 0, idx.w, idx.h))
                 {
                     LoadTileFromFile(AppPath + localpath + BuildTileFileName(idx.FileNum, fileExt, 0), fileExt,
                         idx.Pointers[0], 0, idx.w, idx.h);
@@ -1541,7 +1821,11 @@ void LoadOnePNGTexture(const std::string& path, void* z, TPNGIndex& PNGIndex, in
                 {
                     LoadTileFromFile(AppPath + localpath + BuildTileFileName(idx.FileNum, fileExt, j), fileExt,
                         idx.Pointers[j], 0, w1, h1);
-                    if (j == 0) { idx.w = w1; idx.h = h1; }
+                    if (j == 0)
+                    {
+                        idx.w = w1;
+                        idx.h = h1;
+                    }
                 }
             }
         }
@@ -1552,7 +1836,10 @@ void LoadOnePNGTexture(const std::string& path, void* z, TPNGIndex& PNGIndex, in
 bool LoadTileFromFile(const std::string& filename, const std::string& fileExt, void*& pt, int usesur, int& w, int& h)
 {
     pt = nullptr;
-    if (!filefunc::fileExist(filename)) return false;
+    if (!filefunc::fileExist(filename))
+    {
+        return false;
+    }
     SDL_Surface* tempscr = nullptr;
     if (fileExt == ".png")
     {
@@ -1561,10 +1848,16 @@ bool LoadTileFromFile(const std::string& filename, const std::string& fileExt, v
     else
     {
         SDL_IOStream* io = SDL_IOFromFile(filename.c_str(), "rb");
-        if (!io) return false;
+        if (!io)
+        {
+            return false;
+        }
         tempscr = LoadSurfaceByExtension(io, true, fileExt);
     }
-    if (!tempscr) return false;
+    if (!tempscr)
+    {
+        return false;
+    }
     pt = SDL_CreateTextureFromSurface(render, tempscr);
     SDL_DestroySurface(tempscr);
     if (pt)
@@ -1583,9 +1876,15 @@ bool LoadTileFromMem(const char* p, int len, const std::string& fileExt, void*& 
 {
     pt = nullptr;
     SDL_IOStream* rwops = SDL_IOFromConstMem(p, len);
-    if (!rwops) return false;
+    if (!rwops)
+    {
+        return false;
+    }
     SDL_Surface* tempscr = LoadSurfaceByExtension(rwops, true, fileExt);
-    if (!tempscr) return false;
+    if (!tempscr)
+    {
+        return false;
+    }
     pt = SDL_CreateTextureFromSurface(render, tempscr);
     SDL_DestroySurface(tempscr);
     if (pt)
@@ -1613,13 +1912,34 @@ void DestroyAllTextures(int all)
     if (all == 1)
     {
         DestroyRenderTextures();
-        if (screenTex) SDL_DestroyTexture(screenTex);
-        if (ImgSGroundTex) SDL_DestroyTexture(ImgSGroundTex);
-        if (ImgBGroundTex) SDL_DestroyTexture(ImgBGroundTex);
-        if (pMPic) zip_close((zip_t*)pMPic);
-        if (pSPic) zip_close((zip_t*)pSPic);
-        if (pHPic) zip_close((zip_t*)pHPic);
-        if (pIPic) zip_close((zip_t*)pIPic);
+        if (screenTex)
+        {
+            SDL_DestroyTexture(screenTex);
+        }
+        if (ImgSGroundTex)
+        {
+            SDL_DestroyTexture(ImgSGroundTex);
+        }
+        if (ImgBGroundTex)
+        {
+            SDL_DestroyTexture(ImgBGroundTex);
+        }
+        if (pMPic)
+        {
+            zip_close((zip_t*)pMPic);
+        }
+        if (pSPic)
+        {
+            zip_close((zip_t*)pSPic);
+        }
+        if (pHPic)
+        {
+            zip_close((zip_t*)pHPic);
+        }
+        if (pIPic)
+        {
+            zip_close((zip_t*)pIPic);
+        }
     }
     for (auto& pair : CharTex)
     {
@@ -1642,13 +1962,24 @@ void DrawPNGTile(SDL_Renderer* r, TPNGIndex& PNGIndex, int FrameNum, int px, int
     SDL_Rect* region, int shadow, int alpha, uint32 mixColor, int mixAlpha,
     double scalex, double scaley, double angle, SDL_Point* center)
 {
-    if (PNGIndex.Frame == 0) return;
-    if (PNGIndex.Pointers.empty()) return;
+    if (PNGIndex.Frame == 0)
+    {
+        return;
+    }
+    if (PNGIndex.Pointers.empty())
+    {
+        return;
+    }
 
     SDL_Texture* tex = (SDL_Texture*)PNGIndex.Pointers[0];
     if (PNGIndex.Frame > 1)
+    {
         tex = (SDL_Texture*)PNGIndex.Pointers[FrameNum % PNGIndex.Frame];
-    if (tex == nullptr) return;
+    }
+    if (tex == nullptr)
+    {
+        return;
+    }
 
     SDL_FRect dest;
     dest.x = (float)(px - PNGIndex.x);
@@ -1753,7 +2084,9 @@ void DrawPNGTile(SDL_Renderer* r, TPNGIndex& PNGIndex, int FrameNum, int px, int
 
     SDL_RenderTextureRotated(r, tex, pr, &dest, angle, pc, SDL_FLIP_NONE);
     if (newtex)
+    {
         SDL_DestroyTexture(tex);
+    }
 }
 
 bool PlayMovie(const std::string& filename)
@@ -1790,7 +2123,10 @@ int DrawLength(const std::string& str)
 
 int DrawLength(const char* p)
 {
-    if (p == nullptr) return 0;
+    if (p == nullptr)
+    {
+        return 0;
+    }
     return DrawLength(std::string(p));
 }
 
@@ -1801,15 +2137,27 @@ void SetFontSize(int Chnsize, int engsize, int force)
 {
     double scale;
     if (TEXT_LAYER == 0 || force == 1)
+    {
         scale = 1;
+    }
     else
+    {
         scale = std::min((double)RESOLUTIONX / CENTER_X / 2, (double)RESOLUTIONY / CENTER_Y / 2);
+    }
 
     // 非初始化时先关闭字体
     if (force != -1)
     {
-        if (Font) { TTF_CloseFont(Font); Font = nullptr; }
-        if (EngFont) { TTF_CloseFont(EngFont); EngFont = nullptr; }
+        if (Font)
+        {
+            TTF_CloseFont(Font);
+            Font = nullptr;
+        }
+        if (EngFont)
+        {
+            TTF_CloseFont(EngFont);
+            EngFont = nullptr;
+        }
     }
 
     if (force == -1)
@@ -1843,7 +2191,9 @@ void SetFontSize(int Chnsize, int engsize, int force)
     ENGLISH_FONT_REALSIZE = engsize;
 
     if (Font == nullptr || EngFont == nullptr)
+    {
         kyslog("Read fonts failed");
+    }
 
     // 测试中文字体的空格宽度
     if (Font)
@@ -1905,18 +2255,26 @@ void DrawSimpleStatusByTeam(int i, int px, int py, uint32 mixColor, int mixAlpha
     b1 = (uint8_t)std::max(0, 255 - (255 + (int)r + (int)g) * mixAlpha / 100);
 
     if (mixAlpha > 0)
+    {
         SDL_SetTextureColorMod(SimpleStatusTex[i], r1, g1, b1);
+    }
     else
+    {
         SDL_SetTextureColorMod(SimpleStatusTex[i], 255, 255, 255);
+    }
     SDL_FRect destf = rect2f(dest);
     SDL_RenderTexture(render, SimpleStatusTex[i], nullptr, &destf);
 
     if (TEXT_LAYER == 1)
     {
         if (mixAlpha > 0)
+        {
             SDL_SetTextureColorMod(SimpleTextTex[i], r1, g1, b1);
+        }
         else
+        {
             SDL_SetTextureColorMod(SimpleTextTex[i], 255, 255, 255);
+        }
         SDL_SetRenderTarget(render, TextScreenTex);
         SDL_FRect destf2 = rect2f(dest2);
         SDL_FRect rectcutf = rect2f(rectcut);
@@ -1999,9 +2357,21 @@ void UpdateAllScreen()
     uint8_t r = 255, g = 255, b = 255;
     switch (ScreenBlendMode)
     {
-    case 0: r = 255; g = 255; b = 255; break;
-    case 1: r = 150; g = 150; b = 220; break;
-    case 2: r = 200; g = 152; b = 20; break;
+    case 0:
+        r = 255;
+        g = 255;
+        b = 255;
+        break;
+    case 1:
+        r = 150;
+        g = 150;
+        b = 220;
+        break;
+    case 2:
+        r = 200;
+        g = 152;
+        b = 20;
+        break;
     }
 
     SDL_SetRenderTarget(render, nullptr);
@@ -2157,49 +2527,112 @@ TStretchInfo KeepRatioScale(int w1, int h1, int w2, int h2)
     return s;
 }
 
-void swap(uint8_t& x, uint8_t& y) { uint8_t t = x; x = y; y = t; }
-void swap(uint32& x, uint32& y) { uint32 t = x; x = y; y = t; }
+void swap(uint8_t& x, uint8_t& y)
+{
+    uint8_t t = x;
+    x = y;
+    y = t;
+}
+void swap(uint32& x, uint32& y)
+{
+    uint32 t = x;
+    x = y;
+    y = t;
+}
 
 int RegionParameter(int x, int x1, int x2)
 {
-    if (x < x1) return x1;
-    if (x > x2) return x2;
+    if (x < x1)
+    {
+        return x1;
+    }
+    if (x > x2)
+    {
+        return x2;
+    }
     return x;
 }
 
 int LinearInsert(double x, double x1, double x2, int y1, int y2)
 {
-    if (x2 == x1) return y1;
+    if (x2 == x1)
+    {
+        return y1;
+    }
     return (int)(y1 + (x - x1) / (x2 - x1) * (y2 - y1));
 }
 
 void QuickSort(int* a, int l, int r)
 {
-    if (l >= r) return;
+    if (l >= r)
+    {
+        return;
+    }
     int i = l, j = r, x = a[(l + r) / 2];
     while (i <= j)
     {
-        while (a[i] < x) i++;
-        while (a[j] > x) j--;
-        if (i <= j) { int t = a[i]; a[i] = a[j]; a[j] = t; i++; j--; }
+        while (a[i] < x)
+        {
+            i++;
+        }
+        while (a[j] > x)
+        {
+            j--;
+        }
+        if (i <= j)
+        {
+            int t = a[i];
+            a[i] = a[j];
+            a[j] = t;
+            i++;
+            j--;
+        }
     }
-    if (l < j) QuickSort(a, l, j);
-    if (i < r) QuickSort(a, i, r);
+    if (l < j)
+    {
+        QuickSort(a, l, j);
+    }
+    if (i < r)
+    {
+        QuickSort(a, i, r);
+    }
 }
 
 void QuickSortB(TBuildInfo* a, int l, int r)
 {
-    if (l >= r) return;
+    if (l >= r)
+    {
+        return;
+    }
     int i = l, j = r;
     int x = a[(l + r) / 2].c;
     while (i <= j)
     {
-        while (a[i].c < x) i++;
-        while (a[j].c > x) j--;
-        if (i <= j) { TBuildInfo t = a[i]; a[i] = a[j]; a[j] = t; i++; j--; }
+        while (a[i].c < x)
+        {
+            i++;
+        }
+        while (a[j].c > x)
+        {
+            j--;
+        }
+        if (i <= j)
+        {
+            TBuildInfo t = a[i];
+            a[i] = a[j];
+            a[j] = t;
+            i++;
+            j--;
+        }
     }
-    if (l < j) QuickSortB(a, l, j);
-    if (i < r) QuickSortB(a, i, r);
+    if (l < j)
+    {
+        QuickSortB(a, l, j);
+    }
+    if (i < r)
+    {
+        QuickSortB(a, i, r);
+    }
 }
 
 static uint32 tic_time = 0;

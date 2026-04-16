@@ -32,6 +32,22 @@ extern std::string zip_express(zip_t* z, const std::string& filename);
 #include <format>
 #include <fstream>
 
+static std::vector<std::string> gLaunchArgs;
+
+void SetLaunchArgs(int argc, char* argv[])
+{
+    gLaunchArgs.clear();
+    if (argc <= 1 || argv == nullptr)
+    {
+        return;
+    }
+    gLaunchArgs.reserve(argc - 1);
+    for (int i = 1; i < argc; ++i)
+    {
+        gLaunchArgs.emplace_back(argv[i] ? argv[i] : "");
+    }
+}
+
 #ifdef __ANDROID__
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
@@ -155,6 +171,16 @@ void Run()
 #else
     AppPath = "../game/";
 #endif
+
+    // Pascal behavior: first arg appends to "../game" (e.g. "0" -> "../game0/").
+    if (!gLaunchArgs.empty())
+    {
+        if (!AppPath.empty() && (AppPath.back() == '/' || AppPath.back() == '\\'))
+        {
+            AppPath.pop_back();
+        }
+        AppPath += gLaunchArgs[0] + "/";
+    }
 
     kyslog("AppPath: %s", AppPath.c_str());
 
@@ -421,8 +447,8 @@ void ReadFiles()
     NIGHT_EFFECT = ini.getInt("system", "NIGHT_EFFECT", 0);
     EXIT_GAME = ini.getInt("system", "EXIT_GAME", 0);
     PNG_TILE = ini.getInt("system", "PNG_TILE", 2);
-    TRY_FIND_GRP = ini.getInt("system", "TRY_FIND_GRP", 0);
-    PNG_LOAD_ALL = ini.getInt("system", "PNG_LOAD_ALL", 0);
+    //TRY_FIND_GRP = ini.getInt("system", "TRY_FIND_GRP", 0);
+    //PNG_LOAD_ALL = ini.getInt("system", "PNG_LOAD_ALL", 0);
     KEEP_SCREEN_RATIO = ini.getInt("system", "KEEP_SCREEN_RATIO", 1);
     TEXT_LAYER = ini.getInt("system", "Text_Layer", 0);
     ZIP_SAVE = ini.getInt("system", "ZIP_SAVE", 1);
@@ -469,10 +495,6 @@ void ReadFiles()
         TEXT_LAYER = 0;
     }
 
-    if (!filefunc::fileExist(AppPath + "resource/mmap/index.ka") && !filefunc::fileExist(AppPath + "resource/mmap.zip"))
-    {
-        PNG_TILE = 0;
-    }
     if (!filefunc::fileExist(AppPath + "save/ranger.grp"))
     {
         ZIP_SAVE = 1;
@@ -690,11 +712,8 @@ void ReadFiles()
 void Start()
 {
     Where = 4;
-    if (PNG_TILE > 0)
-    {
-        LoadPNGTiles("resource/title", TitlePNGIndex, 1);
-        InitialPicArrays();
-    }
+    LoadPNGTiles("resource/title", TitlePNGIndex, 1);
+    InitialPicArrays();
 
     ReadingTiles = true;
 

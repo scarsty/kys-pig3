@@ -366,8 +366,8 @@ inline TTF_Font* EngFont = nullptr;
 
 // 视频设置
 inline int PNG_TILE = 1;
-inline int PNG_LOAD_ALL = 1;
-inline int TRY_FIND_GRP = 1;
+//inline int PNG_LOAD_ALL = 1;
+//inline int TRY_FIND_GRP = 1;
 inline int BIG_PNG_TILE = 0;
 inline int FULLSCREEN = 0;
 inline int RESOLUTIONX = 0, RESOLUTIONY = 0;

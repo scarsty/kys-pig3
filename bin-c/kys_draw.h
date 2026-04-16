@@ -6,7 +6,6 @@
 #include <string>
 
 // 绘制各类图片
-void DrawPic(SDL_Surface* sur, int Pictype, int num, int px, int py, int shadow, int alpha, uint32 mixColor, int mixAlpha);
 void DrawTPic(int imgnum, int px, int py, SDL_Rect* region = nullptr, int shadow = 0, int Alpha = 255,
     uint32 mixColor = 0, int mixAlpha = 0, double scalex = 1, double scaley = 1, double angle = 0);
 void DrawMPic(int num, int px, int py, int Framenum = -1, int shadow = 0, int alpha = 255,

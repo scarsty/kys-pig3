@@ -182,34 +182,31 @@ void LoadBattleTiles()
 {
     LoadingBattleTiles = true;
     RecordFreshScreen(CENTER_X - 140, CENTER_Y, 300, 25);
-    if (PNG_TILE > 0)
+    for (int i = 0; i < BRoleAmount; i++)
     {
-        for (int i = 0; i < BRoleAmount; i++)
+        int actionnum = Rrole[Brole[i].rnum].ActionNum;
+        if (FPNGIndex[actionnum].Loaded == 0)
         {
-            int actionnum = Rrole[Brole[i].rnum].ActionNum;
-            if (FPNGIndex[actionnum].Loaded == 0)
-            {
-                auto buf = std::format("resource/fight/fight{:03d}", actionnum);
-                LoadPNGTiles(buf, FPNGIndex[actionnum].PNGIndexArray, 1, &FPNGIndex[actionnum].FightFrame[0]);
-                FPNGIndex[actionnum].Loaded = 1;
-            }
-            int num = 0;
-            for (int j = 0; j < 5; j++)
-            {
-                if (FPNGIndex[actionnum].FightFrame[j] < 0 || FPNGIndex[actionnum].FightFrame[j] > 50)
-                    FPNGIndex[actionnum].FightFrame[j] = 1;
-                if (FPNGIndex[actionnum].FightFrame[j] > 0)
-                {
-                    for (int k = 0; k < 4; k++)
-                        Brole[i].StaticPic[k] = num + FPNGIndex[actionnum].FightFrame[j] * k;
-                    break;
-                }
-            }
-            LoadFreshScreen(CENTER_X - 140, CENTER_Y);
-            auto str = std::format("載入戰鬥人物貼圖 {:2d}/{:2d}", i + 1, BRoleAmount);
-            DrawTextWithRect(str, CENTER_X - 120, CENTER_Y, 0, ColColor(0x64), ColColor(0x66), 179);
-            UpdateAllScreen();
+            auto buf = std::format("resource/fight/fight{:03d}", actionnum);
+            LoadPNGTiles(buf, FPNGIndex[actionnum].PNGIndexArray, 1, &FPNGIndex[actionnum].FightFrame[0]);
+            FPNGIndex[actionnum].Loaded = 1;
         }
+        int num = 0;
+        for (int j = 0; j < 5; j++)
+        {
+            if (FPNGIndex[actionnum].FightFrame[j] < 0 || FPNGIndex[actionnum].FightFrame[j] > 50)
+                FPNGIndex[actionnum].FightFrame[j] = 1;
+            if (FPNGIndex[actionnum].FightFrame[j] > 0)
+            {
+                for (int k = 0; k < 4; k++)
+                    Brole[i].StaticPic[k] = num + FPNGIndex[actionnum].FightFrame[j] * k;
+                break;
+            }
+        }
+        LoadFreshScreen(CENTER_X - 140, CENTER_Y);
+        auto str = std::format("載入戰鬥人物貼圖 {:2d}/{:2d}", i + 1, BRoleAmount);
+        DrawTextWithRect(str, CENTER_X - 120, CENTER_Y, 0, ColColor(0x64), ColColor(0x66), 179);
+        UpdateAllScreen();
     }
     LoadingBattleTiles = false;
     FreeFreshScreen();
@@ -217,10 +214,7 @@ void LoadBattleTiles()
 
 void FreeBattleTiles()
 {
-    if (PNG_TILE > 0)
-    {
-        // 当前使用全局FPNGIndex数组，不需逐个释放
-    }
+    // 当前使用全局FPNGIndex数组，不需逐个释放
 }
 
 bool InitialBField()

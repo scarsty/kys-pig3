@@ -8,6 +8,7 @@
 
 // 程序入口
 extern "C" void Run();
+void SetLaunchArgs(int argc, char* argv[]);
 void Quit();
 void SetMODVersion();
 void ReadFiles();
