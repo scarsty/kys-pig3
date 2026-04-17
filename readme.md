@@ -10,13 +10,15 @@ All heros in Kam Yung stories - 108 brothers and sisters
 
 ## Pascal version
 
-可以使用Lazarus或CodeTyphon编译。
+可以使用Lazarus或CodeTyphon编译。需从Pascal-Game-Development的页面找到SDL3的Pascal绑定，放在项目目录下的lib文件夹里。
 
 Android版本需要先用CodeTyphon编译出so文件，再在SDL的java层调用。
 
 ## C++ version
 
 几乎所有代码都是Github Copilot从Pascal版本翻译的，只有少量手工修正。目前没发现什么明显的bug，如果有的话也可以直接用AI参考Pascal版本修正。Android版可以直接用NDK来处理。
+
+编译建议参考kys-pascal的说明，基本上是一样的。
 
 ## 资源文件
 
