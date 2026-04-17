@@ -505,7 +505,7 @@ inline std::string MovieName;
 
 inline int BasicOffset = 0, RoleOffset = 0, ItemOffset = 0, SceneOffset = 0, MagicOffset = 0, WeiShopOffset = 0, LenR = 0;
 
-inline std::string versionstr = "  108 Brothers and Sisters (c++ v3)";
+inline std::string versionstr = "  108 Brothers and Sisters (c++) v4";
 
 inline std::vector<std::string> BattleNames, loverstrs, statestrs;
 

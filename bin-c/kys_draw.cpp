@@ -158,7 +158,7 @@ void DrawIPic(int num, int px, int py, int shadow, int alpha, uint32 mixColor, i
 {
     if (num >= 0 && num < IPicAmount)
     {
-        if (pIPic && IPNGIndex[num].Loaded == 0)
+        if (IPNGIndex[num].Loaded == 0)
         {
             LoadOnePNGTexture("resource/item/", pIPic, IPNGIndex[num]);
         }
