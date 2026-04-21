@@ -2,7 +2,18 @@ plugins {
      id 'com.android.application'
 }
 
-def buildWithCMake = project.hasProperty('BUILD_WITH_CMAKE');
+def gameAssetsDir = project.findProperty('GAME_ASSETS_DIR') ?: "D:/kys-all/_pascal/pig3/发布版游戏/game"
+def normalizePath = { p -> p ? p.toString().replace('\\', '/') : p }
+def mlccPath = normalizePath(project.findProperty('MLCC_PATH') ?: System.getenv('MLCC_PATH'))
+def vcpkgInstalled = normalizePath(project.findProperty('VCPKG_INSTALLED') ?: System.getenv('VCPKG_INSTALLED'))
+def nativeCmakeArgs = ["-DANDROID_PLATFORM=android-29", "-DANDROID_STL=c++_shared"]
+
+if (mlccPath) {
+    nativeCmakeArgs << "-DMLCC_PATH=${mlccPath}"
+}
+if (vcpkgInstalled) {
+    nativeCmakeArgs << "-DVCPKG_INSTALLED=${vcpkgInstalled}"
+}
 
 android {
     namespace = "org.libsdl.app"
@@ -16,7 +27,7 @@ android {
         ndkVersion "29.0.14206865"  // 替换为实际版本号
         externalNativeBuild {
             cmake {
-                arguments "-DANDROID_PLATFORM=android-29", "-DANDROID_STL=c++_shared"
+                arguments(*nativeCmakeArgs)
                 // abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
                 abiFilters 'arm64-v8a'
             }
@@ -43,7 +54,7 @@ android {
         sourceSets.main {
             jniLibs.srcDir 'lib'
             // 只打包game目录, 资源在APK中位于 assets/ 根下
-            assets.srcDirs = ['src/main/assets', 'D:/kys-all/pig3/发布版游戏/game']
+            assets.srcDirs = ['src/main/assets', gameAssetsDir]
         }
         externalNativeBuild {
                 cmake {

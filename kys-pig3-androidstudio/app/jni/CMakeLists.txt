@@ -6,13 +6,38 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # --- 路径配置 ---
 set(BIN_C_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../bin-c")
-set(MLCC_PATH "C:/project/mlcc")
-set(VCPKG_INSTALLED "D:/project/vcpkg/installed/arm64-android-dynamic")
+
+if(NOT DEFINED MLCC_PATH OR MLCC_PATH STREQUAL "")
+    if(DEFINED ENV{MLCC_PATH} AND NOT "$ENV{MLCC_PATH}" STREQUAL "")
+        set(MLCC_PATH "$ENV{MLCC_PATH}")
+    elseif(EXISTS "C:/project/mlcc/filefunc.cpp")
+        set(MLCC_PATH "C:/project/mlcc")
+    endif()
+endif()
+
+if(NOT DEFINED VCPKG_INSTALLED OR VCPKG_INSTALLED STREQUAL "")
+    if(DEFINED ENV{VCPKG_INSTALLED} AND NOT "$ENV{VCPKG_INSTALLED}" STREQUAL "")
+        set(VCPKG_INSTALLED "$ENV{VCPKG_INSTALLED}")
+    elseif(EXISTS "D:/project/vcpkg/installed/arm64-android-dynamic/lib")
+        set(VCPKG_INSTALLED "D:/project/vcpkg/installed/arm64-android-dynamic")
+    endif()
+endif()
+
+if(NOT EXISTS "${MLCC_PATH}/filefunc.cpp")
+    message(FATAL_ERROR "MLCC_PATH is invalid. Pass -DMLCC_PATH=<path> (must contain filefunc.cpp).")
+endif()
+
+if(NOT EXISTS "${VCPKG_INSTALLED}/lib")
+    message(FATAL_ERROR "VCPKG_INSTALLED is invalid. Pass -DVCPKG_INSTALLED=<path> (must contain lib/).")
+endif()
+
 set(PREBUILT_LIB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../lib/${ANDROID_ABI}")
 
 file(MAKE_DIRECTORY ${PREBUILT_LIB_PATH})
 foreach(extra_lib libSDL3_image.so libwebp.so libwebpdecoder.so libwebpdemux.so libwebpmux.so libsharpyuv.so)
-    file(COPY ${VCPKG_INSTALLED}/lib/${extra_lib} DESTINATION ${PREBUILT_LIB_PATH})
+    if(EXISTS ${VCPKG_INSTALLED}/lib/${extra_lib})
+        file(COPY ${VCPKG_INSTALLED}/lib/${extra_lib} DESTINATION ${PREBUILT_LIB_PATH})
+    endif()
 endforeach()
 
 # --- 游戏源文件 ---
