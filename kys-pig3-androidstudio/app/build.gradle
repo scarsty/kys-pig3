@@ -1,19 +1,8 @@
 plugins {
-     id 'com.android.application'
+    id 'com.android.application'
 }
 
 def gameAssetsDir = project.findProperty('GAME_ASSETS_DIR') ?: "D:/kys-all/_pascal/pig3/发布版游戏/game"
-def normalizePath = { p -> p ? p.toString().replace('\\', '/') : p }
-def mlccPath = normalizePath(project.findProperty('MLCC_PATH') ?: System.getenv('MLCC_PATH'))
-def vcpkgInstalled = normalizePath(project.findProperty('VCPKG_INSTALLED') ?: System.getenv('VCPKG_INSTALLED'))
-def nativeCmakeArgs = ["-DANDROID_PLATFORM=android-29", "-DANDROID_STL=c++_shared"]
-
-if (mlccPath) {
-    nativeCmakeArgs << "-DMLCC_PATH=${mlccPath}"
-}
-if (vcpkgInstalled) {
-    nativeCmakeArgs << "-DVCPKG_INSTALLED=${vcpkgInstalled}"
-}
 
 android {
     namespace = "org.libsdl.app"
@@ -24,11 +13,10 @@ android {
         targetSdkVersion 34
         versionCode 1
         versionName "1.0"
-        ndkVersion "29.0.14206865"  // 替换为实际版本号
+        ndkVersion "29.0.14206865"
         externalNativeBuild {
             cmake {
-                arguments(*nativeCmakeArgs)
-                // abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+                arguments "-DANDROID_PLATFORM=android-29", "-DANDROID_STL=c++_shared"
                 abiFilters 'arm64-v8a'
             }
         }
@@ -39,7 +27,6 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.debug
         }
     }
@@ -50,20 +37,15 @@ android {
         tasks["merge${variant.name.capitalize()}Assets"]
             .dependsOn("externalNativeBuild${variant.name.capitalize()}")
     }
-    if (!project.hasProperty('EXCLUDE_NATIVE_LIBS')) {
-        sourceSets.main {
-            jniLibs.srcDir 'lib'
-            // 只打包game目录, 资源在APK中位于 assets/ 根下
-            assets.srcDirs = ['src/main/assets', gameAssetsDir]
-        }
-        externalNativeBuild {
-                cmake {
-                    path 'jni/CMakeLists.txt'
-                }
-        }
-
+    sourceSets.main {
+        jniLibs.srcDir 'lib'
+        assets.srcDirs = ['src/main/assets', gameAssetsDir]
     }
-    // 不压缩游戏资源文件, 避免解压开销
+    externalNativeBuild {
+        cmake {
+            path 'jni/CMakeLists.txt'
+        }
+    }
     aaptOptions {
         noCompress 'grp', 'idx', 'col', 'sta', '002', 'bin', 'imz', 'ka',
                    'mp3', 'ogg', 'wav', 'wmv', 'zip', 'ini', 'png'

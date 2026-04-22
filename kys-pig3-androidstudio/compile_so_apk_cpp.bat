@@ -25,9 +25,28 @@ if errorlevel 1 ( echo [ERROR] 编译失败! ^& exit /b 1 )
 
 copy "app\build\outputs\apk\release\*.apk" . /y
 
-for %%A in ("%PROJECT_DIR%kys-pig3-release.apk") do set "APK_SIZE=%%~zA"
+set "APK_PATH=%PROJECT_DIR%kys-pig3-release.apk"
+for %%A in ("%APK_PATH%") do set "APK_SIZE=%%~zA"
 echo [INFO] APK size: %APK_SIZE% bytes
 if %APK_SIZE% LSS 209715200 ( echo [ERROR] APK 小于 200MB ^& exit /b 1 )
 
-echo 编译完成！APK: %PROJECT_DIR%kys-pig3-release.apk
+echo 编译完成！APK: %APK_PATH%
+
+set "ADB=adb"
+where adb >nul 2>&1
+if not errorlevel 1 goto adb_found
+set "ADB=%LOCALAPPDATA%\Android\Sdk\platform-tools\adb.exe"
+if not exist "%ADB%" (
+    echo [INFO] 未找到 adb，跳过安装
+    exit /b 0
+)
+:adb_found
+"%ADB%" devices | findstr /r "device$" >nul 2>&1
+if not errorlevel 1 (
+    echo [INFO] 检测到设备，安装并启动...
+    "%ADB%" install -r "%APK_PATH%"
+    "%ADB%" shell am start -n org.libsdl.kys_pig3/org.libsdl.app.SDLActivity
+) else (
+    echo [INFO] 未检测到设备，跳过安装
+)
 exit /b 0
