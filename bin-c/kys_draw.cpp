@@ -763,7 +763,7 @@ void DrawBFieldWithCursor(int AttAreaType, int step, int range)
                     sh = 1;
                 }
                 DrawFPic(Brole[bnum].StaticPic[Brole[bnum].Face], pos.x, pos.y,
-                    Rrole[Brole[bnum].rnum].ActionNum, sh, 0, mc, ma);
+                    Rrole[Brole[bnum].rnum].ActionNum, sh, 255, mc, ma);
             }
         }
     }

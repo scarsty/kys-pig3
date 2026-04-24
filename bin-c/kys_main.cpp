@@ -1125,6 +1125,91 @@ bool InitialRole()
                     Rrole[0].HeadNum = 448;
                 }
             }
+            if (input_name == "風劍琴")
+            {
+                Rrole[0].addnum = 1;
+                Rrole[0].AmiFrameNum[0] = 0;
+            }
+            if (input_name == "阮小二")
+            {
+                Rrole[0].addnum = 1;
+                Rrole[0].Aptitude = 100;
+                Rrole[0].MagLevel[0] = 999;
+                Rrole[0].AmiFrameNum[0] = 1;
+                if (MODVersion == 31)
+                {
+                    Rrole[0].HeadNum = 434;
+                }
+            }
+            if (input_name == "史進")
+            {
+                Rrole[0].addnum = 1;
+                Rrole[0].Aptitude = 100;
+                Rrole[0].MagLevel[0] = 999;
+                Rrole[0].AmiFrameNum[0] = 2;
+                if (MODVersion == 31)
+                {
+                    Rrole[0].HeadNum = 435;
+                }
+            }
+            if (input_name == "晁蓋")
+            {
+                Rrole[0].Aptitude = 100;
+                Rrole[0].MagLevel[0] = 999;
+                Rrole[0].AmiFrameNum[0] = 12;
+                if (MODVersion == 31)
+                {
+                    Rrole[0].HeadNum = 454;
+                }
+            }
+            if (input_name == "筷子")
+            {
+                instruct_32(277, 1);
+                Rrole[0].Fist = 150;
+                Ritem[277].ItemType = 1;
+                Ritem[277].EquipType = 0;
+                Ritem[277].AddSpeed = 150;
+                Ritem[277].AddAttack = 75;
+                Ritem[277].NeedMPType = 2;
+            }
+            if (input_name == "獨孤令狐")
+            {
+                instruct_33(0, 168, 1);
+                Ritem[0x27].AddAttack = 160;
+                Ritem[0x65].AddAttack = 8;
+                Ritem[0x6C].AddAttack = 10;
+                Ritem[0xA5].AddAttack = 6;
+                Rrole[0].Movestep = 50;
+                Rrole[0].AmiFrameNum[0] = 3;
+            }
+            if (input_name == "虛僞帝")
+            {
+                Rrole[0] = Rrole[930];
+                Rrole[0].Level = 1;
+                Rrole[0].Attack = 999;
+                Rrole[0].Speed = 999;
+                Rrole[0].Defence = 999;
+            }
+            if (input_name == "無恥帝")
+            {
+                Rrole[0] = Rrole[931];
+                Rrole[0].Level = 1;
+                Rrole[0].MaxHP = 327;
+                Rrole[0].CurrentHP = 327;
+                Rrole[0].MaxMP = 655;
+                Rrole[0].CurrentMP = 655;
+            }
+            if (input_name == "智障帝")
+            {
+                Rrole[0].AmiFrameNum[0] = 103;
+                Rrole[0].MagLevel[0] = 999;
+            }
+            if (input_name == "光頭強")
+            {
+                instruct_33(0, 409, 1);
+                Rrole[0].HeadNum = 455;
+                Rrole[0].ActionNum = 455;
+            }
         }
         Redraw();
         ShowStatus(0);
@@ -1925,7 +2010,7 @@ void Walk()
 //----------------------------------------------------------------------
 bool CanWalk(int x, int y)
 {
-    if (MODVersion == 13 && CellPhone == 0)
+    if (MODVersion == 13) // {&& CellPhone == 0} - 与Pascal保持一致，手机也使用MOD13严格判断
     {
         bool result = false;
         if (x >= 0 && y >= 0 && x < 480 && y < 480)

@@ -1631,7 +1631,7 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
                 idx.Loaded = 0;
                 idx.UseGRP = 0;
                 idx.Pointers.assign(idx.Frame, nullptr);
-                result = std::max(result, i);
+                result = std::max(result, i + 1);
             }
             PNGIndexArray.resize(result);
         }
@@ -1724,7 +1724,7 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
             idx.Loaded = 0;
             idx.UseGRP = 0;
             idx.Pointers.assign(idx.Frame, nullptr);
-            result = std::max(result, i);            
+            result = std::max(result, i + 1);
         }
         PNGIndexArray.resize(result);
     }
