@@ -180,9 +180,9 @@ uses
   kys_draw;
 
 var
-  gMixer: MIX_Mixer = nil;
-  MusicTrack: MIX_Track = nil;
-  SfxTracks: array [0 .. 9] of MIX_Track;
+  gMixer: PMIX_Mixer = nil;
+  MusicTrack: PMIX_Track = nil;
+  SfxTracks: array [0 .. 9] of PMIX_Track;
   SfxNextTrack: integer = 0;
 
 function EnsureMixerCreated: boolean;
@@ -201,12 +201,12 @@ begin
   Result := gMixer <> nil;
 end;
 
-function EnsureTrackForAudio(var track: MIX_Track; audio: MIX_Audio): boolean;
+function EnsureTrackForAudio(var track: PMIX_Track; audio: PMIX_Audio): boolean;
 begin
   Result := MIX_SetTrackAudio(track, audio);
 end;
 
-function AcquireSfxTrack(audio: MIX_Audio): MIX_Track;
+function AcquireSfxTrack(audio: PMIX_Audio): PMIX_Track;
 var
   idx: integer;
 begin
@@ -261,9 +261,9 @@ var
   i: integer;
   str: utf8string;
 
-  function LoadMid(filename: string): Mix_Audio;
+  function LoadMid(filename: string): PMix_Audio;
   var
-    id: SDL_PropertiesID;
+    id: TSDL_PropertiesID;
     io: PSDL_IOStream;
   begin
     id := SDL_CreateProperties();
@@ -401,7 +401,7 @@ end;
 procedure PlayMP3(MusicNum, times: integer; frombeginning: integer = 1); overload;
 var
   loops: integer;
-  id: SDL_PropertiesID;
+  id: TSDL_PropertiesID;
 begin
   if not EnsureMixerCreated then
     Exit;
@@ -448,7 +448,7 @@ end;
 procedure PlaySound(SoundNum, times: integer); overload;
 var
   loops: integer;
-  track: MIX_Track;
+  track: PMIX_Track;
 begin
   if times = -1 then
     loops := -1
@@ -470,8 +470,8 @@ end;
 procedure PlaySound(SoundNum, times, x, y, z: integer); overload;
 var
   loops: integer;
-  pos: MIX_Point3D;
-  track: MIX_Track;
+  pos: PMIX_Point3D;
+  track: PMIX_Track;
 begin
   if times = -1 then
     loops := -1
@@ -502,7 +502,7 @@ end;
 procedure PlaySoundA(SoundNum, times: integer); overload;
 var
   loops: integer;
-  track: MIX_Track;
+  track: PMIX_Track;
 begin
   if times = -1 then
     loops := -1
@@ -2472,7 +2472,7 @@ begin
     Result := True;
     if usesur = 0 then
     begin
-      tempscr := SDL_LoadPNG(putf8char(filename));
+      tempscr := SDL_LoadSurface(putf8char(filename));
       pt := SDL_CreateTextureFromSurface(render, tempscr);
       SDL_DestroySurface(tempscr);
       if pt <> nil then
@@ -2486,7 +2486,7 @@ begin
     end
     else
     begin
-      tempscr := SDL_LoadPNG(putf8char(filename));
+      tempscr := SDL_LoadSurface(putf8char(filename));
       pt := SDL_ConvertSurface(tempscr, screen.format);
       SDL_DestroySurface(tempscr);
       //SDL_SetSurfaceBlendMode(ps^, SDL_BLENDMODE_BlEND);
@@ -2514,7 +2514,7 @@ begin
   pt := nil;
   if usesur = 0 then
   begin
-    tempscr := SDL_LoadPNG_IO(tempRWops, False);
+    tempscr := SDL_LoadSurface_IO(tempRWops, False);
     pt := SDL_CreateTextureFromSurface(render, tempscr);
     SDL_DestroySurface(tempscr);
     if pt <> nil then
@@ -2528,7 +2528,7 @@ begin
   end
   else
   begin
-    tempscr := SDL_LoadPNG_IO(tempRWops, False);
+    tempscr := SDL_LoadSurface_IO(tempRWops, False);
     pt := SDL_ConvertSurface(tempscr, screen.format);
     SDL_DestroySurface(tempscr);
     if pt <> nil then

@@ -376,9 +376,9 @@ var
   VOLUME, VOLUMEWAV, SOUND3D: integer; //音乐音量 音效音量 是否启用3D音效
   SoundFlag: longword;
 
-  Music: array of MIX_Audio;
-  ESound: array of MIX_Audio;
-  ASound: array of MIX_Audio;
+  Music: array of PMIX_Audio;
+  ESound: array of PMIX_Audio;
+  ASound: array of PMIX_Audio;
 
   StartMusic: integer;
   ExitSceneMusicNum: integer; //离开场景的音乐
@@ -516,7 +516,7 @@ var
   DISABLE_MENU_AMI: integer = 0; //弹出菜单的速度
   //InMenuEsc: integer = 0;  //表示是否处于菜单中, 无需刷新场景
 
-  openAudio: MIX_Audio;
+  openAudio: PMIX_Audio;
   MovieName: utf8string;
 
   BasicOffset, RoleOffset, ItemOffset, SceneOffset, MagicOffset, WeiShopOffset, LenR: integer;
