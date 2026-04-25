@@ -437,14 +437,13 @@ void instruct_24()
 void instruct_25(int x1, int y1, int x2, int y2)
 {
     auto sgn = [](int v) -> int { return (v > 0) ? 1 : ((v < 0) ? -1 : 0); };
-    SDL_Event ev;
     int s = sgn(x2 - x1);
     int i = x1 + s;
     Cx = y1;
     Cy = x1;
     if (s != 0)
     {
-        while (SDL_PollEvent(&ev) || true)
+        while (SDL_PollEvent(&event) || true)
         {
             CheckBasicEvent();
             SDL_Delay(50);
@@ -459,7 +458,7 @@ void instruct_25(int x1, int y1, int x2, int y2)
     i = y1 + s;
     if (s != 0)
     {
-        while (SDL_PollEvent(&ev) || true)
+        while (SDL_PollEvent(&event) || true)
         {
             CheckBasicEvent();
             SDL_Delay(50);
@@ -486,13 +485,12 @@ void instruct_26(int snum, int eNum, int add1, int add2, int add3)
 // instruct_27: 动画
 void instruct_27(int eNum, int beginpic, int endpic)
 {
-    SDL_Event ev;
     if (eNum >= 0 && DData[CurScene][eNum][10] == Sx && DData[CurScene][eNum][9] == Sy)
         eNum = -1;
     if (eNum == -1)
     {
         int i = beginpic;
-        while (SDL_PollEvent(&ev) || true)
+        while (SDL_PollEvent(&event) || true)
         {
             CheckBasicEvent();
             CurSceneRolePic = i / 2;
@@ -506,7 +504,7 @@ void instruct_27(int eNum, int beginpic, int endpic)
     else
     {
         int i = beginpic;
-        while (SDL_PollEvent(&ev) || true)
+        while (SDL_PollEvent(&event) || true)
         {
             CheckBasicEvent();
             DData[CurScene][eNum][5] = i;
@@ -541,14 +539,13 @@ int instruct_29(int rnum, int r1, int r2, int jump1, int jump2)
 void instruct_30(int x1, int y1, int x2, int y2)
 {
     auto sgn = [](int v) -> int { return (v > 0) ? 1 : ((v < 0) ? -1 : 0); };
-    SDL_Event ev;
     int s = sgn(x2 - x1);
     Sy = x1 + s;
     if (s > 0) SFace = 1;
     if (s < 0) SFace = 2;
     if (s != 0)
     {
-        while (SDL_PollEvent(&ev) || true)
+        while (SDL_PollEvent(&event) || true)
         {
             CheckBasicEvent();
             SDL_Delay(50);
@@ -568,7 +565,7 @@ void instruct_30(int x1, int y1, int x2, int y2)
     if (s < 0) SFace = 0;
     if (s != 0)
     {
-        while (SDL_PollEvent(&ev) || true)
+        while (SDL_PollEvent(&event) || true)
         {
             SDL_Delay(50);
             SStep++;
@@ -830,11 +827,10 @@ int instruct_43(int inum, int jump1, int jump2)
 // instruct_44: 双事件动画
 void instruct_44(int enum1, int beginpic1, int endpic1, int enum2, int beginpic2, int endpic2)
 {
-    SDL_Event ev;
     SData[CurScene][3][DData[CurScene][enum1][10]][DData[CurScene][enum1][9]] = enum1;
     SData[CurScene][3][DData[CurScene][enum2][10]][DData[CurScene][enum2][9]] = enum2;
     int i = 0;
-    while (SDL_PollEvent(&ev) || true)
+    while (SDL_PollEvent(&event) || true)
     {
         CheckBasicEvent();
         DData[CurScene][enum1][5] = beginpic1 + i;
@@ -850,12 +846,11 @@ void instruct_44(int enum1, int beginpic1, int endpic1, int enum2, int beginpic2
 // instruct_44e: 三事件动画
 void instruct_44e(int enum1, int beginpic1, int endpic1, int enum2, int beginpic2, int enum3, int beginpic3)
 {
-    SDL_Event ev;
     SData[CurScene][3][DData[CurScene][enum1][10]][DData[CurScene][enum1][9]] = enum1;
     SData[CurScene][3][DData[CurScene][enum2][10]][DData[CurScene][enum2][9]] = enum2;
     SData[CurScene][3][DData[CurScene][enum3][10]][DData[CurScene][enum3][9]] = enum3;
     int i = 0;
-    while (SDL_PollEvent(&ev) || true)
+    while (SDL_PollEvent(&event) || true)
     {
         CheckBasicEvent();
         DData[CurScene][enum1][5] = beginpic1 + i;
@@ -2121,19 +2116,18 @@ void NewTalk(int headnum, int talknum, int namenum, int place, int showhead, int
 
         int ix = 0, iy = 0;
         skipSync = false;
-        SDL_Event ev;
-        while (SDL_PollEvent(&ev) || true)
+        while (SDL_PollEvent(&event) || true)
         {
             CheckBasicEvent();
-            if ((ev.type == SDL_EVENT_KEY_UP && ev.key.key == SDLK_ESCAPE) ||
-                (ev.type == SDL_EVENT_MOUSE_BUTTON_UP && ev.button.button == SDL_BUTTON_RIGHT))
+            if ((event.type == SDL_EVENT_KEY_UP && event.key.key == SDLK_ESCAPE) ||
+                (event.type == SDL_EVENT_MOUSE_BUTTON_UP && event.button.button == SDL_BUTTON_RIGHT))
             {
                 skipSync = true;
                 SkipTalk = 1;
                 break;
             }
-            if ((ev.type == SDL_EVENT_KEY_UP && (ev.key.key == SDLK_RETURN || ev.key.key == SDLK_SPACE)) ||
-                (ev.type == SDL_EVENT_MOUSE_BUTTON_UP && ev.button.button == SDL_BUTTON_LEFT))
+            if ((event.type == SDL_EVENT_KEY_UP && (event.key.key == SDLK_RETURN || event.key.key == SDLK_SPACE)) ||
+                (event.type == SDL_EVENT_MOUSE_BUTTON_UP && event.button.button == SDL_BUTTON_LEFT))
             {
                 skipSync = true;
                 SkipTalk = 0;
@@ -2474,50 +2468,49 @@ void NewTeammateList()
             UpdateAllScreen();
         }
 
-        SDL_Event ev = {};
-        if (SDL_WaitEvent(&ev))
+        if (SDL_WaitEvent(&event))
         {
             CheckBasicEvent();
             int pstar = CurrentStar;
             int pteam = CurrentTeam;
-            if (ev.type == SDL_EVENT_KEY_DOWN)
+            if (event.type == SDL_EVENT_KEY_DOWN)
             {
-                if (ev.key.key == SDLK_PAGEDOWN)
+                if (event.key.key == SDLK_PAGEDOWN)
                 {
                     if (menuid == 0 && CurrentStar < 108 - Show)
                         CurrentStar += Show;
                 }
-                if (ev.key.key == SDLK_PAGEUP)
+                if (event.key.key == SDLK_PAGEUP)
                 {
                     if (menuid == 0 && CurrentStar > Show - 1)
                         CurrentStar -= Show;
                 }
-                if (ev.key.key == SDLK_DOWN)
+                if (event.key.key == SDLK_DOWN)
                 {
                     if (menuid == 0) { if (CurrentStar < 107) CurrentStar++; }
                     else { if (CurrentTeam < 5) CurrentTeam++; }
                 }
-                if (ev.key.key == SDLK_UP)
+                if (event.key.key == SDLK_UP)
                 {
                     if (menuid == 0) { if (CurrentStar > 0) CurrentStar--; }
                     else { if (CurrentTeam > 1) CurrentTeam--; }
                 }
             }
-            if (ev.type == SDL_EVENT_KEY_UP)
+            if (event.type == SDL_EVENT_KEY_UP)
             {
-                if (ev.key.key == SDLK_LEFT)
+                if (event.key.key == SDLK_LEFT)
                 {
                     menuid = 0; refresh = true;
                 }
-                if (ev.key.key == SDLK_RIGHT)
+                if (event.key.key == SDLK_RIGHT)
                 {
                     menuid = 1; refresh = true;
                 }
-                if (ev.key.key == SDLK_ESCAPE)
+                if (event.key.key == SDLK_ESCAPE)
                 {
                     escape = true; Redraw();
                 }
-                if (ev.key.key == SDLK_RETURN || ev.key.key == SDLK_SPACE)
+                if (event.key.key == SDLK_RETURN || event.key.key == SDLK_SPACE)
                 {
                     if (menuid == 0)
                     {
@@ -2542,13 +2535,13 @@ void NewTeammateList()
                     }
                 }
             }
-            if (ev.type == SDL_EVENT_MOUSE_BUTTON_UP)
+            if (event.type == SDL_EVENT_MOUSE_BUTTON_UP)
             {
-                if (ev.button.button == SDL_BUTTON_RIGHT && Where <= 2)
+                if (event.button.button == SDL_BUTTON_RIGHT && Where <= 2)
                 {
                     escape = true; Redraw();
                 }
-                if (ev.button.button == SDL_BUTTON_LEFT)
+                if (event.button.button == SDL_BUTTON_LEFT)
                 {
                     int x1, y1;
                     if (MouseInRegion(xStar, yStar, 200, Show * h + 32, x1, y1))
@@ -2574,20 +2567,20 @@ void NewTeammateList()
                     }
                 }
             }
-            if (ev.type == SDL_EVENT_MOUSE_WHEEL)
+            if (event.type == SDL_EVENT_MOUSE_WHEEL)
             {
-                if (ev.wheel.y < 0)
+                if (event.wheel.y < 0)
                 {
                     if (menuid == 0) { if (CurrentStar < 107) CurrentStar++; }
                     else { if (CurrentTeam < 5) CurrentTeam++; }
                 }
-                if (ev.wheel.y > 0)
+                if (event.wheel.y > 0)
                 {
                     if (menuid == 0) { if (CurrentStar > 0) CurrentStar--; }
                     else { if (CurrentTeam > 1) CurrentTeam--; }
                 }
             }
-            if (ev.type == SDL_EVENT_MOUSE_MOTION)
+            if (event.type == SDL_EVENT_MOUSE_MOTION)
             {
                 int x1, y1;
                 if (MouseInRegion(xStar, yStar, 200, Show * h + 32, x1, y1))
@@ -2730,34 +2723,33 @@ void ShowStarList()
 
     ShowCommonScrollMenu_starlist(head[menu]);
 
-    SDL_Event ev = {};
-    while (SDL_WaitEvent(&ev))
+    while (SDL_WaitEvent(&event))
     {
         CheckBasicEvent();
-        if (ev.type == SDL_EVENT_KEY_DOWN)
+        if (event.type == SDL_EVENT_KEY_DOWN)
         {
-            if (ev.key.key == SDLK_DOWN)
+            if (event.key.key == SDLK_DOWN)
             {
                 menu++;
                 if (menu - menutop >= maxshow) menutop++;
                 if (menu > max) { menu = 0; menutop = 0; }
                 ShowCommonScrollMenu_starlist(head[menu]);
             }
-            if (ev.key.key == SDLK_UP)
+            if (event.key.key == SDLK_UP)
             {
                 menu--;
                 if (menu <= menutop) menutop = menu;
                 if (menu < 0) { menu = max; menutop = menu - maxshow + 1; if (menutop < 0) menutop = 0; }
                 ShowCommonScrollMenu_starlist(head[menu]);
             }
-            if (ev.key.key == SDLK_PAGEDOWN)
+            if (event.key.key == SDLK_PAGEDOWN)
             {
                 menu += maxshow; menutop += maxshow;
                 if (menu > max) menu = max;
                 if (menutop > max - maxshow + 1) menutop = max - maxshow + 1;
                 ShowCommonScrollMenu_starlist(head[menu]);
             }
-            if (ev.key.key == SDLK_PAGEUP)
+            if (event.key.key == SDLK_PAGEUP)
             {
                 menu -= maxshow; menutop -= maxshow;
                 if (menu < 0) menu = 0;
@@ -2765,30 +2757,30 @@ void ShowStarList()
                 ShowCommonScrollMenu_starlist(head[menu]);
             }
         }
-        if (ev.type == SDL_EVENT_KEY_UP)
+        if (event.type == SDL_EVENT_KEY_UP)
         {
-            if (ev.key.key == SDLK_ESCAPE && Where <= 2)
+            if (event.key.key == SDLK_ESCAPE && Where <= 2)
             {
                 Redraw(); UpdateAllScreen(); break;
             }
         }
-        if (ev.type == SDL_EVENT_MOUSE_BUTTON_UP)
+        if (event.type == SDL_EVENT_MOUSE_BUTTON_UP)
         {
-            if (ev.button.button == SDL_BUTTON_RIGHT && Where <= 2)
+            if (event.button.button == SDL_BUTTON_RIGHT && Where <= 2)
             {
                 Redraw(); UpdateAllScreen(); break;
             }
         }
-        if (ev.type == SDL_EVENT_MOUSE_WHEEL)
+        if (event.type == SDL_EVENT_MOUSE_WHEEL)
         {
-            if (ev.wheel.y < 0)
+            if (event.wheel.y < 0)
             {
                 menu++; menutop++;
                 if (menu > max) menu = 107;
                 if (menutop > 108 - maxshow) menutop = 108 - maxshow;
                 ShowCommonScrollMenu_starlist(head[menu]);
             }
-            if (ev.wheel.y > 0)
+            if (event.wheel.y > 0)
             {
                 menu--; menutop--;
                 if (menu < 0) menu = 0;
@@ -2796,7 +2788,7 @@ void ShowStarList()
                 ShowCommonScrollMenu_starlist(head[menu]);
             }
         }
-        if (ev.type == SDL_EVENT_MOUSE_MOTION)
+        if (event.type == SDL_EVENT_MOUSE_MOTION)
         {
             int x1, y1;
             if (MouseInRegion(x, y, w, max * h + 32, x1, y1))
@@ -3906,7 +3898,6 @@ void NewShop(int shop_num)
 
     int menu = 0, select = 0, lr = 0;
     bool sure = false;
-    SDL_Event ev;
 
     while (!sure)
     {
@@ -3937,24 +3928,24 @@ void NewShop(int shop_num)
         moneyBuf = std::format("花費估算：{:5d}", totalprice);
         DrawTextWithRect(moneyBuf, x, y + 180, 160, 0, 0x202020, 255, 0);
         UpdateAllScreen();
-        if (SDL_WaitEvent(&ev))
+        if (SDL_WaitEvent(&event))
         {
             CheckBasicEvent();
-            if (ev.type == SDL_EVENT_KEY_UP)
+            if (event.type == SDL_EVENT_KEY_UP)
             {
-                if (ev.key.key == SDLK_ESCAPE) break;
-                if (ev.key.key == SDLK_UP && menu > 0) menu--;
-                if (ev.key.key == SDLK_DOWN && menu < 4) menu++;
-                if (ev.key.key == SDLK_LEFT)
+                if (event.key.key == SDLK_ESCAPE) break;
+                if (event.key.key == SDLK_UP && menu > 0) menu--;
+                if (event.key.key == SDLK_DOWN && menu < 4) menu++;
+                if (event.key.key == SDLK_LEFT)
                 {
                     if (buyAmount[menu] > 0) buyAmount[menu]--;
                 }
-                if (ev.key.key == SDLK_RIGHT)
+                if (event.key.key == SDLK_RIGHT)
                 {
                     if (buyAmount[menu] < sell.Amount[menu] && totalprice + sell.Price[menu] <= money)
                         buyAmount[menu]++;
                 }
-                if (ev.key.key == SDLK_RETURN || ev.key.key == SDLK_SPACE)
+                if (event.key.key == SDLK_RETURN || event.key.key == SDLK_SPACE)
                 {
                     // 购买
                     for (int i = 0; i < 5; i++)
@@ -3969,7 +3960,7 @@ void NewShop(int shop_num)
                     sure = true;
                 }
             }
-            else if (ev.type == SDL_EVENT_MOUSE_BUTTON_UP && ev.button.button == SDL_BUTTON_RIGHT)
+            else if (event.type == SDL_EVENT_MOUSE_BUTTON_UP && event.button.button == SDL_BUTTON_RIGHT)
                 break;
         }
     }
@@ -4290,7 +4281,6 @@ bool EnterString(std::string& str, int x, int y, int w, int h)
     SDL_Rect r = {x, y, w, h};
     SDL_StartTextInput(window);
     SDL_SetTextInputArea(window, &r, 0);
-    SDL_Event ev;
     uint32_t tick = 0;
     while (true)
     {
@@ -4300,17 +4290,17 @@ bool EnterString(std::string& str, int x, int y, int w, int h)
         if (tick % 16 < 8) display += "_";
         else display += " ";
         DrawTextWithRect(display.c_str(), x, y, 280, 0, 0, 255, 1);
-        SDL_PollEvent(&ev);
+        SDL_PollEvent(&event);
         CheckBasicEvent();
-        if (ev.type == SDL_EVENT_TEXT_INPUT)
+        if (event.type == SDL_EVENT_TEXT_INPUT)
         {
-            str += ev.text.text;
+            str += event.text.text;
         }
-        else if (ev.type == SDL_EVENT_KEY_UP)
+        else if (event.type == SDL_EVENT_KEY_UP)
         {
-            if (ev.key.key == SDLK_RETURN) { SDL_StopTextInput(window); return true; }
-            if (ev.key.key == SDLK_ESCAPE) { SDL_StopTextInput(window); return false; }
-            if (ev.key.key == SDLK_BACKSPACE)
+            if (event.key.key == SDLK_RETURN) { SDL_StopTextInput(window); return true; }
+            if (event.key.key == SDLK_ESCAPE) { SDL_StopTextInput(window); return false; }
+            if (event.key.key == SDLK_BACKSPACE)
             {
                 int l = (int)str.size();
                 if (l >= 3 && (uint8_t)str[l - 1] >= 128)
@@ -4319,7 +4309,7 @@ bool EnterString(std::string& str, int x, int y, int w, int h)
                     str.resize(l - 1);
             }
         }
-        else if (ev.type == SDL_EVENT_MOUSE_BUTTON_UP && ev.button.button == SDL_BUTTON_RIGHT)
+        else if (event.type == SDL_EVENT_MOUSE_BUTTON_UP && event.button.button == SDL_BUTTON_RIGHT)
         {
             SDL_StopTextInput(window);
             return false;
