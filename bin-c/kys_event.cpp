@@ -3879,10 +3879,11 @@ int ReSetName(int t, int inum, int newnamenum)
 
 void NewShop(int shop_num)
 {
-    auto& sell = RShop[shop_num];
+    TShop sell = RShop[shop_num];
     int money = GetItemAmount(MONEY_ID);
     int buyAmount[5] = {0};
     int holdAmount[5];
+    int totalbuy[5] = {0};
     std::string menuStr[5];
 
     for (int i = 0; i < 5; i++)
@@ -3892,78 +3893,237 @@ void NewShop(int shop_num)
     }
 
     int x = CENTER_X - 190, y = 200;
+    int w = 420;
+    int x2 = x + 240, y2 = y + 140;
+    int w2 = 180;
+    int arrowlx = x + 330, arrowrx = x + 400;
+    int arrowy = y + 5;
+    int l = 22;
+
     DrawRectangleWithoutFrame(0, 20, CENTER_X * 2, 120, 0, 153);
     std::string shopStr = "需要買什麼？";
     DrawShadowText(shopStr.c_str(), CENTER_X - 70, 55, ColColor(0xFF), ColColor(0x0));
+    std::string headerStr = "品名         價格    存貨  持有     交易";
+    DrawTextWithRect(headerStr, CENTER_X - 210, 155, 420, 0, 0x202020);
+    RecordFreshScreen(x, y, 421, CENTER_Y * 2 - y);
 
     int menu = 0, select = 0, lr = 0;
     bool sure = false;
+    bool refresh = true;
+    int pmenu = -1, pselect = -1, plr = -1;
 
-    while (!sure)
+    // 内嵌显示函数
+    auto NewShop_Show = [&]()
     {
-        // 计算总价
+        LoadFreshScreen(x, y);
         int totalprice = 0;
         for (int i = 0; i < 5; i++)
             totalprice += sell.Price[i] * buyAmount[i];
 
-        // 绘制
         DrawRectangle(x, y, 420, 116, 0, ColColor(255), 128);
         for (int i = 0; i < 5; i++)
         {
             auto buf = std::format("{:5d}{:7d}{:6d}{:9d}", sell.Price[i], sell.Amount[i], holdAmount[i], buyAmount[i]);
+            uint32_t mixcolorl = 0, mixcolorr = 0;
+            int mixalphal = 0, mixalphar = 0;
             if (i == menu)
             {
                 DrawShadowText(menuStr[i].c_str(), x + 3, y + 2 + 22 * i, ColColor(0x64), ColColor(0x66));
                 DrawEngShadowText(buf, x + 120, y + 2 + 22 * i, ColColor(0x64), ColColor(0x66));
+                if (lr < 0) { mixcolorl = 0xFFFFFFFF; mixalphal = 25; }
+                if (lr > 0) { mixcolorr = 0xFFFFFFFF; mixalphar = 25; }
             }
             else
             {
                 DrawShadowText(menuStr[i].c_str(), x + 3, y + 2 + 22 * i, ColColor(0x5), ColColor(0x7));
                 DrawEngShadowText(buf, x + 120, y + 2 + 22 * i, ColColor(0x5), ColColor(0x7));
             }
+            if (buyAmount[i] <= 0) { mixcolorl = 0; mixalphal = 50; }
+            if (buyAmount[i] >= sell.Amount[i] || totalprice + sell.Price[i] > money)
+            {
+                mixcolorr = 0; mixalphar = 50;
+            }
+            DrawMPic(2004, arrowlx, i * l + arrowy, -1, 0, 255, mixcolorl, mixalphal);
+            DrawMPic(2005, arrowrx, i * l + arrowy, -1, 0, 255, mixcolorr, mixalphar);
         }
 
-        auto moneyBuf = std::format("現有銀兩：{:5d}", money);
-        DrawTextWithRect(moneyBuf, x, y + 140, 160, 0, 0x202020, 255, 0);
-        moneyBuf = std::format("花費估算：{:5d}", totalprice);
-        DrawTextWithRect(moneyBuf, x, y + 180, 160, 0, 0x202020, 255, 0);
-        UpdateAllScreen();
-        if (SDL_WaitEvent(&event))
+        auto word1 = std::format("現有銀兩：{:5d}", money);
+        DrawTextWithRect(word1, x, y2, 160, 0, 0x202020, 255, 0);
+        auto word2 = std::format("花費估算：{:5d}", totalprice);
+        DrawTextWithRect(word2, x, y2 + 40, 160, 0, 0x202020, 255, 0);
+
+        // 底部 購買/反悔/離開
+        std::string btns[3] = {"購買", "反悔", "離開"};
+        DrawTextFrame(x2, y2, 16);
+        for (int i = 0; i < 3; i++)
         {
-            CheckBasicEvent();
-            if (event.type == SDL_EVENT_KEY_UP)
+            if (i == select && menu == 5)
+                DrawShadowText(btns[i].c_str(), x2 + 19 + i * 60, y2 + 3, ColColor(0x66), ColColor(0x64));
+            else
+                DrawShadowText(btns[i].c_str(), x2 + 19 + i * 60, y2 + 3, 0, 0x202020);
+        }
+        UpdateAllScreen();
+    };
+
+    while (SDL_PollEvent(&event) || true)
+    {
+        if (refresh)
+        {
+            NewShop_Show();
+            refresh = false;
+            pmenu = menu;
+            pselect = select;
+            plr = lr;
+        }
+        CheckBasicEvent();
+        SDL_Delay(20);
+
+        int prevBuyAmount[5];
+        for (int i = 0; i < 5; i++) prevBuyAmount[i] = buyAmount[i];
+
+        if (event.type == SDL_EVENT_KEY_DOWN)
+        {
+            if (menu >= 0 && menu < 5)
             {
-                if (event.key.key == SDLK_ESCAPE) break;
-                if (event.key.key == SDLK_UP && menu > 0) menu--;
-                if (event.key.key == SDLK_DOWN && menu < 4) menu++;
+                int pvalue = buyAmount[menu];
                 if (event.key.key == SDLK_LEFT)
                 {
-                    if (buyAmount[menu] > 0) buyAmount[menu]--;
+                    buyAmount[menu] = std::max(0, buyAmount[menu] - 1);
+                    lr = -1;
                 }
-                if (event.key.key == SDLK_RIGHT)
+                else if (event.key.key == SDLK_RIGHT)
                 {
-                    if (buyAmount[menu] < sell.Amount[menu] && totalprice + sell.Price[menu] <= money)
-                        buyAmount[menu]++;
+                    buyAmount[menu] = std::min(sell.Amount[menu], buyAmount[menu] + 1);
+                    lr = 1;
                 }
-                if (event.key.key == SDLK_RETURN || event.key.key == SDLK_SPACE)
-                {
-                    // 购买
-                    for (int i = 0; i < 5; i++)
-                    {
-                        if (buyAmount[i] > 0)
-                        {
-                            instruct_32(sell.Item[i], buyAmount[i]);
-                            sell.Amount[i] -= buyAmount[i];
-                        }
-                    }
-                    instruct_32(MONEY_ID, -totalprice);
-                    sure = true;
-                }
+                if (pvalue != buyAmount[menu]) refresh = true;
             }
-            else if (event.type == SDL_EVENT_MOUSE_BUTTON_UP && event.button.button == SDL_BUTTON_RIGHT)
-                break;
         }
+        else if (event.type == SDL_EVENT_KEY_UP)
+        {
+            lr = 0;
+            switch (event.key.key)
+            {
+            case SDLK_UP:
+                menu = menu - 1;
+                if (menu < 0) menu = 5;
+                break;
+            case SDLK_DOWN:
+                menu = menu + 1;
+                if (menu > 5) menu = 0;
+                break;
+            case SDLK_LEFT:
+                if (menu == 5) select = (select - 1 + 3) % 3;
+                break;
+            case SDLK_RIGHT:
+                if (menu == 5) select = (select + 1) % 3;
+                break;
+            case SDLK_ESCAPE:
+                goto shop_exit;
+            case SDLK_RETURN:
+            case SDLK_SPACE:
+                if (menu == 5) sure = true;
+                break;
+            }
+        }
+        else if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN)
+        {
+            if (menu >= 0 && menu < 5)
+            {
+                int pvalue = buyAmount[menu];
+                if (event.button.button == SDL_BUTTON_LEFT)
+                {
+                    if (MouseInRegion(arrowlx, y + 5, 20, 25 * 5))
+                    {
+                        buyAmount[menu] = std::max(0, buyAmount[menu] - 1);
+                        lr = -1;
+                    }
+                    else if (MouseInRegion(arrowrx, y + 5, 20, 25 * 5))
+                    {
+                        buyAmount[menu] = std::min(sell.Amount[menu], buyAmount[menu] + 1);
+                        lr = 1;
+                    }
+                    else
+                        lr = 0;
+                }
+                if (pvalue != buyAmount[menu]) refresh = true;
+            }
+        }
+        else if (event.type == SDL_EVENT_MOUSE_BUTTON_UP)
+        {
+            if (event.button.button == SDL_BUTTON_LEFT)
+            {
+                if (menu == 5 && select >= 0 && select <= 2) sure = true;
+            }
+            else if (event.button.button == SDL_BUTTON_RIGHT)
+                goto shop_exit;
+            lr = 0;
+        }
+        else if (event.type == SDL_EVENT_MOUSE_MOTION)
+        {
+            int xm, ym;
+            if (MouseInRegion(x, y, w, l * 5 + 10, xm, ym))
+                menu = RegionParameter((ym - y - 5) / l, 0, 4);
+            if (MouseInRegion(x2, y2, w2, l + 10, xm, ym))
+            {
+                menu = 5;
+                select = RegionParameter(3 * (xm - x2) / w2, 0, 2);
+            }
+        }
+
+        event.key.key = 0;
+
+        // 检查总价是否超出，超出则回退
+        int totalprice = 0;
+        for (int i = 0; i < 5; i++)
+            totalprice += sell.Price[i] * buyAmount[i];
+        if (totalprice > money)
+            for (int i = 0; i < 5; i++) buyAmount[i] = prevBuyAmount[i];
+
+        if (sure)
+        {
+            sure = false;
+            refresh = true;
+            switch (select)
+            {
+            case 0: // 購買
+                for (int i = 0; i < 5; i++)
+                {
+                    sell.Amount[i] -= buyAmount[i];
+                    holdAmount[i] += buyAmount[i];
+                    totalbuy[i] += buyAmount[i];
+                    money -= sell.Price[i] * buyAmount[i];
+                    buyAmount[i] = 0;
+                }
+                break;
+            case 1: // 反悔
+                for (int i = 0; i < 5; i++)
+                {
+                    sell.Amount[i] += totalbuy[i];
+                    holdAmount[i] -= totalbuy[i];
+                    buyAmount[i] = 0;
+                    totalbuy[i] = 0;
+                }
+                money = GetItemAmount(MONEY_ID);
+                break;
+            case 2: // 離開
+                goto shop_exit;
+            }
+        }
+
+        refresh = refresh || (pmenu != menu) || (pselect != select) || (plr != lr);
     }
+
+shop_exit:
+    // 实际执行物品和金钱变更
+    for (int i = 0; i < 5; i++)
+    {
+        RShop[shop_num].Amount[i] -= totalbuy[i];
+        instruct_32(RShop[shop_num].Item[i], totalbuy[i]);
+        instruct_32(MONEY_ID, -RShop[shop_num].Price[i] * totalbuy[i]);
+    }
+    FreeFreshScreen();
+    CleanKeyValue();
     Redraw();
 }
 
