@@ -1189,23 +1189,23 @@ end;
 
 procedure instruct_45(rnum, speed: integer);
 begin
-  AddRoleProWithHint(rnum, (pointer(@Rrole[0].Speed) - pointer(@Rrole[0])) div 2, speed, '輕功增加');
+  AddRoleProWithHint(rnum, (pointer(@Rrole[0].Speed) - pointer(@Rrole[0])) div 4, speed, '輕功增加');
 end;
 
 procedure instruct_46(rnum, mp: integer);
 begin
-  AddRoleProWithHint(rnum, (pointer(@Rrole[0].MaxMP) - pointer(@Rrole[0])) div 2, mp, '內力增加');
+  AddRoleProWithHint(rnum, (pointer(@Rrole[0].MaxMP) - pointer(@Rrole[0])) div 4, mp, '內力增加');
   Rrole[rnum].CurrentMP := Rrole[rnum].MaxMP;
 end;
 
 procedure instruct_47(rnum, Attack: integer);
 begin
-  AddRoleProWithHint(rnum, (pointer(@Rrole[0].Attack) - pointer(@Rrole[0])) div 2, Attack, '武力增加');
+  AddRoleProWithHint(rnum, (pointer(@Rrole[0].Attack) - pointer(@Rrole[0])) div 4, Attack, '武力增加');
 end;
 
 procedure instruct_48(rnum, hp: integer);
 begin
-  AddRoleProWithHint(rnum, (pointer(@Rrole[0].MaxHP) - pointer(@Rrole[0])) div 2, hp, '生命增加');
+  AddRoleProWithHint(rnum, (pointer(@Rrole[0].MaxHP) - pointer(@Rrole[0])) div 4, hp, '生命增加');
   Rrole[rnum].CurrentHP := Rrole[rnum].MaxHP;
 end;
 
