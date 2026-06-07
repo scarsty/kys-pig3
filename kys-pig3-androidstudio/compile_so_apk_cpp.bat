@@ -23,6 +23,14 @@ if "%NEED_CLEAN%"=="1" (
 call gradlew.bat assembleRelease -PGAME_ASSETS_DIR="%GAME_ASSETS_DIR%"
 if errorlevel 1 ( echo [ERROR] 编译失败! ^& exit /b 1 )
 
+set "STRIPPED_SO=app\build\intermediates\stripped_native_libs\release\stripReleaseDebugSymbols\out\lib\arm64-v8a\libkys_pig3_c.so"
+if exist "%STRIPPED_SO%" (
+    copy /b "%STRIPPED_SO%" "%PROJECT_DIR%libkys_pig3_c.so" /y >nul
+    echo [INFO] Stripped .so copied: %PROJECT_DIR%libkys_pig3_c.so
+) else (
+    echo [WARN] Stripped .so not found at %STRIPPED_SO%
+)
+
 copy "app\build\outputs\apk\release\*.apk" . /y
 
 set "APK_PATH=%PROJECT_DIR%kys-pig3-release.apk"

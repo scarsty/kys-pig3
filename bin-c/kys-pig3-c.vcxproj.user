@@ -5,7 +5,9 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LocalDebuggerWorkingDirectory>..\..\发布版游戏\bin</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerWorkingDirectory>.</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommandArguments>0</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArgumentsHistory>12|0|</LocalDebuggerCommandArgumentsHistory>
   </PropertyGroup>
 </Project>

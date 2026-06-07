@@ -156,17 +156,21 @@ void Run()
     AppPath = "../game/";
 #elif defined(__ANDROID__)
     {
-        // 资源文件已打包在APK assets中, 首次运行时提取到app内部存储
-        const char* intPath = SDL_GetAndroidInternalStoragePath();
-        std::string basePath(intPath);
-        AppPath = basePath + "/game/";
+        AppPath = "/sdcard/kys-pig3/game/";
+        if (!filefunc::pathExist(AppPath))
+        {
+            // 资源文件已打包在APK assets中, 首次运行时提取到app内部存储
+            const char* intPath = SDL_GetAndroidInternalStoragePath();
+            std::string basePath(intPath);
+            AppPath = basePath + "/game/";
+            if (needExtractAssets(AppPath, assetVer))
+            {
+                extractGameAssets(AppPath, assetVer);
+            }
+        }
         CellPhone = 1;
         SDL_SetHint(SDL_HINT_ORIENTATIONS, "LandscapeLeft LandscapeRight");
         std::string assetVer = "1.0";  // 更新资源时修改此版本号
-        if (needExtractAssets(AppPath, assetVer))
-        {
-            extractGameAssets(AppPath, assetVer);
-        }
     }
 #else
     AppPath = "../game/";
