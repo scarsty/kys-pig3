@@ -972,6 +972,7 @@ void DrawTextWithRect(const std::string& word, int x, int y, int w, uint32 color
 
 void DrawVirtualKey()
 {
+    return;
     if (CellPhone == 0 || ShowVirtualKey == 0)
     {
         return;

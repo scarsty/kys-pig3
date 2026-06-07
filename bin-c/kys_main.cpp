@@ -163,6 +163,7 @@ void Run()
             const char* intPath = SDL_GetAndroidInternalStoragePath();
             std::string basePath(intPath);
             AppPath = basePath + "/game/";
+            std::string assetVer = "1.0";    // 更新资源时修改此版本号
             if (needExtractAssets(AppPath, assetVer))
             {
                 extractGameAssets(AppPath, assetVer);
@@ -170,7 +171,6 @@ void Run()
         }
         CellPhone = 1;
         SDL_SetHint(SDL_HINT_ORIENTATIONS, "LandscapeLeft LandscapeRight");
-        std::string assetVer = "1.0";  // 更新资源时修改此版本号
     }
 #else
     AppPath = "../game/";

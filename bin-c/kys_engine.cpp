@@ -1144,25 +1144,25 @@ uint32 CheckBasicEvent()
         }
         break;
     case SDL_EVENT_FINGER_MOTION:
-        if (CellPhone == 1)
-        {
-            if (event.tfinger.fingerID == 1)
-            {
-                uint32 msCount = SDL_GetTicks() - FingerTick;
-                uint32 msWait = BattleSelecting ? 100 : 50;
-                if (msCount > 500)
-                {
-                    FingerCount = 1;
-                }
-                if ((FingerCount <= 2 && msCount > 200) || (FingerCount > 2 && msCount > msWait))
-                {
-                    FingerCount++;
-                    FingerTick = SDL_GetTicks();
-                    event.type = SDL_EVENT_KEY_DOWN;
-                    event.key.key = AngleToDirection(event.tfinger.dy, event.tfinger.dx);
-                }
-            }
-        }
+        //if (CellPhone == 1)
+        //{
+        //    if (event.tfinger.fingerID == 1)
+        //    {
+        //        uint32 msCount = SDL_GetTicks() - FingerTick;
+        //        uint32 msWait = BattleSelecting ? 100 : 50;
+        //        if (msCount > 500)
+        //        {
+        //            FingerCount = 1;
+        //        }
+        //        if ((FingerCount <= 2 && msCount > 200) || (FingerCount > 2 && msCount > msWait))
+        //        {
+        //            FingerCount++;
+        //            FingerTick = SDL_GetTicks();
+        //            event.type = SDL_EVENT_KEY_DOWN;
+        //            event.key.key = AngleToDirection(event.tfinger.dy, event.tfinger.dx);
+        //        }
+        //    }
+        //}
         break;
     case SDL_EVENT_QUIT:
         QuitConfirm();
@@ -1177,7 +1177,7 @@ uint32 CheckBasicEvent()
         StopMP3(0);
         break;
     case SDL_EVENT_MOUSE_BUTTON_DOWN:
-        if (CellPhone == 1)
+        /*if (CellPhone == 1)
         {
             FingerCount = 0;
             if (ShowVirtualKey != 0)
@@ -1214,11 +1214,11 @@ uint32 CheckBasicEvent()
                     event.key.key = VirtualKeyValue;
                 }
             }
-        }
+        }*/
         break;
     case SDL_EVENT_KEY_UP:
     case SDL_EVENT_MOUSE_BUTTON_UP:
-        if (CellPhone == 1 && event.type == SDL_EVENT_MOUSE_BUTTON_UP && event.button.button == SDL_BUTTON_LEFT)
+        /*if (CellPhone == 1 && event.type == SDL_EVENT_MOUSE_BUTTON_UP && event.button.button == SDL_BUTTON_LEFT)
         {
             int x, y;
             SDL_GetMouseState2(x, y);
@@ -1302,7 +1302,7 @@ uint32 CheckBasicEvent()
             {
                 event.button.button = 0;
             }
-        }
+        }*/
         if (Where == 2 && (event.key.key == SDLK_ESCAPE || event.button.button == SDL_BUTTON_RIGHT))
         {
             for (int i = 0; i < BRoleAmount; i++)
