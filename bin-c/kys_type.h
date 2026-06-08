@@ -505,7 +505,7 @@ inline std::string MovieName;
 
 inline int BasicOffset = 0, RoleOffset = 0, ItemOffset = 0, SceneOffset = 0, MagicOffset = 0, WeiShopOffset = 0, LenR = 0;
 
-inline std::string versionstr = "  108 Brothers and Sisters (c++) v6";
+inline std::string versionstr = "  108 Brothers and Sisters (c++) v7";
 
 inline std::vector<std::string> BattleNames, loverstrs, statestrs;
 
@@ -584,6 +584,9 @@ inline int VirtualKeyX = 150;
 inline int VirtualKeyY = 250;
 inline int VirtualKeySize = 60;
 inline int VirtualKeySpace = 25;
+
+// 触屏走路（手机版点击地图走路），1=开启，0=关闭
+inline int touch_walk = 1;
 
 // 临时计时
 inline uint64_t tttt = 0;

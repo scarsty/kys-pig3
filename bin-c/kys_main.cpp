@@ -488,6 +488,7 @@ void ReadFiles()
         VirtualKeyY = ini.getInt("system", "Virtual_Key_Y", 300);
         VirtualKeySize = ini.getInt("system", "Virtual_Key_Size", 50);
         VirtualKeySpace = ini.getInt("system", "Virtual_Key_Space", 15);
+        touch_walk = ini.getInt("system", "touch_walk", 1);
     }
     else
     {
@@ -1793,7 +1794,7 @@ void Walk()
             }
             if (event.button.button == SDL_BUTTON_LEFT)
             {
-                if (CellPhone == 1)
+                if (CellPhone == 1 && touch_walk == 0)
                 {
                     event.button.button = 0;
                     break;
@@ -2410,7 +2411,7 @@ int WalkInScene(int Open)
             }
             if (event.button.button == SDL_BUTTON_LEFT)
             {
-                if (CellPhone == 1)
+                if (CellPhone == 1 && touch_walk == 0)
                 {
                     event.button.button = 0;
                     break;
@@ -6033,23 +6034,24 @@ void MenuSet()
     uint32 color1, color2, mixcolorl, mixcolorr;
     int mixalphal, mixalphar, arrowy, arrowlx, arrowrx;
 
-    maxmenu = 8;
-    std::string str[8] = {
-        "音樂音量",          // 音樂音量
-        "音效音量",          // 音效音量
-        "大地圖走路延遲",    // 大地圖走路延遲
-        "內場景走路延遲",    // 內場景走路延遲
-        "戰鬥動畫延遲",      // 戰鬥動畫延遲
-        "戰鬥文字顯示",      // 戰鬥文字顯示
-        "顯示模式",          // 顯示模式
-        "文字設置"           // 文字設置
+    maxmenu = 9;
+    std::string str[9] = {
+        "音樂音量",
+        "音效音量",
+        "大地圖走路延遲",
+        "內場景走路延遲",
+        "戰鬥動畫延遲",
+        "戰鬥文字顯示",
+        "顯示模式",
+        "文字設置",
+        "觸屏走路"
     };
-    std::string str2[8];
+    std::string str2[9];
     std::string menuString[2] = {
         "取消",    // 取消
         "確定"     // 確定
     };
-    int Value[9];
+    int Value[10];
     Value[0] = VOLUME;
     Value[1] = VOLUMEWAV;
     Value[2] = WALK_SPEED;
@@ -6058,6 +6060,7 @@ void MenuSet()
     Value[5] = EFFECT_STRING;
     Value[6] = FULLSCREEN;
     Value[7] = SIMPLE;
+    Value[8] = touch_walk;
     Value[maxmenu] = 0;
 
     x = CENTER_X + 120;
@@ -6135,6 +6138,10 @@ void MenuSet()
                     if (i == 7)
                     {
                         str2[i] = (Value[i] == 0) ? "繁體" : "簡體";    // 繁體 : 簡體
+                    }
+                    if (i == 8)
+                    {
+                        str2[i] = (Value[i] == 0) ? "關閉" : "打開";
                     }
                 }
                 DrawShadowText(str[i], x + 10, y + 5 + i * h0, color1, color2);
@@ -6273,6 +6280,10 @@ void MenuSet()
                     {
                         Value[7] = 1 - Value[7];
                     }
+                    if (MouseInRegion(x + 160 + 13, y + 5 + 8 * h0, 50, h0))
+                    {
+                        Value[8] = 1 - Value[8];
+                    }
                     leftright = 0;
                     valuechanged = 1;
                 }
@@ -6342,6 +6353,7 @@ void MenuSet()
             MenuEscType = -1;
         }
         SIMPLE = Value[7];
+        touch_walk = Value[8];
 
         INIReaderNormal ini;
         ini.loadFile(iniFilename);
@@ -6353,6 +6365,7 @@ void MenuSet()
         ini.setKey("system", "EFFECT_STRING", std::to_string(EFFECT_STRING));
         ini.setKey("system", "FULLSCREEN", std::to_string(FULLSCREEN));
         ini.setKey("system", "SIMPLE", std::to_string(SIMPLE));
+        ini.setKey("system", "touch_walk", std::to_string(touch_walk));
         ini.saveFile(iniFilename);
     }
     FreeFreshScreen();
