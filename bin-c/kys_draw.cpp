@@ -260,8 +260,8 @@ void DrawMMap()
                         num = 3715 + MFace * 4 + (MStep + 1) / 2;
                     }
                 }
-                // 空船位置
-                if (MODVersion == 13 && CellPhone == 0)
+                // 空船位置（MOD13 总是显示，非 MOD13 不显示空船，进入水域自动变船）
+                if (MODVersion == 13)
                 {
                     if (i1 == ShipY && i2 == ShipX && InShip == 0)
                     {
