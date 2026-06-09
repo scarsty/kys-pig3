@@ -59,7 +59,9 @@ static void mkdirp(const std::string& path)
 {
     size_t pos = 0;
     while ((pos = path.find('/', pos + 1)) != std::string::npos)
+    {
         mkdir(path.substr(0, pos).c_str(), 0755);
+    }
     mkdir(path.c_str(), 0755);
 }
 
@@ -72,7 +74,10 @@ static void extractAssetsRecursive(JNIEnv* env, jobject jAssetMgr, AAssetManager
     jstring jPath = env->NewStringUTF(assetPath.c_str());
     auto files = (jobjectArray)env->CallObjectMethod(jAssetMgr, listMid, jPath);
     env->DeleteLocalRef(jPath);
-    if (!files) return;
+    if (!files)
+    {
+        return;
+    }
 
     mkdirp(outDir);
     int count = env->GetArrayLength(files);
@@ -92,7 +97,9 @@ static void extractAssetsRecursive(JNIEnv* env, jobject jAssetMgr, AAssetManager
                 char buf[65536];
                 int nb;
                 while ((nb = AAsset_read(asset, buf, sizeof(buf))) > 0)
+                {
                     fwrite(buf, 1, nb, f);
+                }
                 fclose(f);
             }
             AAsset_close(asset);
@@ -124,7 +131,11 @@ static void extractGameAssets(const std::string& targetDir, const std::string& v
     // 写版本标记
     std::string verFile = targetDir + "/.asset_version";
     FILE* vf = fopen(verFile.c_str(), "w");
-    if (vf) { fputs(versionName.c_str(), vf); fclose(vf); }
+    if (vf)
+    {
+        fputs(versionName.c_str(), vf);
+        fclose(vf);
+    }
     __android_log_print(ANDROID_LOG_INFO, "kys", "Asset extraction complete.");
 }
 
@@ -133,13 +144,16 @@ static bool needExtractAssets(const std::string& targetDir, const std::string& v
 {
     std::string verFile = targetDir + "/.asset_version";
     FILE* f = fopen(verFile.c_str(), "r");
-    if (!f) return true;
+    if (!f)
+    {
+        return true;
+    }
     char buf[128] = {};
     fgets(buf, sizeof(buf), f);
     fclose(f);
     return std::string(buf) != versionName;
 }
-#endif // __ANDROID__
+#endif    // __ANDROID__
 
 // potdll前向声明 (动态加载)
 //static void* (*PotCreateFromWindow)(SDL_Window*) = nullptr;
@@ -177,6 +191,25 @@ void Run()
 #endif
 
     // Pascal behavior: first arg appends to "../game" (e.g. "0" -> "../game0/").
+
+    if (filefunc::fileExist(AppPath + "../games.ini"))
+    {
+        INIReaderNormal ini;
+        ini.loadFile(AppPath + "../games.ini");
+        int index = ini.getInt("games", "current", 0);
+        std::string str = ini.getString("games", std::to_string(index), "");
+        if (!str.empty())
+        {
+            auto pos = str.find_last_of(":");
+            if (pos != std::string::npos)
+            {
+                str = str.substr(pos + 1);
+                str = strfunc::trim(str);
+                AppPath += "../" + str + "/";
+            }
+        }
+    }
+
     if (!gLaunchArgs.empty())
     {
         if (!AppPath.empty() && (AppPath.back() == '/' || AppPath.back() == '\\'))
@@ -697,17 +730,13 @@ void ReadFiles()
     }
 
     auto* t2s = new SimpleCC();
-    t2s->init({
-        AppPath + "cc/TSCharacters.txt",
-        AppPath + "cc/TSPhrases.txt"
-        });
+    t2s->init({ AppPath + "cc/TSCharacters.txt",
+        AppPath + "cc/TSPhrases.txt" });
     cct2s = t2s;
 
     auto* s2t = new SimpleCC();
-    s2t->init({
-        AppPath + "cc/STCharacters.txt",
-        AppPath + "cc/STPhrases.txt"
-        });
+    s2t->init({ AppPath + "cc/STCharacters.txt",
+        AppPath + "cc/STPhrases.txt" });
     ccs2t = s2t;
 }
 
@@ -1684,8 +1713,7 @@ void Walk()
             {
                 Cloud[i].Positionx += Cloud[i].Speedx;
                 Cloud[i].Positiony += Cloud[i].Speedy;
-                if (Cloud[i].Positionx > 17279 || Cloud[i].Positionx < 0 ||
-                    Cloud[i].Positiony > 8639 || Cloud[i].Positiony < 0)
+                if (Cloud[i].Positionx > 17279 || Cloud[i].Positionx < 0 || Cloud[i].Positiony > 8639 || Cloud[i].Positiony < 0)
                 {
                     CloudCreateOnSide(i);
                 }
@@ -1814,8 +1842,7 @@ void Walk()
                         {
                             for (int i2 = by - 3; i2 <= by; i2++)
                             {
-                                if (i1 >= 0 && i2 >= 0 && Entrance[i1][i2] >= 0 &&
-                                    BuildX[i1][i2] == bx && BuildY[i1][i2] == by)
+                                if (i1 >= 0 && i2 >= 0 && Entrance[i1][i2] >= 0 && BuildX[i1][i2] == bx && BuildY[i1][i2] == by)
                                 {
                                     axp = i1;
                                     ayp = i2;
@@ -1823,7 +1850,7 @@ void Walk()
                                 }
                             }
                         }
-                        found_entrance:;
+                    found_entrance:;
                     }
                     if (Entrance[axp][ayp] >= 0)
                     {
@@ -1834,9 +1861,19 @@ void Walk()
                             ayp1 = ayp;
                             switch (i)
                             {
-                            case 0: if (axp1 > 0) axp1 = axp - 1; break;
+                            case 0:
+                                if (axp1 > 0)
+                                {
+                                    axp1 = axp - 1;
+                                }
+                                break;
                             case 1: ayp1 = ayp + 1; break;
-                            case 2: if (ayp1 > 0) ayp1 = ayp - 1; break;
+                            case 2:
+                                if (ayp1 > 0)
+                                {
+                                    ayp1 = ayp - 1;
+                                }
+                                break;
                             case 3: axp1 = axp + 1; break;
                             }
                             int step = Fway[axp1][ayp1];
@@ -1938,8 +1975,7 @@ void Walk()
                     {
                         MStep = 1;
                     }
-                    if (abs(Mx - linex[nowstep]) + abs(My - liney[nowstep]) == 1 &&
-                        CanWalk(linex[nowstep], liney[nowstep]))
+                    if (abs(Mx - linex[nowstep]) + abs(My - liney[nowstep]) == 1 && CanWalk(linex[nowstep], liney[nowstep]))
                     {
                         Mx = linex[nowstep];
                         My = liney[nowstep];
@@ -2015,14 +2051,13 @@ void Walk()
 //----------------------------------------------------------------------
 bool CanWalk(int x, int y)
 {
-    if (MODVersion == 13) // {&& CellPhone == 0} - 与Pascal保持一致，手机也使用MOD13严格判断
+    if (MODVersion == 13)    // {&& CellPhone == 0} - 与Pascal保持一致，手机也使用MOD13严格判断
     {
         bool result = false;
         if (x >= 0 && y >= 0 && x < 480 && y < 480)
         {
             result = (BuildX[x][y] == 0);
-            if (x <= 0 || x >= 479 || y <= 0 || y >= 479 ||
-                (Surface[x][y] >= 1692 && Surface[x][y] <= 1700))
+            if (x <= 0 || x >= 479 || y <= 0 || y >= 479 || (Surface[x][y] >= 1692 && Surface[x][y] <= 1700))
             {
                 result = false;
             }
@@ -2030,9 +2065,7 @@ bool CanWalk(int x, int y)
             {
                 result = false;
             }
-            if (((Earth[x][y] >= 358 && Earth[x][y] <= 362) ||
-                (Earth[x][y] >= 506 && Earth[x][y] <= 670) ||
-                (Earth[x][y] >= 1016 && Earth[x][y] <= 1022)))
+            if (((Earth[x][y] >= 358 && Earth[x][y] <= 362) || (Earth[x][y] >= 506 && Earth[x][y] <= 670) || (Earth[x][y] >= 1016 && Earth[x][y] <= 1022)))
             {
                 if (InShip == 1)
                 {
@@ -2091,9 +2124,7 @@ bool CanWalk(int x, int y)
             result = false;
         }
     }
-    if ((Earth[Mx][My] >= 358 && Earth[Mx][My] <= 362) ||
-        (Earth[Mx][My] >= 506 && Earth[Mx][My] <= 670) ||
-        (Earth[Mx][My] >= 1016 && Earth[Mx][My] <= 1022))
+    if ((Earth[Mx][My] >= 358 && Earth[Mx][My] <= 362) || (Earth[Mx][My] >= 506 && Earth[Mx][My] <= 670) || (Earth[Mx][My] >= 1016 && Earth[Mx][My] <= 1022))
     {
         InShip = 1;
     }
@@ -2273,17 +2304,14 @@ int WalkInScene(int Open)
         }
 
         // 检查是否位于出口
-        if ((Sx == Rscene[CurScene].ExitX[0] && Sy == Rscene[CurScene].ExitY[0]) ||
-            (Sx == Rscene[CurScene].ExitX[1] && Sy == Rscene[CurScene].ExitY[1]) ||
-            (Sx == Rscene[CurScene].ExitX[2] && Sy == Rscene[CurScene].ExitY[2]))
+        if ((Sx == Rscene[CurScene].ExitX[0] && Sy == Rscene[CurScene].ExitY[0]) || (Sx == Rscene[CurScene].ExitX[1] && Sy == Rscene[CurScene].ExitY[1]) || (Sx == Rscene[CurScene].ExitX[2] && Sy == Rscene[CurScene].ExitY[2]))
         {
             Where = 0;
             instruct_14();
             break;
         }
         // 检查是否位于跳转口
-        if (Sx == Rscene[CurScene].JumpX1 && Sy == Rscene[CurScene].JumpY1 &&
-            Rscene[CurScene].JumpScene >= 0)
+        if (Sx == Rscene[CurScene].JumpX1 && Sy == Rscene[CurScene].JumpY1 && Rscene[CurScene].JumpScene >= 0)
         {
             instruct_14();
             PreScene = CurScene;
@@ -2425,15 +2453,26 @@ int WalkInScene(int Open)
                         memset(Fway, -1, sizeof(Fway));
                         FindWay(Sx, Sy);
                         gotoEvent = -1;
-                        if (InRegion(axp, 0, 64) && InRegion(ayp, 0, 64) &&
-                            SData[CurScene][3][axp][ayp] >= 0)
+                        if (InRegion(axp, 0, 64) && InRegion(ayp, 0, 64) && SData[CurScene][3][axp][ayp] >= 0)
                         {
                             if (abs(axp - Sx) + abs(ayp - Sy) == 1)
                             {
-                                if (axp < Sx) SFace = 0;
-                                if (axp > Sx) SFace = 3;
-                                if (ayp < Sy) SFace = 2;
-                                if (ayp > Sy) SFace = 1;
+                                if (axp < Sx)
+                                {
+                                    SFace = 0;
+                                }
+                                if (axp > Sx)
+                                {
+                                    SFace = 3;
+                                }
+                                if (ayp < Sy)
+                                {
+                                    SFace = 2;
+                                }
+                                if (ayp > Sy)
+                                {
+                                    SFace = 1;
+                                }
                                 if (CheckEvent1())
                                 {
                                     walking = 0;
@@ -2654,23 +2693,33 @@ void ShowSceneName(int snum)
 bool CanWalkInScene(int x1, int y1, int x, int y)
 {
     if (x < 0 || x > 63 || y < 0 || y > 63)
+    {
         return false;
+    }
     // 建筑层: 仅 -2, -1, 0 可通行
     if (SData[CurScene][1][x][y] > 0 || SData[CurScene][1][x][y] < -2)
+    {
         return false;
+    }
     // 高度差检查(仅相邻格)
     if (abs(SData[CurScene][4][x][y] - SData[CurScene][4][x1][y1]) > 10
         && abs(x1 - x) + abs(y1 - y) == 1)
+    {
         return false;
+    }
     // 事件类型1阻挡
     if (SData[CurScene][3][x][y] >= 0
         && DData[CurScene][SData[CurScene][3][x][y]][0] == 1)
+    {
         return false;
+    }
     // 特定地面贴图阻挡
     int g = SData[CurScene][0][x][y];
     if ((g >= 358 && g <= 362) || g == 522 || g == 1022
         || (g >= 1324 && g <= 1330) || g == 1348)
+    {
         return false;
+    }
     return true;
 }
 
