@@ -522,6 +522,7 @@ void ReadFiles()
         VirtualKeySize = ini.getInt("system", "Virtual_Key_Size", 50);
         VirtualKeySpace = ini.getInt("system", "Virtual_Key_Space", 15);
         touch_walk = ini.getInt("system", "touch_walk", 1);
+        enable_haptic = ini.getInt("system", "enable_haptic", 1);
     }
     else
     {
@@ -6083,8 +6084,8 @@ void MenuSet()
     uint32 color1, color2, mixcolorl, mixcolorr;
     int mixalphal, mixalphar, arrowy, arrowlx, arrowrx;
 
-    maxmenu = 9;
-    std::string str[9] = {
+    maxmenu = 10;
+    std::string str[10] = {
         "音樂音量",
         "音效音量",
         "大地圖走路延遲",
@@ -6093,14 +6094,15 @@ void MenuSet()
         "戰鬥文字顯示",
         "顯示模式",
         "文字設置",
-        "觸屏走路"
+        "觸屏走路",
+        "物理震動"
     };
-    std::string str2[9];
+    std::string str2[10];
     std::string menuString[2] = {
         "取消",    // 取消
         "確定"     // 確定
     };
-    int Value[10];
+    int Value[11];
     Value[0] = VOLUME;
     Value[1] = VOLUMEWAV;
     Value[2] = WALK_SPEED;
@@ -6110,6 +6112,7 @@ void MenuSet()
     Value[6] = FULLSCREEN;
     Value[7] = SIMPLE;
     Value[8] = touch_walk;
+    Value[9] = enable_haptic;
     Value[maxmenu] = 0;
 
     x = CENTER_X + 120;
@@ -6189,6 +6192,10 @@ void MenuSet()
                         str2[i] = (Value[i] == 0) ? "繁體" : "簡體";    // 繁體 : 簡體
                     }
                     if (i == 8)
+                    {
+                        str2[i] = (Value[i] == 0) ? "關閉" : "打開";
+                    }
+                    if (i == 9)
                     {
                         str2[i] = (Value[i] == 0) ? "關閉" : "打開";
                     }
@@ -6333,6 +6340,10 @@ void MenuSet()
                     {
                         Value[8] = 1 - Value[8];
                     }
+                    if (MouseInRegion(x + 160 + 13, y + 5 + 9 * h0, 50, h0))
+                    {
+                        Value[9] = 1 - Value[9];
+                    }
                     leftright = 0;
                     valuechanged = 1;
                 }
@@ -6403,6 +6414,7 @@ void MenuSet()
         }
         SIMPLE = Value[7];
         touch_walk = Value[8];
+        enable_haptic = Value[9];
 
         INIReaderNormal ini;
         ini.loadFile(iniFilename);
@@ -6415,6 +6427,7 @@ void MenuSet()
         ini.setKey("system", "FULLSCREEN", std::to_string(FULLSCREEN));
         ini.setKey("system", "SIMPLE", std::to_string(SIMPLE));
         ini.setKey("system", "touch_walk", std::to_string(touch_walk));
+        ini.setKey("system", "enable_haptic", std::to_string(enable_haptic));
         ini.saveFile(iniFilename);
     }
     FreeFreshScreen();

@@ -602,6 +602,7 @@ inline int ForceBattleWin = 0;
 
 // 手机震动
 inline SDL_Haptic* haptic = nullptr;
+inline int enable_haptic = 1;
 
 // 色值蒙版
 constexpr uint32 RMask = 0xFF0000;

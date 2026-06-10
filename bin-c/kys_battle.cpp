@@ -2156,7 +2156,7 @@ void PlayMagicAmination(int bnum, int eNum, int aimMode, int mode)
     int z = -((Ax + Ay) - (Bx + By)) * 9;
     PlaySound(eNum, 0, x, y, z);
 
-    if (CellPhone == 1 && needOffset != 0)
+    if (CellPhone == 1 && needOffset != 0 && enable_haptic)
         SDL_PlayHapticRumble(haptic, 0.5f, 2000);
 
     int rnum = Brole[bnum].rnum;
