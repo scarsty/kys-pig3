@@ -48,7 +48,7 @@
     <ClCompile Include="C:\project\mlcc\strfunc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\project\mlcc\ZipFile.cpp">
+    <ClCompile Include="C:\project\mlcc\ZipFile2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

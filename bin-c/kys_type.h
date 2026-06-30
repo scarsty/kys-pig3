@@ -5,6 +5,7 @@
 #include <SDL3/SDL.h>
 #include <SDL3_mixer/SDL_mixer.h>
 #include <SDL3_ttf/SDL_ttf.h>
+#include "ZipFile2.h"
 #include <cstdint>
 #include <map>
 #include <string>
@@ -249,14 +250,6 @@ struct TWoodMan
     };
 };
 
-struct TLoadTileData
-{
-    int amount = 0;
-    std::string path;
-    void* filemem = nullptr;    // pzip_t
-    TPNGIndex* beginIndex = nullptr;
-};
-
 // ---- 全局变量 ----
 // 大数组使用extern (定义在kys_type.cpp), 其余使用C++17 inline变量
 
@@ -477,11 +470,11 @@ inline bool LoadingTiles = true;
 inline bool ReadingTiles = false;
 inline bool LoadingBattleTiles = false;
 
-inline void* pMPic = nullptr;
-inline void* pSPic = nullptr;
-inline void* pEPic = nullptr;
-inline void* pHPic = nullptr;
-inline void* pIPic = nullptr;
+inline ZipFile2 pMPic;
+inline ZipFile2 pSPic;
+inline ZipFile2 pEPic;
+inline ZipFile2 pHPic;
+inline ZipFile2 pIPic;
 
 inline int ScreenBlendMode = 0;
 
@@ -505,7 +498,7 @@ inline std::string MovieName;
 
 inline int BasicOffset = 0, RoleOffset = 0, ItemOffset = 0, SceneOffset = 0, MagicOffset = 0, WeiShopOffset = 0, LenR = 0;
 
-inline std::string versionstr = "  108 Brothers and Sisters (c++) v7";
+inline std::string versionstr = "  108 Brothers and Sisters (c++) v9";
 
 inline std::vector<std::string> BattleNames, loverstrs, statestrs;
 

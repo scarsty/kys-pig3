@@ -70,7 +70,7 @@ TIDXGRP LoadIdxGrp(const std::string& stridx, const std::string& strgrp);
 void InitialPicArrays();
 void ReadTiles();
 int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int LoadPic = 1, int16_t* frame = nullptr);
-void LoadOnePNGTexture(const std::string& path, void* z, TPNGIndex& PNGIndex, int forceLoad = 0);
+void LoadOnePNGTexture(const std::string& path, ZipFile2& z, TPNGIndex& PNGIndex, int forceLoad = 0);
 void DrawPNGTile(SDL_Renderer* r, TPNGIndex& PNGIndex, int FrameNum, int px, int py);
 void DrawPNGTile(SDL_Renderer* r, TPNGIndex& PNGIndex, int FrameNum, int px, int py,
     SDL_Rect* region, int shadow, int alpha, uint32 mixColor, int mixAlpha,

@@ -15,16 +15,12 @@
 #include "INIReader.h"
 #include "PotConv.h"
 #include "SimpleCC.h"
-#include "ZipFile.h"
+#include "ZipFile2.h"
 #include "filefunc.h"
 #include "strfunc.h"
 #ifndef KYS_NO_MOVIE
 #include "PotDll.h"
 #endif
-#include <zip.h>
-
-// 在kys_engine.cpp中定义
-extern std::string zip_express(zip_t* z, const std::string& filename);
 
 #include <algorithm>
 #include <cmath>
@@ -690,7 +686,7 @@ void ReadFiles()
     }
     else
     {
-        ZipFile zip;
+        ZipFile2 zip;
         std::string zfilename = AppPath + "save/0.zip";
         if (filefunc::fileExist(zfilename))
         {
@@ -1319,27 +1315,26 @@ bool LoadR(int num)
     }
     else
     {
-        zip_t* z = zip_open(zfilename.c_str(), ZIP_RDONLY, nullptr);
-        if (z)
+        ZipFile2 zip;
+        zip.openRead(zfilename);
+        if (zip.opened())
         {
-            std::string dr = zip_express(z, filenamer);
+            std::string dr = zip.readFile(filenamer);
             if (dr.empty())
             {
-                zip_close(z);
                 return false;
             }
             memcpy(pbuf.data(), dr.data(), std::min((int)dr.size(), LenR));
-            std::string ds = zip_express(z, filenames);
+            std::string ds = zip.readFile(filenames);
             if (!ds.empty())
             {
                 memcpy(&SData[0], ds.data(), std::min((int)ds.size(), (int)sizeof(SData)));
             }
-            std::string dd = zip_express(z, filenamed);
+            std::string dd = zip.readFile(filenamed);
             if (!dd.empty())
             {
                 memcpy(&DData[0], dd.data(), std::min((int)dd.size(), (int)sizeof(DData)));
             }
-            zip_close(z);
         }
         else
         {
@@ -1600,31 +1595,15 @@ bool SaveR(int num)
     else
     {
         std::string zfilename = AppPath + "save/" + std::to_string(num) + ".zip";
-        zip_t* z = zip_open(zfilename.c_str(), ZIP_CREATE | ZIP_TRUNCATE, nullptr);
-        if (!z)
+        ZipFile2 zip;
+        zip.create(zfilename);
+        if (!zip.opened())
         {
             return false;
         }
-
-        zip_source_t* src_r = zip_source_buffer(z, pbuf.data(), LenR, 0);
-        if (src_r)
-        {
-            zip_file_add(z, filenamer.c_str(), src_r, ZIP_FL_OVERWRITE);
-        }
-
-        zip_source_t* src_s = zip_source_buffer(z, &SData[0], sizeof(SData), 0);
-        if (src_s)
-        {
-            zip_file_add(z, filenames.c_str(), src_s, ZIP_FL_OVERWRITE);
-        }
-
-        zip_source_t* src_d = zip_source_buffer(z, &DData[0], sizeof(DData), 0);
-        if (src_d)
-        {
-            zip_file_add(z, filenamed.c_str(), src_d, ZIP_FL_OVERWRITE);
-        }
-
-        zip_close(z);
+        zip.addData(filenamer, pbuf.data(), LenR);
+        zip.addData(filenames, (const char*)&SData[0], (int)sizeof(SData));
+        zip.addData(filenamed, (const char*)&DData[0], (int)sizeof(DData));
     }
     return true;
 }

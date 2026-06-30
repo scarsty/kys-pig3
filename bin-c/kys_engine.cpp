@@ -16,10 +16,9 @@
 #include <SDL3_ttf/SDL_ttf.h>
 
 #include "SimpleCC.h"
-#include "ZipFile.h"
+#include "ZipFile2.h"
 #include "filefunc.h"
 #include "strfunc.h"
-#include <zip.h>
 
 #include <algorithm>
 #define _USE_MATH_DEFINES
@@ -51,13 +50,16 @@ std::string BuildTileFileName(int fileNum, const std::string& fileExt, int frame
     return std::to_string(fileNum) + "_" + std::to_string(frameNum) + fileExt;
 }
 
-std::string DetectTileExtensionInZip(zip_t* z, int maxCount)
+std::string DetectTileExtensionInZip(const ZipFile2& z, int maxCount)
 {
+    auto files = z.getFileNames();
     for (int i = 0; i <= maxCount; i++)
     {
         for (const char* fileExt : kSupportedTileExts)
         {
-            if (zip_name_locate(z, BuildTileFileName(i, fileExt).c_str(), 0) >= 0 || zip_name_locate(z, BuildTileFileName(i, fileExt, 0).c_str(), 0) >= 0)
+            std::string name = BuildTileFileName(i, fileExt);
+            std::string frameName = BuildTileFileName(i, fileExt, 0);
+            if (std::find(files.begin(), files.end(), name) != files.end() || std::find(files.begin(), files.end(), frameName) != files.end())
             {
                 return fileExt;
             }
@@ -1365,36 +1367,6 @@ void ChangeCol()
 //----------------------------------------------------------------------
 
 // 从zip中读取文件内容（返回string）
-std::string zip_express(zip_t* z, const std::string& filename)
-    {
-    std::string result;
-    if (!z)
-    {
-        return result;
-    }
-    zip_file_t* zf = zip_fopen(z, filename.c_str(), ZIP_FL_UNCHANGED);
-    if (!zf)
-    {
-        return result;
-    }
-    zip_stat_t zs;
-    zip_stat_init(&zs);
-    if (zip_stat(z, filename.c_str(), ZIP_FL_UNCHANGED, &zs) != 0)
-    {
-        zip_fclose(zf);
-        return result;
-    }
-    int len = (int)zs.size;
-    result.resize(len);
-    zip_int64_t bytes_read = zip_fread(zf, &result[0], len);
-    if (bytes_read < 0)
-    {
-        result.clear();
-    }
-    zip_fclose(zf);
-    return result;
-}
-
 void InitialPicArrays()
 {
     MPicAmount = LoadPNGTiles("resource/mmap", MPNGIndex, 0);
@@ -1402,17 +1374,13 @@ void InitialPicArrays()
     HPicAmount = LoadPNGTiles("resource/head", HPNGIndex, 0);
     IPicAmount = LoadPNGTiles("resource/item", IPNGIndex, 0);
     CPicAmount = LoadPNGTiles("resource/cloud", CPNGIndex, 1);
-    pMPic = nullptr;
-    pSPic = nullptr;
-    pHPic = nullptr;
-    pIPic = nullptr;
 
     //if (PNG_TILE == 2)
     {
-        pMPic = zip_open((AppPath + "resource/mmap.zip").c_str(), ZIP_RDONLY, nullptr);
-        pSPic = zip_open((AppPath + "resource/smap.zip").c_str(), ZIP_RDONLY, nullptr);
-        pHPic = zip_open((AppPath + "resource/head.zip").c_str(), ZIP_RDONLY, nullptr);
-        pIPic = zip_open((AppPath + "resource/item.zip").c_str(), ZIP_RDONLY, nullptr);
+        pMPic.openRead(AppPath + "resource/mmap.zip");
+        pSPic.openRead(AppPath + "resource/smap.zip");
+        pHPic.openRead(AppPath + "resource/head.zip");
+        pIPic.openRead(AppPath + "resource/item.zip");
     }
     ReadTiles();
 }
@@ -1428,18 +1396,6 @@ void ReadTiles()
         LoadOnePNGTexture("resource/smap", pSPic, SPNGIndex[i]);
     }
     ReadingTiles = false;
-}
-
-int LoadPNGTilesThread(void* Data)
-{
-    TLoadTileData* d = (TLoadTileData*)Data;
-    TPNGIndex* pIndex = d->beginIndex;
-    for (int i = 0; i < d->amount; i++)
-    {
-        LoadOnePNGTexture(d->path, d->filemem, *pIndex);
-        pIndex++;
-    }
-    return 0;
 }
 
 char* ReadFileToBuffer(char* p, const std::string& filename, int size, int malloc_flag)
@@ -1507,7 +1463,7 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
     const int maxCount = 9999;
     int result = 0;
     std::vector<int16_t> offset;
-    zip_t* z = nullptr;
+    ZipFile2 zip;
     std::string localpath = path;
     std::string fileExt = kDefaultTileExt;
 
@@ -1546,11 +1502,11 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
     if (PNG_TILE == 2)
     {
         kyslog("Searching file %s.zip", (path).c_str());
-        z = zip_open((AppPath + path + ".zip").c_str(), ZIP_RDONLY, nullptr);
-        if (z)
+        zip.openRead(AppPath + path + ".zip");
+        if (zip.opened())
         {
             // 先尝试 index.txt，再 fallback index.ka
-            std::string indexText = zip_express(z, "index.txt");
+            std::string indexText = zip.readFile("index.txt");
             if (!indexText.empty())
             {
                 std::replace(indexText.begin(), indexText.end(), ':', ',');
@@ -1559,7 +1515,7 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
             }
             else
             {
-                std::string buf = zip_express(z, "index.ka");
+                std::string buf = zip.readFile("index.ka");
                 offset.resize(buf.size() / 2 + 2, 0);
                 if (!buf.empty())
                 {
@@ -1571,27 +1527,19 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
             // fightframe.txt
             if (frame)
             {
-                auto nums = strfunc::findNumbers<int>(zip_express(z, "fightframe.txt"));
+                auto nums = strfunc::findNumbers<int>(zip.readFile("fightframe.txt"));
                 for (size_t i = 0; i < nums.size() / 2; i++)
                 {
                     frame[nums[i * 2]] = (int16_t)nums[i * 2 + 1];
                 }
             }
 
-            fileExt = DetectTileExtensionInZip(z, maxCount);
+            fileExt = DetectTileExtensionInZip(zip, maxCount);
 
                         PNGIndexArray.resize(9999);
             offset.resize(9999 * 2, 0);
 
-            std::vector<std::string> files;
-            zip_int64_t numEntries = zip_get_num_entries(z, 0);
-            //get all files in zip
-            for (zip_uint64_t i = 0; i < numEntries; i++)
-            {
-                //get file name
-                const char* name = zip_get_name(z, i, 0);
-                files.push_back(name);
-            }
+            std::vector<std::string> files = zip.getFileNames();
             // 初始化贴图索引, 计算全部帧数和
             result = 0;
             for (auto& file : files)
@@ -1642,7 +1590,7 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
     }
 
     // 从文件夹加载 (PNG_TILE==1 或 zip打开失败)
-    if (PNG_TILE == 1 || z == nullptr)
+    if (PNG_TILE == 1 || !zip.opened())
     {
         kyslog("Searching index of png files %s/index.txt", (path).c_str());
         localpath = path + "/";
@@ -1736,13 +1684,9 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
         kyslog("Now loading...");
         for (int i = 0; i < result; i++)
         {
-            LoadOnePNGTexture(localpath, z, PNGIndexArray[i], 1);
+            LoadOnePNGTexture(localpath, zip, PNGIndexArray[i], 1);
         }
         kyslog("end");
-    }
-    if (z)
-    {
-        zip_close(z);
     }
     return result;
 }
@@ -1751,13 +1695,13 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
 bool LoadTileFromFile(const std::string& filename, const std::string& fileExt, void*& pt, int usesur, int& w, int& h);
 bool LoadTileFromMem(const char* p, int len, const std::string& fileExt, void*& pt, int usesur, int& w, int& h);
 
-void LoadOnePNGTexture(const std::string& path, void* z, TPNGIndex& PNGIndex, int forceLoad)
+void LoadOnePNGTexture(const std::string& path, ZipFile2& z, TPNGIndex& PNGIndex, int forceLoad)
 {
     if (PNGIndex.Loaded != 0 && forceLoad == 0)
     {
         return;
     }
-    bool frommem = z != nullptr;
+    bool frommem = z.opened();
     std::string localpath = path;
     if (!frommem)
     {
@@ -1777,7 +1721,7 @@ void LoadOnePNGTexture(const std::string& path, void* z, TPNGIndex& PNGIndex, in
 
         if (frommem)
         {
-            std::string buf = zip_express((zip_t*)z, BuildTileFileName(idx.FileNum, fileExt));
+            std::string buf = z.readFile(BuildTileFileName(idx.FileNum, fileExt));
             if (!buf.empty())
             {
                 idx.Frame = 1;
@@ -1788,7 +1732,7 @@ void LoadOnePNGTexture(const std::string& path, void* z, TPNGIndex& PNGIndex, in
                 int loadedFrame = 0;
                 for (int i = 0; i < idx.Frame; i++)
                 {
-                    buf = zip_express((zip_t*)z, BuildTileFileName(idx.FileNum, fileExt, i));
+                    buf = z.readFile(BuildTileFileName(idx.FileNum, fileExt, i));
                     if (!buf.empty())
                     {
                         LoadTileFromMem(buf.data(), (int)buf.size(), fileExt, idx.Pointers[i], 0, idx.w, idx.h);
@@ -1923,22 +1867,6 @@ void DestroyAllTextures(int all)
         if (ImgBGroundTex)
         {
             SDL_DestroyTexture(ImgBGroundTex);
-        }
-        if (pMPic)
-        {
-            zip_close((zip_t*)pMPic);
-        }
-        if (pSPic)
-        {
-            zip_close((zip_t*)pSPic);
-        }
-        if (pHPic)
-        {
-            zip_close((zip_t*)pHPic);
-        }
-        if (pIPic)
-        {
-            zip_close((zip_t*)pIPic);
         }
     }
     for (auto& pair : CharTex)
@@ -2315,7 +2243,7 @@ void RecordFreshScreen(int x, int y, int w, int h)
     SDL_RenderTexture(render, screenTex, &destf, nullptr);
     SDL_SetRenderTarget(render, screenTex);
     FreshScreen.push_back(reinterpret_cast<SDL_Surface*>(tex));
-    kyslog("Now the amount of fresh screens is %d", (int)FreshScreen.size());
+    //kyslog("Now the amount of fresh screens is %d", (int)FreshScreen.size());
 }
 
 void LoadFreshScreen(int x, int y)

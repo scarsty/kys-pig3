@@ -56,7 +56,7 @@ set(GAME_SOURCES
 set(MLCC_SOURCES
     ${MLCC_PATH}/filefunc.cpp
     ${MLCC_PATH}/strfunc.cpp
-    ${MLCC_PATH}/ZipFile.cpp
+    ${MLCC_PATH}/ZipFile2.cpp
     ${MLCC_PATH}/SimpleCC.cpp
 )
 
@@ -96,10 +96,6 @@ set_target_properties(SDL3_image PROPERTIES IMPORTED_LOCATION ${PREBUILT_LIB_PAT
 add_library(lua SHARED IMPORTED)
 set_target_properties(lua PROPERTIES IMPORTED_LOCATION ${PREBUILT_LIB_PATH}/liblua.so)
 
-# libzip
-add_library(zip_lib SHARED IMPORTED)
-set_target_properties(zip_lib PROPERTIES IMPORTED_LOCATION ${PREBUILT_LIB_PATH}/libzip.so)
-
 # zlib
 add_library(z_lib SHARED IMPORTED)
 set_target_properties(z_lib PROPERTIES IMPORTED_LOCATION ${PREBUILT_LIB_PATH}/libz.so)
@@ -114,7 +110,6 @@ target_link_libraries(kys_pig3_c PRIVATE
     SDL3_mixer
     SDL3_ttf
     lua
-    zip_lib
     z_lib
     android
     log

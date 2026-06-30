@@ -98,7 +98,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>SDL3.lib;SDL3_image.lib;SDL3_ttf.lib;SDL3_mixer.lib;lua.lib;zip.lib;charset.lib;iconv.lib;smallpot.lib</AdditionalDependencies>
+      <AdditionalDependencies>SDL3.lib;SDL3_image.lib;SDL3_ttf.lib;SDL3_mixer.lib;lua.lib;charset.lib;iconv.lib;smallpot.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -127,14 +127,14 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>SDL3.lib;SDL3_image.lib;SDL3_ttf.lib;SDL3_mixer.lib;lua.lib;zip.lib;charset.lib;iconv.lib;smallpot.lib</AdditionalDependencies>
+      <AdditionalDependencies>SDL3.lib;SDL3_image.lib;SDL3_ttf.lib;SDL3_mixer.lib;lua.lib;charset.lib;iconv.lib;smallpot.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="C:\project\mlcc\filefunc.cpp" />
     <ClCompile Include="C:\project\mlcc\SimpleCC.cpp" />
     <ClCompile Include="C:\project\mlcc\strfunc.cpp" />
-    <ClCompile Include="C:\project\mlcc\ZipFile.cpp" />
+    <ClCompile Include="C:\project\mlcc\ZipFile2.cpp" />
     <ClCompile Include="kys_battle.cpp" />
     <ClCompile Include="kys_draw.cpp" />
     <ClCompile Include="kys_engine.cpp" />
