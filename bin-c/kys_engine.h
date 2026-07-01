@@ -59,7 +59,7 @@ void DrawPartPic(void* pic, int x, int y, int w, int h, int x1, int y1);
 // 文件读取
 char* ReadFileToBuffer(char* p, const std::string& filename, int size, int malloc_flag);
 void FreeFileBuffer(char*& p);
-void ReadTxtFileToBuffer(char* p, const std::string& filename);
+void ReadTxtFileToBuffer(char* p, size_t size, const std::string& filename);
 std::string ReadFileToString(const std::string& filename);
 std::vector<int> ReadNumbersFromString(const std::string& str);
 

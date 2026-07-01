@@ -577,7 +577,7 @@ void ReadFiles()
     ReadFileToBuffer((char*)&LeaveList[0], AppPath + "binlist/leave.bin", 200, 0);
     ReadFileToBuffer((char*)&LevelUpList[0], AppPath + "binlist/levelup.bin", 200, 0);
 
-    ReadTxtFileToBuffer((char*)&loverlist[0], AppPath + "list/lover.txt");
+    ReadTxtFileToBuffer((char*)&loverlist[0], sizeof(loverlist), AppPath + "list/lover.txt");
     ReadFileToBuffer((char*)&WarStaList[0], AppPath + "resource/war.sta", sizeof(TWarData) * 401, 0);
 
     KDEF = LoadIdxGrp("resource/kdef.idx", "resource/kdef.grp");

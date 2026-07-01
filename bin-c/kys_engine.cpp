@@ -1420,13 +1420,13 @@ char* ReadFileToBuffer(char* p, const std::string& filename, int size, int mallo
     return (malloc_flag == 1) ? nullptr : p;
 }
 
-void ReadTxtFileToBuffer(char* p, const std::string& filename)
+void ReadTxtFileToBuffer(char* p, size_t size, const std::string& filename)
 {
     std::string content = filefunc::readFileToString(filename);
     auto nums = strfunc::findNumbers<int>(content);
-    if (!nums.empty())
+    if (p && size > 0 && !nums.empty())
     {
-        memcpy(p, nums.data(), nums.size() * 4);
+        memcpy(p, nums.data(), std::min(nums.size() * sizeof(int), size));
     }
 }
 
