@@ -431,16 +431,58 @@ void DrawRoleOnScene(int x, int y)
 
 void ExpandGroundOnImg()
 {
-    int16_t Ex[64][64];
-    memset(Ex, -1, sizeof(Ex));
+    int16_t expandedGround[64][64];
     for (int i1 = 0; i1 < 64; i1++)
     {
         for (int i2 = 0; i2 < 64; i2++)
         {
             switch (Where)
             {
-            case 1: Ex[i1][i2] = SData[CurScene][0][i1][i2]; break;
-            case 2: Ex[i1][i2] = BField[0][i1][i2]; break;
+            case 1: expandedGround[i1][i2] = SData[CurScene][0][i1][i2]; break;
+            case 2: expandedGround[i1][i2] = BField[0][i1][i2]; break;
+            }
+        }
+    }
+    if (EXPAND_GROUND != 0 && (MODVersion != 13 || (CurScene != 81 && CurScene != 72)))
+    {
+        for (int i1 = 32; i1 < 64; i1++)
+        {
+            for (int i2 = 0; i2 < 64; i2++)
+            {
+                if (expandedGround[i1][i2] <= 0)
+                {
+                    expandedGround[i1][i2] = expandedGround[i1 - 1][i2];
+                }
+            }
+        }
+        for (int i1 = 0; i1 < 64; i1++)
+        {
+            for (int i2 = 32; i2 < 64; i2++)
+            {
+                if (expandedGround[i1][i2] <= 0)
+                {
+                    expandedGround[i1][i2] = expandedGround[i1][i2 - 1];
+                }
+            }
+        }
+        for (int i1 = 31; i1 >= 0; i1--)
+        {
+            for (int i2 = 0; i2 < 64; i2++)
+            {
+                if (expandedGround[i1][i2] <= 0)
+                {
+                    expandedGround[i1][i2] = expandedGround[i1 + 1][i2];
+                }
+            }
+        }
+        for (int i1 = 0; i1 < 64; i1++)
+        {
+            for (int i2 = 31; i2 >= 0; i2--)
+            {
+                if (expandedGround[i1][i2] <= 0)
+                {
+                    expandedGround[i1][i2] = expandedGround[i1][i2 + 1];
+                }
             }
         }
     }
@@ -457,7 +499,7 @@ void ExpandGroundOnImg()
         {
             int x, y;
             CalPosOnImage(i1, i2, x, y);
-            int num = Ex[i1][i2] / 2;
+            int num = expandedGround[i1][i2] / 2;
             if (num > 0)
             {
                 DrawSPic(num, x, y);
@@ -467,21 +509,13 @@ void ExpandGroundOnImg()
     SDL_SetRenderTarget(render, screenTex);
     switch (Where)
     {
-    case 1: memcpy(ExGroundS, Ex, sizeof(Ex)); break;
-    case 2: memcpy(ExGroundB, Ex, sizeof(Ex)); break;
+    case 1: memcpy(ExGroundS, expandedGround, sizeof(expandedGround)); break;
+    case 2: memcpy(ExGroundB, expandedGround, sizeof(expandedGround)); break;
     }
 }
 
 void InitialScene(int Visible)
 {
-    memset(ExGroundS, 0, sizeof(ExGroundS));
-    for (int i1 = 0; i1 < 64; i1++)
-    {
-        for (int i2 = 0; i2 < 64; i2++)
-        {
-            ExGroundS[i1][i2] = (int16_t)SData[CurScene][0][i1][i2];
-        }
-    }
     ExpandGroundOnImg();
     if (IsCave(CurScene))
     {
