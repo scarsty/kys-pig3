@@ -2193,6 +2193,18 @@ int WalkInScene(int Open)
     int x1, y1;
     int Sx1, Sy1;
     int PreScene;
+    auto stopWalkingIfPositionChanged = [&](int oldSx, int oldSy) -> bool {
+        if (Sx != oldSx || Sy != oldSy)
+        {
+            walking = 0;
+            nowstep = -1;
+            speed = 0;
+            SStep = 0;
+            stillcount = 0;
+            return true;
+        }
+        return false;
+    };
     ExitSceneMusicNum = Rscene[CurScene].ExitMusic;
 
     InitialScene();
@@ -2336,7 +2348,12 @@ int WalkInScene(int Open)
             }
             if (event.key.key == SDLK_RETURN || event.key.key == SDLK_SPACE)
             {
-                CheckEvent1();
+                int oldSx = Sx;
+                int oldSy = Sy;
+                if (CheckEvent1())
+                {
+                    stopWalkingIfPositionChanged(oldSx, oldSy);
+                }
             }
             if (event.key.key == SDLK_TAB)
             {
@@ -2415,7 +2432,12 @@ int WalkInScene(int Open)
             }
             if (event.button.button == SDL_BUTTON_MIDDLE)
             {
-                CheckEvent1();
+                int oldSx = Sx;
+                int oldSy = Sy;
+                if (CheckEvent1())
+                {
+                    stopWalkingIfPositionChanged(oldSx, oldSy);
+                }
             }
             if (event.button.button == SDL_BUTTON_LEFT)
             {
@@ -2453,9 +2475,12 @@ int WalkInScene(int Open)
                                 {
                                     SFace = 1;
                                 }
+                                int oldSx = Sx;
+                                int oldSy = Sy;
                                 if (CheckEvent1())
                                 {
                                     walking = 0;
+                                    stopWalkingIfPositionChanged(oldSx, oldSy);
                                 }
                             }
                             else
@@ -2591,7 +2616,12 @@ int WalkInScene(int Open)
                     if (gotoEvent >= 0)
                     {
                         SFace = gotoEvent;
-                        CheckEvent1();
+                        int oldSx = Sx;
+                        int oldSy = Sy;
+                        if (CheckEvent1())
+                        {
+                            stopWalkingIfPositionChanged(oldSx, oldSy);
+                        }
                     }
                 }
                 break;
@@ -2601,7 +2631,12 @@ int WalkInScene(int Open)
             CurSceneRolePic = BEGIN_WALKPIC2 + SFace * 7 + SStep;
             DrawScene();
             UpdateAllScreen();
-            CheckEvent3();
+            int oldSx = Sx;
+            int oldSy = Sy;
+            if (CheckEvent3())
+            {
+                stopWalkingIfPositionChanged(oldSx, oldSy);
+            }
         }
 
         event.key.key = 0;
@@ -6063,8 +6098,8 @@ void MenuSet()
     uint32 color1, color2, mixcolorl, mixcolorr;
     int mixalphal, mixalphar, arrowy, arrowlx, arrowrx;
 
-    maxmenu = 10;
-    std::string str[10] = {
+    maxmenu = 11;
+    std::string str[11] = {
         "音樂音量",
         "音效音量",
         "大地圖走路延遲",
@@ -6072,16 +6107,17 @@ void MenuSet()
         "戰鬥動畫延遲",
         "戰鬥文字顯示",
         "顯示模式",
-        "文字設置",
+        "文字顯示",
         "觸屏走路",
-        "物理震動"
+        "物理震動",
+        "半即時"
     };
-    std::string str2[10];
+    std::string str2[11];
     std::string menuString[2] = {
         "取消",    // 取消
         "確定"     // 確定
     };
-    int Value[11];
+    int Value[12];
     Value[0] = VOLUME;
     Value[1] = VOLUMEWAV;
     Value[2] = WALK_SPEED;
@@ -6092,6 +6128,7 @@ void MenuSet()
     Value[7] = SIMPLE;
     Value[8] = touch_walk;
     Value[9] = enable_haptic;
+    Value[10] = SEMIREAL;
     Value[maxmenu] = 0;
 
     x = CENTER_X + 120;
@@ -6175,6 +6212,10 @@ void MenuSet()
                         str2[i] = (Value[i] == 0) ? "關閉" : "打開";
                     }
                     if (i == 9)
+                    {
+                        str2[i] = (Value[i] == 0) ? "關閉" : "打開";
+                    }
+                    if (i == 10)
                     {
                         str2[i] = (Value[i] == 0) ? "關閉" : "打開";
                     }
@@ -6323,6 +6364,10 @@ void MenuSet()
                     {
                         Value[9] = 1 - Value[9];
                     }
+                    if (MouseInRegion(x + 160 + 13, y + 5 + 10 * h0, 50, h0))
+                    {
+                        Value[10] = 1 - Value[10];
+                    }
                     leftright = 0;
                     valuechanged = 1;
                 }
@@ -6394,6 +6439,7 @@ void MenuSet()
         SIMPLE = Value[7];
         touch_walk = Value[8];
         enable_haptic = Value[9];
+        SEMIREAL = Value[10];
 
         INIReaderNormal ini;
         ini.loadFile(iniFilename);
@@ -6407,6 +6453,7 @@ void MenuSet()
         ini.setKey("system", "SIMPLE", std::to_string(SIMPLE));
         ini.setKey("system", "touch_walk", std::to_string(touch_walk));
         ini.setKey("system", "enable_haptic", std::to_string(enable_haptic));
+        ini.setKey("system", "SEMIREAL", std::to_string(SEMIREAL));
         ini.saveFile(iniFilename);
     }
     FreeFreshScreen();

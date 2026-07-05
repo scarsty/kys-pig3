@@ -529,11 +529,11 @@ void BattleMainControl()
             Brole[i].Moved = 0;
         }
 
+        int i = 0;
         if (SEMIREAL == 1)
         {
             Redraw();
             int act = 0;
-            int i = 0;
             while (true)
             {
                 SDL_PollEvent(&event);
@@ -559,7 +559,6 @@ void BattleMainControl()
             }
         }
 
-        int i;
         if (SEMIREAL == 0)
             i = 0;
 
