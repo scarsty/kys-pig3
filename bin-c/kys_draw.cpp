@@ -445,44 +445,49 @@ void ExpandGroundOnImg()
     }
     if (EXPAND_GROUND != 0 && (MODVersion != 13 || (CurScene != 81 && CurScene != 72)))
     {
-        for (int i1 = 32; i1 < 64; i1++)
+        for (int radius = 1; radius <= 31; radius++)
         {
-            for (int i2 = 0; i2 < 64; i2++)
+            int left = 31 - radius;
+            int right = 32 + radius;
+            int top = 31 - radius;
+            int bottom = 32 + radius;
+            for (int i2 = top + 1; i2 < bottom; i2++)
             {
-                if (expandedGround[i1][i2] <= 0)
+                if (expandedGround[left][i2] <= 0)
                 {
-                    expandedGround[i1][i2] = expandedGround[i1 - 1][i2];
+                    expandedGround[left][i2] = expandedGround[left + 1][i2];
+                }
+                if (expandedGround[right][i2] <= 0)
+                {
+                    expandedGround[right][i2] = expandedGround[right - 1][i2];
                 }
             }
-        }
-        for (int i1 = 0; i1 < 64; i1++)
-        {
-            for (int i2 = 32; i2 < 64; i2++)
+            for (int i1 = left + 1; i1 < right; i1++)
             {
-                if (expandedGround[i1][i2] <= 0)
+                if (expandedGround[i1][top] <= 0)
                 {
-                    expandedGround[i1][i2] = expandedGround[i1][i2 - 1];
+                    expandedGround[i1][top] = expandedGround[i1][top + 1];
+                }
+                if (expandedGround[i1][bottom] <= 0)
+                {
+                    expandedGround[i1][bottom] = expandedGround[i1][bottom - 1];
                 }
             }
-        }
-        for (int i1 = 31; i1 >= 0; i1--)
-        {
-            for (int i2 = 0; i2 < 64; i2++)
+            if (expandedGround[left][top] <= 0)
             {
-                if (expandedGround[i1][i2] <= 0)
-                {
-                    expandedGround[i1][i2] = expandedGround[i1 + 1][i2];
-                }
+                expandedGround[left][top] = expandedGround[left + 1][top] > 0 ? expandedGround[left + 1][top] : expandedGround[left][top + 1];
             }
-        }
-        for (int i1 = 0; i1 < 64; i1++)
-        {
-            for (int i2 = 31; i2 >= 0; i2--)
+            if (expandedGround[right][top] <= 0)
             {
-                if (expandedGround[i1][i2] <= 0)
-                {
-                    expandedGround[i1][i2] = expandedGround[i1][i2 + 1];
-                }
+                expandedGround[right][top] = expandedGround[right - 1][top] > 0 ? expandedGround[right - 1][top] : expandedGround[right][top + 1];
+            }
+            if (expandedGround[left][bottom] <= 0)
+            {
+                expandedGround[left][bottom] = expandedGround[left + 1][bottom] > 0 ? expandedGround[left + 1][bottom] : expandedGround[left][bottom - 1];
+            }
+            if (expandedGround[right][bottom] <= 0)
+            {
+                expandedGround[right][bottom] = expandedGround[right - 1][bottom] > 0 ? expandedGround[right - 1][bottom] : expandedGround[right][bottom - 1];
             }
         }
     }
