@@ -203,7 +203,7 @@ void LoadBattleTiles()
                 break;
             }
         }
-        LoadFreshScreen(CENTER_X - 140, CENTER_Y);
+        LoadFreshScreen();
         auto str = std::format("載入戰鬥人物貼圖 {:2d}/{:2d}", i + 1, BRoleAmount);
         DrawTextWithRect(str, CENTER_X - 120, CENTER_Y, 0, ColColor(0x64), ColColor(0x66), 179);
         UpdateAllScreen();
@@ -308,7 +308,7 @@ int SelectTeamMembers(int forceSingle)
 
     auto ShowMultiMenu = [&]()
     {
-        LoadFreshScreen(x, y);
+        LoadFreshScreen();
         for (int i = 0; i <= max_; i++)
         {
             if (i == 0 || i == max_)
@@ -931,7 +931,7 @@ int BattleMenu(int bnum)
 
     // 显示战斗菜单的lambda
     auto ShowBMenu = [&](int ms, int menu_idx, int mx) {
-        LoadFreshScreen(x, y);
+        LoadFreshScreen();
         int p = 0;
         for (int ii = 0; ii < 12; ii++)
         {
@@ -970,6 +970,27 @@ int BattleMenu(int bnum)
     RecordFreshScreen(x, y, 90, max * h + 40);
     int menu = 0;
     ShowBMenu(MenuStatus, menu, max);
+    auto finishBattleMenu = [&]() -> int {
+        int result = -1;
+        if (menu >= 0)
+        {
+            int p = 0;
+            for (int ii = 0; ii < 12; ii++)
+            {
+                if (MenuStatus & (1 << ii))
+                {
+                    if (p == menu)
+                    {
+                        result = ii;
+                        break;
+                    }
+                    p++;
+                }
+            }
+        }
+        FreeFreshScreen();
+        return result;
+    };
 
     while (SDL_WaitEvent(&event))
     {
@@ -993,22 +1014,22 @@ int BattleMenu(int bnum)
             break;
         case SDL_EVENT_KEY_UP:
             if (event.key.key == SDLK_RETURN || event.key.key == SDLK_SPACE)
-                goto bmenu_done;
+                return finishBattleMenu();
             if (event.key.key == SDLK_ESCAPE)
             {
                 menu = -1;
-                goto bmenu_done;
+                return finishBattleMenu();
             }
             break;
         case SDL_EVENT_MOUSE_BUTTON_UP:
         {
             int xm, ym;
             if (event.button.button == SDL_BUTTON_LEFT && menu != -1 && MouseInRegion(x, y, 120, (max + 1) * h, xm, ym))
-                goto bmenu_done;
+                return finishBattleMenu();
             if (event.button.button == SDL_BUTTON_RIGHT)
             {
                 menu = -1;
-                goto bmenu_done;
+                return finishBattleMenu();
             }
             break;
         }
@@ -1029,27 +1050,7 @@ int BattleMenu(int bnum)
         }
     }
 
-bmenu_done:
-    // 将菜单选项索引映射回word数组索引
-    int result = -1;
-    if (menu >= 0)
-    {
-        int p = 0;
-        for (int ii = 0; ii < 12; ii++)
-        {
-            if (MenuStatus & (1 << ii))
-            {
-                if (p == menu)
-                {
-                    result = ii;
-                    break;
-                }
-                p++;
-            }
-        }
-    }
-    FreeFreshScreen();
-    return result;
+    return finishBattleMenu();
 }
 
 void MoveRole(int bnum)
@@ -1909,7 +1910,7 @@ int SelectMagic(int rnum)
 
     // ShowMagicMenu inline
     auto showMenu = [&](int ms, int sel, int mx) {
-        LoadFreshScreen(100, 50);
+        LoadFreshScreen();
         int p = 0;
         for (int i = 0; i < 10; i++)
         {
@@ -4061,7 +4062,7 @@ bool SelectAutoMode()
     int menu = 0;
     auto ShowTeamModeMenu = [&]()
     {
-        LoadFreshScreen(x, y);
+        LoadFreshScreen();
         for (int i = 0; i < amount; i++)
         {
             if (i == menu)

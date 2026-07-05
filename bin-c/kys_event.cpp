@@ -3094,7 +3094,7 @@ bool SpellPicture(int num, int chance)
     bool result = false;
     auto drawPuzzle = [&]()
     {
-        LoadFreshScreen(x - 5, y - 5);
+        LoadFreshScreen();
         DrawRectangle(x - 5, y - 5, w, h, 0, ColColor(255), 128);
         for (int i = 0; i < 25; i++)
             DrawPartPic(pic, ((24 - gamearray[0][i]) % 5) * 80, ((24 - gamearray[0][i]) / 5) * 80, 80, 80, (i % 5) * 80 + x, (i / 5) * 80 + y + 30);
@@ -3911,11 +3911,22 @@ void NewShop(int shop_num)
     bool sure = false;
     bool refresh = true;
     int pmenu = -1, pselect = -1, plr = -1;
+    auto finishShop = [&]() {
+        for (int i = 0; i < 5; i++)
+        {
+            RShop[shop_num].Amount[i] -= totalbuy[i];
+            instruct_32(RShop[shop_num].Item[i], totalbuy[i]);
+            instruct_32(MONEY_ID, -RShop[shop_num].Price[i] * totalbuy[i]);
+        }
+        FreeFreshScreen();
+        CleanKeyValue();
+        Redraw();
+    };
 
     // 内嵌显示函数
     auto NewShop_Show = [&]()
     {
-        LoadFreshScreen(x, y);
+        LoadFreshScreen();
         int totalprice = 0;
         for (int i = 0; i < 5; i++)
             totalprice += sell.Price[i] * buyAmount[i];
@@ -4019,7 +4030,8 @@ void NewShop(int shop_num)
                 if (menu == 5) select = (select + 1) % 3;
                 break;
             case SDLK_ESCAPE:
-                goto shop_exit;
+                finishShop();
+                return;
             case SDLK_RETURN:
             case SDLK_SPACE:
                 if (menu == 5) sure = true;
@@ -4056,7 +4068,10 @@ void NewShop(int shop_num)
                 if (menu == 5 && select >= 0 && select <= 2) sure = true;
             }
             else if (event.button.button == SDL_BUTTON_RIGHT)
-                goto shop_exit;
+            {
+                finishShop();
+                return;
+            }
             lr = 0;
         }
         else if (event.type == SDL_EVENT_MOUSE_MOTION)
@@ -4107,24 +4122,15 @@ void NewShop(int shop_num)
                 money = GetItemAmount(MONEY_ID);
                 break;
             case 2: // 離開
-                goto shop_exit;
+                finishShop();
+                return;
             }
         }
 
         refresh = refresh || (pmenu != menu) || (pselect != select) || (plr != lr);
     }
 
-shop_exit:
-    // 实际执行物品和金钱变更
-    for (int i = 0; i < 5; i++)
-    {
-        RShop[shop_num].Amount[i] -= totalbuy[i];
-        instruct_32(RShop[shop_num].Item[i], totalbuy[i]);
-        instruct_32(MONEY_ID, -RShop[shop_num].Price[i] * totalbuy[i]);
-    }
-    FreeFreshScreen();
-    CleanKeyValue();
-    Redraw();
+    finishShop();
 }
 
 // ---- UI与输入----
@@ -4308,6 +4314,20 @@ int16_t EnterNumber(int MinValue, int MaxValue, int x, int y, int Default)
     int sure = 0; // 1-keyboard, 2-mouse
     int pvalue = INT_MIN;
     int pmenu = INT_MIN;
+    auto finishEnterNumber = [&]() -> int16_t {
+        int16_t result = (int16_t)RegionParameter(Value, MinValue, MaxValue);
+        if (result != Value)
+        {
+            Redraw();
+            UpdateAllScreen();
+            auto adjustStr = std::format("依據範圍自動調整為{}！", result);
+            DrawTextWithRect(adjustStr, x, y, DrawLength(adjustStr.c_str()) * 10 + 8, ColColor(0x64), ColColor(0x66));
+            WaitAnyKey();
+        }
+        CleanKeyValue();
+        FreeFreshScreen();
+        return result;
+    };
 
     while (SDL_PollEvent(&event) || true)
     {
@@ -4365,7 +4385,7 @@ int16_t EnterNumber(int MinValue, int MaxValue, int x, int y, int Default)
 
         if (Value != pvalue || menu != pmenu)
         {
-            LoadFreshScreen(x, y);
+            LoadFreshScreen();
             auto valStr = std::format("{:6d}", Value);
             DrawShadowText(valStr, x + 80, y + 10, ColColor(0x64), ColColor(0x66));
 
@@ -4408,7 +4428,7 @@ int16_t EnterNumber(int MinValue, int MaxValue, int x, int y, int Default)
                 break;
             default:
                 if (menu == highButton)
-                    goto enter_number_done;
+                    return finishEnterNumber();
                 break;
             }
             if (sure == 1)
@@ -4417,22 +4437,6 @@ int16_t EnterNumber(int MinValue, int MaxValue, int x, int y, int Default)
 
         sure = 0;
         SDL_Delay(25);
-    }
-
-enter_number_done:
-    {
-        int16_t result = (int16_t)RegionParameter(Value, MinValue, MaxValue);
-        if (result != Value)
-        {
-            Redraw();
-            UpdateAllScreen();
-            auto adjustStr = std::format("依據範圍自動調整為{}！", result);
-            DrawTextWithRect(adjustStr, x, y, DrawLength(adjustStr.c_str()) * 10 + 8, ColColor(0x64), ColColor(0x66));
-            WaitAnyKey();
-        }
-        CleanKeyValue();
-        FreeFreshScreen();
-        return result;
     }
 }
 

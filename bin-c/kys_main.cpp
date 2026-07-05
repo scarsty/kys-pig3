@@ -1818,7 +1818,8 @@ void Walk()
                     {
                         int bx = BuildX[axp][ayp];
                         int by = BuildY[axp][ayp];
-                        for (int i1 = bx - 3; i1 <= bx; i1++)
+                        bool foundEntrance = false;
+                        for (int i1 = bx - 3; i1 <= bx && !foundEntrance; i1++)
                         {
                             for (int i2 = by - 3; i2 <= by; i2++)
                             {
@@ -1826,11 +1827,11 @@ void Walk()
                                 {
                                     axp = i1;
                                     ayp = i2;
-                                    goto found_entrance;
+                                    foundEntrance = true;
+                                    break;
                                 }
                             }
                         }
-                    found_entrance:;
                     }
                     if (Entrance[axp][ayp] >= 0)
                     {
@@ -2628,6 +2629,10 @@ int WalkInScene(int Open)
             }
             }
 
+            if (Where != 1)
+            {
+                break;
+            }
             CurSceneRolePic = BEGIN_WALKPIC2 + SFace * 7 + SStep;
             DrawScene();
             UpdateAllScreen();
@@ -3037,7 +3042,7 @@ int CommonMenu(int x, int y, int w, int max, int default_, const std::string men
     // 内部绘制函数
     auto ShowCommonMenu = [&]()
     {
-        LoadFreshScreen(x, y);
+        LoadFreshScreen();
         for (int i = 0; i <= std::min(max, count - 1); i++)
         {
             int alpha;
@@ -3183,7 +3188,7 @@ int CommonScrollMenu(int x, int y, int w, int max, int maxshow, const std::strin
 
     auto ShowMenu = [&]()
     {
-        LoadFreshScreen(x, y);
+        LoadFreshScreen();
         int ms = std::min(max + 1, maxshow);
         for (int i = menutop; i < menutop + ms && i <= max; i++)
         {
@@ -3375,7 +3380,128 @@ int CommonScrollMenu(int x, int y, int w, int max, int maxshow, const std::strin
 
 int CommonMenu2(int x, int y, int w, const std::string menuString[], int max)
 {
-    return CommonMenu(x, y, w, max, 0, menuString, max + 1);
+    int menu = 0;
+    int len = 0;
+    for (int i = 0; i <= max; i++)
+    {
+        len = std::max(len, DrawLength(menuString[i]));
+    }
+    w = w + 40;
+
+    RecordFreshScreen(x, y, w * (max + 1) + 3, 30);
+
+    auto ShowCommonMenu2 = [&]()
+    {
+        LoadFreshScreen();
+        for (int i = 0; i <= max; i++)
+        {
+            int alpha;
+            uint32 c1, c2;
+            if (i == menu)
+            {
+                alpha = 255;
+                c1 = ColColor(0x64);
+                c2 = ColColor(0x66);
+            }
+            else
+            {
+                alpha = 230;
+                c1 = 0;
+                c2 = 0x202020;
+            }
+            DrawTextFrame(x + i * w, y, len, alpha);
+            DrawShadowText(menuString[i], x + 19 + i * w, y + 3, c1, c2);
+        }
+    };
+
+    ShowCommonMenu2();
+    UpdateAllScreen();
+    CleanKeyValue();
+
+    while (SDL_WaitEvent(&event))
+    {
+        CheckBasicEvent();
+        switch (event.type)
+        {
+        case SDL_EVENT_KEY_UP:
+            if (event.key.key == SDLK_LEFT)
+            {
+                menu--;
+                if (menu < 0)
+                    menu = max;
+                ShowCommonMenu2();
+                UpdateAllScreen();
+            }
+            if (event.key.key == SDLK_RIGHT)
+            {
+                menu++;
+                if (menu > max)
+                    menu = 0;
+                ShowCommonMenu2();
+                UpdateAllScreen();
+            }
+            if (event.key.key == SDLK_ESCAPE && Where <= 2)
+            {
+                UpdateAllScreen();
+                event.key.key = SDLK_UNKNOWN;
+                event.button.button = 0;
+                FreeFreshScreen();
+                return -1;
+            }
+            if (event.key.key == SDLK_RETURN || event.key.key == SDLK_SPACE)
+            {
+                UpdateAllScreen();
+                event.key.key = SDLK_UNKNOWN;
+                event.button.button = 0;
+                FreeFreshScreen();
+                return menu;
+            }
+            break;
+        case SDL_EVENT_MOUSE_BUTTON_UP:
+            if (event.button.button == SDL_BUTTON_RIGHT && Where <= 2)
+            {
+                UpdateAllScreen();
+                event.key.key = SDLK_UNKNOWN;
+                event.button.button = 0;
+                FreeFreshScreen();
+                return -1;
+            }
+            if (event.button.button == SDL_BUTTON_LEFT && MouseInRegion(x, y, w * (max + 1), 29))
+            {
+                UpdateAllScreen();
+                event.key.key = SDLK_UNKNOWN;
+                event.button.button = 0;
+                FreeFreshScreen();
+                return menu;
+            }
+            break;
+        case SDL_EVENT_MOUSE_MOTION:
+        {
+            int x1, y1;
+            if (MouseInRegion(x, y, w * (max + 1), 29, x1, y1))
+            {
+                int menup = menu;
+                menu = (x1 - x - 2) / w;
+                if (menu > max)
+                    menu = max;
+                if (menu < 0)
+                    menu = 0;
+                if (menup != menu)
+                {
+                    ShowCommonMenu2();
+                    UpdateAllScreen();
+                }
+            }
+            break;
+        }
+        }
+        CleanKeyValue();
+    }
+
+    event.key.key = SDLK_UNKNOWN;
+    event.button.button = 0;
+    FreeFreshScreen();
+    return -1;
 }
 
 int SelectOneTeamMember(int x, int y, const std::string& str, int list1, int list2, int mask)
@@ -3407,7 +3533,7 @@ int SelectOneTeamMember(int x, int y, const std::string& str, int list1, int lis
         SDL_PollEvent(&event);
         if (menu != premenu)
         {
-            LoadFreshScreen(CENTER_X - 275, CENTER_Y - 160);
+            LoadFreshScreen();
             DrawRectangle(CENTER_X - 275, CENTER_Y - 160, 550, 310, 0, ColColor(0x64), 128);
             for (int i = 0; i <= max; i++)
             {
@@ -3544,6 +3670,28 @@ void MenuEsc()
     int j = 0;
     int menu = 0;
     int menup = -1;
+    auto closeMenuEsc = [&]() {
+        CleanKeyValue();
+        for (int i = 25; i >= DISABLE_MENU_AMI; i--)
+        {
+            LoadFreshScreen();
+            DrawMPic(2020, CENTER_X - 193, CENTER_Y - 182, 0, 0, i * 255 / 25, 0, 0);
+            for (int j2 = 0; j2 < 4; j2++)
+            {
+                int x1 = LinearInsert(i, 0, 25, CENTER_X, pos[j2].x);
+                int y1 = LinearInsert(i, 0, 25, CENTER_Y, pos[j2].y);
+                DrawMPic(2021, x1 - 65, y1 - 70, 0, 0, i * 255 / 25, 0, 0);
+                DrawMPic(2022 + j2, x1 - 30, y1 - 25, 0, 0, i * 255 / 25, 0, 0);
+            }
+            UpdateAllScreen();
+            SDL_PollEvent(&event);
+            CheckBasicEvent();
+            SDL_Delay(10);
+        }
+
+        NeedRefreshScene = 1;
+        FreeFreshScreen();
+    };
 
     // 如果鼠标在某个有效位置则重设初值
     for (int i = 0; i < 4; i++)
@@ -3619,7 +3767,8 @@ void MenuEsc()
             }
             if (event.key.key == SDLK_ESCAPE)
             {
-                goto menuesc_exit;
+                closeMenuEsc();
+                return;
             }
             if (event.key.key == SDLK_RETURN || event.key.key == SDLK_SPACE)
             {
@@ -3634,7 +3783,8 @@ void MenuEsc()
         case SDL_EVENT_MOUSE_BUTTON_UP:
             if (event.button.button == SDL_BUTTON_RIGHT)
             {
-                goto menuesc_exit;
+                closeMenuEsc();
+                return;
             }
             if (event.button.button == SDL_BUTTON_LEFT)
             {
@@ -3698,28 +3848,7 @@ void MenuEsc()
         SDL_Delay(30);
     }
 
-menuesc_exit:
-    CleanKeyValue();
-    // 收起动画
-    for (int i = 25; i >= DISABLE_MENU_AMI; i--)
-    {
-        LoadFreshScreen();
-        DrawMPic(2020, CENTER_X - 193, CENTER_Y - 182, 0, 0, i * 255 / 25, 0, 0);
-        for (int j2 = 0; j2 < 4; j2++)
-        {
-            int x1 = LinearInsert(i, 0, 25, CENTER_X, pos[j2].x);
-            int y1 = LinearInsert(i, 0, 25, CENTER_Y, pos[j2].y);
-            DrawMPic(2021, x1 - 65, y1 - 70, 0, 0, i * 255 / 25, 0, 0);
-            DrawMPic(2022 + j2, x1 - 30, y1 - 25, 0, 0, i * 255 / 25, 0, 0);
-        }
-        UpdateAllScreen();
-        SDL_PollEvent(&event);
-        CheckBasicEvent();
-        SDL_Delay(10);
-    }
-
-    NeedRefreshScene = 1;
-    FreeFreshScreen();
+    closeMenuEsc();
 }
 
 void DrawTitleMenu(int menu)
@@ -6041,7 +6170,8 @@ void MenuSystem()
             if (event.key.key == SDLK_ESCAPE)
             {
                 MenuEscType = -1;
-                goto menusystem_exit;
+                FreeFreshScreen();
+                return;
             }
             if (event.key.key == SDLK_RETURN || event.key.key == SDLK_SPACE || (event.key.key == SDLK_DOWN && intitle == 1))
             {
@@ -6053,7 +6183,8 @@ void MenuSystem()
             if (event.button.button == SDL_BUTTON_RIGHT)
             {
                 MenuEscType = -1;
-                goto menusystem_exit;
+                FreeFreshScreen();
+                return;
             }
             if (event.button.button == SDL_BUTTON_LEFT)
             {
@@ -6086,7 +6217,6 @@ void MenuSystem()
         event.button.button = 0;
         SDL_Delay(20);
     }
-menusystem_exit:
     FreeFreshScreen();
 }
 
@@ -6145,7 +6275,7 @@ void MenuSet()
     {
         if ((menu != pmenu) || (valuechanged == 1) || (leftright != 0))
         {
-            LoadFreshScreen(x, y);
+            LoadFreshScreen();
             CleanTextScreenRect(x, y, w, h);
             for (int i = 0; i <= maxmenu - 1; i++)
             {
@@ -6584,7 +6714,7 @@ bool LoadForSecondRound(int num)
     int mode = 0;
     if (LoadR(num))
     {
-        int s = 0;
+    int s = 0;
         for (int i = 0; i <= 107; i++)
         {
             if (GetStarState(i) > 0)
@@ -6607,7 +6737,6 @@ bool LoadForSecondRound(int num)
         TRole tempRrole[1002];
         memcpy(tempRrole, Rrole, sizeof(Rrole));
         memcpy(tempRItemList.data(), RItemList.data(), sizeof(TItemList) * MAX_ITEM_AMOUNT);
-
         LoadR(0);
 
         if (mode >= 1)
@@ -7025,6 +7154,15 @@ void CallEvent(int num)
     }
     NeedRefreshScene = 0;
     SkipTalk = 0;
+    auto finishEvent = []() {
+        event.key.key = 0;
+        event.button.button = 0;
+        if (NeedRefreshScene == 1)
+        {
+            // InitialScene(0);
+        }
+        NeedRefreshScene = 1;
+    };
 
     if (KDEF_SCRIPT >= 1)
     {
@@ -7035,7 +7173,8 @@ void CallEvent(int num)
             {
                 kyslog("Enter script %d", num);
                 ExecScript(filename);
-                goto done;
+                finishEvent();
+                return;
             }
         }
         else
@@ -7043,7 +7182,8 @@ void CallEvent(int num)
             kyslog("Enter script %d", num);
             std::string script = LoadStringFromIMZMEM(AppPath + "script/event/", pEvent, num);
             ExecScriptString(script);
-            goto done;
+            finishEvent();
+            return;
         }
     }
 
@@ -7054,13 +7194,15 @@ void CallEvent(int num)
         int len = KDEF.IDX[num + 1] - offset;
         if (len <= 0)
         {
-            goto done;
+            finishEvent();
+            return;
         }
         std::vector<int16_t> e(len / 2 + 1, 0);
         memcpy(e.data(), &KDEF.GRP[offset], len);
         kyslog("Event %d", num);
         int i = 0;
         int elen = (int)e.size();
+        bool stopEvent = false;
         while (true)
         {
             SDL_PollEvent(&event);
@@ -7100,7 +7242,10 @@ void CallEvent(int num)
                 i += instruct_6(e[i + 1], e[i + 2], e[i + 3], e[i + 4]);
                 i += 5;
                 break;
-            case 7: i += 1; goto done;
+            case 7:
+                i += 1;
+                stopEvent = true;
+                break;
             case 8:
                 instruct_8(e[i + 1]);
                 i += 2;
@@ -7132,7 +7277,8 @@ void CallEvent(int num)
             case 15:
                 instruct_15();
                 i += 1;
-                goto done;
+                stopEvent = true;
+                break;
             case 16:
                 i += instruct_16(e[i + 1], e[i + 2], e[i + 3]);
                 i += 4;
@@ -7327,7 +7473,8 @@ void CallEvent(int num)
             case 62:
                 instruct_62(e[i + 1], e[i + 2], e[i + 3], e[i + 4], e[i + 5], e[i + 6]);
                 i += 7;
-                goto done;
+                stopEvent = true;
+                break;
             case 63:
                 instruct_63(e[i + 1], e[i + 2]);
                 i += 3;
@@ -7367,17 +7514,14 @@ void CallEvent(int num)
                 break;
             default: i += 1; break;
             }
+            if (stopEvent)
+            {
+                break;
+            }
         }
     }
 
-done:
-    event.key.key = 0;
-    event.button.button = 0;
-    if (NeedRefreshScene == 1)
-    {
-        // InitialScene(0);
-    }
-    NeedRefreshScene = 1;
+    finishEvent();
 }
 
 void ReSetEntrance()

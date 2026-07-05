@@ -93,7 +93,6 @@ void CleanTextScreen();
 void CleanTextScreenRect(int x, int y, int w, int h);
 void CleanKeyValue();
 void LoadFreshScreen();
-void LoadFreshScreen(int x, int y);
 void FreeFreshScreen();
 
 // 鼠标

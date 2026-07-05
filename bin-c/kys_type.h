@@ -552,7 +552,14 @@ inline int AUTO_LEVELUP = 0;
 
 inline uint32 SurfaceFlag = 0;
 
-inline std::vector<SDL_Surface*> FreshScreen;
+struct TFreshScreen
+{
+    SDL_Texture* Tex = nullptr;
+    int x = 0;
+    int y = 0;
+};
+
+inline std::vector<TFreshScreen> FreshScreen;
 
 
 inline int SkipTalk = 0;

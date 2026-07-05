@@ -1853,6 +1853,10 @@ std::string LoadStringFromIMZMEM(const std::string& path, const char* p, int num
 
 void DestroyAllTextures(int all)
 {
+    while (!FreshScreen.empty())
+    {
+        FreeFreshScreen();
+    }
     if (all == 1)
     {
         DestroyRenderTextures();
@@ -2231,42 +2235,45 @@ void RecordFreshScreen()
 
 void LoadFreshScreen()
 {
-    LoadFreshScreen(0, 0);
+    if (!FreshScreen.empty())
+    {
+        const auto& fresh = FreshScreen.back();
+        if (fresh.Tex != nullptr)
+        {
+            SDL_Rect dest;
+            dest.x = fresh.x;
+            dest.y = fresh.y;
+            float wf, hf;
+            SDL_GetTextureSize(fresh.Tex, &wf, &hf);
+            dest.w = (int)wf;
+            dest.h = (int)hf;
+            CleanTextScreenRect(fresh.x, fresh.y, dest.w, dest.h);
+            SDL_FRect destf = rect2f(dest);
+            SDL_SetTextureBlendMode(fresh.Tex, SDL_BLENDMODE_NONE);
+            SDL_RenderTexture(render, fresh.Tex, nullptr, &destf);
+        }
+    }
 }
 
 void RecordFreshScreen(int x, int y, int w, int h)
 {
+    if (w <= 0 || h <= 0)
+    {
+        return;
+    }
     SDL_Rect dest = { x, y, w, h };
     SDL_Texture* tex = SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, w, h);
+    if (tex == nullptr)
+    {
+        return;
+    }
+    SDL_Texture* oldTarget = SDL_GetRenderTarget(render);
     SDL_SetRenderTarget(render, tex);
     SDL_FRect destf = rect2f(dest);
     SDL_RenderTexture(render, screenTex, &destf, nullptr);
-    SDL_SetRenderTarget(render, screenTex);
-    FreshScreen.push_back(reinterpret_cast<SDL_Surface*>(tex));
+    SDL_SetRenderTarget(render, oldTarget);
+    FreshScreen.push_back({ tex, x, y });
     //kyslog("Now the amount of fresh screens is %d", (int)FreshScreen.size());
-}
-
-void LoadFreshScreen(int x, int y)
-{
-    int i = (int)FreshScreen.size() - 1;
-    if (i >= 0)
-    {
-        if (FreshScreen[i] != nullptr)
-        {
-            SDL_Texture* tex = reinterpret_cast<SDL_Texture*>(FreshScreen[i]);
-            SDL_Rect dest;
-            dest.x = x;
-            dest.y = y;
-            float wf, hf;
-            SDL_GetTextureSize(tex, &wf, &hf);
-            dest.w = (int)wf;
-            dest.h = (int)hf;
-            CleanTextScreenRect(x, y, dest.w, dest.h);
-            SDL_FRect destf = rect2f(dest);
-            SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_NONE);
-            SDL_RenderTexture(render, tex, nullptr, &destf);
-        }
-    }
 }
 
 void FreeFreshScreen()
@@ -2274,8 +2281,8 @@ void FreeFreshScreen()
     int i = (int)FreshScreen.size() - 1;
     if (i >= 0)
     {
-        SDL_DestroyTexture(reinterpret_cast<SDL_Texture*>(FreshScreen[i]));
-        FreshScreen[i] = nullptr;
+        SDL_DestroyTexture(FreshScreen[i].Tex);
+        FreshScreen[i].Tex = nullptr;
         FreshScreen.erase(FreshScreen.begin() + i);
     }
 }
