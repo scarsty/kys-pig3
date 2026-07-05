@@ -181,7 +181,7 @@ int getBnum(int rnum)
 void LoadBattleTiles()
 {
     LoadingBattleTiles = true;
-    RecordFreshScreen(CENTER_X - 140, CENTER_Y, 300, 25);
+    TFreshScreenGuard freshScreen(CENTER_X - 140, CENTER_Y, 300, 25);
     for (int i = 0; i < BRoleAmount; i++)
     {
         int actionnum = Rrole[Brole[i].rnum].ActionNum;
@@ -209,7 +209,6 @@ void LoadBattleTiles()
         UpdateAllScreen();
     }
     LoadingBattleTiles = false;
-    FreeFreshScreen();
 }
 
 void FreeBattleTiles()
@@ -289,7 +288,7 @@ int SelectTeamMembers(int forceSingle)
     int y = CENTER_Y - 90;
     int h = 28;
     std::string str1 = "參戰";
-    RecordFreshScreen(x, y, 220, 250);
+    TFreshScreenGuard freshScreen(x, y, 220, 250);
     int result = 0;
     int max_ = 1;
     int menu = 0;
@@ -378,7 +377,6 @@ int SelectTeamMembers(int forceSingle)
             }
         }
     }
-    FreeFreshScreen();
     return result;
 }
 
@@ -967,7 +965,7 @@ int BattleMenu(int bnum)
     DrawShadowText("回合", x + 119, y + 3, 0, 0x202020);
 
     UpdateAllScreen();
-    RecordFreshScreen(x, y, 90, max * h + 40);
+    TFreshScreenGuard freshScreen(x, y, 90, max * h + 40);
     int menu = 0;
     ShowBMenu(MenuStatus, menu, max);
     auto finishBattleMenu = [&]() -> int {
@@ -988,7 +986,6 @@ int BattleMenu(int bnum)
                 }
             }
         }
-        FreeFreshScreen();
         return result;
     };
 
@@ -1894,7 +1891,7 @@ int SelectMagic(int rnum)
 
     Redraw();
     ShowSimpleStatus(rnum, 80, CENTER_Y * 2 - 150);
-    RecordFreshScreen(100, 50, 200, 300);
+    TFreshScreenGuard freshScreen(100, 50, 200, 300);
     UpdateAllScreen();
 
     int menu = 0;
@@ -1904,7 +1901,6 @@ int SelectMagic(int rnum)
         DrawTextWithRect(str, 100, 50, 0, 0, 0x202020, 255, 0);
         UpdateAllScreen();
         WaitAnyKey();
-        FreeFreshScreen();
         return -1;
     }
 
@@ -2005,7 +2001,6 @@ int SelectMagic(int rnum)
             }
         }
     }
-    FreeFreshScreen();
     return result;
 }
 
@@ -4055,7 +4050,7 @@ bool SelectAutoMode()
     modestring[3] = "混子";
     std::string str = "確認";
 
-    RecordFreshScreen(x, y, w + 1, (amount + 1) * h + 1);
+    TFreshScreenGuard freshScreen(x, y, w + 1, (amount + 1) * h + 1);
     std::vector<int> tempmode(BRoleAmount);
     for (int i = 0; i < BRoleAmount; i++) tempmode[i] = Brole[i].AutoMode;
 
@@ -4156,7 +4151,7 @@ bool SelectAutoMode()
 
     if (!resultVal)
         for (int i = 0; i < BRoleAmount; i++) Brole[i].AutoMode = tempmode[i];
-    FreeFreshScreen();
+    freshScreen.Release();
     Redraw();
     UpdateAllScreen();
     return resultVal;

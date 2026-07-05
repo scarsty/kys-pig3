@@ -2095,7 +2095,7 @@ void NewTalk(int headnum, int talknum, int namenum, int place, int showhead, int
 
     // 显示对话
     Redraw();
-    RecordFreshScreen();
+    TFreshScreenGuard freshScreen;
 
     uint32_t DrawForeCol = ColColor(ForeGroundCol);
     uint32_t DrawBackCol = ColColor(BackGroundCol);
@@ -2233,7 +2233,7 @@ void NewTalk(int headnum, int talknum, int namenum, int place, int showhead, int
         }
         if (I >= len) break;
     }
-    FreeFreshScreen();
+    freshScreen.Release();
     UpdateAllScreen();
     if (SkipTalk == 0)
     {
@@ -3083,7 +3083,7 @@ bool SpellPicture(int num, int chance)
     }
 
     Redraw();
-    RecordFreshScreen(x - 5, y - 5, w + 1, h + 1);
+    TFreshScreenGuard freshScreen(x - 5, y - 5, w + 1, h + 1);
     // 先显示正确图 2 秒
     DrawRectangle(x - 5, y - 5, w, h, 0, ColColor(255), 128);
     for (int i = 0; i < 25; i++)
@@ -3164,7 +3164,6 @@ bool SpellPicture(int num, int chance)
         else if (chance == 0) { SDL_Delay(700); break; }
     }
     gamearray.clear();
-    FreeFreshScreen();
     return result;
 }
 
@@ -3905,7 +3904,7 @@ void NewShop(int shop_num)
     DrawShadowText(shopStr.c_str(), CENTER_X - 70, 55, ColColor(0xFF), ColColor(0x0));
     std::string headerStr = "品名         價格    存貨  持有     交易";
     DrawTextWithRect(headerStr, CENTER_X - 210, 155, 420, 0, 0x202020);
-    RecordFreshScreen(x, y, 421, CENTER_Y * 2 - y);
+    TFreshScreenGuard freshScreen(x, y, 421, CENTER_Y * 2 - y);
 
     int menu = 0, select = 0, lr = 0;
     bool sure = false;
@@ -3918,7 +3917,7 @@ void NewShop(int shop_num)
             instruct_32(RShop[shop_num].Item[i], totalbuy[i]);
             instruct_32(MONEY_ID, -RShop[shop_num].Price[i] * totalbuy[i]);
         }
-        FreeFreshScreen();
+        freshScreen.Release();
         CleanKeyValue();
         Redraw();
     };
@@ -4308,7 +4307,7 @@ int16_t EnterNumber(int MinValue, int MaxValue, int x, int y, int Default)
         DrawRectangle(buttons[i].x, buttons[i].y, buttons[i].w, buttons[i].h, 0, ColColor(255), 128, 0);
     }
     UpdateAllScreen();
-    RecordFreshScreen(x, y, 181, 181);
+    TFreshScreenGuard freshScreen(x, y, 181, 181);
 
     int menu = -1;
     int sure = 0; // 1-keyboard, 2-mouse
@@ -4325,7 +4324,6 @@ int16_t EnterNumber(int MinValue, int MaxValue, int x, int y, int Default)
             WaitAnyKey();
         }
         CleanKeyValue();
-        FreeFreshScreen();
         return result;
     };
 

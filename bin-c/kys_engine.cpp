@@ -1038,7 +1038,7 @@ void QuitConfirm()
     }
 
     AskingQuit = true;
-    RecordFreshScreen();
+    TFreshScreenGuard freshScreen;
     TransBlackScreen();
     UpdateAllScreen();
     std::string menuStr[] = { "取消", "確認" };
@@ -1047,7 +1047,6 @@ void QuitConfirm()
         Quit();
     }
     LoadFreshScreen();
-    FreeFreshScreen();
     UpdateAllScreen();
     AskingQuit = false;
 }

@@ -1056,10 +1056,9 @@ bool InitialRole()
     std::string input_name = (SIMPLE == 1) ? "萧笑竹" : "蕭笑竹";
 
     Redraw();
-    RecordFreshScreen();
+    TFreshScreenGuard freshScreen;
     UpdateAllScreen();
     bool result = EnterString(input_name, CENTER_X - 163, CENTER_Y + 10, 86, 100);
-    FreeFreshScreen();
 
     if (FULLSCREEN == 1)
     {
@@ -3037,7 +3036,7 @@ int CommonMenu(int x, int y, int w, int max, int default_, const std::string men
     int len1 = len + lene;
     w = w + 40;
 
-    RecordFreshScreen(x, y, w, max * h + h + 2);
+    TFreshScreenGuard freshScreen(x, y, w, max * h + h + 2);
 
     // 内部绘制函数
     auto ShowCommonMenu = [&]()
@@ -3103,14 +3102,12 @@ int CommonMenu(int x, int y, int w, int max, int default_, const std::string men
             {
                 event.key.key = SDLK_UNKNOWN;
                 event.button.button = 0;
-                FreeFreshScreen();
                 return -1;
             }
             if (event.key.key == SDLK_RETURN || event.key.key == SDLK_SPACE)
             {
                 event.key.key = SDLK_UNKNOWN;
                 event.button.button = 0;
-                FreeFreshScreen();
                 return menu;
             }
             break;
@@ -3119,7 +3116,6 @@ int CommonMenu(int x, int y, int w, int max, int default_, const std::string men
             {
                 event.key.key = SDLK_UNKNOWN;
                 event.button.button = 0;
-                FreeFreshScreen();
                 return -1;
             }
             if (event.button.button == SDL_BUTTON_LEFT)
@@ -3128,7 +3124,6 @@ int CommonMenu(int x, int y, int w, int max, int default_, const std::string men
                 {
                     event.key.key = SDLK_UNKNOWN;
                     event.button.button = 0;
-                    FreeFreshScreen();
                     return menu;
                 }
             }
@@ -3158,7 +3153,6 @@ int CommonMenu(int x, int y, int w, int max, int default_, const std::string men
         }
         }
     }
-    FreeFreshScreen();
     return -1;
 }
 
@@ -3184,7 +3178,7 @@ int CommonScrollMenu(int x, int y, int w, int max, int maxshow, const std::strin
     w = len1 * 10 + 40;
     int h = 28;
 
-    RecordFreshScreen(x, y, w + 1, maxshow * h + 32);
+    TFreshScreenGuard freshScreen(x, y, w + 1, maxshow * h + 32);
 
     auto ShowMenu = [&]()
     {
@@ -3368,7 +3362,7 @@ int CommonScrollMenu(int x, int y, int w, int max, int maxshow, const std::strin
     }
     event.key.key = 0;
     event.button.button = 0;
-    FreeFreshScreen();
+    freshScreen.Release();
     UpdateAllScreen();
     return result;
 }
@@ -3388,7 +3382,7 @@ int CommonMenu2(int x, int y, int w, const std::string menuString[], int max)
     }
     w = w + 40;
 
-    RecordFreshScreen(x, y, w * (max + 1) + 3, 30);
+    TFreshScreenGuard freshScreen(x, y, w * (max + 1) + 3, 30);
 
     auto ShowCommonMenu2 = [&]()
     {
@@ -3445,7 +3439,6 @@ int CommonMenu2(int x, int y, int w, const std::string menuString[], int max)
                 UpdateAllScreen();
                 event.key.key = SDLK_UNKNOWN;
                 event.button.button = 0;
-                FreeFreshScreen();
                 return -1;
             }
             if (event.key.key == SDLK_RETURN || event.key.key == SDLK_SPACE)
@@ -3453,7 +3446,6 @@ int CommonMenu2(int x, int y, int w, const std::string menuString[], int max)
                 UpdateAllScreen();
                 event.key.key = SDLK_UNKNOWN;
                 event.button.button = 0;
-                FreeFreshScreen();
                 return menu;
             }
             break;
@@ -3463,7 +3455,6 @@ int CommonMenu2(int x, int y, int w, const std::string menuString[], int max)
                 UpdateAllScreen();
                 event.key.key = SDLK_UNKNOWN;
                 event.button.button = 0;
-                FreeFreshScreen();
                 return -1;
             }
             if (event.button.button == SDL_BUTTON_LEFT && MouseInRegion(x, y, w * (max + 1), 29))
@@ -3471,7 +3462,6 @@ int CommonMenu2(int x, int y, int w, const std::string menuString[], int max)
                 UpdateAllScreen();
                 event.key.key = SDLK_UNKNOWN;
                 event.button.button = 0;
-                FreeFreshScreen();
                 return menu;
             }
             break;
@@ -3500,7 +3490,6 @@ int CommonMenu2(int x, int y, int w, const std::string menuString[], int max)
 
     event.key.key = SDLK_UNKNOWN;
     event.button.button = 0;
-    FreeFreshScreen();
     return -1;
 }
 
@@ -3510,7 +3499,7 @@ int SelectOneTeamMember(int x, int y, const std::string& str, int list1, int lis
     {
         DrawTextWithRect(str, CENTER_X - 275, CENTER_Y - 193, 0, 0, 0x202020);
     }
-    RecordFreshScreen(CENTER_X - 275, CENTER_Y - 160, 551, 310);
+    TFreshScreenGuard freshScreen(CENTER_X - 275, CENTER_Y - 160, 551, 310);
 
     TPosition pos[6];
     for (int i = 0; i < 3; i++)
@@ -3614,7 +3603,6 @@ int SelectOneTeamMember(int x, int y, const std::string& str, int list1, int lis
         event.key.key = 0;
         event.button.button = 0;
     }
-    FreeFreshScreen();
     return result;
 }
 
@@ -3643,7 +3631,7 @@ void MenuEsc()
     pos[3].x = CENTER_X;
     pos[3].y = CENTER_Y + 140;
 
-    RecordFreshScreen();
+    TFreshScreenGuard freshScreen;
     CleanTextScreen();
 
     // 展开动画
@@ -3690,7 +3678,6 @@ void MenuEsc()
         }
 
         NeedRefreshScene = 1;
-        FreeFreshScreen();
     };
 
     // 如果鼠标在某个有效位置则重设初值
@@ -3978,7 +3965,7 @@ bool MenuItem()
     Redraw();
     TransBlackScreen();
     DrawTitleMenu(2);
-    RecordFreshScreen();
+    TFreshScreenGuard freshScreen;
 
     if (Where == 2)
     {
@@ -4594,7 +4581,6 @@ bool MenuItem()
         }
     }
     MenuItemType = menu;
-    FreeFreshScreen();
     return Result;
 }
 int ReadItemList(int ItemType)
@@ -5018,7 +5004,7 @@ void MenuStatus()
     DrawMPic(2015, CENTER_X - 384 + 283, CENTER_Y - 240);
     TransBlackScreen();
     DrawTitleMenu(0);
-    RecordFreshScreen();
+    TFreshScreenGuard freshScreen;
 
     event.key.key = 0;
     event.button.button = 0;
@@ -5174,7 +5160,6 @@ void MenuStatus()
         event.button.button = 0;
     }
     MenuEscTeammate = menu;
-    FreeFreshScreen();
 }
 
 void ShowStatusByTeam(int tnum)
@@ -5729,7 +5714,7 @@ void MenuAbility()
     DrawMPic(2008, CENTER_X - 384 + 283, CENTER_Y - 240);
     TransBlackScreen();
     DrawTitleMenu(1);
-    RecordFreshScreen();
+    TFreshScreenGuard freshScreen;
 
     int itemx = x + 230;
     int itemy = y + 380;
@@ -5902,7 +5887,6 @@ void MenuAbility()
         event.button.button = 0;
     }
     MenuEscTeammate = menu;
-    FreeFreshScreen();
 }
 void ShowAbility(int rnum, int select, int showLeave)
 {
@@ -6069,7 +6053,7 @@ void MenuSystem()
     Redraw();
     TransBlackScreen();
     DrawTitleMenu(3);
-    RecordFreshScreen();
+    TFreshScreenGuard freshScreen;
 
     std::string menuString[6] = { "讀檔", "存檔", "設置", "製作", "特殊", "離開" };
 
@@ -6170,7 +6154,6 @@ void MenuSystem()
             if (event.key.key == SDLK_ESCAPE)
             {
                 MenuEscType = -1;
-                FreeFreshScreen();
                 return;
             }
             if (event.key.key == SDLK_RETURN || event.key.key == SDLK_SPACE || (event.key.key == SDLK_DOWN && intitle == 1))
@@ -6183,7 +6166,6 @@ void MenuSystem()
             if (event.button.button == SDL_BUTTON_RIGHT)
             {
                 MenuEscType = -1;
-                FreeFreshScreen();
                 return;
             }
             if (event.button.button == SDL_BUTTON_LEFT)
@@ -6217,7 +6199,6 @@ void MenuSystem()
         event.button.button = 0;
         SDL_Delay(20);
     }
-    FreeFreshScreen();
 }
 
 void MenuSet()
@@ -6266,7 +6247,7 @@ void MenuSet()
     w = 300;
     h0 = 28;
     h = (maxmenu + 1) * h0 + 5;
-    RecordFreshScreen(x, y, w + 1, h + 1);
+    TFreshScreenGuard freshScreen(x, y, w + 1, h + 1);
     arrowy = 4;
     arrowlx = x + 170;
     arrowrx = x + 235;
@@ -6586,7 +6567,6 @@ void MenuSet()
         ini.setKey("system", "SEMIREAL", std::to_string(SEMIREAL));
         ini.saveFile(iniFilename);
     }
-    FreeFreshScreen();
 }
 
 static std::string GetFileDateTime(const std::string& filepath)

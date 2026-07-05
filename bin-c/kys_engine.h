@@ -113,6 +113,42 @@ void ChangeCol();
 void TransBlackScreen();
 void RecordFreshScreen();
 void RecordFreshScreen(int x, int y, int w, int h);
+class TFreshScreenGuard
+{
+public:
+    TFreshScreenGuard()
+    {
+        depth = FreshScreen.size();
+        RecordFreshScreen();
+    }
+
+    TFreshScreenGuard(int x, int y, int w, int h)
+    {
+        depth = FreshScreen.size();
+        RecordFreshScreen(x, y, w, h);
+    }
+
+    ~TFreshScreenGuard()
+    {
+        Release();
+    }
+
+    TFreshScreenGuard(const TFreshScreenGuard&) = delete;
+    TFreshScreenGuard& operator=(const TFreshScreenGuard&) = delete;
+
+    void Release()
+    {
+        if (active && FreshScreen.size() > depth)
+        {
+            FreeFreshScreen();
+        }
+        active = false;
+    }
+
+private:
+    size_t depth = 0;
+    bool active = true;
+};
 void LoadTeamSimpleStatus(int& max);
 
 // 视频播放
