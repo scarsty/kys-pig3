@@ -6456,9 +6456,14 @@ void MenuSet()
             {
                 if (MouseInRegion(x, y + 5, w, h - 5))
                 {
-                    if (MouseInRegion(x + 160 + 13, y + 5 + maxmenu * h0, 50, h0) || MouseInRegion(x + 210 + 13, y + 5 + maxmenu * h0, 50, h0))
+                    if (MouseInRegion(x + 140 - 19, y + 5 + maxmenu * h0 - 3, 80, h0))
                     {
-                        pressed = Value[maxmenu];
+                        pressed = 0;
+                        break;
+                    }
+                    if (MouseInRegion(x + 220 - 19, y + 5 + maxmenu * h0 - 3, 80, h0))
+                    {
+                        pressed = 1;
                         break;
                     }
                     if (MouseInRegion(x + 160 + 13, y + 5 + 5 * h0, 50, h0))
@@ -6505,12 +6510,12 @@ void MenuSet()
                 menu = std::min((ym - y - 5) / h0, maxmenu);
                 if (menu == maxmenu)
                 {
-                    if (MouseInRegion(x + 160 + 13, y + 5 + maxmenu * h0, 50, h0))
+                    if (MouseInRegion(x + 140 - 19, y + 5 + maxmenu * h0 - 3, 80, h0))
                     {
                         Value[maxmenu] = 0;
                         valuechanged = 1;
                     }
-                    if (MouseInRegion(x + 210 + 13, y + 5 + maxmenu * h0, 50, h0))
+                    if (MouseInRegion(x + 220 - 19, y + 5 + maxmenu * h0 - 3, 80, h0))
                     {
                         Value[maxmenu] = 1;
                         valuechanged = 1;
