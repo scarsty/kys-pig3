@@ -38,19 +38,14 @@ void InitialScript()
     // 注册所有Lua函数 (按字母序, 含instruct_N别名)
     R("add3eventnum", Lua_Add3EventNum);
     R("instruct_26", Lua_Add3EventNum);
-    R("addaptitude", Lua_AddAptitude);
     R("instruct_34", Lua_AddAptitude);
     R("addattack", Lua_AddAttack);
     R("instruct_47", Lua_AddAttack);
-    R("addethics", Lua_AddEthics);
     R("instruct_37", Lua_AddEthics);
-    R("addhp", Lua_AddHP);
     R("instruct_48", Lua_AddHP);
     R("additem", Lua_AddItem);
     R("instruct_32", Lua_AddItem);
-    R("addmp", Lua_AddMP);
     R("instruct_46", Lua_AddMP);
-    R("addrepute", Lua_AddRepute);
     R("instruct_56", Lua_AddRepute);
     R("addroleintobattle", Lua_AddRoleIntoBattle);
     R("addspeed", Lua_AddSpeed);
@@ -78,7 +73,6 @@ void InitialScript()
     R("changemmapmusic", Lua_ChangeMMapMusic);
     R("instruct_8", Lua_ChangeMMapMusic);
     R("changescene", Lua_ChangeScene);
-    R("changescenepic", Lua_ChangeScenePic);
     R("instruct_38", Lua_ChangeScenePic);
     R("checkbutton", Lua_CheckButton);
     R("clear", Lua_Clear);
@@ -98,7 +92,6 @@ void InitialScript()
     R("instruct_58", Lua_FightForTop);
     R("forcebattleresult", Lua_ForceBattleResult);
     R("getbattlenumber", Lua_GetBattleNumber);
-    R("getbattlepro", Lua_GetBattlePro);
     R("getbattlerolepro", Lua_GetBattleRolePro);
     R("getbutton", Lua_GetButton);
     R("getcurrentevent", Lua_GetCurrentEvent);
@@ -130,24 +123,15 @@ void InitialScript()
     R("instruct_10", Lua_Join);
     R("join", Lua_Join);
     R("instruct_61", Lua_Judge14BooksPlaced);
-    R("judge14booksplaced", Lua_Judge14BooksPlaced);
     R("instruct_50", Lua_Judge5Item);
     R("instruct_29", Lua_JudgeAttack);
-    R("judgeattack", Lua_JudgeAttack);
     R("instruct_28", Lua_JudgeEthics);
-    R("judgeethics", Lua_JudgeEthics);
     R("instruct_55", Lua_JudgeEventNum);
-    R("judgeeventnum", Lua_JudgeEventNum);
     R("instruct_42", Lua_JudgeFemaleInTeam);
-    R("judgefemaleinteam", Lua_JudgeFemaleInTeam);
     R("instruct_31", Lua_JudgeMoney);
-    R("judgemoney", Lua_JudgeMoney);
     R("judgesceneevent", Lua_JudgeSceneEvent);
     R("instruct_60", Lua_JudgeScenePic);
-    R("judgescenepic", Lua_JudgeScenePic);
     R("instruct_36", Lua_JudgeSexual);
-    R("judgesexual", Lua_JudgeSexual);
-    R("jumpscene", Lua_JumpScene);
     R("learnmagic", Lua_LearnMagic);
     R("instruct_21", Lua_LeaveTeam);
     R("leave", Lua_LeaveTeam);
@@ -161,18 +145,13 @@ void InitialScript()
     R("instruct_33", Lua_OldLearnMagic);
     R("learnmagic2", Lua_OldLearnMagic);
     R("instruct_17", Lua_OldSetSceneMapPro);
-    R("setscenemappro2", Lua_OldSetSceneMapPro);
-    R("setscenemap", Lua_OldSetSceneMapPro);
     R("instruct_19", Lua_OldSetScenePosition);
-    R("setsceneposition2", Lua_OldSetScenePosition);
     R("instruct_1", Lua_OldTalk);
     R("instruct_54", Lua_OpenAllScene);
     R("openallscene", Lua_OpenAllScene);
     R("instruct_39", Lua_OpenScene);
-    R("openscene", Lua_OpenScene);
     R("pause", Lua_Pause);
     R("instruct_44", Lua_Play2Animation);
-    R("play2animation", Lua_Play2Animation);
     R("playaction", Lua_PlayAction);
     R("instruct_27", Lua_PlayAnimation);
     R("playanimation", Lua_PlayAnimation);
@@ -183,7 +162,6 @@ void InitialScript()
     R("playwave", Lua_PlayWave);
 
     // set/put 系列
-    R("setbattlepro", Lua_SetBattlePro);
     R("setbattlerolepro", Lua_SetBattleRolePro);
     R("setitempro", Lua_SetItemPro);
     R("setmagicpro", Lua_SetMagicPro);
@@ -203,20 +181,14 @@ void InitialScript()
     R("setaminationlayer", Lua_SetAminationLayer);
     R("setattribute", Lua_SetAttribute);
     R("setmainmapposition", Lua_SetMainMapPosition);
-    R("setmenuesctype", Lua_SetMenuEscType);
     R("instruct_49", Lua_SetMPPro);
-    R("setmppro", Lua_SetMPPro);
-    R("setpersonmppro", Lua_SetMPPro);
     R("instruct_35", Lua_SetOneMagic);
-    R("setonemagic", Lua_SetOneMagic);
     R("instruct_23", Lua_SetOneUsePoi);
-    R("setoneusepoi", Lua_SetOneUsePoi);
     R("instruct_40", Lua_SetRoleFace);
     R("setroleface", Lua_SetRoleFace);
     R("setsceneface", Lua_SetSceneFace);
     R("setsceneposition", Lua_SetScenePosition);
     R("instruct_63", Lua_SetSexual);
-    R("showability", Lua_ShowAbility);
     R("instruct_52", Lua_ShowEthics);
     R("showethics", Lua_ShowEthics);
     R("showpicture", Lua_ShowPicture);
@@ -236,7 +208,6 @@ void InitialScript()
     R("instruct_30", Lua_WalkFromTo);
     R("walkfromto", Lua_WalkFromTo);
     R("instruct_64", Lua_WeiShop);
-    R("weishop", Lua_WeiShop);
     R("instruct_22", Lua_ZeroAllMP);
     R("zeroallmp", Lua_ZeroAllMP);
     R("getx50", Lua_GetX50);
@@ -246,18 +217,11 @@ void InitialScript()
     R("readtalkasstring", Lua_ReadTalkAsString);
     R("checkjumpflag", Lua_CheckJumpFlag);
     R("exit", Lua_ExitScript);
-    R("addroleprowithhint", Lua_AddRoleProWithHint);
     R("colcolor", Lua_ColColor);
-    R("setbattlename", Lua_SetBattleName);
     R("showsimplestatus", Lua_ShowSimpleStatus);
     R("updateallscreen", Lua_UpdateAllScreen);
 
     R("setitemintro", Lua_SetItemIntro);
-
-    R("setshowmainrole", Lua_SetShowMR);
-    R("setscreenblendmode", Lua_SetScreenBlendMode);
-    R("playmovie", Lua_PlayMovie);
-    R("resetscene", Lua_ResetScene);
 
     R("setteam", Lua_SetTeam);
     R("getteam", Lua_GetTeam);
@@ -272,6 +236,44 @@ void InitialScript()
 
     R("drawlength", Lua_DrawLengthS);
     R("getkey", Lua_GetKey);
+
+    // pig3独有扩展：这些脚本名在 N-in-1/pascal-c 当前资源中没有有效调用，
+    // 依赖 pig3 新增流程或资源约定，暂不要求 pascal-c 同步实现。
+    R("addaptitude", Lua_AddAptitude);
+    R("addethics", Lua_AddEthics);
+    R("addhp", Lua_AddHP);
+    R("addmp", Lua_AddMP);
+    R("addrepute", Lua_AddRepute);
+    R("addroleprowithhint", Lua_AddRoleProWithHint);
+    R("changescenepic", Lua_ChangeScenePic);
+    R("getbattlepro", Lua_GetBattlePro);
+    R("judge14booksplaced", Lua_Judge14BooksPlaced);
+    R("judgeattack", Lua_JudgeAttack);
+    R("judgeethics", Lua_JudgeEthics);
+    R("judgeeventnum", Lua_JudgeEventNum);
+    R("judgefemaleinteam", Lua_JudgeFemaleInTeam);
+    R("judgemoney", Lua_JudgeMoney);
+    R("judgescenepic", Lua_JudgeScenePic);
+    R("judgesexual", Lua_JudgeSexual);
+    R("jumpscene", Lua_JumpScene);
+    R("openscene", Lua_OpenScene);
+    R("play2animation", Lua_Play2Animation);
+    R("playmovie", Lua_PlayMovie);
+    R("resetscene", Lua_ResetScene);
+    R("setbattlename", Lua_SetBattleName);
+    R("setbattlepro", Lua_SetBattlePro);
+    R("setmenuesctype", Lua_SetMenuEscType);
+    R("setmppro", Lua_SetMPPro);
+    R("setonemagic", Lua_SetOneMagic);
+    R("setoneusepoi", Lua_SetOneUsePoi);
+    R("setpersonmppro", Lua_SetMPPro);
+    R("setscenemap", Lua_OldSetSceneMapPro);
+    R("setscenemappro2", Lua_OldSetSceneMapPro);
+    R("setsceneposition2", Lua_OldSetScenePosition);
+    R("setscreenblendmode", Lua_SetScreenBlendMode);
+    R("setshowmainrole", Lua_SetShowMR);
+    R("showability", Lua_ShowAbility);
+    R("weishop", Lua_WeiShop);
 }
 
 void DestroyScript()
@@ -1395,7 +1397,7 @@ int Lua_SetTeam(lua_State* L)
 
 int Lua_GetTeam(lua_State* L)
 {
-    lua_pushnumber(L, TeamList[lua_tointeger_ex(L, -1)]);
+    lua_pushinteger(L, TeamList[lua_tointeger_ex(L, -1)]);
     return 1;
 }
 
@@ -1403,7 +1405,7 @@ int Lua_ReadMem(lua_State* L)
 {
     int x = lua_tointeger_ex(L, -1);
     instruct_50e(26, 0, 0, x % 65536, x / 65536, 9999, 0);
-    lua_pushnumber(L, x50[9999]);
+    lua_pushinteger(L, x50[9999]);
     return 1;
 }
 
