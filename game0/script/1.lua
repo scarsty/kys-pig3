@@ -18,7 +18,7 @@ function f1()
   --clear();
   --f7();
   --menu(3, 100, 100, 100, {"in","56","2数字2"});
-  --putrolepro(80, 0, 20);
+  --setrolepro(80, 0, 20);
   --allleave();
   --Join(5);
   --Join(26);
@@ -28,9 +28,9 @@ function f1()
   --getitem(i,i);
   --end
   --trybattle(78);
-  --putrolepro(900,0,73);
-  --putrolepro(getrolepro(0,58)+20,0,58);
-  --putrolepro(900,5,43);
+  --setrolepro(900,0,73);
+  --setrolepro(getrolepro(0,58)+20,0,58);
+  --setrolepro(900,5,43);
   --for i=1,10 do
   --instruct_33(5,115,1);
   --instruct_33(5,302,1)

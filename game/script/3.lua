@@ -151,7 +151,7 @@ function ask2fight(num)
 	
     Talk(a,string.format("%s%s%s","在下Ｒ",getnameasstring(0, a),"Ｗ向少侠请教！"),-2,1,0,0);
     clear();
-	PutBattlePro(a,0,33);
+	setbattlepro(a,0,33);
     if TryBattle(0,0,1,1) ==true then
        Talk(a,"少侠武功高强，在下甘拜下风！",-2,1,0,0);
 	   clear();
@@ -160,7 +160,7 @@ function ask2fight(num)
 	else Talk(a,"真是太弱了，回去再练练吧！",-2,1,0,0);
 	     clear();
 	end
-	PutBattlePro(1,0,33);
+	setbattlepro(1,0,33);
 	
   end
 

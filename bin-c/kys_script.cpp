@@ -64,8 +64,8 @@ void InitialScript()
     R("asksoftstar", Lua_AskSoftStar);
     R("instruct_51", Lua_AskSoftStar);
     R("askyesorno", Lua_AskYesOrNo);
-    R("endamination", Lua_BackHome);
-    R("instruct_62", Lua_BackHome);
+    R("endanimation", Lua_EndAnimation);
+    R("instruct_62", Lua_EndAnimation);
     R("instruct_24", Lua_Blank);
     R("instruct_65", Lua_Blank);
     R("instruct_7", Lua_Blank);
@@ -178,7 +178,7 @@ void InitialScript()
     R("scenefromto", Lua_SceneFromTo);
     R("selectoneaim", Lua_SelectOneAim);
     R("selectoneteammember", Lua_SelectOneTeamMember);
-    R("setaminationlayer", Lua_SetAminationLayer);
+    R("setanimationlayer", Lua_SetAnimationLayer);
     R("setattribute", Lua_SetAttribute);
     R("setmainmapposition", Lua_SetMainMapPosition);
     R("instruct_49", Lua_SetMPPro);
@@ -1030,8 +1030,8 @@ int Lua_PlayAction(lua_State* L)
 {
     int bnum = lua_tointeger_ex(L, -3);
     int mtype = lua_tointeger_ex(L, -2);
-    PlayActionAmination(bnum, mtype);
-    PlayMagicAmination(bnum, mtype);
+    PlayActionAnimation(bnum, mtype);
+    PlayMagicAnimation(bnum, mtype);
     return 0;
 }
 
@@ -1041,7 +1041,7 @@ int Lua_PlayHurtValue(lua_State* L)
     return 0;
 }
 
-int Lua_SetAminationLayer(lua_State* L)
+int Lua_SetAnimationLayer(lua_State* L)
 {
     int x = lua_tointeger_ex(L, -5);
     int y = lua_tointeger_ex(L, -4);
@@ -1201,7 +1201,7 @@ int Lua_SetSexual(lua_State* L)
     return 0;
 }
 
-int Lua_BackHome(lua_State* L)
+int Lua_EndAnimation(lua_State* L)
 {
     instruct_62(lua_tointeger_ex(L, -6), lua_tointeger_ex(L, -5), lua_tointeger_ex(L, -4),
         lua_tointeger_ex(L, -3), lua_tointeger_ex(L, -2), lua_tointeger_ex(L, -1));

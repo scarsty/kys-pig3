@@ -98,7 +98,7 @@ int Lua_GetBattleRolePro(lua_State* L);
 int Lua_SetBattleRolePro(lua_State* L);
 int Lua_PlayAction(lua_State* L);
 int Lua_PlayHurtValue(lua_State* L);
-int Lua_SetAminationLayer(lua_State* L);
+int Lua_SetAnimationLayer(lua_State* L);
 int Lua_ClearRoleFromBattle(lua_State* L);
 int Lua_AddRoleIntoBattle(lua_State* L);
 int Lua_ForceBattleResult(lua_State* L);
@@ -145,7 +145,7 @@ int Lua_AddRepute(lua_State* L);
 int Lua_BreakStoneGate(lua_State* L);
 int Lua_FightForTop(lua_State* L);
 int Lua_SetSexual(lua_State* L);
-int Lua_BackHome(lua_State* L);
+int Lua_EndAnimation(lua_State* L);
 
 // 特殊UI
 int Lua_EatOneItem(lua_State* L);

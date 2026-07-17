@@ -1,10 +1,10 @@
 function f1()
-	putbattlepro(-1,b,33);
-	putbattlepro(-1,b,34);
-	putbattlepro(-1,b,35);
-	putbattlepro(-1,b,36);
-	putbattlepro(-1,b,37);
-	putbattlepro(-1,b,38);
+	setbattlepro(-1,b,33);
+	setbattlepro(-1,b,34);
+	setbattlepro(-1,b,35);
+	setbattlepro(-1,b,36);
+	setbattlepro(-1,b,37);
+	setbattlepro(-1,b,38);
 end
 
 
@@ -23,7 +23,7 @@ end
 	talk(0, '葵花神功，天下閃避第一，如何應對呢？', -2, 1)
 	setbattlename(b, "東方不敗");
 	f1();
-	putbattlepro(dongfang,b,33+math.random(0,5));
+	setbattlepro(dongfang,b,33+math.random(0,5));
 	trybattle(b);
 	rest();
 	
@@ -31,7 +31,7 @@ end
 	talk(0, '張真人教我神並天地，他自己一定也會這招吧。', -2, 1)
 	setbattlename(b, "張三丰");
 	f1();
-	putbattlepro(zhang,b,33+math.random(0,5));
+	setbattlepro(zhang,b,33+math.random(0,5));
 	trybattle(b);
 	rest();
 	
@@ -39,7 +39,7 @@ end
 	talk(0, '這老僧攻擊防禦都高的誇張啊，我能贏嗎？', -2, 1)
 	setbattlename(b, "無名老僧");
 	f1();
-	putbattlepro(wuming,b,33+math.random(0,5));
+	setbattlepro(wuming,b,33+math.random(0,5));
 	trybattle(b);
 	rest();
 	
@@ -47,7 +47,7 @@ end
 	talk(0, '慕容復家傳的斗轉星移從逍遙派武功中得了好處，更難對付了。', -2, 1)
 	setbattlename(b, "慕容復");
 	f1();
-	putbattlepro(murong,b,33+math.random(0,5));
+	setbattlepro(murong,b,33+math.random(0,5));
 	trybattle(b);
 	rest();
 	
@@ -55,11 +55,11 @@ end
 	talk(303, '嘿嘿，我也來湊個數。', -2)
 	talk(0, '………………………………', -2, 1)
 	setbattlename(b, "絕世高手");
-	putbattlepro(dongfang,b,34);
-	putbattlepro(zhang,b,35);
-	putbattlepro(wuming,b,36);
-	putbattlepro(murong,b,33);
-	putbattlepro(cheng,b,37);
+	setbattlepro(dongfang,b,34);
+	setbattlepro(zhang,b,35);
+	setbattlepro(wuming,b,36);
+	setbattlepro(murong,b,33);
+	setbattlepro(cheng,b,37);
 	trybattle(b);
 	rest();
 	

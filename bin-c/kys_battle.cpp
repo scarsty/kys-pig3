@@ -1056,11 +1056,11 @@ void MoveRole(int bnum)
     SelectAimMode = 4;
     if (SelectAim(bnum, Brole[bnum].Step))
     {
-        MoveAmination(bnum);
+        MoveAnimation(bnum);
     }
 }
 
-bool MoveAmination(int bnum)
+bool MoveAnimation(int bnum)
 {
     bool result = (abs(Ax - Bx) + abs(Ay - By)) > 0;
     if (result)
@@ -1662,7 +1662,7 @@ void Attack(int bnum)
         if (selected)
         {
             Brole[bnum].Acted = 1;
-            SetAminationPosition(AttAreaType, step, range, SelectAimMode);
+            SetAnimationPosition(AttAreaType, step, range, SelectAimMode);
             AttackAction(bnum, i, mnum, level);
             break;
         }
@@ -1791,9 +1791,9 @@ void AttackAction(int bnum, int mnum, int level)
 
         ShowMagicName(mnum);
         PlaySoundA(Rmagic[mnum].SoundNum, 0);
-        PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+        PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
         CalHurtRole(bnum, mnum, level, 1);
-        PlayMagicAmination(bnum, Rmagic[mnum].AmiNum);
+        PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum);
         ShowHurtValue(Rmagic[mnum].HurtType);
         if (Rmagic[mnum].NeedItem >= 0)
             instruct_32(Rmagic[mnum].NeedItem, -Rmagic[mnum].NeedItemAmount);
@@ -2004,12 +2004,12 @@ int SelectMagic(int rnum)
     return result;
 }
 
-void SetAminationPosition(int mode, int step, int range, int aimMode)
+void SetAnimationPosition(int mode, int step, int range, int aimMode)
 {
-    SetAminationPosition(Bx, By, Ax, Ay, mode, step, range, aimMode);
+    SetAnimationPosition(Bx, By, Ax, Ay, mode, step, range, aimMode);
 }
 
-void SetAminationPosition(int bx0, int by0, int ax0, int ay0, int mode, int step, int range, int aimMode)
+void SetAnimationPosition(int bx0, int by0, int ax0, int ay0, int mode, int step, int range, int aimMode)
 {
     auto sign = [](int x) { return (x > 0) - (x < 0); };
     memset(&BField[4][0][0], 0, 64 * 64 * sizeof(int16_t));
@@ -2131,7 +2131,7 @@ void SetAminationPosition(int bx0, int by0, int ax0, int ay0, int mode, int step
     }
 }
 
-void PlayMagicAmination(int bnum, int eNum, int aimMode, int mode)
+void PlayMagicAnimation(int bnum, int eNum, int aimMode, int mode)
 {
     int minVal = 1000, maxVal = 0;
     for (int i1 = 0; i1 < 64; i1++)
@@ -3073,15 +3073,15 @@ void UsePoison(int bnum)
             Brole[bnum].ExpGot += addpoi / 5;
             std::string str = "使毒";
             ShowMagicName(2, str);
-            SetAminationPosition(0, 0, 0);
-            PlayActionAmination(bnum, 0);
-            PlayMagicAmination(bnum, 30, 0, 2);
+            SetAnimationPosition(0, 0, 0);
+            PlayActionAnimation(bnum, 0);
+            PlayMagicAnimation(bnum, 30, 0, 2);
             ShowHurtValue(2);
         }
     }
 }
 
-void PlayActionAmination(int bnum, int mode)
+void PlayActionAnimation(int bnum, int mode)
 {
     // 暗器类用特殊的动作
     if (mode == 5) mode = 4;
@@ -3170,9 +3170,9 @@ void Medcine(int bnum)
             Brole[bnum1].ShowNumber = addlife;
             std::string str = "醫療";
             ShowMagicName(3, str);
-            SetAminationPosition(0, 0, 0);
-            PlayActionAmination(bnum, 0);
-            PlayMagicAmination(bnum, 29, 1, 3);
+            SetAnimationPosition(0, 0, 0);
+            PlayActionAnimation(bnum, 0);
+            PlayMagicAnimation(bnum, 29, 1, 3);
             ShowHurtValue(3);
         }
     }
@@ -3208,9 +3208,9 @@ void MedPoison(int bnum)
             Brole[bnum].ExpGot += minuspoi / 5;
             std::string str = "解毒";
             ShowMagicName(4, str);
-            SetAminationPosition(0, 0, 0);
-            PlayActionAmination(bnum, 0);
-            PlayMagicAmination(bnum, 36, 1, 4);
+            SetAnimationPosition(0, 0, 0);
+            PlayActionAnimation(bnum, 0);
+            PlayMagicAnimation(bnum, 36, 1, 4);
             ShowHurtValue(4);
         }
     }
@@ -3276,11 +3276,11 @@ void UseHiddenWeapon(int bnum, int inum)
                 {
                     int rnum1 = Brole[bnum1].rnum;
                     Rrole[rnum1].Poison = std::min((int)(Rrole[rnum1].Poison + Ritem[inum].AddPoi * (100 - Rrole[rnum1].DefPoi - Brole[bnum1].loverlevel[3]) / 100), 99);
-                    SetAminationPosition(0, 0, 0);
+                    SetAnimationPosition(0, 0, 0);
                     std::string str((char*)&Ritem[inum].Name[0]);
                     ShowMagicName(inum, str);
-                    PlayActionAmination(bnum, 0);
-                    PlayMagicAmination(bnum, Ritem[inum].AmiNum);
+                    PlayActionAnimation(bnum, 0);
+                    PlayMagicAnimation(bnum, Ritem[inum].AmiNum);
                     Rmagic[0].HurtType = 0;
                     Rmagic[0].MagicType = 5;
                     Rmagic[0].Attack[0] = -Ritem[inum].AddCurrentHP;
@@ -3441,7 +3441,7 @@ void AutoBattle3(int bnum)
                         FarthestMove(Movex, Movey, bnum);
                         Ax = Movex;
                         Ay = Movey;
-                        MoveAmination(bnum);
+                        MoveAnimation(bnum);
                         Medcine(bnum);
                     }
                     else if (Brole[bnum].Team != 0 || (Brole[bnum].Team == 0 && Brole[bnum].AutoMode == 2))
@@ -3452,7 +3452,7 @@ void AutoBattle3(int bnum)
                             FarthestMove(Movex, Movey, bnum);
                             Ax = Movex;
                             Ay = Movey;
-                            MoveAmination(bnum);
+                            MoveAnimation(bnum);
                             AutoUseItem(bnum, 45);
                         }
                     }
@@ -3471,7 +3471,7 @@ void AutoBattle3(int bnum)
                     FarthestMove(Movex, Movey, bnum);
                     Ax = Movex;
                     Ay = Movey;
-                    MoveAmination(bnum);
+                    MoveAnimation(bnum);
                     AutoUseItem(bnum, 50);
                 }
             }
@@ -3488,7 +3488,7 @@ void AutoBattle3(int bnum)
                     FarthestMove(Movex, Movey, bnum);
                     Ax = Movex;
                     Ay = Movey;
-                    MoveAmination(bnum);
+                    MoveAnimation(bnum);
                     AutoUseItem(bnum, 48);
                 }
             }
@@ -3513,7 +3513,7 @@ void AutoBattle3(int bnum)
                     NearestMoveByPro(Ax, Ay, Ax1, Ay1, bnum, 1, 0, 17, -1, 1);
                     if (Ax1 != -1)
                     {
-                        MoveAmination(bnum);
+                        MoveAnimation(bnum);
                         Ax = Ax1;
                         Ay = Ay1;
                         Medcine(bnum);
@@ -3530,7 +3530,7 @@ void AutoBattle3(int bnum)
                     NearestMove(Ax1, Ay1, bnum);
                     if (Ax1 != -1)
                     {
-                        MoveAmination(bnum);
+                        MoveAnimation(bnum);
                         Ax = Ax1;
                         Ay = Ay1;
                         UsePoison(bnum);
@@ -3547,7 +3547,7 @@ void AutoBattle3(int bnum)
                     NearestMoveByPro(Ax, Ay, Ax1, Ay1, bnum, 1, 0, 20, 1, 2);
                     if (Ax1 != -1)
                     {
-                        MoveAmination(bnum);
+                        MoveAnimation(bnum);
                         Ax = Ax1;
                         Ay = Ay1;
                         MedPoison(bnum);
@@ -3586,7 +3586,7 @@ void AutoBattle3(int bnum)
                 // 移动
                 Ax = Movex;
                 Ay = Movey;
-                MoveAmination(bnum);
+                MoveAnimation(bnum);
                 // 攻击
                 Ax = Ax1;
                 Ay = Ay1;
@@ -3595,7 +3595,7 @@ void AutoBattle3(int bnum)
                 int Cmrange = Rmagic[Cmnum].AttDistance[Cmlevel - 1];
                 ModifyRange(bnum, Cmnum, Cmdis, Cmrange);
                 Brole[bnum].Acted = 1;
-                SetAminationPosition(Rmagic[Cmnum].AttAreaType, Cmdis, Cmrange);
+                SetAnimationPosition(Rmagic[Cmnum].AttAreaType, Cmdis, Cmrange);
                 AttackAction(bnum, magicid, Cmnum, Cmlevel);
             }
         }
@@ -3614,7 +3614,7 @@ void AutoBattle3(int bnum)
                 NearestMove(Movex, Movey, bnum);
                 Ax = Movex;
                 Ay = Movey;
-                MoveAmination(bnum);
+                MoveAnimation(bnum);
                 Rest(bnum);
             }
             else if (Rrole[rnum].CurrentHP < Rrole[rnum].MaxHP / 10 && Rrole[rnum].CurrentMP < Rrole[rnum].MaxMP / 10)
@@ -3624,7 +3624,7 @@ void AutoBattle3(int bnum)
                 FarthestMove(Movex, Movey, bnum);
                 Ax = Movex;
                 Ay = Movey;
-                MoveAmination(bnum);
+                MoveAnimation(bnum);
                 Rest(bnum);
             }
             else
@@ -3669,7 +3669,7 @@ void TryMoveAttack(int& Mx1, int& My1, int& Ax1, int& Ay1, int& tempmaxhurt, int
                     {
                         if (abs(curX - i1) + abs(curY - i2) <= minstep)
                             continue;
-                        SetAminationPosition(curX, curY, i1, i2, AttAreaType, distance, range);
+                        SetAnimationPosition(curX, curY, i1, i2, AttAreaType, distance, range);
                         int temphurt = 0;
                         if ((AttAreaType == 0 || AttAreaType == 3) && aimHurt[i1][i2] >= 0)
                         {
@@ -3873,7 +3873,7 @@ void TryAttack(int& Ax1, int& Ay1, int& magicid, int& cmlevel, int Mx, int My, i
             for (int i2 = std::max(My - dis + dis0, 0); i2 <= std::min(My + dis - dis0, 63); i2++)
             {
                 if (abs(Mx - i1) + abs(My - i2) <= minstep) continue;
-                SetAminationPosition(Mx, My, i1, i2, AttAreaType, step, range);
+                SetAnimationPosition(Mx, My, i1, i2, AttAreaType, step, range);
                 int temphurt = 0;
                 if ((AttAreaType == 0 || AttAreaType == 3) && aimHurt[i1][i2] >= 0)
                 {
@@ -3947,9 +3947,9 @@ void CureAction(int bnum)
     Rrole[rnum1].Hurt -= addlife / 10 / LIFE_HURT;
     if (Rrole[rnum1].Hurt < 0) Rrole[rnum1].Hurt = 0;
     Brole[bnum1].ShowNumber = addlife;
-    SetAminationPosition(0, 0, 0);
-    PlayActionAmination(bnum, 0);
-    PlayMagicAmination(bnum, 0);
+    SetAnimationPosition(0, 0, 0);
+    PlayActionAnimation(bnum, 0);
+    PlayMagicAnimation(bnum, 0);
     ShowHurtValue(3);
 }
 
@@ -4444,13 +4444,13 @@ bool SpecialAttack(int bnum)
             {
                 NearestMove(Movex, Movey, bnum);
                 Ax = Movex; Ay = Movey;
-                MoveAmination(bnum);
+                MoveAnimation(bnum);
             }
             else if (movetype == 2)
             {
                 FarthestMove(Movex, Movey, bnum);
                 Ax = Movex; Ay = Movey;
-                MoveAmination(bnum);
+                MoveAnimation(bnum);
             }
 
             int maxCount = 0;
@@ -4473,7 +4473,7 @@ bool SpecialAttack(int bnum)
                     for (int i2 = std::max(By - dis + dis0, 0); i2 <= std::min(By + dis - dis0, 63); i2++)
                     {
                         if (abs(Bx - i1) + abs(By - i2) <= minstep) continue;
-                        SetAminationPosition(Bx, By, i1, i2, Rmagic[mnum].AttAreaType, distance, range);
+                        SetAnimationPosition(Bx, By, i1, i2, Rmagic[mnum].AttAreaType, distance, range);
                         int tempcount = 0;
                         for (int i = 0; i < BRoleAmount; i++)
                         {
@@ -4507,7 +4507,7 @@ bool SpecialAttack(int bnum)
             {
                 if (Rmagic[mnum].ScriptNum == 0)
                     Brole[bnum].Acted = 1;
-                SetAminationPosition(Rmagic[mnum].AttAreaType, distance, range, Rmagic[mnum].AddMP[0]);
+                SetAnimationPosition(Rmagic[mnum].AttAreaType, distance, range, Rmagic[mnum].AddMP[0]);
                 AttackAction(bnum, magicid, mnum, level);
             }
         }
@@ -4575,7 +4575,7 @@ void GiveMeLife(int bnum, int mnum, int level, int Si)
         if (Brole[aimbnum].Team == Brole[bnum].Team)
         {
             instruct_67(Rmagic[mnum].SoundNum);
-            PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+            PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
             int rnum = Brole[bnum].rnum;
             int addvalue = 100 * level;
             if (addvalue > Rrole[Brole[aimbnum].rnum].CurrentMP)
@@ -4590,7 +4590,7 @@ void GiveMeLife(int bnum, int mnum, int level, int Si)
                 Brole[aimbnum].StateRound[Si]++;
             else
             { Brole[aimbnum].StateLevel[Si] = 10; Brole[aimbnum].StateRound[Si] = 3; }
-            PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+            PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
         }
     }
     Brole[bnum].Acted = 1;
@@ -4633,7 +4633,7 @@ void ambush(int bnum, int mnum, int level, int Si)
             }
         }
     }
-    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
     Brole[bnum].Acted = 1;
 }
 
@@ -4691,8 +4691,8 @@ void TSpecialAbility::SA_0(int bnum, int mnum, int level)
         }
     }
     PlaySoundA(Rmagic[mnum].SoundNum, 0);
-    PlayActionAmination(bnum, Rmagic[mnum].MagicType);
-    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
+    PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
     if (Rmagic[mnum].NeedItem >= 0)
         instruct_32(Rmagic[mnum].NeedItem, -Rmagic[mnum].NeedItemAmount);
 }
@@ -4714,7 +4714,7 @@ void TSpecialAbility::SA_2(int bnum, int mnum, int level)
         if (Brole[aimbnum].Team == Brole[bnum].Team)
         {
             instruct_67(Rmagic[mnum].SoundNum);
-            PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+            PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
             int rnum = Brole[bnum].rnum;
             int MPnum = 200 * level;
             if (MPnum > Rrole[rnum].CurrentMP)
@@ -4723,7 +4723,7 @@ void TSpecialAbility::SA_2(int bnum, int mnum, int level)
                 MPnum = Rrole[Brole[aimbnum].rnum].MaxMP - Rrole[Brole[aimbnum].rnum].CurrentMP;
             Rrole[rnum].CurrentMP -= MPnum;
             Rrole[Brole[aimbnum].rnum].CurrentMP += MPnum;
-            PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+            PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
         }
     }
     Brole[bnum].Acted = 1;
@@ -4745,7 +4745,7 @@ void TSpecialAbility::SA_3(int bnum, int mnum, int level)
     }
     ShowMagicName(mnum);
     instruct_67(Rmagic[mnum].SoundNum);
-    PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+    PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
 
     int curenum = 5 * level;
     for (int i = 0; i < BRoleAmount; i++)
@@ -4757,7 +4757,7 @@ void TSpecialAbility::SA_3(int bnum, int mnum, int level)
             BField[4][Brole[i].X][Brole[i].Y] = 1;
         }
     }
-    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
     ShowHurtValue(4);
     Brole[bnum].Acted = 1;
 }
@@ -4770,7 +4770,7 @@ void TSpecialAbility::SA_4(int bnum, int mnum, int level)
         if (Rrole[rnum].CurrentMP > Rrole[rnum].MaxMP / 2) return;
     ShowMagicName(mnum);
     instruct_67(Rmagic[mnum].SoundNum);
-    PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+    PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
 
     int dePhy = 20;
     if (dePhy > Rrole[rnum].PhyPower) dePhy = Rrole[rnum].PhyPower;
@@ -4784,7 +4784,7 @@ void TSpecialAbility::SA_4(int bnum, int mnum, int level)
 
     BField[4][Brole[bnum].X][Brole[bnum].Y] = 1;
     Brole[bnum].ShowNumber = addMP;
-    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
     ShowHurtValue(1, 0, "+d%");
     Brole[bnum].Acted = 1;
 }
@@ -4820,8 +4820,8 @@ void TSpecialAbility::SA_6(int bnum, int mnum, int level)
     int aimbnum = BField[2][Ax][Ay];
     BField[4][Ax][Ay] = 1;
     instruct_67(Rmagic[mnum].SoundNum);
-    PlayActionAmination(bnum, Rmagic[mnum].MagicType);
-    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
+    PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
     if (aimbnum >= 0)
     {
         if (Brole[aimbnum].Team != Brole[bnum].Team)
@@ -4860,8 +4860,8 @@ void TSpecialAbility::SA_6(int bnum, int mnum, int level)
             if (Brole[bnum].Team != Brole[i].Team && Brole[i].Dead == 0)
                 BField[4][Brole[i].X][Brole[i].Y] = 1 + rand() % 6;
         instruct_67(Rmagic[mnum].SoundNum);
-        PlayActionAmination(bnum, Rmagic[mnum].MagicType);
-        PlayMagicAmination(bnum, 100, Rmagic[mnum].AddMP[0]);
+        PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
+        PlayMagicAnimation(bnum, 100, Rmagic[mnum].AddMP[0]);
         Redraw();
         for (int i = 0; i < BRoleAmount; i++)
         {
@@ -4917,7 +4917,7 @@ void TSpecialAbility::SA_7(int bnum, int mnum, int level)
     }
     ShowMagicName(mnum);
     instruct_67(Rmagic[mnum].SoundNum);
-    PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+    PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
     for (int i = 0; i < BRoleAmount; i++)
     {
         if (Brole[i].Team == Brole[bnum].Team && Brole[i].Dead == 0)
@@ -4930,7 +4930,7 @@ void TSpecialAbility::SA_7(int bnum, int mnum, int level)
             Brole[i].ShowNumber = curenum;
         }
     }
-    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
     ShowHurtValue(3);
     Brole[bnum].Acted = 1;
 }
@@ -4943,7 +4943,7 @@ void TSpecialAbility::SA_8(int bnum, int mnum, int level)
         if (Rrole[rnum].CurrentHP > Rrole[rnum].MaxHP / 2) return;
     ShowMagicName(mnum);
     instruct_67(Rmagic[mnum].SoundNum);
-    PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+    PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
 
     int deMP = 100 * level;
     if (deMP > Rrole[rnum].CurrentMP) deMP = Rrole[rnum].CurrentMP;
@@ -4957,7 +4957,7 @@ void TSpecialAbility::SA_8(int bnum, int mnum, int level)
 
     BField[4][Brole[bnum].X][Brole[bnum].Y] = 1;
     Brole[bnum].ShowNumber = addHP;
-    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
     ShowHurtValue(3);
     Brole[bnum].Acted = 1;
 }
@@ -4981,7 +4981,7 @@ void TSpecialAbility::SA_11(int bnum, int mnum, int level)
 {
     ShowMagicName(mnum);
     instruct_67(Rmagic[mnum].SoundNum);
-    PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+    PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
 
     int hurt = 50 * level;
     for (int i = 0; i < BRoleAmount; i++)
@@ -5001,7 +5001,7 @@ void TSpecialAbility::SA_11(int bnum, int mnum, int level)
             BField[4][Brole[i].X][Brole[i].Y] = 1;
         }
     }
-    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
     ShowHurtValue(0);
     Brole[bnum].Acted = 1;
 }
@@ -5011,8 +5011,8 @@ void TSpecialAbility::SA_12(int bnum, int mnum, int level)
 {
     ShowMagicName(mnum);
     instruct_67(Rmagic[mnum].SoundNum);
-    PlayActionAmination(bnum, Rmagic[mnum].MagicType);
-    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
+    PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
     int rnum = Brole[bnum].rnum;
     int incx = Ax - Bx;
     int incy = Ay - By;
@@ -5062,7 +5062,7 @@ void TSpecialAbility::SA_13(int bnum, int mnum, int level)
 {
     ShowMagicName(mnum);
     instruct_67(Rmagic[mnum].SoundNum);
-    PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+    PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
     int rnum = Brole[bnum].rnum;
     int Value = LinearInsert(level, 1, 10, Rmagic[mnum].Attack[0], Rmagic[mnum].Attack[1]);
     for (int i = 0; i < BRoleAmount; i++)
@@ -5078,7 +5078,7 @@ void TSpecialAbility::SA_13(int bnum, int mnum, int level)
             BField[4][Brole[i].X][Brole[i].Y] = 1 + rand() % 6;
         }
     }
-    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
     ShowHurtValue(2);
     Brole[bnum].Acted = 1;
 }
@@ -5088,7 +5088,7 @@ void TSpecialAbility::SA_14(int bnum, int mnum, int level)
 {
     ShowMagicName(mnum);
     instruct_67(Rmagic[mnum].SoundNum);
-    PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+    PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
 
     int stonenum = Rmagic[mnum].Attack[0] + (Rmagic[mnum].Attack[1] - Rmagic[mnum].Attack[0]) * level / 10;
     CalCanSelect(bnum, 1, Rmagic[mnum].MoveDistance[level - 1]);
@@ -5147,9 +5147,9 @@ void TSpecialAbility::SA_15(int bnum, int mnum, int level)
                     int attacklevel = Rrole[Brole[attackbnum].rnum].MagLevel[1] / 100 + 1;
                     ShowMagicName(attackmnum);
                     instruct_67(Rmagic[attackmnum].SoundNum);
-                    PlayActionAmination(attackbnum, Rmagic[attackmnum].MagicType);
+                    PlayActionAnimation(attackbnum, Rmagic[attackmnum].MagicType);
                     CalHurtRole(attackbnum, attackmnum, attacklevel, 1);
-                    PlayMagicAmination(attackbnum, Rmagic[attackmnum].AmiNum, Rmagic[mnum].AddMP[0]);
+                    PlayMagicAnimation(attackbnum, Rmagic[attackmnum].AmiNum, Rmagic[mnum].AddMP[0]);
                     Brole[attackmnum].Pic = 0;
                     ShowHurtValue(Rmagic[attackmnum].HurtType);
                 }
@@ -5175,7 +5175,7 @@ void TSpecialAbility::SA_16(int bnum, int mnum, int level)
     }
     ShowMagicName(mnum);
     instruct_67(Rmagic[mnum].SoundNum);
-    PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+    PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
 
     int curenum = MAX_PHYSICAL_POWER * 5 * level / 100;
     for (int i = 0; i < BRoleAmount; i++)
@@ -5189,7 +5189,7 @@ void TSpecialAbility::SA_16(int bnum, int mnum, int level)
             Brole[i].ShowNumber = curenum;
         }
     }
-    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
     ShowHurtValue(3);
     Brole[bnum].Acted = 1;
 }
@@ -5207,7 +5207,7 @@ void TSpecialAbility::SA_17(int bnum, int mnum, int level)
     {
         if (Brole[bnum2].Team == Brole[bnum].Team)
         {
-            PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+            PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
             int oldactstatus = Brole[bnum2].Acted;
             Brole[bnum2].Acted = 0;
             if (Brole[bnum2].Auto == 0 && Brole[bnum2].Team == 0)
@@ -5296,7 +5296,7 @@ void TSpecialAbility::SA_18(int bnum, int mnum, int level)
         Rrole[rnum].CurrentHP = std::min((int)Rrole[rnum].MaxHP, Rrole[rnum].CurrentHP + 60 * level);
     }
     Rrole[rnum].CurrentMP = std::max(0, Rrole[rnum].CurrentMP - Rmagic[mnum].NeedMP * level);
-    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
     Brole[bnum].Acted = 1;
 }
 void TSpecialAbility::SA_19(int bnum, int mnum, int level)
@@ -5363,7 +5363,7 @@ void TSpecialAbility::SA_19(int bnum, int mnum, int level)
         BField[2][aimx][aimy] = bnum;
         Brole[bnum].X = aimx; Brole[bnum].Y = aimy;
         Bx = aimx; By = aimy;
-        PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+        PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
     }
     Brole[bnum].Acted = 1;
 }
@@ -5401,7 +5401,7 @@ void TSpecialAbility::SA_20(int bnum, int mnum, int level)
     BField[2][Brole[bnum].X][Brole[bnum].Y] = -1;
     BField[2][Ax2][Ay2] = bnum;
     Brole[bnum].X = Ax2; Brole[bnum].Y = Ay2;
-    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum);
+    PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum);
     memset(&BField[4][0][0], 0, sizeof(BField[4]));
     if (sel)
     {
@@ -5411,9 +5411,9 @@ void TSpecialAbility::SA_20(int bnum, int mnum, int level)
             Rmagic[mnum].HurtType = 0;
             Rmagic[mnum].Attack[0] = 5 * step * level;
             Rmagic[mnum].Attack[1] = 10 * step * level;
-            PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+            PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
             CalHurtRole(bnum, mnum, level, 1);
-            PlayMagicAmination(bnum, Rmagic[mnum].AmiNum);
+            PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum);
             ShowHurtValue(Rmagic[mnum].HurtType);
             Rmagic[mnum].HurtType = 2;
         }
@@ -5447,7 +5447,7 @@ void TSpecialAbility::SA_21(int bnum, int mnum, int level)
         }
     }
     CalMoveAbility();
-    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
     Brole[bnum].Acted = 1;
 }
 void TSpecialAbility::SA_22(int bnum, int mnum, int level)
@@ -5470,7 +5470,7 @@ void TSpecialAbility::SA_22(int bnum, int mnum, int level)
             BField[4][Brole[i].X][Brole[i].Y] = 1 + rand() % 6;
         }
     }
-    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
     Brole[bnum].Acted = 1;
 }
 void TSpecialAbility::SA_23(int bnum, int mnum, int level)
@@ -5507,7 +5507,7 @@ void TSpecialAbility::SA_23(int bnum, int mnum, int level)
                     BField[4][Brole[i].X][Brole[i].Y] = 1;
                 }
             }
-            PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+            PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
         }
     }
     Brole[bnum].Acted = 1;
@@ -5547,7 +5547,7 @@ void TSpecialAbility::SA_24(int bnum, int mnum, int level)
                     BField[4][Brole[i].X][Brole[i].Y] = 1;
                 }
             }
-            PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+            PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
         }
     }
     Brole[bnum].Acted = 1;
@@ -5591,7 +5591,7 @@ void TSpecialAbility::SA_25(int bnum, int mnum, int level)
             }
         }
     }
-    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
     ShowHurtValue(1, 0, "+{}");
     Brole[bnum].Acted = 1;
 }
@@ -5601,7 +5601,7 @@ void TSpecialAbility::SA_26(int bnum, int mnum, int level)
 {
     ShowMagicName(mnum);
     instruct_67(Rmagic[mnum].SoundNum);
-    PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+    PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
 
     for (int i = 0; i < BRoleAmount; i++)
     {
@@ -5641,7 +5641,7 @@ void TSpecialAbility::SA_26(int bnum, int mnum, int level)
             }
         }
     }
-    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
     ShowHurtValue(5);
     Brole[bnum].Acted = 1;
 }
@@ -5682,7 +5682,7 @@ void TSpecialAbility::SA_27(int bnum, int mnum, int level)
         }
     }
     Brole[bnum].Acted = 1;
-    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
 }
 
 // SA_28: 断己相杀，与敌人死磕至一方死亡
@@ -5724,12 +5724,12 @@ void TSpecialAbility::SA_28(int bnum, int mnum, int level)
                 // 己方攻击
                 ShowMagicName(hmnumB);
                 instruct_67(Rmagic[hmnumB].SoundNum);
-                PlayActionAmination(bnum, Rmagic[hmnumB].MagicType);
+                PlayActionAnimation(bnum, Rmagic[hmnumB].MagicType);
                 int hurt = CalHurtValue(bnum, Anum, hmnumB, hmlevelB, 1);
                 BField[4][Brole[Anum].X][Brole[Anum].Y] = 1;
                 Bx = Brole[Anum].X; By = Brole[Anum].Y;
                 Ax = Brole[bnum].X; Ay = Brole[bnum].Y;
-                PlayMagicAmination(bnum, Rmagic[hmnumB].AmiNum);
+                PlayMagicAnimation(bnum, Rmagic[hmnumB].AmiNum);
                 Brole[Anum].ShowNumber = hurt;
                 ShowHurtValue(Rmagic[hmnumB].HurtType);
                 BField[4][Brole[Anum].X][Brole[Anum].Y] = 0;
@@ -5740,12 +5740,12 @@ void TSpecialAbility::SA_28(int bnum, int mnum, int level)
                 // 敌方攻击
                 ShowMagicName(hmnumA);
                 instruct_67(Rmagic[hmnumA].SoundNum);
-                PlayActionAmination(Anum, Rmagic[hmnumA].MagicType);
+                PlayActionAnimation(Anum, Rmagic[hmnumA].MagicType);
                 hurt = CalHurtValue(Anum, bnum, hmnumA, hmlevelA, 1);
                 BField[4][Brole[bnum].X][Brole[bnum].Y] = 1;
                 Bx = Brole[bnum].X; By = Brole[bnum].Y;
                 Ax = Brole[Anum].X; Ay = Brole[Anum].Y;
-                PlayMagicAmination(Anum, Rmagic[hmnumA].AmiNum);
+                PlayMagicAnimation(Anum, Rmagic[hmnumA].AmiNum);
                 Brole[bnum].ShowNumber = hurt;
                 ShowHurtValue(Rmagic[hmnumA].HurtType);
                 Brole[bnum].ShowNumber = 0;
@@ -5793,7 +5793,7 @@ void TSpecialAbility::SA_29(int bnum, int mnum, int level)
             }
         }
     }
-    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
     Brole[bnum].Acted = 1;
 }
 
@@ -5829,8 +5829,8 @@ void TSpecialAbility::SA_30(int bnum, int mnum, int level)
             }
             BField[4][Ax][Ay] = 10;
             instruct_67(Rmagic[mnum].SoundNum);
-            PlayActionAmination(bnum, Rmagic[mnum].MagicType);
-            PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+            PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
+            PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
             BField[2][aimbrole.X][aimbrole.Y] = -1;
             Brole[aimbnum].X = Ax;
             Brole[aimbnum].Y = Ay;
@@ -5920,7 +5920,7 @@ void TSpecialAbility::SA_31(int bnum, int mnum, int level)
             return;
         }
         Rrole[Brole[bnum].rnum].Magic[0] = mnumarray[res];
-        PlayMagicAmination(bnum, Rmagic[mnumarray[res]].AmiNum, Rmagic[mnumarray[res]].AddMP[0]);
+        PlayMagicAnimation(bnum, Rmagic[mnumarray[res]].AmiNum, Rmagic[mnumarray[res]].AddMP[0]);
         if (AI) ShowMagicName(Rrole[Brole[bnum].rnum].Magic[0]);
     }
     Brole[bnum].Acted = 1;
@@ -5953,7 +5953,7 @@ void TSpecialAbility::SA_32(int bnum, int mnum, int level)
             BField[4][Brole[i].X][Brole[i].Y] = 1 + rand() % 6;
         }
     }
-    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
     Brole[bnum].Acted = 1;
 }
 void TSpecialAbility::SA_33(int bnum, int mnum, int level)
@@ -5994,7 +5994,7 @@ void TSpecialAbility::SA_33(int bnum, int mnum, int level)
         }
         aimbnum2 = BField[2][Ax][Ay];
         instruct_67(Rmagic[mnum].SoundNum);
-        PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+        PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
         if (aimbnum1 >= 0 && aimbnum2 >= 0 && aimbnum1 != aimbnum2)
         {
             int tempmp = Rrole[Brole[aimbnum1].rnum].CurrentMP;
@@ -6008,7 +6008,7 @@ void TSpecialAbility::SA_33(int bnum, int mnum, int level)
             BField[4][Brole[aimbnum2].X][Brole[aimbnum2].Y] = 10;
         }
     }
-    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
     Brole[bnum].Acted = 1;
 }
 void TSpecialAbility::SA_34(int bnum, int mnum, int level)
@@ -6049,7 +6049,7 @@ void TSpecialAbility::SA_34(int bnum, int mnum, int level)
         }
         aimbnum2 = BField[2][Ax][Ay];
         instruct_67(Rmagic[mnum].SoundNum);
-        PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+        PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
         if (aimbnum1 >= 0 && aimbnum2 >= 0 && aimbnum1 != aimbnum2)
         {
             int temphp = Rrole[Brole[aimbnum1].rnum].CurrentHP;
@@ -6063,7 +6063,7 @@ void TSpecialAbility::SA_34(int bnum, int mnum, int level)
         BField[4][Brole[aimbnum1].X][Brole[aimbnum1].Y] = 1;
         BField[4][Brole[aimbnum2].X][Brole[aimbnum2].Y] = 10;
     }
-    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
     Brole[bnum].Acted = 1;
 }
 void TSpecialAbility::SA_35(int bnum, int mnum, int level)
@@ -6075,7 +6075,7 @@ void TSpecialAbility::SA_35(int bnum, int mnum, int level)
         if (Brole[aimbnum].Team != Brole[bnum].Team)
         {
             instruct_67(Rmagic[mnum].SoundNum);
-            PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+            PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
             for (int i = 0; i <= 23; i++)
             {
                 if (i == 14) continue;
@@ -6087,7 +6087,7 @@ void TSpecialAbility::SA_35(int bnum, int mnum, int level)
             }
             Brole[aimbnum].StateLevel[4] = -50;
             Brole[aimbnum].StateRound[4] += 3;
-            PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+            PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
         }
     }
     Brole[bnum].Acted = 1;
@@ -6100,9 +6100,9 @@ void TSpecialAbility::SA_36(int bnum, int mnum, int level)
     Rmagic[mnum].Attack[1] = Rrole[Brole[bnum].rnum].Attack * level;
     if (Rrole[Brole[bnum].rnum].Attack > 200) needOffset = 1;
     PlaySoundA(Rmagic[mnum].SoundNum, 0);
-    PlayActionAmination(bnum, Rmagic[mnum].MagicType);
+    PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
     CalHurtRole(bnum, mnum, level, 1);
-    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum);
+    PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum);
     ShowHurtValue(Rmagic[mnum].HurtType);
     Rmagic[mnum].HurtType = 2;
     Brole[bnum].Acted = 1;
@@ -6127,7 +6127,7 @@ void TSpecialAbility::SA_37(int bnum, int mnum, int level)
             BField[4][Brole[i].X][Brole[i].Y] = 1;
         }
     }
-    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
     Brole[bnum].Acted = 1;
 }
 void TSpecialAbility::SA_38(int bnum, int mnum, int level)
@@ -6144,8 +6144,8 @@ void TSpecialAbility::SA_38(int bnum, int mnum, int level)
             BField[4][Brole[i].X][Brole[i].Y] = 1;
         }
     }
-    PlayActionAmination(bnum, Rmagic[mnum].MagicType);
-    PlayMagicAmination(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
+    PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
+    PlayMagicAnimation(bnum, Rmagic[mnum].AmiNum, Rmagic[mnum].AddMP[0]);
     ShowHurtValue(0);
     Brole[bnum].Acted = 1;
 }
@@ -6173,8 +6173,8 @@ void TSpecialAbility2::SA2_0(int bnum, int mnum, int mnum2, int level)
                 ModifyState(i, 26, -1, 3);
             }
         }
-        PlayActionAmination(bnum, Rmagic[mnum].MagicType);
-        PlayMagicAmination(bnum, Rmagic[mnum2].AmiNum);
+        PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
+        PlayMagicAnimation(bnum, Rmagic[mnum2].AmiNum);
         ShowHurtValue(0);
     }
 }
@@ -6191,7 +6191,7 @@ void TSpecialAbility2::SA2_1(int bnum, int mnum, int mnum2, int level)
         case 2: Ay = By - 1; break;
         case 3: Ax = Bx + 1; break;
         }
-        SetAminationPosition(1, 32, 0);
+        SetAnimationPosition(1, 32, 0);
         for (int i = 0; i < BRoleAmount; i++)
         {
             Brole[i].ShowNumber = -1;
@@ -6205,8 +6205,8 @@ void TSpecialAbility2::SA2_1(int bnum, int mnum, int mnum2, int level)
                 ModifyState(i, 1, -50, 5);
             }
         }
-        PlayActionAmination(bnum, Rmagic[mnum].MagicType);
-        PlayMagicAmination(bnum, Rmagic[mnum2].AmiNum);
+        PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
+        PlayMagicAnimation(bnum, Rmagic[mnum2].AmiNum);
         ShowHurtValue(0);
     }
 }
@@ -6216,7 +6216,7 @@ void TSpecialAbility2::SA2_2(int bnum, int mnum, int mnum2, int level)
     {
         ShowMagicName(mnum2);
         Ax = Bx; Ay = By;
-        SetAminationPosition(3, 0, 4);
+        SetAnimationPosition(3, 0, 4);
         for (int i = 0; i < BRoleAmount; i++)
         {
             Brole[i].ShowNumber = -1;
@@ -6230,8 +6230,8 @@ void TSpecialAbility2::SA2_2(int bnum, int mnum, int mnum2, int level)
                 ModifyState(i, 0, -50, 5);
             }
         }
-        PlayActionAmination(bnum, Rmagic[mnum].MagicType);
-        PlayMagicAmination(bnum, Rmagic[mnum2].AmiNum);
+        PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
+        PlayMagicAnimation(bnum, Rmagic[mnum2].AmiNum);
         ShowHurtValue(0);
     }
 }
@@ -6261,8 +6261,8 @@ void TSpecialAbility2::SA2_3(int bnum, int mnum, int mnum2, int level)
                 }
             }
         }
-        PlayActionAmination(bnum, Rmagic[mnum].MagicType);
-        PlayMagicAmination(bnum, Rmagic[mnum2].AmiNum);
+        PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
+        PlayMagicAnimation(bnum, Rmagic[mnum2].AmiNum);
         ShowHurtValue(0);
     }
 }
@@ -6277,7 +6277,7 @@ void TSpecialAbility2::SA2_4(int bnum, int mnum, int mnum2, int level)
         memcpy(&BField[5][0][0], &BField[4][0][0], 4096 * 2);
         memset(&BField[4][0][0], 0, 4096 * 2);
         BField[4][Brole[bnum].X][Brole[bnum].Y] = 1;
-        PlayMagicAmination(bnum, Rmagic[mnum2].AmiNum);
+        PlayMagicAnimation(bnum, Rmagic[mnum2].AmiNum);
         memcpy(&BField[4][0][0], &BField[5][0][0], 4096 * 2);
         AttackAction(bnum, mnum, level);
     }
@@ -6299,7 +6299,7 @@ void TSpecialAbility2::SA2_5(int bnum, int mnum, int mnum2, int level)
         memcpy(&BField[5][0][0], &BField[4][0][0], 4096 * 2);
         memset(&BField[4][0][0], 0, 4096 * 2);
         BField[4][Brole[bnum].X][Brole[bnum].Y] = 1;
-        PlayMagicAmination(bnum, Rmagic[mnum2].AmiNum);
+        PlayMagicAnimation(bnum, Rmagic[mnum2].AmiNum);
         memcpy(&BField[4][0][0], &BField[5][0][0], 4096 * 2);
         AttackAction(bnum, mnum, level);
     }
@@ -6312,7 +6312,7 @@ void TSpecialAbility2::SA2_6(int bnum, int mnum, int mnum2, int level)
         memcpy(&BField[5][0][0], &BField[4][0][0], 4096 * 2);
         memset(&BField[4][0][0], 0, 4096 * 2);
         BField[4][Brole[bnum].X][Brole[bnum].Y] = 1;
-        PlayMagicAmination(bnum, Rmagic[mnum2].AmiNum);
+        PlayMagicAnimation(bnum, Rmagic[mnum2].AmiNum);
         memcpy(&BField[4][0][0], &BField[5][0][0], 4096 * 2);
         for (int i = 0; i < BRoleAmount; i++)
         {
@@ -6351,8 +6351,8 @@ void TSpecialAbility2::SA2_7(int bnum, int mnum, int mnum2, int level)
                 Brole[i].ShowNumber = hurt;
             }
         }
-        PlayActionAmination(bnum, Rmagic[mnum].MagicType);
-        PlayMagicAmination(bnum, Rmagic[mnum2].AmiNum);
+        PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
+        PlayMagicAnimation(bnum, Rmagic[mnum2].AmiNum);
         ShowHurtValue(0);
     }
 }
@@ -6383,8 +6383,8 @@ void TSpecialAbility2::SA2_8(int bnum, int mnum, int mnum2, int level)
                 Brole[bnum2].ShowNumber = 0;
             }
             BField[4][Brole[bnum].X][Brole[bnum].Y] = 1 + rand() % 6;
-            PlayActionAmination(bnum, Rmagic[mnum].MagicType);
-            PlayMagicAmination(bnum, Rmagic[mnum2].AmiNum);
+            PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
+            PlayMagicAnimation(bnum, Rmagic[mnum2].AmiNum);
             ShowHurtValue(Rmagic[mnum].HurtType);
         }
     }
@@ -6395,7 +6395,7 @@ void TSpecialAbility2::SA2_9(int bnum, int mnum, int mnum2, int level)
     {
         ShowMagicName(mnum2);
         Ax = Bx; Ay = By;
-        SetAminationPosition(3, 0, 4);
+        SetAnimationPosition(3, 0, 4);
         for (int i = 0; i < BRoleAmount; i++)
         {
             Brole[i].ShowNumber = -1;
@@ -6408,8 +6408,8 @@ void TSpecialAbility2::SA2_9(int bnum, int mnum, int mnum2, int level)
                 if (rand() % 100 < 30) ModifyState(i, 28, -1, 3);
             }
         }
-        PlayActionAmination(bnum, Rmagic[mnum].MagicType);
-        PlayMagicAmination(bnum, Rmagic[mnum2].AmiNum);
+        PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
+        PlayMagicAnimation(bnum, Rmagic[mnum2].AmiNum);
         ShowHurtValue(Rmagic[mnum].HurtType);
     }
 }
@@ -6420,7 +6420,7 @@ void TSpecialAbility2::SA2_10(int bnum, int mnum, int mnum2, int level)
     {
         ShowMagicName(mnum2);
         Ax = Bx; Ay = By;
-        SetAminationPosition(3, 0, 4);
+        SetAnimationPosition(3, 0, 4);
         for (int i = 0; i < BRoleAmount; i++)
         {
             Brole[i].ShowNumber = -1;
@@ -6434,8 +6434,8 @@ void TSpecialAbility2::SA2_10(int bnum, int mnum, int mnum2, int level)
                 Rrole[rn].Poison = 100;
             }
         }
-        PlayActionAmination(bnum, Rmagic[mnum].MagicType);
-        PlayMagicAmination(bnum, Rmagic[mnum2].AmiNum);
+        PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
+        PlayMagicAnimation(bnum, Rmagic[mnum2].AmiNum);
         ShowHurtValue(0);
     }
 }
@@ -6445,7 +6445,7 @@ void TSpecialAbility2::SA2_11(int bnum, int mnum, int mnum2, int level)
     {
         ShowMagicName(mnum2);
         Ax = Bx; Ay = By;
-        SetAminationPosition(3, 0, 6);
+        SetAnimationPosition(3, 0, 6);
         for (int i = 0; i < BRoleAmount; i++)
         {
             Brole[i].ShowNumber = -1;
@@ -6457,8 +6457,8 @@ void TSpecialAbility2::SA2_11(int bnum, int mnum, int mnum2, int level)
                 Brole[i].ShowNumber = hurt;
             }
         }
-        PlayActionAmination(bnum, Rmagic[mnum].MagicType);
-        PlayMagicAmination(bnum, Rmagic[mnum2].AmiNum);
+        PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
+        PlayMagicAnimation(bnum, Rmagic[mnum2].AmiNum);
         ShowHurtValue(0);
     }
 }
@@ -6468,7 +6468,7 @@ void TSpecialAbility2::SA2_12(int bnum, int mnum, int mnum2, int level)
     {
         ShowMagicName(mnum2);
         Ax = Bx; Ay = By;
-        SetAminationPosition(3, 0, 4);
+        SetAnimationPosition(3, 0, 4);
         memset(&BField[4][0][0], 0, 4096 * 2);
         for (int i = 0; i < BRoleAmount; i++)
         {
@@ -6490,8 +6490,8 @@ void TSpecialAbility2::SA2_12(int bnum, int mnum, int mnum2, int level)
                 }
             }
         }
-        PlayActionAmination(bnum, Rmagic[mnum].MagicType);
-        PlayMagicAmination(bnum, Rmagic[mnum2].AmiNum);
+        PlayActionAnimation(bnum, Rmagic[mnum].MagicType);
+        PlayMagicAnimation(bnum, Rmagic[mnum2].AmiNum);
         ShowHurtValue(0);
     }
 }
@@ -6503,7 +6503,7 @@ void TSpecialAbility2::SA2_100(int bnum, int mnum, int mnum2, int level)
         ShowMagicName(mnum2);
         memset(&BField[4][0][0], 0, 4096 * 2);
         BField[4][Brole[bnum].X][Brole[bnum].Y] = 1;
-        PlayMagicAmination(bnum, Rmagic[mnum2].AmiNum);
+        PlayMagicAnimation(bnum, Rmagic[mnum2].AmiNum);
         ModifyState(bnum, 0, 50, 3);
         ModifyState(bnum, 1, 50, 3);
         if (rand() % 100 < 50) ModifyState(bnum, 29, 30, 3);
@@ -6521,7 +6521,7 @@ void TSpecialAbility2::SA2_101(int bnum, int mnum, int mnum2, int level)
         ShowMagicName(mnum2);
         memset(&BField[4][0][0], 0, 4096 * 2);
         BField[4][Brole[bnum].X][Brole[bnum].Y] = 1;
-        PlayMagicAmination(bnum, Rmagic[mnum2].AmiNum);
+        PlayMagicAnimation(bnum, Rmagic[mnum2].AmiNum);
         Rrole[rnum].PhyPower = std::min(MAX_PHYSICAL_POWER, (int)Rrole[rnum].PhyPower + 20);
         Brole[bnum].StateLevel[14] += 50;
     }
@@ -6532,7 +6532,7 @@ void TSpecialAbility2::SA2_102(int bnum, int mnum, int mnum2, int level)
     ShowMagicName(mnum2);
     memset(&BField[4][0][0], 0, 4096 * 2);
     BField[4][Brole[bnum].X][Brole[bnum].Y] = 1;
-    PlayMagicAmination(bnum, Rmagic[mnum2].AmiNum);
+    PlayMagicAnimation(bnum, Rmagic[mnum2].AmiNum);
     Rrole[rnum].CurrentHP = Rrole[rnum].MaxHP;
 }
 void TSpecialAbility2::SA2_103(int bnum, int mnum, int mnum2, int level)
@@ -6543,7 +6543,7 @@ void TSpecialAbility2::SA2_103(int bnum, int mnum, int mnum2, int level)
         ShowMagicName(mnum2);
         memset(&BField[4][0][0], 0, 4096 * 2);
         BField[4][Brole[bnum].X][Brole[bnum].Y] = 1;
-        PlayMagicAmination(bnum, Rmagic[mnum2].AmiNum);
+        PlayMagicAnimation(bnum, Rmagic[mnum2].AmiNum);
         for (int si = 0; si <= 20; si++)
         {
             if (si == 0 || si == 1 || si == 2 || si == 4 || si == 11 || si == 14 || si == 15)

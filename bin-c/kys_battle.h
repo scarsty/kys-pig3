@@ -109,7 +109,7 @@ int CalBroleDistance(int bnum1, int bnum2);
 
 // 移动
 void MoveRole(int bnum);
-bool MoveAmination(int bnum);
+bool MoveAnimation(int bnum);
 void SeekPath2(int x, int y, int step, int myteam, int mode, int bnum);
 
 // 目标选择
@@ -131,10 +131,10 @@ void ModifyRange(int bnum, int mnum, int& step, int& range);
 // 魔法/武功
 void ShowMagicName(int mnum, const std::string& str = "");
 int SelectMagic(int rnum);
-void SetAminationPosition(int mode, int step, int range, int aimMode = 0);
-void SetAminationPosition(int bx, int by, int ax, int ay, int mode, int step, int range, int aimMode = 0);
-void PlayMagicAmination(int bnum, int eNum, int aimMode = 0, int mode = 0);
-void PlayActionAmination(int bnum, int mode);
+void SetAnimationPosition(int mode, int step, int range, int aimMode = 0);
+void SetAnimationPosition(int bx, int by, int ax, int ay, int mode, int step, int range, int aimMode = 0);
+void PlayMagicAnimation(int bnum, int eNum, int aimMode = 0, int mode = 0);
+void PlayActionAnimation(int bnum, int mode);
 
 // 伤害计算
 void CalHurtRole(int bnum, int mnum, int level, int mode = 0);

@@ -62,10 +62,10 @@ function f4()
 	--darkscene();
 	--lightscene();
 	--learnmagic(0, 17);
-	--putrolepro(33, 168, 25);
-	--putrolepro(0, 169, 25);
-	--putrolepro(getrolepro(166, 25) + 1, 166, 25);
-	--putrolepro(0, 167, 25);
+	--setrolepro(33, 168, 25);
+	--setrolepro(0, 169, 25);
+	--setrolepro(getrolepro(166, 25) + 1, 166, 25);
+	--setrolepro(0, 167, 25);
 	execevent(574);
 end
 
@@ -94,42 +94,42 @@ end
 
 
 function f12()
-	putrolepro(4, 892, 25);
+	setrolepro(4, 892, 25);
 end
 
 function f13()
-	putrolepro(824, 6, 18);
-	putrolepro(328, 6, 42);
+	setrolepro(824, 6, 18);
+	setrolepro(328, 6, 42);
 
-	putrolepro(90, 6, 43);
-	putrolepro(70, 6, 44);
-	putrolepro(115, 6, 45);
-	putrolepro(0, 6, 46);
-	putrolepro(0, 6, 47);
-	putrolepro(0, 6, 48);
-	--putrolepro(50, 6, 49);
-	putrolepro(10, 6, 50);
-	putrolepro(10, 6, 51);
-	putrolepro(40, 6, 52);
-	putrolepro(10, 6, 53);
-	putrolepro(30, 6, 54);
-	putrolepro(50, 6, 58);
-	putrolepro(1, 6, 15);
+	setrolepro(90, 6, 43);
+	setrolepro(70, 6, 44);
+	setrolepro(115, 6, 45);
+	setrolepro(0, 6, 46);
+	setrolepro(0, 6, 47);
+	setrolepro(0, 6, 48);
+	--setrolepro(50, 6, 49);
+	setrolepro(10, 6, 50);
+	setrolepro(10, 6, 51);
+	setrolepro(40, 6, 52);
+	setrolepro(10, 6, 53);
+	setrolepro(30, 6, 54);
+	setrolepro(50, 6, 58);
+	setrolepro(1, 6, 15);
 end
 
 
 function f14()
 --f14();
 rest();
-  putbattlepro(881,297,34);
-  putbattlepro(-1,297,32);
-  putbattlepro(-1,297,33);
+  setbattlepro(881,297,34);
+  setbattlepro(-1,297,32);
+  setbattlepro(-1,297,33);
   trybattle(297);
 end
 
 function f15()
 	rest();
-	--putbattlepro(getbattlepro(297,33)+1, 297, 33);
+	--setbattlepro(getbattlepro(297,33)+1, 297, 33);
 	trybattle(enternumber(0,298,100,100,0));
 end
 
@@ -212,5 +212,5 @@ exit();
 end
 
 function f20()
-	putitemintro(0, '一张藏宝图，好像已经被撕毁');
+	setitemintro(0, '一张藏宝图，好像已经被撕毁');
 end

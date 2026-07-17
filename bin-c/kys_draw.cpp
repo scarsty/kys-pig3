@@ -649,7 +649,7 @@ void DrawBFieldWithCursor(int AttAreaType, int step, int range)
     SDL_SetTextureColorMod(ImgBGroundTex, 128, 128, 128);
     LoadGroundTex(Bx, By);
     SDL_SetTextureColorMod(ImgBGroundTex, 255, 255, 255);
-    SetAminationPosition(AttAreaType, step, range);
+    SetAnimationPosition(AttAreaType, step, range);
     for (int i1 = 0; i1 < 64; i1++)
     {
         for (int i2 = 0; i2 < 64; i2++)

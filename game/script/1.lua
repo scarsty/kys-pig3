@@ -93,8 +93,8 @@ function f4()
     showstringwithbox(100, 70, "保留几个？");
     i = enternumber(1, 9, 200, 120, 0);
     while i < 10 do
-        putrolepro(0, b, 63 + i);
-        putrolepro(0, b, 73 + i);
+        setrolepro(0, b, 63 + i);
+        setrolepro(0, b, 73 + i);
         i = i + 1;
     end
     setnameasstring("大騙紙", 0, 0);
@@ -109,8 +109,8 @@ function f5()
     showstringwithbox(100, 70, "保留几个？");
     i = enternumber(0, 9, 200, 120, 0);
     while i < 4 do
-        putrolepro(0, b, 92 + i);
-        putrolepro(0, b, 96 + i);
+        setrolepro(0, b, 92 + i);
+        setrolepro(0, b, 96 + i);
         i = i + 1;
     end
     setnameasstring("大騙紙", 0, 0);
