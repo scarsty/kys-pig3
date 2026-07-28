@@ -442,8 +442,8 @@ bool JudgeInScreen(int px, int py, int w, int h, int xs, int ys, int xx, int yy,
 TPosition GetPositionOnScreen(int x, int y, int cx, int cy)
 {
     TPosition r;
-    r.x = -(x - cx) * 18 + (y - cy) * 18 + CENTER_X;
-    r.y = (x - cx) * 9 + (y - cy) * 9 + CENTER_Y;
+    r.x = -(x - cx) * TILE_W + (y - cy) * TILE_W + CENTER_X;
+    r.y = (x - cx) * TILE_H + (y - cy) * TILE_H + CENTER_Y;
     if (needOffset != 0)
     {
         r.x -= offsetX;
@@ -1858,6 +1858,7 @@ void DestroyAllTextures(int all)
     }
     if (all == 1)
     {
+        DestroySceneGroundTextures();
         DestroyRenderTextures();
         if (screenTex)
         {
@@ -2396,8 +2397,8 @@ void GetMousePosition(int& x, int& y, int x0, int y0, int yp)
 {
     int x1, y1;
     SDL_GetMouseState2(x1, y1);
-    x = (-x1 + CENTER_X + 2 * (y1 + yp) - 2 * CENTER_Y + 18) / 36 + x0;
-    y = (x1 - CENTER_X + 2 * (y1 + yp) - 2 * CENTER_Y + 18) / 36 + y0;
+    x = (-x1 + CENTER_X + (y1 + yp - CENTER_Y) * TILE_W / TILE_H + TILE_W) / (TILE_W * 2) + x0;
+    y = (x1 - CENTER_X + (y1 + yp - CENTER_Y) * TILE_W / TILE_H + TILE_W) / (TILE_W * 2) + y0;
 }
 
 bool InRegion(int x1, int y1, int x, int y, int w, int h)

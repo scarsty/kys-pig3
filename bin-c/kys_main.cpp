@@ -280,8 +280,8 @@ void Run()
 
     kyslog("Text will be drawn on single layer: %d", TEXT_LAYER);
 
-    ImageWidth = (36 * 32 + CENTER_X) * 2;
-    ImageHeight = (18 * 32 + CENTER_Y) * 2;
+    ImageWidth = (TILE_W * 2 * 32 + CENTER_X) * 2;
+    ImageHeight = (TILE_H * 2 * 32 + CENTER_Y) * 2;
 
     // 初始化字体
     kyslog("Try to load the fonts");
@@ -480,6 +480,9 @@ void ReadFiles()
     NIGHT_EFFECT = ini.getInt("system", "NIGHT_EFFECT", 0);
     EXIT_GAME = ini.getInt("system", "EXIT_GAME", 0);
     PNG_TILE = ini.getInt("system", "PNG_TILE", 2);
+    int tileScale = std::max(1, ini.getInt("system", "tile_scale", 1));
+    TILE_W = TILE_W_0 * tileScale;
+    TILE_H = TILE_H_0 * tileScale;
     //TRY_FIND_GRP = ini.getInt("system", "TRY_FIND_GRP", 0);
     //PNG_LOAD_ALL = ini.getInt("system", "PNG_LOAD_ALL", 0);
     KEEP_SCREEN_RATIO = ini.getInt("system", "KEEP_SCREEN_RATIO", 1);

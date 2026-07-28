@@ -9,10 +9,242 @@
 #include "kys_type.h"
 
 #include <SDL3/SDL.h>
+#include <SDL3_image/SDL_image.h>
 #include <algorithm>
 #include <cmath>
 #include <cstring>
+#include <filesystem>
 #include <format>
+
+namespace
+{
+constexpr int BASE_TILE_W = 18;
+constexpr int BASE_TILE_H = 9;
+constexpr int EXPORTED_GROUND_ORIGIN_Y = 17;
+constexpr int GROUND_MAP_WIDTH = BASE_TILE_W * 64 * 2;
+constexpr int GROUND_MAP_HEIGHT = BASE_TILE_H * 64 * 2;
+constexpr int MAIN_MAP_SPLIT = 8;
+constexpr int MAIN_MAP_WIDTH = BASE_TILE_W * 480 * 2;
+constexpr int MAIN_MAP_HEIGHT = BASE_TILE_H * 480 * 2;
+
+std::vector<SDL_Texture*> sceneGroundTextures;
+std::vector<SDL_Texture*> battleGroundTextures;
+std::vector<SDL_Texture*> mainGroundTextures;
+
+struct GroundArchive
+{
+    ZipFile2 zip;
+    bool opened = false;
+};
+
+GroundArchive sceneGroundArchive;
+GroundArchive battleGroundArchive;
+GroundArchive mainGroundArchive;
+
+SDL_Surface* LoadGroundSurface(const std::string& directoryPath, const std::string& fileBaseName,
+    const std::string& zipPath, GroundArchive& archive)
+{
+    if (!archive.opened)
+    {
+        archive.zip.openRead(zipPath);
+        archive.opened = true;
+    }
+    const std::string fileExtensions[] = { ".webp", ".png" };
+    if (archive.zip.opened())
+    {
+        for (const std::string& fileExtension : fileExtensions)
+        {
+            std::string data = archive.zip.readFile(fileBaseName + fileExtension);
+            if (data.empty())
+            {
+                continue;
+            }
+            SDL_IOStream* io = SDL_IOFromConstMem(data.data(), data.size());
+            if (!io)
+            {
+                continue;
+            }
+            SDL_Surface* surface = fileExtension == ".png"
+                ? SDL_LoadPNG_IO(io, true)
+                : IMG_LoadTyped_IO(io, true, "WEBP");
+            if (surface)
+            {
+                return surface;
+            }
+        }
+    }
+    for (const std::string& fileExtension : fileExtensions)
+    {
+        const std::string path = directoryPath + fileBaseName + fileExtension;
+        if (!std::filesystem::exists(path))
+        {
+            continue;
+        }
+        if (fileExtension == ".png")
+        {
+            return SDL_LoadPNG(path.c_str());
+        }
+        SDL_IOStream* io = SDL_IOFromFile(path.c_str(), "rb");
+        if (io)
+        {
+            return IMG_LoadTyped_IO(io, true, "WEBP");
+        }
+    }
+    return nullptr;
+}
+
+SDL_Texture* LoadGroundTexture(std::vector<SDL_Texture*>& textures, int index, const std::string& directoryPath,
+    const std::string& zipPath, const std::string& fileName, GroundArchive& archive)
+{
+    if (index < 0)
+    {
+        return nullptr;
+    }
+    if (index >= (int)textures.size())
+    {
+        textures.resize(index + 1, nullptr);
+    }
+    if (textures[index])
+    {
+        return textures[index];
+    }
+    SDL_Surface* surface = LoadGroundSurface(directoryPath, fileName, zipPath, archive);
+    if (!surface)
+    {
+        return nullptr;
+    }
+    textures[index] = SDL_CreateTextureFromSurface(render, surface);
+    SDL_DestroySurface(surface);
+    if (textures[index])
+    {
+        SDL_SetTextureBlendMode(textures[index], SDL_BLENDMODE_BLEND);
+    }
+    return textures[index];
+}
+
+bool RenderGroundTexture(SDL_Texture* texture, int logicalWidth, int logicalHeight, int centerX, int centerY)
+{
+    if (!texture)
+    {
+        return false;
+    }
+    float textureWidth = 0, textureHeight = 0;
+    SDL_GetTextureSize(texture, &textureWidth, &textureHeight);
+    const float scaleX = textureWidth / logicalWidth;
+    const float scaleY = textureHeight / logicalHeight;
+    SDL_FRect source = {
+        centerX * scaleX - CENTER_X,
+        centerY * scaleY - CENTER_Y,
+        (float)CENTER_X * 2,
+        (float)CENTER_Y * 2
+    };
+    SDL_FRect destination = { 0, 0, (float)CENTER_X * 2, (float)CENTER_Y * 2 };
+    if (source.x < 0)
+    {
+        destination.x = -source.x;
+        destination.w -= destination.x;
+        source.w += source.x;
+        source.x = 0;
+    }
+    if (source.y < 0)
+    {
+        destination.y = -source.y;
+        destination.h -= destination.y;
+        source.h += source.y;
+        source.y = 0;
+    }
+    if (source.x + source.w > textureWidth)
+    {
+        destination.w = textureWidth - source.x;
+        source.w = textureWidth - source.x;
+    }
+    if (source.y + source.h > textureHeight)
+    {
+        destination.h = textureHeight - source.y;
+        source.h = textureHeight - source.y;
+    }
+    if (source.w <= 0 || source.h <= 0)
+    {
+        return false;
+    }
+    SDL_RenderTexture(render, texture, &source, &destination);
+    return true;
+}
+
+bool RenderSceneGround(std::vector<SDL_Texture*>& textures, const std::string& folder, int mapId, int x, int y)
+{
+    GroundArchive& archive = folder == "smap-earth" ? sceneGroundArchive : battleGroundArchive;
+    const std::string resourcePath = AppPath + "resource/" + folder;
+    SDL_Texture* texture = LoadGroundTexture(textures, mapId, resourcePath + "/", resourcePath + ".zip",
+        std::to_string(mapId), archive);
+    const int centerX = -x * BASE_TILE_W + y * BASE_TILE_W + GROUND_MAP_WIDTH / 2;
+    const int centerY = x * BASE_TILE_H + y * BASE_TILE_H + EXPORTED_GROUND_ORIGIN_Y;
+    return RenderGroundTexture(texture, GROUND_MAP_WIDTH, GROUND_MAP_HEIGHT, centerX, centerY);
+}
+
+void RenderMainGround(int x, int y)
+{
+    const int centerX = -x * BASE_TILE_W + y * BASE_TILE_W + MAIN_MAP_WIDTH / 2;
+    const int centerY = x * BASE_TILE_H + y * BASE_TILE_H + EXPORTED_GROUND_ORIGIN_Y;
+    const int sourceX = centerX * 2 - CENTER_X;
+    const int sourceY = centerY * 2 - CENTER_Y;
+    const int sourceRight = sourceX + CENTER_X * 2;
+    const int sourceBottom = sourceY + CENTER_Y * 2;
+    const int tileWidth = MAIN_MAP_WIDTH * 2 / MAIN_MAP_SPLIT;
+    const int tileHeight = MAIN_MAP_HEIGHT * 2 / MAIN_MAP_SPLIT;
+    const int firstColumn = std::max(0, sourceX / tileWidth);
+    const int lastColumn = std::min(MAIN_MAP_SPLIT - 1, (sourceRight - 1) / tileWidth);
+    const int firstRow = std::max(0, sourceY / tileHeight);
+    const int lastRow = std::min(MAIN_MAP_SPLIT - 1, (sourceBottom - 1) / tileHeight);
+    if (firstColumn > lastColumn || firstRow > lastRow)
+    {
+        return;
+    }
+    for (int row = firstRow; row <= lastRow; row++)
+    {
+        for (int column = firstColumn; column <= lastColumn; column++)
+        {
+            const int tileId = row * MAIN_MAP_SPLIT + column;
+            const std::string resourcePath = AppPath + "resource/mmap-earth";
+            SDL_Texture* texture = LoadGroundTexture(mainGroundTextures, tileId, resourcePath + "/", resourcePath + ".zip",
+                std::to_string(tileId), mainGroundArchive);
+            if (!texture)
+            {
+                continue;
+            }
+            const int tileLeft = column * tileWidth;
+            const int tileTop = row * tileHeight;
+            const int left = std::max(sourceX, tileLeft);
+            const int top = std::max(sourceY, tileTop);
+            const int right = std::min(sourceRight, tileLeft + tileWidth);
+            const int bottom = std::min(sourceBottom, tileTop + tileHeight);
+            SDL_FRect source = { (float)(left - tileLeft), (float)(top - tileTop),
+                (float)(right - left), (float)(bottom - top) };
+            SDL_FRect destination = { (float)(left - sourceX), (float)(top - sourceY), source.w, source.h };
+            SDL_RenderTexture(render, texture, &source, &destination);
+        }
+    }
+}
+}
+
+void DestroySceneGroundTextures()
+{
+    for (auto* texture : sceneGroundTextures)
+    {
+        SDL_DestroyTexture(texture);
+    }
+    for (auto* texture : battleGroundTextures)
+    {
+        SDL_DestroyTexture(texture);
+    }
+    for (auto* texture : mainGroundTextures)
+    {
+        SDL_DestroyTexture(texture);
+    }
+    sceneGroundTextures.clear();
+    battleGroundTextures.clear();
+    mainGroundTextures.clear();
+}
 
 //----------------------------------------------------------------------
 // DrawTPic - 标题贴图
@@ -214,9 +446,9 @@ void DrawMMap()
 {
     int k = 0;
     TBuildInfo BuildArray[2001];
-    int widthregion = CENTER_X / 36 + 3;
-    int sumregion = CENTER_Y / 9 + 2;
-
+    int widthregion = CENTER_X / (TILE_W * 2) + 3;
+    int sumregion = CENTER_Y / TILE_H + 2;
+    RenderMainGround(Mx, My);
     for (int sum = -sumregion; sum <= sumregion + 15; sum++)
     {
         for (int i = -widthregion; i <= widthregion; i++)
@@ -233,8 +465,11 @@ void DrawMMap()
             {
                 if (BIG_PNG_TILE == 0)
                 {
-                    DrawMPic(Earth[i1][i2] / 2, pos.x, pos.y);
-                    if (Surface[i1][i2] > 0)
+                    if (MPNGIndex[Earth[i1][i2] / 2].Frame > 1)
+                    {
+                        DrawMPic(Earth[i1][i2] / 2, pos.x, pos.y);
+                    }
+                    if (Surface[i1][i2] > 0 && MPNGIndex[Surface[i1][i2] / 2].Frame > 1)
                     {
                         DrawMPic(Surface[i1][i2] / 2, pos.x, pos.y);
                     }
@@ -278,7 +513,7 @@ void DrawMMap()
                     Width = MPNGIndex[num].w;
                     yoffset = MPNGIndex[num].y;
                     int Height = MPNGIndex[num].h;
-                    BuildArray[k].c = ((i1 + i2) - (Width + 35) / 36 - (yoffset - Height + 1) / 9) * 1024 + i2;
+                    BuildArray[k].c = ((i1 + i2) - (Width + TILE_W * 2 - 1) / (TILE_W * 2) - (yoffset - Height + 1) / TILE_H) * 1024 + i2;
                     k++;
                 }
             }
@@ -321,34 +556,19 @@ void DrawScene()
         Cy1 = Cy;
     }
 
-    int widthregion = CENTER_X / 36 + 3;
-    int sumregion = CENTER_Y / 9;
+    int widthregion = CENTER_X / (TILE_W * 2) + 3;
+    int sumregion = CENTER_Y / TILE_H;
     if (showBlackScreen)
     {
-        widthregion = 100 / 36 + 3;
-        sumregion = 100 / 9;
+        widthregion = 100 / (TILE_W * 2) + 3;
+        sumregion = 100 / TILE_H;
     }
 
-    LoadGroundTex(Cx1, Cy1);
+    SDL_SetRenderTarget(render, screenTex);
+    SDL_SetRenderDrawColor(render, 0, 0, 0, 255);
+    SDL_RenderClear(render);
 
-    // 地面动画帧
-    for (int sum = -sumregion; sum <= sumregion + 2; sum++)
-    {
-        for (int i = -widthregion; i <= widthregion; i++)
-        {
-            int i1 = Cx1 + i + sum / 2;
-            int i2 = Cy1 - i + (sum - sum / 2);
-            if (i1 >= 0 && i1 <= 63 && i2 >= 0 && i2 <= 63)
-            {
-                int num = ExGroundS[i1][i2] / 2;
-                if (num > 0 && num < (int)SPNGIndex.size() && SPNGIndex[num].Frame > 1)
-                {
-                    TPosition pos = GetPositionOnScreen(i1, i2, Cx1, Cy1);
-                    DrawSPic(num, pos.x, pos.y);
-                }
-            }
-        }
-    }
+    RenderSceneGround(sceneGroundTextures, "smap-earth", CurScene, Cx1, Cy1);
 
     // 建筑和事件层
     for (int sum = -sumregion; sum <= sumregion + 15; sum++)
@@ -361,14 +581,6 @@ void DrawScene()
             {
                 TPosition pos = GetPositionOnScreen(i1, i2, Cx1, Cy1);
 
-                if (SData[CurScene][4][i1][i2] > 0)
-                {
-                    int num = SData[CurScene][0][i1][i2] / 2;
-                    if (num > 0)
-                    {
-                        DrawSPic(num, pos.x, pos.y);
-                    }
-                }
                 if (SData[CurScene][1][i1][i2] > 0)
                 {
                     int num = SData[CurScene][1][i1][i2] / 2;
@@ -491,6 +703,19 @@ void ExpandGroundOnImg()
             }
         }
     }
+    if (Where == 1)
+    {
+        for (int i1 = 0; i1 < 64; i1++)
+        {
+            for (int i2 = 0; i2 < 64; i2++)
+            {
+                if (SData[CurScene][4][i1][i2] != 0)
+                {
+                    expandedGround[i1][i2] = 0;
+                }
+            }
+        }
+    }
     switch (Where)
     {
     case 1: SDL_SetRenderTarget(render, ImgSGroundTex); break;
@@ -539,14 +764,14 @@ int CalBlock(int x, int y)
 
 void CalPosOnImage(int i1, int i2, int& x, int& y)
 {
-    x = -i1 * 18 + i2 * 18 + ImageWidth / 2;
-    y = i1 * 9 + i2 * 9 + 9 + CENTER_Y;
+    x = -i1 * TILE_W + i2 * TILE_W + ImageWidth / 2;
+    y = i1 * TILE_H + i2 * TILE_H + TILE_H + CENTER_Y;
 }
 
 void CalLTPosOnImageByCenter(int i1, int i2, int& x, int& y)
 {
-    x = -(i1) * 18 + (i2) * 18 + ImageWidth / 2 - CENTER_X;
-    y = (i1) * 9 + (i2) * 9 + 9;
+    x = -(i1) * TILE_W + (i2) * TILE_W + ImageWidth / 2 - CENTER_X;
+    y = (i1) * TILE_H + (i2) * TILE_H + TILE_H;
     if (needOffset != 0)
     {
         x += offsetX;
@@ -560,10 +785,14 @@ void CalLTPosOnImageByCenter(int i1, int i2, int& x, int& y)
 void DrawBField()
 {
     int Bx1 = Bx, By1 = By;
-    int widthregion = CENTER_X / 36 + 3;
-    int sumregion = CENTER_Y / 9;
+    int widthregion = CENTER_X / (TILE_W * 2) + 3;
+    int sumregion = CENTER_Y / TILE_H;
 
-    LoadGroundTex(Bx1, By1);
+    const bool hasGround = RenderSceneGround(battleGroundTextures, "battle-earth", WarSta.BFieldNum, Bx1, By1);
+    if (!hasGround)
+    {
+        LoadGroundTex(Bx1, By1);
+    }
     for (int sum = -sumregion; sum <= sumregion + 15; sum++)
     {
         for (int i = -widthregion; i <= widthregion; i++)
@@ -930,8 +1159,8 @@ void DrawClouds()
     }
     for (int i = 0; i < (int)Cloud.size(); i++)
     {
-        int x = Cloud[i].Positionx - (-Mx * 18 + My * 18 + 8640 - CENTER_X);
-        int y = Cloud[i].Positiony - (Mx * 9 + My * 9 + 9 - CENTER_Y);
+        int x = Cloud[i].Positionx - (-Mx * TILE_W + My * TILE_W + TILE_W * 480 - CENTER_X);
+        int y = Cloud[i].Positiony - (Mx * TILE_H + My * TILE_H + TILE_H - CENTER_Y);
         DrawCPic(Cloud[i].Picnum, x, y,
             Cloud[i].Shadow, Cloud[i].Alpha, Cloud[i].mixColor, Cloud[i].mixAlpha);
     }

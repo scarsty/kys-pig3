@@ -65,4 +65,5 @@ void DrawTextWithRect(const std::string& word, int x, int y, int w, uint32 color
     int alpha = 255, int Refresh = 1);
 
 // 贴图销毁
+void DestroySceneGroundTextures();
 void DestroyAllTextures(int all = 0);

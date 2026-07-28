@@ -128,3 +128,5 @@ bin-c/.vs
 bin-c/kys-pig3-c/x64
 bin-pas/backup
 .vscode
+tools/__pycache__
+game/exported_ground_maps

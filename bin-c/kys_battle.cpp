@@ -2148,7 +2148,7 @@ void PlayMagicAnimation(int bnum, int eNum, int aimMode, int mode)
     TPosition posB = GetPositionOnScreen(Bx, By, CENTER_X, CENTER_Y);
     int x = posA.x - posB.x;
     int y = posB.y - posA.y;
-    int z = -((Ax + Ay) - (Bx + By)) * 9;
+    int z = -((Ax + Ay) - (Bx + By)) * TILE_H;
     PlaySound(eNum, 0, x, y, z);
 
     if (CellPhone == 1 && needOffset != 0 && enable_haptic)
@@ -2572,8 +2572,8 @@ void ShowHurtValue(int mode, int team, const std::string& fstr)
                 if (Brole[i].Team == team) { color1 = ColColor(0x7); color2 = ColColor(0x5); }
                 else { color1 = ColColor(0x10); color2 = ColColor(0x13); }
             }
-            int x = -(Brole[i].X - Bx) * 18 + (Brole[i].Y - By) * 18 + CENTER_X - 5 * (int)word[i].size();
-            int y = (Brole[i].X - Bx) * 9 + (Brole[i].Y - By) * 9 + CENTER_Y - 40;
+            int x = -(Brole[i].X - Bx) * TILE_W + (Brole[i].Y - By) * TILE_W + CENTER_X - 5 * (int)word[i].size();
+            int y = (Brole[i].X - Bx) * TILE_H + (Brole[i].Y - By) * TILE_H + CENTER_Y - 40;
             if (!word[i].empty())
                 DrawEngShadowText(word[i], x, y - i1 * 2, color1, color2);
         }
@@ -2596,8 +2596,8 @@ void ShowStringOnBrole(const std::string& str, int bnum, int mode, int up)
         std::string formatstr;
         SelectColor(mode, color1, color2, formatstr);
         int len = DrawLength(str.c_str());
-        int x = -(Brole[bnum].X - Bx) * 18 + (Brole[bnum].Y - By) * 18 + CENTER_X - 10;
-        int y = (Brole[bnum].X - Bx) * 9 + (Brole[bnum].Y - By) * 9 + CENTER_Y - 40;
+        int x = -(Brole[bnum].X - Bx) * TILE_W + (Brole[bnum].Y - By) * TILE_W + CENTER_X - 10;
+        int y = (Brole[bnum].X - Bx) * TILE_H + (Brole[bnum].Y - By) * TILE_H + CENTER_Y - 40;
         int i1 = 0;
         int i2 = 5 - sign(up) * 5;
         while (SDL_PollEvent(&event) || true)

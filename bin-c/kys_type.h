@@ -273,8 +273,8 @@ inline int ENGLISH_FONT_REALSIZE = 18;
 inline int CHNFONT_SPACEWIDTH = 0;
 
 // 屏幕中心
-inline int CENTER_X = 480;
-inline int CENTER_Y = 270;
+inline int CENTER_X = 640;
+inline int CENTER_Y = 360;
 
 inline int ui_x = 10;
 inline int ui_y = 10;
@@ -366,6 +366,10 @@ inline int FULLSCREEN = 0;
 inline int RESOLUTIONX = 0, RESOLUTIONY = 0;
 inline int RENDERER = -1;
 inline int SMOOTH = 1;
+inline constexpr int TILE_W_0 = 18;
+inline constexpr int TILE_H_0 = 9;
+inline int TILE_W = TILE_W_0;
+inline int TILE_H = TILE_H_0;
 
 inline int ImageWidth = 0, ImageHeight = 0;
 
@@ -498,7 +502,7 @@ inline std::string MovieName;
 
 inline int BasicOffset = 0, RoleOffset = 0, ItemOffset = 0, SceneOffset = 0, MagicOffset = 0, WeiShopOffset = 0, LenR = 0;
 
-inline std::string versionstr = "  108 Brothers and Sisters (c++) v11";
+inline std::string versionstr = "  108 Brothers and Sisters (c++) v12";
 
 inline std::vector<std::string> BattleNames, loverstrs, statestrs;
 
