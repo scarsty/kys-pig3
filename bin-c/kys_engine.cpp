@@ -31,16 +31,8 @@
 #include <fstream>
 #include <map>
 
-// 前置声明
-void CleanTextScreenRect(int x, int y, int w, int h);
-SDL_Rect GetRealRect(SDL_Rect rect, int force);
-SDL_FRect rect2f(const SDL_Rect& r);
-
-namespace
-{
 const char* kDefaultTileExt = ".png";
 const char* const kSupportedTileExts[] = { ".png", ".webp" };
-
 std::string BuildTileFileName(int fileNum, const std::string& fileExt, int frameNum = -1)
 {
     if (frameNum < 0)
@@ -95,13 +87,86 @@ SDL_Surface* LoadSurfaceByExtension(SDL_IOStream* io, bool closeio, const std::s
     }
     return IMG_Load_IO(io, closeio);
 }
-}    //namespace
 
-// 内部变量
-static MIX_Mixer* gMixer = nullptr;
-static MIX_Track* MusicTrack = nullptr;
-static MIX_Track* SfxTracks[10] = {};
-static int SfxNextTrack = 0;
+SDL_Surface* LoadGroundSurface(const std::string& directoryPath, const std::string& fileBaseName,
+    const std::string& zipPath, GroundArchive& archive)
+{
+    if (!archive.opened)
+    {
+        archive.zip.openRead(zipPath);
+        archive.opened = true;
+    }
+    const std::string fileExtensions[] = { ".webp", ".png" };
+    if (archive.zip.opened())
+    {
+        for (const std::string& fileExtension : fileExtensions)
+        {
+            std::string data = archive.zip.readFile(fileBaseName + fileExtension);
+            if (data.empty())
+            {
+                continue;
+            }
+            SDL_IOStream* io = SDL_IOFromConstMem(data.data(), data.size());
+            if (!io)
+            {
+                continue;
+            }
+            SDL_Surface* surface = LoadSurfaceByExtension(io, true, fileExtension);
+            if (surface)
+            {
+                return surface;
+            }
+        }
+    }
+    for (const std::string& fileExtension : fileExtensions)
+    {
+        const std::string path = directoryPath + fileBaseName + fileExtension;
+        if (!filefunc::fileExist(path))
+        {
+            continue;
+        }
+        SDL_IOStream* io = SDL_IOFromFile(path.c_str(), "rb");
+        if (!io)
+        {
+            continue;
+        }
+        SDL_Surface* surface = LoadSurfaceByExtension(io, true, fileExtension);
+        if (surface)
+        {
+            return surface;
+        }
+    }
+    return nullptr;
+}
+
+SDL_Texture* LoadGroundTexture(std::vector<SDL_Texture*>& textures, int index, const std::string& directoryPath,
+    const std::string& zipPath, const std::string& fileName, GroundArchive& archive)
+{
+    if (index < 0)
+    {
+        return nullptr;
+    }
+    if (index >= (int)textures.size())
+    {
+        textures.resize(index + 1, nullptr);
+    }
+    if (textures[index])
+    {
+        return textures[index];
+    }
+    SDL_Surface* surface = LoadGroundSurface(directoryPath, fileName, zipPath, archive);
+    if (!surface)
+    {
+        return nullptr;
+    }
+    textures[index] = SDL_CreateTextureFromSurface(render, surface);
+    SDL_DestroySurface(surface);
+    if (textures[index])
+    {
+        SDL_SetTextureBlendMode(textures[index], SDL_BLENDMODE_BLEND);
+    }
+    return textures[index];
+}
 
 //----------------------------------------------------------------------
 // Mixer 辅助
@@ -1842,14 +1907,6 @@ bool LoadTileFromMem(const char* p, int len, const std::string& fileExt, void*& 
     return false;
 }
 
-std::string LoadStringFromIMZMEM(const std::string& path, const char* p, int num)
-{
-    int off = *(int*)(p + 4 + num * 4) + 8;
-    int index = *(int*)(p + off);
-    int len = *(int*)(p + off + 4);
-    return std::string(p + index, len);
-}
-
 void DestroyAllTextures(int all)
 {
     while (!FreshScreen.empty())
@@ -2570,7 +2627,6 @@ void QuickSortB(TBuildInfo* a, int l, int r)
     }
 }
 
-static uint32 tic_time = 0;
 void tic() { tic_time = SDL_GetTicks(); }
 void toc() { kyslog("Time elapsed: %d ms", SDL_GetTicks() - tic_time); }
 

@@ -42,6 +42,12 @@
     <ClCompile Include="C:\project\mlcc\filefunc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="C:\project\cifa\Cifa.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="kys_cifa.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="C:\project\mlcc\SimpleCC.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -53,7 +59,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="C:\project\cifa\Cifa.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="kys_battle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="kys_cifa.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="kys_draw.h">

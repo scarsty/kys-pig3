@@ -80,6 +80,7 @@
     <ClCompile>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningLevel>Level3</WarningLevel>
+      <AdditionalIncludeDirectories>C:\project\mlcc;C:\project\cifa;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -90,7 +91,7 @@
     <ClCompile>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>C:\project\mlcc</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\project\mlcc;C:\project\cifa;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <SDLCheck>false</SDLCheck>
       <AdditionalOptions>/FS /utf-8 %(AdditionalOptions)</AdditionalOptions>
@@ -105,6 +106,7 @@
     <ClCompile>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningLevel>Level3</WarningLevel>
+      <AdditionalIncludeDirectories>C:\project\mlcc;C:\project\cifa;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -117,7 +119,7 @@
     <ClCompile>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>C:\project\mlcc</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\project\mlcc;C:\project\cifa;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <SDLCheck>false</SDLCheck>
       <AdditionalOptions>/FS /utf-8 %(AdditionalOptions)</AdditionalOptions>
@@ -132,10 +134,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="C:\project\mlcc\filefunc.cpp" />
+    <ClCompile Include="C:\project\cifa\Cifa.cpp" />
     <ClCompile Include="C:\project\mlcc\SimpleCC.cpp" />
     <ClCompile Include="C:\project\mlcc\strfunc.cpp" />
     <ClCompile Include="C:\project\mlcc\ZipFile2.cpp" />
     <ClCompile Include="kys_battle.cpp" />
+    <ClCompile Include="kys_cifa.cpp" />
     <ClCompile Include="kys_draw.cpp" />
     <ClCompile Include="kys_engine.cpp" />
     <ClCompile Include="kys_event.cpp" />
@@ -145,11 +149,13 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="C:\project\cifa\Cifa.h" />
     <ClInclude Include="C:\project\mlcc\filefunc.h" />
     <ClInclude Include="C:\project\mlcc\INIReader.h" />
     <ClInclude Include="C:\project\mlcc\SimpleCC.h" />
     <ClInclude Include="C:\project\mlcc\strfunc.h" />
     <ClInclude Include="kys_battle.h" />
+    <ClInclude Include="kys_cifa.h" />
     <ClInclude Include="kys_draw.h" />
     <ClInclude Include="kys_engine.h" />
     <ClInclude Include="kys_event.h" />

@@ -66,19 +66,17 @@ std::vector<int> ReadNumbersFromString(const std::string& str);
 // IDX/GRP加载
 TIDXGRP LoadIdxGrp(const std::string& stridx, const std::string& strgrp);
 
-// PNG贴图
 void InitialPicArrays();
 void ReadTiles();
 int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int LoadPic = 1, int16_t* frame = nullptr);
 void LoadOnePNGTexture(const std::string& path, ZipFile2& z, TPNGIndex& PNGIndex, int forceLoad = 0);
+SDL_Texture* LoadGroundTexture(std::vector<SDL_Texture*>& textures, int index, const std::string& directoryPath,
+    const std::string& zipPath, const std::string& fileName, GroundArchive& archive);
 void DrawPNGTile(SDL_Renderer* r, TPNGIndex& PNGIndex, int FrameNum, int px, int py);
 void DrawPNGTile(SDL_Renderer* r, TPNGIndex& PNGIndex, int FrameNum, int px, int py,
     SDL_Rect* region, int shadow, int alpha, uint32 mixColor, int mixAlpha,
     double scalex, double scaley, double angle, SDL_Point* center);
 void DrawSimpleStatusByTeam(int i, int px, int py, uint32 mixColor = 0, int mixAlpha = 0);
-
-// 内存压缩读取
-std::string LoadStringFromIMZMEM(const std::string& path, const char* p, int num);
 
 // 屏幕管理
 void ResizeWindow(int w, int h);
@@ -159,6 +157,7 @@ void QuickSortB(TBuildInfo* a, int l, int r);
 
 // 真实坐标转换
 void GetRealRect(int& x, int& y, int& w, int& h, int force = 0);
+SDL_Rect GetRealRect(SDL_Rect rect, int force = 0);
 TStretchInfo KeepRatioScale(int w0, int h0, int w1, int h1);
 SDL_FRect rect2f(const SDL_Rect& r);
 SDL_Rect Rectf2(SDL_FRect r);

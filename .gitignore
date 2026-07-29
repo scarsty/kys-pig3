@@ -130,3 +130,4 @@ bin-pas/backup
 .vscode
 tools/__pycache__
 game/exported_ground_maps
+game/script/event-cifa

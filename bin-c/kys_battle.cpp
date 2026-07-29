@@ -16,13 +16,8 @@
 #include <format>
 #include <cstdlib>
 
-// 内部变量
-static TSpecialAbility SA;
-static TSpecialAbility2 SA2;
-
-// 寻路相关
-static int MoveList[64][64];
-static int AttackList[64][64];
+TSpecialAbility SA;
+TSpecialAbility2 SA2;
 
 //----------------------------------------------------------------------
 // Battle - 战斗主函数

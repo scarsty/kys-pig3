@@ -5,6 +5,7 @@
 #include <SDL3/SDL.h>
 #include <SDL3_mixer/SDL_mixer.h>
 #include <SDL3_ttf/SDL_ttf.h>
+#include "Cifa.h"
 #include "ZipFile2.h"
 #include <cstdint>
 #include <map>
@@ -13,6 +14,8 @@
 
 // Forward declarations
 struct lua_State;
+class TSpecialAbility;
+class TSpecialAbility2;
 
 // 基本类型别名
 using uint32 = uint32_t;
@@ -22,6 +25,8 @@ using uint16 = uint16_t;
 constexpr int MAX_BATTLE_ROLE = 100;
 constexpr int MAX_EPNG = 201;
 constexpr int MAX_FPNG = 1001;
+constexpr int SCENE_MAP_SIZE = 64;
+constexpr int MAIN_MAP_SIZE = 480;
 
 // ---- 简单结构体 ----
 
@@ -90,6 +95,12 @@ struct TIDXGRP
     int Amount = 0;
     std::vector<int> IDX;
     std::vector<uint8_t> GRP;
+};
+
+struct GroundArchive
+{
+    ZipFile2 zip;
+    bool opened = false;
 };
 
 // ---- 游戏核心数据结构 ----
@@ -277,7 +288,7 @@ inline int CENTER_X = 640;
 inline int CENTER_Y = 360;
 
 inline int ui_x = 10;
-inline int ui_y = 10;
+inline int ui_y = 60;
 
 // 游戏常数 (多数可由ini文件改变)
 inline int BEGIN_MISSION_NUM = 100;
@@ -316,12 +327,12 @@ inline uint8_t ACol1[769] = {};
 inline uint8_t ACol2[769] = {};
 
 // 大地图数据 (extern - 大数组)
-extern int16_t Earth[480][480];
-extern int16_t Surface[480][480];
-extern int16_t Building[480][480];
-extern int16_t BuildX[480][480];
-extern int16_t BuildY[480][480];
-extern int16_t Entrance[480][480];
+extern int16_t Earth[MAIN_MAP_SIZE][MAIN_MAP_SIZE];
+extern int16_t Surface[MAIN_MAP_SIZE][MAIN_MAP_SIZE];
+extern int16_t Building[MAIN_MAP_SIZE][MAIN_MAP_SIZE];
+extern int16_t BuildX[MAIN_MAP_SIZE][MAIN_MAP_SIZE];
+extern int16_t BuildY[MAIN_MAP_SIZE][MAIN_MAP_SIZE];
+extern int16_t Entrance[MAIN_MAP_SIZE][MAIN_MAP_SIZE];
 
 // 游戏状态
 inline int InShip = 0, Useless1 = 0;
@@ -340,11 +351,11 @@ extern TShop RShop[22], RShop0[22];
 inline int SceneAmount = 0;
 
 // 场景/事件数据 (extern - 巨大数组)
-extern int16_t SData[401][6][64][64];
+extern int16_t SData[401][6][SCENE_MAP_SIZE][SCENE_MAP_SIZE];
 extern int16_t DData[401][200][11];
 
 // 战场地图
-extern int16_t BField[10][64][64];
+extern int16_t BField[10][SCENE_MAP_SIZE][SCENE_MAP_SIZE];
 extern TWarData WarStaList[401];
 inline TWarData WarSta;
 
@@ -381,8 +392,14 @@ inline std::vector<std::string> TDEF;
 
 // PNG贴图索引
 inline TPNGIndexArray MPNGIndex, SPNGIndex, HPNGIndex, CPNGIndex, TitlePNGIndex, IPNGIndex;
-inline TPNGIndexes EPNGIndex[201];
-inline TPNGIndexes FPNGIndex[1001];
+inline TPNGIndexes EPNGIndex[MAX_EPNG];
+inline TPNGIndexes FPNGIndex[MAX_FPNG];
+inline std::vector<SDL_Texture*> sceneGroundTextures;
+inline std::vector<SDL_Texture*> battleGroundTextures;
+inline std::vector<SDL_Texture*> mainGroundTextures;
+inline GroundArchive sceneGroundArchive;
+inline GroundArchive battleGroundArchive;
+inline GroundArchive mainGroundArchive;
 
 // 音频
 inline int VOLUME = 0, VOLUMEWAV = 0, SOUND3D = 0;
@@ -395,10 +412,15 @@ inline std::vector<MIX_Audio*> ASound;
 inline int StartMusic = 0;
 inline int ExitSceneMusicNum = 0;
 inline int NowMusic = -1;
+inline MIX_Mixer* gMixer = nullptr;
+inline MIX_Track* MusicTrack = nullptr;
+inline MIX_Track* SfxTracks[10] = {};
+inline int SfxNextTrack = 0;
 
 // 事件和脚本
 extern int x50[0x10000];    // [-0x8000..0x7FFF] => 偏移0x8000访问
 inline lua_State* lua_script = nullptr;
+inline cifa::Cifa cifa_script;
 inline int CurSceneRolePic = 0;
 inline int NeedRefreshScene = 1;
 
@@ -423,6 +445,7 @@ inline double now_time = 0;
 inline TPosition TitlePosition = {};
 inline TPosition OpenPicPosition = {};
 inline int OpenPic = 0;
+inline std::vector<std::string> gLaunchArgs;
 
 // 运行时状态
 inline int MStep = 0, Still = 0;
@@ -435,6 +458,10 @@ inline TBattleRole Brole[100] = {};
 inline int BRoleAmount = 0;
 inline int Bx = 0, By = 0, Ax = 0, Ay = 0;
 inline int Bstatus = 0;
+inline int MoveList[SCENE_MAP_SIZE][SCENE_MAP_SIZE] = {};
+inline int AttackList[SCENE_MAP_SIZE][SCENE_MAP_SIZE] = {};
+extern TSpecialAbility SA;
+extern TSpecialAbility2 SA2;
 
 // 寻路
 extern int16_t linex[480 * 480];
@@ -521,8 +548,6 @@ inline std::string EventScriptExt = ".lua";
 inline int p5032pos = -100;
 inline int p5032value = -1;
 
-inline const char* pEvent = nullptr;
-
 inline SDL_Window* window = nullptr;
 inline SDL_Renderer* render = nullptr;
 
@@ -541,6 +566,8 @@ inline uint8_t* keyleft = nullptr;
 
 inline SDL_Texture* SimpleStatusTex[6] = {};
 inline SDL_Texture* SimpleTextTex[6] = {};
+
+inline uint32 tic_time = 0;
 
 inline std::map<int, void*> CharTex;
 inline void* WoodPic = nullptr;

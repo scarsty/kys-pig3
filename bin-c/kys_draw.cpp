@@ -9,118 +9,10 @@
 #include "kys_type.h"
 
 #include <SDL3/SDL.h>
-#include <SDL3_image/SDL_image.h>
 #include <algorithm>
 #include <cmath>
 #include <cstring>
-#include <filesystem>
 #include <format>
-
-namespace
-{
-constexpr int BASE_TILE_W = 18;
-constexpr int BASE_TILE_H = 9;
-constexpr int EXPORTED_GROUND_ORIGIN_Y = 17;
-constexpr int GROUND_MAP_WIDTH = BASE_TILE_W * 64 * 2;
-constexpr int GROUND_MAP_HEIGHT = BASE_TILE_H * 64 * 2;
-constexpr int MAIN_MAP_SPLIT = 8;
-constexpr int MAIN_MAP_WIDTH = BASE_TILE_W * 480 * 2;
-constexpr int MAIN_MAP_HEIGHT = BASE_TILE_H * 480 * 2;
-
-std::vector<SDL_Texture*> sceneGroundTextures;
-std::vector<SDL_Texture*> battleGroundTextures;
-std::vector<SDL_Texture*> mainGroundTextures;
-
-struct GroundArchive
-{
-    ZipFile2 zip;
-    bool opened = false;
-};
-
-GroundArchive sceneGroundArchive;
-GroundArchive battleGroundArchive;
-GroundArchive mainGroundArchive;
-
-SDL_Surface* LoadGroundSurface(const std::string& directoryPath, const std::string& fileBaseName,
-    const std::string& zipPath, GroundArchive& archive)
-{
-    if (!archive.opened)
-    {
-        archive.zip.openRead(zipPath);
-        archive.opened = true;
-    }
-    const std::string fileExtensions[] = { ".webp", ".png" };
-    if (archive.zip.opened())
-    {
-        for (const std::string& fileExtension : fileExtensions)
-        {
-            std::string data = archive.zip.readFile(fileBaseName + fileExtension);
-            if (data.empty())
-            {
-                continue;
-            }
-            SDL_IOStream* io = SDL_IOFromConstMem(data.data(), data.size());
-            if (!io)
-            {
-                continue;
-            }
-            SDL_Surface* surface = fileExtension == ".png"
-                ? SDL_LoadPNG_IO(io, true)
-                : IMG_LoadTyped_IO(io, true, "WEBP");
-            if (surface)
-            {
-                return surface;
-            }
-        }
-    }
-    for (const std::string& fileExtension : fileExtensions)
-    {
-        const std::string path = directoryPath + fileBaseName + fileExtension;
-        if (!std::filesystem::exists(path))
-        {
-            continue;
-        }
-        if (fileExtension == ".png")
-        {
-            return SDL_LoadPNG(path.c_str());
-        }
-        SDL_IOStream* io = SDL_IOFromFile(path.c_str(), "rb");
-        if (io)
-        {
-            return IMG_LoadTyped_IO(io, true, "WEBP");
-        }
-    }
-    return nullptr;
-}
-
-SDL_Texture* LoadGroundTexture(std::vector<SDL_Texture*>& textures, int index, const std::string& directoryPath,
-    const std::string& zipPath, const std::string& fileName, GroundArchive& archive)
-{
-    if (index < 0)
-    {
-        return nullptr;
-    }
-    if (index >= (int)textures.size())
-    {
-        textures.resize(index + 1, nullptr);
-    }
-    if (textures[index])
-    {
-        return textures[index];
-    }
-    SDL_Surface* surface = LoadGroundSurface(directoryPath, fileName, zipPath, archive);
-    if (!surface)
-    {
-        return nullptr;
-    }
-    textures[index] = SDL_CreateTextureFromSurface(render, surface);
-    SDL_DestroySurface(surface);
-    if (textures[index])
-    {
-        SDL_SetTextureBlendMode(textures[index], SDL_BLENDMODE_BLEND);
-    }
-    return textures[index];
-}
 
 bool RenderGroundTexture(SDL_Texture* texture, int logicalWidth, int logicalHeight, int centerX, int centerY)
 {
@@ -177,25 +69,25 @@ bool RenderSceneGround(std::vector<SDL_Texture*>& textures, const std::string& f
     const std::string resourcePath = AppPath + "resource/" + folder;
     SDL_Texture* texture = LoadGroundTexture(textures, mapId, resourcePath + "/", resourcePath + ".zip",
         std::to_string(mapId), archive);
-    const int centerX = -x * BASE_TILE_W + y * BASE_TILE_W + GROUND_MAP_WIDTH / 2;
-    const int centerY = x * BASE_TILE_H + y * BASE_TILE_H + EXPORTED_GROUND_ORIGIN_Y;
-    return RenderGroundTexture(texture, GROUND_MAP_WIDTH, GROUND_MAP_HEIGHT, centerX, centerY);
+    const int centerX = -x * TILE_W_0 + y * TILE_W_0 + TILE_W_0 * SCENE_MAP_SIZE;
+    const int centerY = x * TILE_H_0 + y * TILE_H_0 + 17;
+    return RenderGroundTexture(texture, TILE_W_0 * SCENE_MAP_SIZE * 2, TILE_H_0 * SCENE_MAP_SIZE * 2, centerX, centerY);
 }
 
 void RenderMainGround(int x, int y)
 {
-    const int centerX = -x * BASE_TILE_W + y * BASE_TILE_W + MAIN_MAP_WIDTH / 2;
-    const int centerY = x * BASE_TILE_H + y * BASE_TILE_H + EXPORTED_GROUND_ORIGIN_Y;
+    const int centerX = -x * TILE_W_0 + y * TILE_W_0 + TILE_W_0 * MAIN_MAP_SIZE;
+    const int centerY = x * TILE_H_0 + y * TILE_H_0 + 17;
     const int sourceX = centerX * 2 - CENTER_X;
     const int sourceY = centerY * 2 - CENTER_Y;
     const int sourceRight = sourceX + CENTER_X * 2;
     const int sourceBottom = sourceY + CENTER_Y * 2;
-    const int tileWidth = MAIN_MAP_WIDTH * 2 / MAIN_MAP_SPLIT;
-    const int tileHeight = MAIN_MAP_HEIGHT * 2 / MAIN_MAP_SPLIT;
+    const int tileWidth = TILE_W_0 * MAIN_MAP_SIZE * 4 / 8;
+    const int tileHeight = TILE_H_0 * MAIN_MAP_SIZE * 4 / 8;
     const int firstColumn = std::max(0, sourceX / tileWidth);
-    const int lastColumn = std::min(MAIN_MAP_SPLIT - 1, (sourceRight - 1) / tileWidth);
+    const int lastColumn = std::min(7, (sourceRight - 1) / tileWidth);
     const int firstRow = std::max(0, sourceY / tileHeight);
-    const int lastRow = std::min(MAIN_MAP_SPLIT - 1, (sourceBottom - 1) / tileHeight);
+    const int lastRow = std::min(7, (sourceBottom - 1) / tileHeight);
     if (firstColumn > lastColumn || firstRow > lastRow)
     {
         return;
@@ -204,7 +96,7 @@ void RenderMainGround(int x, int y)
     {
         for (int column = firstColumn; column <= lastColumn; column++)
         {
-            const int tileId = row * MAIN_MAP_SPLIT + column;
+            const int tileId = row * 8 + column;
             const std::string resourcePath = AppPath + "resource/mmap-earth";
             SDL_Texture* texture = LoadGroundTexture(mainGroundTextures, tileId, resourcePath + "/", resourcePath + ".zip",
                 std::to_string(tileId), mainGroundArchive);
@@ -225,8 +117,6 @@ void RenderMainGround(int x, int y)
         }
     }
 }
-}
-
 void DestroySceneGroundTextures()
 {
     for (auto* texture : sceneGroundTextures)

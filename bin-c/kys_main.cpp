@@ -6,6 +6,7 @@
 #include "kys_draw.h"
 #include "kys_engine.h"
 #include "kys_event.h"
+#include "kys_cifa.h"
 #include "kys_script.h"
 
 #include <SDL3/SDL.h>
@@ -27,8 +28,6 @@
 #include <cstring>
 #include <format>
 #include <fstream>
-
-static std::vector<std::string> gLaunchArgs;
 
 void SetLaunchArgs(int argc, char* argv[])
 {
@@ -292,8 +291,9 @@ void Run()
     CreateMainRenderTextures();
     CreateAssistantRenderTextures();
 
-    kyslog("Initial lua script environment");
+    kyslog("Initial script environment");
     InitialScript();
+    InitialCifaScript();
     kyslog("Initial music");
     InitialMusic();
 
@@ -338,6 +338,7 @@ void Quit()
         SDL_CloseJoystick(joy);
     }
     DestroyAllTextures();
+    DestroyCifaScript();
     DestroyScript();
     TTF_CloseFont(Font);
     TTF_CloseFont(EngFont);
@@ -537,10 +538,6 @@ void ReadFiles()
     {
         ZIP_SAVE = 1;
     }
-    if (KDEF_SCRIPT == 2 && !filefunc::fileExist(AppPath + "script/event.imz"))
-    {
-        KDEF_SCRIPT = 1;
-    }
     if (DISABLE_MENU_AMI != 0)
     {
         DISABLE_MENU_AMI = 25;
@@ -711,11 +708,6 @@ void ReadFiles()
         }
     }
     SceneAmount = (MagicOffset - SceneOffset) / (int)sizeof(TScene);
-
-    if (KDEF_SCRIPT >= 2)
-    {
-        pEvent = ReadFileToBuffer(nullptr, AppPath + "script/event.imz", -1, 1);
-    }
 
     // 简繁转换
     if (cct2s)
@@ -3616,7 +3608,7 @@ void MenuEsc()
 {
     for (int i = 0; i < 4; i++)
     {
-        TitleMenu[i].x = CENTER_X + 220 + 60 * i;
+        TitleMenu[i].x = 10 + 60 * i;
         TitleMenu[i].y = 15;
         TitleMenu[i].w = 60;
         TitleMenu[i].h = 30;
@@ -6212,8 +6204,8 @@ void MenuSet()
     uint32 color1, color2, mixcolorl, mixcolorr;
     int mixalphal, mixalphar, arrowy, arrowlx, arrowrx;
 
-    maxmenu = 12;
-    std::string str[12] = {
+    maxmenu = 13;
+    std::string str[13] = {
         "音樂音量",
         "音效音量",
         "大地圖走路延遲",
@@ -6225,14 +6217,15 @@ void MenuSet()
         "觸屏走路",
         "物理震動",
         "半即時",
-        "擴展地面"
+        "擴展地面",
+        "文字分層"
     };
-    std::string str2[12];
+    std::string str2[13];
     std::string menuString[2] = {
         "取消",    // 取消
         "確定"     // 確定
     };
-    int Value[13];
+    int Value[14];
     Value[0] = VOLUME;
     Value[1] = VOLUMEWAV;
     Value[2] = WALK_SPEED;
@@ -6245,6 +6238,7 @@ void MenuSet()
     Value[9] = enable_haptic;
     Value[10] = SEMIREAL;
     Value[11] = EXPAND_GROUND;
+    Value[12] = TEXT_LAYER;
     Value[maxmenu] = 0;
 
     x = CENTER_X + 120;
@@ -6336,6 +6330,10 @@ void MenuSet()
                         str2[i] = (Value[i] == 0) ? "關閉" : "打開";
                     }
                     if (i == 11)
+                    {
+                        str2[i] = (Value[i] == 0) ? "關閉" : "打開";
+                    }
+                    if (i == 12)
                     {
                         str2[i] = (Value[i] == 0) ? "關閉" : "打開";
                     }
@@ -6497,6 +6495,10 @@ void MenuSet()
                     {
                         Value[11] = 1 - Value[11];
                     }
+                    if (MouseInRegion(x + 160 + 13, y + 5 + 12 * h0, 50, h0))
+                    {
+                        Value[12] = 1 - Value[12];
+                    }
                     leftright = 0;
                     valuechanged = 1;
                 }
@@ -6570,6 +6572,21 @@ void MenuSet()
         enable_haptic = Value[9];
         SEMIREAL = Value[10];
         EXPAND_GROUND = Value[11];
+        if (TEXT_LAYER != Value[12])
+        {
+            DestroyRenderTextures();
+            TEXT_LAYER = Value[12];
+            if (TEXT_LAYER == 1)
+            {
+                CreateAssistantRenderTextures();
+            }
+            else
+            {
+                TTF_CloseFont(Font);
+                TTF_CloseFont(EngFont);
+                SetFontSize(20, 18, -1);
+            }
+        }
 
         INIReaderNormal ini;
         ini.loadFile(iniFilename);
@@ -6585,6 +6602,7 @@ void MenuSet()
         ini.setKey("system", "enable_haptic", std::to_string(enable_haptic));
         ini.setKey("system", "SEMIREAL", std::to_string(SEMIREAL));
         ini.setKey("system", "EXPAND_GROUND", std::to_string(EXPAND_GROUND));
+        ini.setKey("system", "Text_Layer", std::to_string(TEXT_LAYER));
         ini.saveFile(iniFilename);
     }
 }
@@ -7164,24 +7182,22 @@ void CallEvent(int num)
         NeedRefreshScene = 1;
     };
 
+    std::string cifaFilename = AppPath + "script/event-cifa/" + std::to_string(num) + ".cifa";
+    if (filefunc::fileExist(cifaFilename))
+    {
+        kyslog("Enter cifa script %d", num);
+        ExecCifaScript(cifaFilename);
+        finishEvent();
+        return;
+    }
+
     if (KDEF_SCRIPT >= 1)
     {
-        if (KDEF_SCRIPT == 1)
-        {
-            std::string filename = AppPath + EventScriptPath + std::to_string(num) + EventScriptExt;
-            if (filefunc::fileExist(filename))
-            {
-                kyslog("Enter script %d", num);
-                ExecScript(filename);
-                finishEvent();
-                return;
-            }
-        }
-        else
+        std::string filename = AppPath + EventScriptPath + std::to_string(num) + EventScriptExt;
+        if (filefunc::fileExist(filename))
         {
             kyslog("Enter script %d", num);
-            std::string script = LoadStringFromIMZMEM(AppPath + "script/event/", pEvent, num);
-            ExecScriptString(script);
+            ExecScript(filename);
             finishEvent();
             return;
         }

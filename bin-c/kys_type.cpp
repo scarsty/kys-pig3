@@ -4,12 +4,12 @@
 #include "kys_type.h"
 
 // 大地图数据
-int16_t Earth[480][480] = {};
-int16_t Surface[480][480] = {};
-int16_t Building[480][480] = {};
-int16_t BuildX[480][480] = {};
-int16_t BuildY[480][480] = {};
-int16_t Entrance[480][480] = {};
+int16_t Earth[MAIN_MAP_SIZE][MAIN_MAP_SIZE] = {};
+int16_t Surface[MAIN_MAP_SIZE][MAIN_MAP_SIZE] = {};
+int16_t Building[MAIN_MAP_SIZE][MAIN_MAP_SIZE] = {};
+int16_t BuildX[MAIN_MAP_SIZE][MAIN_MAP_SIZE] = {};
+int16_t BuildY[MAIN_MAP_SIZE][MAIN_MAP_SIZE] = {};
+int16_t Entrance[MAIN_MAP_SIZE][MAIN_MAP_SIZE] = {};
 
 // 角色/物品/场景/武功/商店
 // Pascal的[-1..1000]中[-1]为缓冲, 数据从[0]开始
@@ -20,11 +20,11 @@ TMagic Rmagic[1002] = {}, Rmagic0[1002] = {};
 TShop RShop[22] = {}, RShop0[22] = {};
 
 // 场景/事件数据
-int16_t SData[401][6][64][64] = {};
+int16_t SData[401][6][SCENE_MAP_SIZE][SCENE_MAP_SIZE] = {};
 int16_t DData[401][200][11] = {};
 
 // 战场地图
-int16_t BField[10][64][64] = {};
+int16_t BField[10][SCENE_MAP_SIZE][SCENE_MAP_SIZE] = {};
 TWarData WarStaList[401] = {};
 
 // 扩展指令50变量
