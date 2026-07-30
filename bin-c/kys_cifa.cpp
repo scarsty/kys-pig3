@@ -337,58 +337,58 @@ void RegisterCifaFunctions(cifa::Cifa& c)
     R("judgesceneevent", [](ObjectVector& args) -> Object { return cifa_bool(DData[CurScene][cifa_arg_int(args, 0)][2 + cifa_arg_int(args, 1)] == cifa_arg_int(args, 2)); });
     R("compareprointeam", [](ObjectVector& args) -> Object { int count = 0; int datalist = cifa_arg_int(args, 0); int value = cifa_arg_int(args, 1); for (int i = 0; i < 6; i++) if (Rrole[TeamList[i]].Data[datalist] == value) count++; return Object(count); });
     R("instruct_50", [](ObjectVector& args) -> Object { std::vector<int> x(7); for (size_t i = 0; i < 7 && i < args.size(); i++) x[i] = cifa_arg_int(args, i); int result = instruct_50(x); return cifa_bool(result == x[5]); });
-    R50("x50_set", 0);
-    R50("x50_array_set", 1);
-    R50("x50_array_get", 2);
-    R50("x50_math", 3);
-    R50("x50_compare", 4);
-    R50("x50_clear", 5);
-    R50("dialog_to_x50", 8);
-    R50("format_x50", 9);
-    R50("string_length_x50", 10);
-    R50("concat_x50", 11);
-    R50("spaces_x50", 12);
-    R50("record_field_set", 16);
-    R50("record_field_get", 17);
-    R50("team_member_set", 18);
-    R50("team_member_get", 19);
-    R50("item_amount_to_x50", 20);
-    R50("scene_event_field_set", 21);
-    R50("scene_event_field_get", 22);
-    R50("scene_map_field_set", 23);
-    R50("scene_map_field_get", 24);
-    R50("legacy_memory_set", 25);
-    R50("legacy_memory_get", 26);
-    R50("record_name_to_x50", 27);
-    R50("battle_number_to_x50", 28);
-    R50("battle_target_to_x50", 29);
-    R50("battle_field_get", 30);
-    R50("battle_field_set", 31);
-    R50("legacy_next_instruction", 32);
-    R50("draw_x50_text", 33);
-    R50("draw_x50_rect", 34);
-    R50("key_to_x50", 35);
-    R50("confirm_x50_text", 36);
-    R50("legacy_delay", 37);
-    R50("random_to_x50", 38);
-    R50("menu_to_x50", 39);
-    R50("scroll_menu_to_x50", 40);
-    R50("draw_legacy_picture", 41);
-    R50("main_map_position_set", 42);
-    R50("legacy_event_call", 43);
-    R50("battle_animation", 44);
-    R50("battle_hurt_value", 45);
-    R50("battle_effect_set", 46);
-    R50("redraw_scene", 47);
-    R50("legacy_debug", 48);
-    R50("legacy_pe", 49);
-    R50("record_name_input", 50);
-    R50("number_to_x50", 51);
-    R50("magic_check_to_jump", 52);
-    R50("role_attribute_add", 53);
-    R50("walk_picture_set", 54);
-    R50("movie_play", 55);
-    R50("legacy_script_call", 60);
+    R50("setx50value", 0);
+    R50("setx50array", 1);
+    R50("getx50array", 2);
+    R50("calcx50", 3);
+    R50("comparex50", 4);
+    R50("clearx50all", 5);
+    R50("gettalk", 8);
+    R50("format", 9);
+    R50("stringlength", 10);
+    R50("concat", 11);
+    R50("spaces", 12);
+    R50("setr", 16);
+    R50("getr", 17);
+    R50("teamset", 18);
+    R50("teamget", 19);
+    R50("itemamount", 20);
+    R50("dset", 21);
+    R50("dget", 22);
+    R50("sset", 23);
+    R50("sget", 24);
+    R50("memoryset", 25);
+    R50("memoryget", 26);
+    R50("getname", 27);
+    R50("battlenumber", 28);
+    R50("selectaim", 29);
+    R50("battlefieldget", 30);
+    R50("battlefieldset", 31);
+    R50("setnextarg", 32);
+    R50("drawstring", 33);
+    R50("drawrect50", 34);
+    R50("keytox50", 35);
+    R50("showmessage", 36);
+    R50("delay50", 37);
+    R50("randomtox50", 38);
+    R50("menutox50", 39);
+    R50("scrollmenu", 40);
+    R50("drawpicture50", 41);
+    R50("mainmappositionset", 42);
+    R50("eventcall", 43);
+    R50("battleanimation", 44);
+    R50("showhurtvalue", 45);
+    R50("seteffect", 46);
+    R50("redraw", 47);
+    R50("debug", 48);
+    R50("pe", 49);
+    R50("entername", 50);
+    R50("inputnumber", 51);
+    R50("havemagic", 52);
+    R50("roleattributeadd", 53);
+    R50("walkpictureset", 54);
+    R50("movieplay", 55);
+    R50("scriptcall", 60);
     R("setjumpflag", [](ObjectVector& args) -> Object { x50[0x7000] = cifa_arg_int(args, 0) ? 0 : 1; return Object(); });
     R("checkjumpflag", [](ObjectVector&) -> Object { return cifa_bool(x50[0x7000] == 0); });
 
@@ -467,6 +467,7 @@ void RegisterCifaFunctions(cifa::Cifa& c)
 void InitialCifaScript()
 {
     cifa_script = cifa::Cifa();
+    cifa_script.set_output_error(false);
     cifa_script.set_include_dirs({ AppPath + "script", AppPath + "script/event", AppPath + "script/event-cifa" });
     RegisterCifaFunctions(cifa_script);
 }
@@ -512,19 +513,32 @@ void ExecCifaScript(const std::string& filename, const std::string& functionname
 
 void ExecCifaScriptString(const std::string& script, const std::string& functionname)
 {
+    static thread_local int callDepth = 0;
+    struct CallDepthGuard
+    {
+        CallDepthGuard() { ++callDepth; }
+        ~CallDepthGuard() { --callDepth; }
+    } callDepthGuard;
+
     std::string code = NormalizeCifaScript(script);
-    Object result = cifa_script.run_nested_script(code);
+    Object result = cifa_script.run_script(code);
     if (cifa_script.has_error())
     {
-        kyslog("%s", cifa_script.get_errors_str().c_str());
+        if (callDepth == 1)
+        {
+            kyslog("%s", cifa_script.get_errors_str().c_str());
+        }
         return;
     }
     if (!functionname.empty())
     {
-        cifa_script.run_nested_script(NormalizeCifaScript(functionname + "();"));
+        cifa_script.run_script(NormalizeCifaScript(functionname + "();"));
         if (cifa_script.has_error())
         {
-            kyslog("%s", cifa_script.get_errors_str().c_str());
+            if (callDepth == 1)
+            {
+                kyslog("%s", cifa_script.get_errors_str().c_str());
+            }
         }
     }
 }

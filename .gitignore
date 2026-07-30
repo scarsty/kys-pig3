@@ -131,3 +131,4 @@ bin-pas/backup
 tools/__pycache__
 game/exported_ground_maps
 game/script/event-cifa
+game0/script/event-cifa

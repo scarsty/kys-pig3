@@ -63,6 +63,14 @@ bool RenderGroundTexture(SDL_Texture* texture, int logicalWidth, int logicalHeig
     return true;
 }
 
+bool IsGroundOnlySPic(int num)
+{
+    return (num >= 0 && num <= 232)
+        || (num >= 261 && num <= 399)
+        || (num >= 511 && num <= 592)
+        || (num >= 609 && num <= 698);
+}
+
 bool RenderSceneGround(std::vector<SDL_Texture*>& textures, const std::string& folder, int mapId, int x, int y)
 {
     GroundArchive& archive = folder == "smap-earth" ? sceneGroundArchive : battleGroundArchive;
@@ -74,7 +82,7 @@ bool RenderSceneGround(std::vector<SDL_Texture*>& textures, const std::string& f
     return RenderGroundTexture(texture, TILE_W_0 * SCENE_MAP_SIZE * 2, TILE_H_0 * SCENE_MAP_SIZE * 2, centerX, centerY);
 }
 
-void RenderMainGround(int x, int y)
+bool RenderMainGround(int x, int y)
 {
     const int centerX = -x * TILE_W_0 + y * TILE_W_0 + TILE_W_0 * MAIN_MAP_SIZE;
     const int centerY = x * TILE_H_0 + y * TILE_H_0 + 17;
@@ -90,8 +98,9 @@ void RenderMainGround(int x, int y)
     const int lastRow = std::min(7, (sourceBottom - 1) / tileHeight);
     if (firstColumn > lastColumn || firstRow > lastRow)
     {
-        return;
+        return false;
     }
+    bool hasGround = true;
     for (int row = firstRow; row <= lastRow; row++)
     {
         for (int column = firstColumn; column <= lastColumn; column++)
@@ -102,6 +111,7 @@ void RenderMainGround(int x, int y)
                 std::to_string(tileId), mainGroundArchive);
             if (!texture)
             {
+                hasGround = false;
                 continue;
             }
             const int tileLeft = column * tileWidth;
@@ -116,6 +126,7 @@ void RenderMainGround(int x, int y)
             SDL_RenderTexture(render, texture, &source, &destination);
         }
     }
+    return hasGround;
 }
 void DestroySceneGroundTextures()
 {
@@ -338,7 +349,7 @@ void DrawMMap()
     TBuildInfo BuildArray[2001];
     int widthregion = CENTER_X / (TILE_W * 2) + 3;
     int sumregion = CENTER_Y / TILE_H + 2;
-    RenderMainGround(Mx, My);
+    const bool hasGround = RenderMainGround(Mx, My);
     for (int sum = -sumregion; sum <= sumregion + 15; sum++)
     {
         for (int i = -widthregion; i <= widthregion; i++)
@@ -353,7 +364,7 @@ void DrawMMap()
 
             if (i1 >= 0 && i1 < 480 && i2 >= 0 && i2 < 480)
             {
-                if (BIG_PNG_TILE == 0)
+                if (!hasGround && BIG_PNG_TILE == 0)
                 {
                     if (MPNGIndex[Earth[i1][i2] / 2].Frame > 1)
                     {
@@ -474,7 +485,10 @@ void DrawScene()
                 if (SData[CurScene][1][i1][i2] > 0)
                 {
                     int num = SData[CurScene][1][i1][i2] / 2;
-                    DrawSPic(num, pos.x, pos.y - SData[CurScene][4][i1][i2]);
+                    if (SData[CurScene][4][i1][i2] != 0 || !IsGroundOnlySPic(num))
+                    {
+                        DrawSPic(num, pos.x, pos.y - SData[CurScene][4][i1][i2]);
+                    }
                 }
                 if (ShowMR && i1 == Sx && i2 == Sy)
                 {
@@ -483,7 +497,10 @@ void DrawScene()
                 if (SData[CurScene][2][i1][i2] > 0)
                 {
                     int num = SData[CurScene][2][i1][i2] / 2;
-                    DrawSPic(num, pos.x, pos.y - SData[CurScene][5][i1][i2]);
+                    if (SData[CurScene][5][i1][i2] != 0 || !IsGroundOnlySPic(num))
+                    {
+                        DrawSPic(num, pos.x, pos.y - SData[CurScene][5][i1][i2]);
+                    }
                 }
                 if (SData[CurScene][3][i1][i2] >= 0)
                 {
@@ -695,7 +712,7 @@ void DrawBField()
                 int num = ExGroundB[i1][i2] / 2;
 
                 // 重画闪烁的地面贴图
-                if (num > 0 && SPNGIndex[num].Frame > 1)
+                if (!hasGround && num > 0 && SPNGIndex[num].Frame > 1)
                 {
                     DrawSPic(num, pos.x, pos.y);
                 }
