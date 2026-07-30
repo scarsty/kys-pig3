@@ -319,7 +319,7 @@ void ExecScriptString(const std::string& script, const std::string& functionname
     }
     if (result != 0)
     {
-        kyslog("%s", lua_tostring(lua_script, -1));
+        kyslog("{}", lua_tostring(lua_script, -1));
         lua_pop(lua_script, 1);
     }
 }

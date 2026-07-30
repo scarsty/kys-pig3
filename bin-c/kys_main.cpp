@@ -214,7 +214,7 @@ void Run()
         AppPath += gLaunchArgs[0] + "/";
     }
 
-    kyslog("AppPath: %s", AppPath.c_str());
+    kyslog("AppPath: {}", AppPath);
 
     ReadFiles();
     SetMODVersion();
@@ -256,7 +256,7 @@ void Run()
         TEXT_LAYER = 0;
     }
 
-    kyslog("Creating window with width and height %d and %d", RESOLUTIONX, RESOLUTIONY);
+    kyslog("Creating window with width and height {} and {}", RESOLUTIONX, RESOLUTIONY);
     window = SDL_CreateWindow(TitleString.c_str(), RESOLUTIONX, RESOLUTIONY, WindowFlag);
     SDL_GetWindowSize(window, &RESOLUTIONX, &RESOLUTIONY);
 
@@ -264,7 +264,7 @@ void Run()
     {
         SDL_Rect rect;
         SDL_GetDisplayBounds(0, &rect);
-        kyslog("Width and height of the window is %d, %d", RESOLUTIONX, RESOLUTIONY);
+        kyslog("Width and height of the window is {}, {}", RESOLUTIONX, RESOLUTIONY);
         if (RESOLUTIONY > RESOLUTIONX)
         {
             ScreenRotate = 0;
@@ -277,7 +277,7 @@ void Run()
     SDL_RenderClear(render);
     SDL_RenderPresent(render);
 
-    kyslog("Text will be drawn on single layer: %d", TEXT_LAYER);
+    kyslog("Text will be drawn on single layer: {}", TEXT_LAYER);
 
     ImageWidth = (TILE_W * 2 * 32 + CENTER_X) * 2;
     ImageHeight = (TILE_H * 2 * 32 + CENTER_Y) * 2;
@@ -315,7 +315,7 @@ void Run()
         if (haptics != nullptr)
         {
             haptic = SDL_OpenHaptic(*haptics);
-            kyslog("Initial haptic %p", (void*)haptic);
+            kyslog("Initial haptic {}", (void*)haptic);
             SDL_InitHapticRumble(haptic);
         }
     }
@@ -360,7 +360,8 @@ void SetMODVersion()
     ASound.resize(99, nullptr);
 
     StartMusic = 59;
-    TitleString = "Legend of Little Village III - 108 Brothers and Sisters (c++)";
+    versionstr = "108 Brothers and Sisters (c++) v15";
+    TitleString = "Legend of Little Village III - " + versionstr;
 
     OpenPicPosition.x = 0;
     OpenPicPosition.y = 0;
@@ -456,7 +457,7 @@ void ReadFiles()
 
     INIReaderNormal ini;
     ini.loadFile(iniFilename);
-    kyslog("Find ini file: %s", iniFilename.c_str());
+    kyslog("Find ini file: {}", iniFilename);
 
     if (CellPhone == 0)
     {
@@ -7185,7 +7186,7 @@ void CallEvent(int num)
     std::string cifaFilename = AppPath + "script/event-cifa/" + std::to_string(num) + ".cifa";
     if (filefunc::fileExist(cifaFilename))
     {
-        kyslog("Enter cifa script %d", num);
+        kyslog("Enter cifa script {}", num);
         ExecCifaScript(cifaFilename);
         finishEvent();
         return;
@@ -7196,7 +7197,7 @@ void CallEvent(int num)
         std::string filename = AppPath + EventScriptPath + std::to_string(num) + EventScriptExt;
         if (filefunc::fileExist(filename))
         {
-            kyslog("Enter script %d", num);
+            kyslog("Enter script {}", num);
             ExecScript(filename);
             finishEvent();
             return;
@@ -7215,7 +7216,7 @@ void CallEvent(int num)
         }
         std::vector<int16_t> e(len / 2 + 1, 0);
         memcpy(e.data(), &KDEF.GRP[offset], len);
-        kyslog("Event %d", num);
+        kyslog("Event {}", num);
         int i = 0;
         int elen = (int)e.size();
         bool stopEvent = false;

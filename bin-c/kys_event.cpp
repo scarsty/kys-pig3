@@ -1644,7 +1644,7 @@ int instruct_50e(int code, int e1, int e2, int e3, int e4, int e5, int e6)
         x50[0x7101] = e4;
         x50[0x7102] = e5;
         x50[0x7103] = e6;
-        kyslog("Call another event or special process, the code is %d-%d %d %d %d", e2, e3, e4, e5, e6);
+        kyslog("Call another event or special process, the code is {}-{} {} {} {}", e2, e3, e4, e5, e6);
         switch (e2)
         {
         case 201: NewTalk(e3, e4, e5, e6 % 100, (e6 % 100) / 10, e6 / 100, 0); break;
@@ -3176,7 +3176,7 @@ void ExchangePic(int p1, int p2)
 bool WoodMan(int Chamber)
 {
     Redraw();
-    bool result = true;
+    bool result = false;
     int x = 80, y = 90;
     int eface1 = 0, eface2 = 0, roleface = 0, position = 0;
     int picnum = 4714;
@@ -3188,7 +3188,11 @@ bool WoodMan(int Chamber)
     FreeFileBuffer(p);
     LoadOnePNGTexture("resource/smap", pSPic, SPNGIndex[picnum]);
     WoodPic = SPNGIndex[picnum].Pointers[0];
-    if (!WoodPic) return true;
+    if (!WoodPic)
+    {
+        kyslog("WoodMan: failed to load puzzle texture {}", picnum);
+        return false;
+    }
 
     auto drawScene = [&]()
     {
@@ -3764,7 +3768,7 @@ int CorrectMagic(int rnum)
     {
         if (Rrole[rnum].Magic[i1] > 0 && Rmagic[Rrole[rnum].Magic[i1]].HurtType == 3)
         {
-            kyslog("Role %d, magic %d", rnum, i1);
+            kyslog("Role {}, magic {}", rnum, i1);
             for (int i2 = 0; i2 < 4; i2++)
             {
                 if (Rrole[rnum].NeiGong[i2] == Rrole[rnum].Magic[i1]) break;
@@ -3783,7 +3787,7 @@ int CorrectMagic(int rnum)
     {
         if (Rrole[rnum].NeiGong[i1] > 0 && Rmagic[Rrole[rnum].NeiGong[i1]].HurtType != 3)
         {
-            kyslog("Role %d, inner magic %d", rnum, i1);
+            kyslog("Role {}, inner magic {}", rnum, i1);
             for (int i2 = 0; i2 < 10; i2++)
             {
                 if (Rrole[rnum].Magic[i2] == Rrole[rnum].NeiGong[i1]) break;

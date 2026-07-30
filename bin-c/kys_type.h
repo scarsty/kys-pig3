@@ -8,8 +8,10 @@
 #include "Cifa.h"
 #include "ZipFile2.h"
 #include <cstdint>
+#include <format>
 #include <map>
 #include <string>
+#include <utility>
 #include <vector>
 
 // Forward declarations
@@ -529,7 +531,7 @@ inline std::string MovieName;
 
 inline int BasicOffset = 0, RoleOffset = 0, ItemOffset = 0, SceneOffset = 0, MagicOffset = 0, WeiShopOffset = 0, LenR = 0;
 
-inline std::string versionstr = "  108 Brothers and Sisters (c++) v13";
+inline std::string versionstr ;
 
 inline std::vector<std::string> BattleNames, loverstrs, statestrs;
 
@@ -656,10 +658,9 @@ inline void GetRGBA(uint32 color, uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a
     *b = color & 0xFF;
 }
 
-inline void kyslog(const char* fmt, ...)
+template <typename... Args>
+inline void kyslog(std::format_string<Args...> fmt, Args&&... args)
 {
-    va_list args;
-    va_start(args, fmt);
-    SDL_LogMessageV(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, fmt, args);
-    va_end(args);
+    std::string message = std::format(fmt, std::forward<Args>(args)...);
+    SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "%s", message.c_str());
 }

@@ -71,6 +71,11 @@ bool IsGroundOnlySPic(int num)
         || (num >= 609 && num <= 698);
 }
 
+int ScaleSceneHeight(int height)
+{
+    return height * TILE_H / TILE_H_0;
+}
+
 bool RenderSceneGround(std::vector<SDL_Texture*>& textures, const std::string& folder, int mapId, int x, int y)
 {
     GroundArchive& archive = folder == "smap-earth" ? sceneGroundArchive : battleGroundArchive;
@@ -487,19 +492,19 @@ void DrawScene()
                     int num = SData[CurScene][1][i1][i2] / 2;
                     if (SData[CurScene][4][i1][i2] != 0 || !IsGroundOnlySPic(num))
                     {
-                        DrawSPic(num, pos.x, pos.y - SData[CurScene][4][i1][i2]);
+                        DrawSPic(num, pos.x, pos.y - ScaleSceneHeight(SData[CurScene][4][i1][i2]));
                     }
                 }
                 if (ShowMR && i1 == Sx && i2 == Sy)
                 {
-                    DrawSPic(CurSceneRolePic, pos.x, pos.y - SData[CurScene][4][i1][i2]);
+                    DrawSPic(CurSceneRolePic, pos.x, pos.y - ScaleSceneHeight(SData[CurScene][4][i1][i2]));
                 }
                 if (SData[CurScene][2][i1][i2] > 0)
                 {
                     int num = SData[CurScene][2][i1][i2] / 2;
                     if (SData[CurScene][5][i1][i2] != 0 || !IsGroundOnlySPic(num))
                     {
-                        DrawSPic(num, pos.x, pos.y - SData[CurScene][5][i1][i2]);
+                        DrawSPic(num, pos.x, pos.y - ScaleSceneHeight(SData[CurScene][5][i1][i2]));
                     }
                 }
                 if (SData[CurScene][3][i1][i2] >= 0)
@@ -507,7 +512,7 @@ void DrawScene()
                     int num = DData[CurScene][SData[CurScene][3][i1][i2]][5] / 2;
                     if (num > 0)
                     {
-                        DrawSPic(num, pos.x, pos.y - SData[CurScene][4][i1][i2]);
+                        DrawSPic(num, pos.x, pos.y - ScaleSceneHeight(SData[CurScene][4][i1][i2]));
                     }
                 }
             }

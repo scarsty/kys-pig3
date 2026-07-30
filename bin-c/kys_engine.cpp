@@ -1565,7 +1565,7 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
     // 尝试从zip加载
     if (PNG_TILE == 2)
     {
-        kyslog("Searching file %s.zip", (path).c_str());
+        kyslog("Searching file {}.zip", path);
         zip.openRead(AppPath + path + ".zip");
         if (zip.opened())
         {
@@ -1656,7 +1656,7 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
     // 从文件夹加载 (PNG_TILE==1 或 zip打开失败)
     if (PNG_TILE == 1 || !zip.opened())
     {
-        kyslog("Searching index of png files %s/index.txt", (path).c_str());
+        kyslog("Searching index of png files {}/index.txt", path);
         localpath = path + "/";
 
         // fightframe.txt
@@ -1680,7 +1680,7 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
         }
         else
         {
-            kyslog("index.txt not found, fallback to %s/index.ka", (path).c_str());
+            kyslog("index.txt not found, fallback to {}/index.ka", path);
             std::string data = filefunc::readFileToString(AppPath + localpath + "index.ka");
             offset.resize(data.size() / 2 + 2, 0);
             if (!data.empty())
@@ -1741,7 +1741,7 @@ int LoadPNGTiles(const std::string& path, TPNGIndexArray& PNGIndexArray, int Loa
         PNGIndexArray.resize(result);
     }
 
-    kyslog("%d index, %d real tiles", result, count);
+    kyslog("{} index, {} real tiles", result, count);
 
     if (LoadPic == 1)
     {
@@ -2083,6 +2083,9 @@ bool PlayMovie(const std::string& filename)
 #ifndef KYS_NO_MOVIE
     if (smallpot != nullptr)
     {
+        DrawRectangleWithoutFrame(0, 0, CENTER_X * 2, CENTER_Y * 2, 0, 255);
+        CleanTextScreen();
+        UpdateAllScreen();
         PotPlayVideo(smallpot, (char*)filename.c_str(), VOLUME / 100.0f);
         return true;
     }
@@ -2628,7 +2631,7 @@ void QuickSortB(TBuildInfo* a, int l, int r)
 }
 
 void tic() { tic_time = SDL_GetTicks(); }
-void toc() { kyslog("Time elapsed: %d ms", SDL_GetTicks() - tic_time); }
+void toc() { kyslog("Time elapsed: {} ms", SDL_GetTicks() - tic_time); }
 
 std::string readFiletostring(const std::string& filename)
 {

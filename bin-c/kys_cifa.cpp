@@ -526,7 +526,7 @@ void ExecCifaScriptString(const std::string& script, const std::string& function
     {
         if (callDepth == 1)
         {
-            kyslog("%s", cifa_script.get_errors_str().c_str());
+            kyslog("{}", cifa_script.get_errors_str());
         }
         return;
     }
@@ -537,7 +537,7 @@ void ExecCifaScriptString(const std::string& script, const std::string& function
         {
             if (callDepth == 1)
             {
-                kyslog("%s", cifa_script.get_errors_str().c_str());
+                kyslog("{}", cifa_script.get_errors_str());
             }
         }
     }

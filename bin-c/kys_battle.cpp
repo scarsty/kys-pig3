@@ -33,6 +33,7 @@ bool Battle(int battlenum, int getexp, int forceSingle)
         Brole[i].alpha = 255;
 
     bool autoselect = InitialBField();
+    kyslog("Battle {}, battle field {}", battlenum, WarSta.BFieldNum);
 
     Redraw();
     TransBlackScreen();
@@ -4358,7 +4359,7 @@ bool UseSpecialAbility(int bnum, int mnum, int level)
     default: return false;
     }
     (sa.*func)(bnum, mnum, level);
-    kyslog("Use Special Ability %d, level %d", mnum, level);
+    kyslog("Use Special Ability {}, level {}", mnum, level);
     return true;
 }
 
@@ -5865,7 +5866,7 @@ void TSpecialAbility::SA_31(int bnum, int mnum, int level)
                         for (int pad = namelen; pad < 10; pad++) namemagic += ' ';
                         namemagic += std::string((char*)Rmagic[Rrole[Brole[i].rnum].Magic[i1]].Name);
                         menuString[amount] = namemagic;
-                        kyslog("%s", menuString[amount].c_str());
+                        kyslog("{}", menuString[amount]);
                         amount++;
                     }
                 }
@@ -5892,7 +5893,7 @@ void TSpecialAbility::SA_31(int bnum, int mnum, int level)
                         for (int pad = namelen; pad < 10; pad++) namemagic += ' ';
                         namemagic += std::string((char*)Rmagic[Rrole[rn].Magic[0]].Name);
                         menuString[amount] = namemagic;
-                        kyslog("%s", menuString[amount].c_str());
+                        kyslog("{}", menuString[amount]);
                         amount++;
                     }
                 }
