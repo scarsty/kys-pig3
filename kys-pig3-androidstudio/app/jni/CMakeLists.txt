@@ -15,6 +15,12 @@ if(NOT DEFINED MLCC_PATH OR MLCC_PATH STREQUAL "")
     endif()
 endif()
 
+if(NOT DEFINED CIFA_PATH OR CIFA_PATH STREQUAL "")
+    if(EXISTS "C:/project/cifa/Cifa.cpp")
+        set(CIFA_PATH "C:/project/cifa")
+    endif()
+endif()
+
 if(NOT DEFINED VCPKG_INSTALLED OR VCPKG_INSTALLED STREQUAL "")
     if(DEFINED ENV{VCPKG_INSTALLED} AND NOT "$ENV{VCPKG_INSTALLED}" STREQUAL "")
         set(VCPKG_INSTALLED "$ENV{VCPKG_INSTALLED}")
@@ -25,6 +31,10 @@ endif()
 
 if(NOT EXISTS "${MLCC_PATH}/filefunc.cpp")
     message(FATAL_ERROR "MLCC_PATH is invalid. Pass -DMLCC_PATH=<path> (must contain filefunc.cpp).")
+endif()
+
+if(NOT EXISTS "${CIFA_PATH}/Cifa.cpp")
+    message(FATAL_ERROR "CIFA_PATH is invalid. Pass -DCIFA_PATH=<path> (must contain Cifa.cpp).")
 endif()
 
 if(NOT EXISTS "${VCPKG_INSTALLED}/lib")
@@ -50,6 +60,7 @@ set(GAME_SOURCES
     ${BIN_C_PATH}/kys_event.cpp
     ${BIN_C_PATH}/kys_battle.cpp
     ${BIN_C_PATH}/kys_script.cpp
+    ${BIN_C_PATH}/kys_cifa.cpp
 )
 
 # --- mlcc 基础库源文件 (strcvt仅Windows, 不参与Android编译) ---
@@ -60,12 +71,17 @@ set(MLCC_SOURCES
     ${MLCC_PATH}/SimpleCC.cpp
 )
 
+set(CIFA_SOURCES
+    ${CIFA_PATH}/Cifa.cpp
+)
+
 # --- 构建共享库 ---
-add_library(kys_pig3_c SHARED ${GAME_SOURCES} ${MLCC_SOURCES})
+add_library(kys_pig3_c SHARED ${GAME_SOURCES} ${MLCC_SOURCES} ${CIFA_SOURCES})
 
 target_include_directories(kys_pig3_c PRIVATE
     ${BIN_C_PATH}
     ${MLCC_PATH}
+    ${CIFA_PATH}
 )
 target_include_directories(kys_pig3_c SYSTEM PRIVATE
     ${VCPKG_INSTALLED}/include

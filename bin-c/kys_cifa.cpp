@@ -121,6 +121,21 @@ void RegisterCifaFunctions(cifa::Cifa& c)
     R("getscreensize", [](ObjectVector&) -> Object { return cifa_array({ Object(CENTER_X * 2), Object(CENTER_Y * 2) }); });
     R("getcurrentscene", [](ObjectVector&) -> Object { return Object(CurScene); });
     R("getcurrentevent", [](ObjectVector&) -> Object { return Object(CurEvent); });
+    R("getscenex", [](ObjectVector&) -> Object { return Object(Sx); });
+    R("getsceney", [](ObjectVector&) -> Object { return Object(Sy); });
+    R("setscenex", [](ObjectVector& args) -> Object { Sx = cifa_arg_int(args, 0); return Object(); });
+    R("setsceney", [](ObjectVector& args) -> Object { Sy = cifa_arg_int(args, 0); return Object(); });
+    R("setspecialcurrentscene", [](ObjectVector& args) -> Object { CurScene = cifa_arg_int(args, 0); InitialScene(); return Object(); });
+    R("getmapx", [](ObjectVector&) -> Object { return Object(Mx); });
+    R("getmapy", [](ObjectVector&) -> Object { return Object(My); });
+    R("getbattlecursorx", [](ObjectVector&) -> Object { return Object(Ax); });
+    R("getbattlecursory", [](ObjectVector&) -> Object { return Object(Ay); });
+    R("getbattleactor", [](ObjectVector&) -> Object { return Object(x50[28100]); });
+    R("getbattletick", [](ObjectVector&) -> Object { return Object(SDL_GetTicks() / 55 % 65536); });
+    R("getbattlefieldcell", [](ObjectVector& args) -> Object { int offset = cifa_arg_int(args, 0); int index = offset / 2; return Object(BField[2][index % 64][index / 64]); });
+    R("getitemlistfield", [](ObjectVector& args) -> Object { int offset = cifa_arg_int(args, 0); const TItemList& item = RItemList[offset / 4]; return Object(offset % 4 <= 1 ? item.Number : item.Amount); });
+    R("setitemlistfield", [](ObjectVector& args) -> Object { int offset = cifa_arg_int(args, 0); TItemList& item = RItemList[offset / 4]; if (offset % 4 <= 1) item.Number = cifa_arg_int(args, 1); else item.Amount = cifa_arg_int(args, 1); return Object(); });
+    R("setpaletteword", [](ObjectVector& args) -> Object { int offset = cifa_arg_int(args, 0); int value = cifa_arg_int(args, 1); ACol[offset] = value % 256; ACol[offset + 1] = value / 256; ACol1[offset] = ACol[offset]; ACol1[offset + 1] = ACol[offset + 1]; ACol2[offset] = ACol[offset]; ACol2[offset + 1] = ACol[offset + 1]; return Object(); });
 
     R("talk", [](ObjectVector& args) -> Object {
         int nums[6] = { -1, -2, -2, 0, 0, 0 };
@@ -344,7 +359,7 @@ void RegisterCifaFunctions(cifa::Cifa& c)
     R50("comparex50", 4);
     R50("clearx50all", 5);
     R50("gettalk", 8);
-    R50("format", 9);
+    R50("format50", 9);
     R50("stringlength", 10);
     R50("concat", 11);
     R50("spaces", 12);
@@ -357,8 +372,6 @@ void RegisterCifaFunctions(cifa::Cifa& c)
     R50("dget", 22);
     R50("sset", 23);
     R50("sget", 24);
-    R50("memoryset", 25);
-    R50("memoryget", 26);
     R50("getname", 27);
     R50("battlenumber", 28);
     R50("selectaim", 29);
@@ -459,9 +472,6 @@ void RegisterCifaFunctions(cifa::Cifa& c)
     R("setwalkpicture", [](ObjectVector& args) -> Object { BEGIN_WALKPIC = cifa_arg_int(args, 0); BEGIN_WALKPIC2 = cifa_arg_int(args, 1); return Object(); });
     R("callscript", [](ObjectVector& args) -> Object { ExecScript(std::format("{}script/{}.lua", AppPath, cifa_arg_int(args, 0)), std::format("f{}", cifa_arg_int(args, 1))); return Object(); });
     R("callevent", [](ObjectVector& args) -> Object { return Object(instruct_50e(43, 0, cifa_arg_int(args, 0), cifa_arg_int(args, 1), cifa_arg_int(args, 2), cifa_arg_int(args, 3), cifa_arg_int(args, 4))); });
-    R("read_mem", [](ObjectVector& args) -> Object { int x = cifa_arg_int(args, 0); instruct_50e(26, 0, 0, x % 65536, x / 65536, 9999, 0); return Object(x50[9999]); });
-    R("write_mem", [](ObjectVector& args) -> Object { int x = cifa_arg_int(args, 0); x50[9999] = cifa_arg_int(args, 1); instruct_50e(25, 1, 0, x % 65536, x / 65536, 9999, 0); return Object(); });
-
 }
 
 void InitialCifaScript()

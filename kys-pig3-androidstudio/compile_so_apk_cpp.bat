@@ -53,7 +53,9 @@ if not exist "%ADB%" (
 if not errorlevel 1 (
     echo [INFO] 检测到设备，安装并启动...
     "%ADB%" install -r "%APK_PATH%"
+    if errorlevel 1 ( echo [ERROR] APK 安装失败! ^& exit /b 1 )
     "%ADB%" shell am start -n org.libsdl.kys_pig3/org.libsdl.app.SDLActivity
+    if errorlevel 1 ( echo [ERROR] APK 启动失败! ^& exit /b 1 )
 ) else (
     echo [INFO] 未检测到设备，跳过安装
 )
