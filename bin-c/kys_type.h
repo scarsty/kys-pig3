@@ -416,7 +416,8 @@ inline int ExitSceneMusicNum = 0;
 inline int NowMusic = -1;
 inline MIX_Mixer* gMixer = nullptr;
 inline MIX_Track* MusicTrack = nullptr;
-inline MIX_Track* SfxTracks[10] = {};
+constexpr int SfxTrackCount = 32;
+inline MIX_Track* SfxTracks[SfxTrackCount] = {};
 inline int SfxNextTrack = 0;
 
 // 事件和脚本
@@ -478,6 +479,7 @@ inline int16_t ItemList[969] = {};
 inline int BATTLE_SPEED = 10;
 inline int EFFECT_STRING = 0;
 inline int SIMPLE = 0;
+inline int CAVE_OVERLAY = 1;
 inline bool LoadingScene = false;
 
 inline int16_t LastShowScene = -1;

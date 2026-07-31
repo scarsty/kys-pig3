@@ -178,12 +178,19 @@ static MIX_Track* AcquireSfxTrack(MIX_Audio* audio)
     {
         return nullptr;
     }
+
     int idx = SfxNextTrack;
-    SfxNextTrack++;
-    if (SfxNextTrack > 9)
+    for (int offset = 0; offset < SfxTrackCount; ++offset)
     {
-        SfxNextTrack = 0;
+        int candidate = (SfxNextTrack + offset) % SfxTrackCount;
+        if (!MIX_TrackPlaying(SfxTracks[candidate]))
+        {
+            idx = candidate;
+            break;
+        }
     }
+    SfxNextTrack = (idx + 1) % SfxTrackCount;
+
     if (!MIX_SetTrackAudio(SfxTracks[idx], audio))
     {
         return nullptr;
@@ -254,7 +261,7 @@ void InitialMusic()
     {
         MusicTrack = MIX_CreateTrack(gMixer);
     }
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < SfxTrackCount; i++)
     {
         if (SfxTracks[i] == nullptr)
         {
@@ -330,7 +337,7 @@ void FreeAllMusic()
         MIX_DestroyTrack(MusicTrack);
         MusicTrack = nullptr;
     }
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < SfxTrackCount; i++)
     {
         if (SfxTracks[i])
         {
@@ -1243,48 +1250,45 @@ uint32 CheckBasicEvent()
         StopMP3(0);
         break;
     case SDL_EVENT_MOUSE_BUTTON_DOWN:
-        /*if (CellPhone == 1)
+        if (ShowVirtualKey != 0)
         {
             FingerCount = 0;
-            if (ShowVirtualKey != 0)
+            int x, y;
+            SDL_GetMouseState2(x, y);
+            auto inVirtualKey = [&](int mx, int my, uint32& key) -> uint32
             {
-                int x, y;
-                SDL_GetMouseState2(x, y);
-                auto inVirtualKey = [&](int mx, int my, uint32& key) -> uint32
+                key = 0;
+                if (InRegion(mx, my, VirtualKeyX, VirtualKeyY, VirtualKeySize, VirtualKeySize))
                 {
-                    key = 0;
-                    if (InRegion(mx, my, VirtualKeyX, VirtualKeyY, VirtualKeySize, VirtualKeySize))
-                    {
-                        key = SDLK_UP;
-                    }
-                    if (InRegion(mx, my, VirtualKeyX - VirtualKeySize - VirtualKeySpace, VirtualKeyY + VirtualKeySize + VirtualKeySpace, VirtualKeySize, VirtualKeySize))
-                    {
-                        key = SDLK_LEFT;
-                    }
-                    if (InRegion(mx, my, VirtualKeyX, VirtualKeyY + VirtualKeySize * 2 + VirtualKeySpace * 2, VirtualKeySize, VirtualKeySize))
-                    {
-                        key = SDLK_DOWN;
-                    }
-                    if (InRegion(mx, my, VirtualKeyX + VirtualKeySize + VirtualKeySpace, VirtualKeyY + VirtualKeySize, VirtualKeySize + VirtualKeySpace, VirtualKeySize))
-                    {
-                        key = SDLK_RIGHT;
-                    }
-                    return key;
-                };
-                uint32 vk = 0;
-                inVirtualKey(x, y, vk);
-                VirtualKeyValue = vk;
-                if (VirtualKeyValue != 0)
-                {
-                    event.type = SDL_EVENT_KEY_DOWN;
-                    event.key.key = VirtualKeyValue;
+                    key = SDLK_UP;
                 }
+                if (InRegion(mx, my, VirtualKeyX - VirtualKeySize - VirtualKeySpace, VirtualKeyY + VirtualKeySize + VirtualKeySpace, VirtualKeySize, VirtualKeySize))
+                {
+                    key = SDLK_LEFT;
+                }
+                if (InRegion(mx, my, VirtualKeyX, VirtualKeyY + VirtualKeySize * 2 + VirtualKeySpace * 2, VirtualKeySize, VirtualKeySize))
+                {
+                    key = SDLK_DOWN;
+                }
+                if (InRegion(mx, my, VirtualKeyX + VirtualKeySize + VirtualKeySpace, VirtualKeyY + VirtualKeySize, VirtualKeySize + VirtualKeySpace, VirtualKeySize))
+                {
+                    key = SDLK_RIGHT;
+                }
+                return key;
+            };
+            uint32 vk = 0;
+            inVirtualKey(x, y, vk);
+            VirtualKeyValue = vk;
+            if (VirtualKeyValue != 0)
+            {
+                event.type = SDL_EVENT_KEY_DOWN;
+                event.key.key = VirtualKeyValue;
             }
-        }*/
+        }
         break;
     case SDL_EVENT_KEY_UP:
     case SDL_EVENT_MOUSE_BUTTON_UP:
-        /*if (CellPhone == 1 && event.type == SDL_EVENT_MOUSE_BUTTON_UP && event.button.button == SDL_BUTTON_LEFT)
+        if (ShowVirtualKey != 0 && event.type == SDL_EVENT_MOUSE_BUTTON_UP && event.button.button == SDL_BUTTON_LEFT)
         {
             int x, y;
             SDL_GetMouseState2(x, y);
@@ -1300,10 +1304,6 @@ uint32 CheckBasicEvent()
             auto inTab = [](int mx, int my) -> bool
             {
                 return InRegion(mx, my, CENTER_X - 120, CENTER_Y * 2 - 70, 60, 60);
-            };
-            auto inSwitchShowVirtualKey = [](int mx, int my) -> bool
-            {
-                return (mx < 100) && (my > CENTER_Y * 2 - 100);
             };
             auto inVirtualKey = [&](int mx, int my, uint32& key) -> uint32
             {
@@ -1355,11 +1355,6 @@ uint32 CheckBasicEvent()
                     event.key.key = 0;
                 }
             }
-            else if (inSwitchShowVirtualKey(x, y))
-            {
-                ShowVirtualKey = (ShowVirtualKey != 0) ? 0 : 1;
-                event.key.key = 0;
-            }
             else if (Where == 2 && BattleSelecting)
             {
                 event.button.button = 0;
@@ -1368,7 +1363,7 @@ uint32 CheckBasicEvent()
             {
                 event.button.button = 0;
             }
-        }*/
+        }
         if (Where == 2 && (event.key.key == SDLK_ESCAPE || event.button.button == SDL_BUTTON_RIGHT))
         {
             for (int i = 0; i < BRoleAmount; i++)

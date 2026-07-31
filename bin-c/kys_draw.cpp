@@ -466,15 +466,16 @@ void DrawScene()
     int sumregion = CENTER_Y / TILE_H;
     if (showBlackScreen)
     {
-        widthregion = 100 / (TILE_W * 2) + 3;
-        sumregion = 100 / TILE_H;
+        const int visibleRange = 100 * TILE_H / TILE_H_0;
+        widthregion = visibleRange / (TILE_W * 2) + 3;
+        sumregion = visibleRange / TILE_H;
     }
 
     SDL_SetRenderTarget(render, screenTex);
     SDL_SetRenderDrawColor(render, 0, 0, 0, 255);
     SDL_RenderClear(render);
 
-    RenderSceneGround(sceneGroundTextures, "smap-earth", CurScene, Cx1, Cy1);
+    const bool hasGround = RenderSceneGround(sceneGroundTextures, "smap-earth", CurScene, Cx1, Cy1);
 
     // 建筑和事件层
     for (int sum = -sumregion; sum <= sumregion + 15; sum++)
@@ -486,6 +487,15 @@ void DrawScene()
             if (i1 >= 0 && i1 <= 63 && i2 >= 0 && i2 <= 63)
             {
                 TPosition pos = GetPositionOnScreen(i1, i2, Cx1, Cy1);
+
+                if (!hasGround)
+                {
+                    int num = SData[CurScene][0][i1][i2] / 2;
+                    if (num > 0)
+                    {
+                        DrawSPic(num, pos.x, pos.y);
+                    }
+                }
 
                 if (SData[CurScene][1][i1][i2] > 0)
                 {
@@ -526,6 +536,15 @@ void DrawScene()
     if (HaveText == 1)
     {
         CleanTextScreen();
+    }
+    if (CurScene == 71 && MODVersion == 13)
+    {
+        auto word = std::format("{}:{:02d}", TimeInWater / 60, TimeInWater % 60);
+        DrawShadowText(word, 5, 5, ColColor(5), ColColor(7));
+        if (TimeInWater <= 0)
+        {
+            instruct_15();
+        }
     }
     DrawVirtualKey();
 }
@@ -658,8 +677,16 @@ void ExpandGroundOnImg()
 
 void InitialScene(int Visible)
 {
+    if (CurScene >= 0 && CurScene < SceneAmount)
+    {
+        kyslog("Enter scene {}: {}", CurScene, Rscene[CurScene].Name);
+    }
+    else
+    {
+        kyslog("Enter scene {}", CurScene);
+    }
     ExpandGroundOnImg();
-    if (IsCave(CurScene))
+    if (CAVE_OVERLAY != 0 && IsCave(CurScene))
     {
         showBlackScreen = true;
     }
@@ -954,6 +981,10 @@ void DrawBlackScreen()
 {
     if (BlackScreenTex == nullptr)
     {
+        const int caveMaskScale = TILE_H / TILE_H_0;
+        const int caveMaskYOffset = 20 * caveMaskScale;
+        const int caveMaskRadius = 125 * caveMaskScale;
+        const double caveMaskRadiusSquared = (double)caveMaskRadius * caveMaskRadius;
         SDL_Surface* sur = SDL_CreateSurface(CENTER_X * 2, CENTER_Y * 2,
             SDL_GetPixelFormatForMasks(32, RMask, GMask, BMask, AMask));
         SDL_FillSurfaceRect(sur, nullptr, MapRGBA(0, 0, 0, 255));
@@ -962,8 +993,8 @@ void DrawBlackScreen()
             for (int i2 = 0; i2 < CENTER_Y * 2; i2++)
             {
                 int x = i1 - CENTER_X;
-                int y = i2 - CENTER_Y + 20;
-                double distance = (double)(x * x + y * y) / 15625.0;
+                int y = i2 - CENTER_Y + caveMaskYOffset;
+                double distance = (double)(x * x + y * y) / caveMaskRadiusSquared;
                 if (distance <= 1.0)
                 {
                     uint8_t alpha = (uint8_t)(distance * 255);
@@ -1152,8 +1183,7 @@ void DrawTextWithRect(const std::string& word, int x, int y, int w, uint32 color
 
 void DrawVirtualKey()
 {
-    return;
-    if (CellPhone == 0 || ShowVirtualKey == 0)
+    if (ShowVirtualKey == 0)
     {
         return;
     }

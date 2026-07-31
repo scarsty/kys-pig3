@@ -42,6 +42,7 @@ void ExpandGroundOnImg();
 
 // 坐标计算
 int CalBlock(int x, int y);
+int ScaleSceneHeight(int height);
 void CalPosOnImage(int i1, int i2, int& x, int& y);
 void CalLTPosOnImageByCenter(int i1, int i2, int& x, int& y);
 

@@ -501,6 +501,7 @@ void ReadFiles()
     FONT_MEMERY = ini.getInt("system", "FONT_VIDEOMEMERY", 1);
     FULL_DESKTOP = ini.getInt("system", "FULL_DESKTOP", 0);
     AUTO_LEVELUP = ini.getInt("system", "AUTO_LEVELUP", 0);
+    CAVE_OVERLAY = ini.getInt("system", "cave_overlay", 1);
 
     VOLUME = ini.getInt("music", "VOLUME", 30);
     VOLUMEWAV = ini.getInt("music", "VOLUMEWAV", 30);
@@ -515,19 +516,19 @@ void ReadFiles()
     JOY_MOUSE_LEFT = ini.getInt("joystick", "JOY_MOUSE_LEFT", 12);
     JOY_AXIS_DELAY = ini.getInt("joystick", "JOY_AXIS_DELAY", 10);
 
-    if (CellPhone != 0)
+    ShowVirtualKey = ini.getInt("system", "virtual_key", 0);
+    if (ShowVirtualKey != 0)
     {
-        ShowVirtualKey = ini.getInt("system", "Virtual_Key", 1);
         VirtualKeyX = ini.getInt("system", "Virtual_Key_X", 100);
-        VirtualKeyY = ini.getInt("system", "Virtual_Key_Y", 300);
         VirtualKeySize = ini.getInt("system", "Virtual_Key_Size", 50);
         VirtualKeySpace = ini.getInt("system", "Virtual_Key_Space", 15);
+        const int virtualKeyHeight = VirtualKeySize * 3 + VirtualKeySpace * 2;
+        VirtualKeyY = ini.getInt("system", "Virtual_Key_Y", CENTER_Y * 2 - virtualKeyHeight - 20);
+    }
+    if (CellPhone != 0)
+    {
         touch_walk = ini.getInt("system", "touch_walk", 1);
         enable_haptic = ini.getInt("system", "enable_haptic", 1);
-    }
-    else
-    {
-        ShowVirtualKey = 0;
     }
 
     if (KEEP_SCREEN_RATIO == 0)
@@ -1098,13 +1099,14 @@ bool InitialRole()
             }
             Redraw();
             ShowStatus(0);
-            DrawTextWithRect("資質", 150, CENTER_Y + 120, 80, 0, 0x202020, 179, 0);
+            const int initialRoleX = CENTER_X - 320;
+            DrawTextWithRect("資質", initialRoleX + 150, CENTER_Y + 120, 80, 0, 0x202020, 179, 0);
             auto buf = std::format("{:4d}", Rrole[0].Aptitude);
-            DrawEngShadowText(buf, 200, CENTER_Y + 123, ColColor(0x64), ColColor(0x66));
-            DrawTextWithRect("選定屬性后按回車或這裡確認", 175, CENTER_Y + 171, 260, 0, 0, 255);
+            DrawEngShadowText(buf, initialRoleX + 200, CENTER_Y + 123, ColColor(0x64), ColColor(0x66));
+            DrawTextWithRect("選定屬性后按回車或這裡確認", initialRoleX + 175, CENTER_Y + 171, 260, 0, 0, 255);
             UpdateAllScreen();
             int i = WaitAnyKey();
-            if (i == SDLK_RETURN || i == SDLK_Y || (MouseInRegion(175, CENTER_Y + 171, 260, 22) && i != SDLK_ESCAPE))
+            if (i == SDLK_RETURN || i == SDLK_Y || (MouseInRegion(initialRoleX + 175, CENTER_Y + 171, 260, 22) && i != SDLK_ESCAPE))
             {
                 break;
             }
@@ -2445,7 +2447,7 @@ int WalkInScene(int Open)
                 if (walking == 0)
                 {
                     walking = 2;
-                    GetMousePosition(axp, ayp, Sx, Sy, SData[CurScene][4][Sx][Sy]);
+                    GetMousePosition(axp, ayp, Sx, Sy, ScaleSceneHeight(SData[CurScene][4][Sx][Sy]));
                     if (axp >= 0 && axp <= 63 && ayp >= 0 && ayp <= 63)
                     {
                         memset(Fway, -1, sizeof(Fway));
@@ -2650,20 +2652,20 @@ int WalkInScene(int Open)
                 DrawScene();
                 if (walking == 0)
                 {
-                    GetMousePosition(axp, ayp, Sx, Sy, SData[CurScene][4][Sx][Sy]);
+                    GetMousePosition(axp, ayp, Sx, Sy, ScaleSceneHeight(SData[CurScene][4][Sx][Sy]));
                     if (axp >= 0 && axp < 64 && ayp >= 0 && ayp < 64)
                     {
                         TPosition pos = GetPositionOnScreen(axp, ayp, Sx, Sy);
-                        DrawMPic(1, pos.x, pos.y - SData[CurScene][4][axp][ayp], 0, 0, 128, 0, 0);
+                        DrawMPic(1, pos.x, pos.y - ScaleSceneHeight(SData[CurScene][4][axp][ayp]), 0, 0, 128, 0, 0);
                         if (!CanWalkInScene(axp, ayp))
                         {
                             if (SData[CurScene][3][axp][ayp] >= 0)
                             {
-                                DrawMPic(2001, pos.x, pos.y - SData[CurScene][4][axp][ayp], 0, 0, 64, 0, 0);
+                                DrawMPic(2001, pos.x, pos.y - ScaleSceneHeight(SData[CurScene][4][axp][ayp]), 0, 0, 64, 0, 0);
                             }
                             else
                             {
-                                DrawMPic(2001, pos.x, pos.y - SData[CurScene][4][axp][ayp], 0, 0, 128, 0, 0);
+                                DrawMPic(2001, pos.x, pos.y - ScaleSceneHeight(SData[CurScene][4][axp][ayp]), 0, 0, 128, 0, 0);
                             }
                         }
                     }
@@ -6205,8 +6207,8 @@ void MenuSet()
     uint32 color1, color2, mixcolorl, mixcolorr;
     int mixalphal, mixalphar, arrowy, arrowlx, arrowrx;
 
-    maxmenu = 13;
-    std::string str[13] = {
+    maxmenu = 15;
+    std::string str[15] = {
         "音樂音量",
         "音效音量",
         "大地圖走路延遲",
@@ -6217,16 +6219,18 @@ void MenuSet()
         "文字顯示",
         "觸屏走路",
         "物理震動",
+        "虛擬按鍵",
+        "山洞遮蓋",
         "半即時",
         "擴展地面",
         "文字分層"
     };
-    std::string str2[13];
+    std::string str2[15];
     std::string menuString[2] = {
         "取消",    // 取消
         "確定"     // 確定
     };
-    int Value[14];
+    int Value[16];
     Value[0] = VOLUME;
     Value[1] = VOLUMEWAV;
     Value[2] = WALK_SPEED;
@@ -6237,9 +6241,11 @@ void MenuSet()
     Value[7] = SIMPLE;
     Value[8] = touch_walk;
     Value[9] = enable_haptic;
-    Value[10] = SEMIREAL;
-    Value[11] = EXPAND_GROUND;
-    Value[12] = TEXT_LAYER;
+    Value[10] = ShowVirtualKey;
+    Value[11] = CAVE_OVERLAY;
+    Value[12] = SEMIREAL;
+    Value[13] = EXPAND_GROUND;
+    Value[14] = TEXT_LAYER;
     Value[maxmenu] = 0;
 
     x = CENTER_X + 120;
@@ -6335,6 +6341,14 @@ void MenuSet()
                         str2[i] = (Value[i] == 0) ? "關閉" : "打開";
                     }
                     if (i == 12)
+                    {
+                        str2[i] = (Value[i] == 0) ? "關閉" : "打開";
+                    }
+                    if (i == 13)
+                    {
+                        str2[i] = (Value[i] == 0) ? "關閉" : "打開";
+                    }
+                    if (i == 14)
                     {
                         str2[i] = (Value[i] == 0) ? "關閉" : "打開";
                     }
@@ -6500,6 +6514,14 @@ void MenuSet()
                     {
                         Value[12] = 1 - Value[12];
                     }
+                    if (MouseInRegion(x + 160 + 13, y + 5 + 13 * h0, 50, h0))
+                    {
+                        Value[13] = 1 - Value[13];
+                    }
+                    if (MouseInRegion(x + 160 + 13, y + 5 + 14 * h0, 50, h0))
+                    {
+                        Value[14] = 1 - Value[14];
+                    }
                     leftright = 0;
                     valuechanged = 1;
                 }
@@ -6571,12 +6593,15 @@ void MenuSet()
         SIMPLE = Value[7];
         touch_walk = Value[8];
         enable_haptic = Value[9];
-        SEMIREAL = Value[10];
-        EXPAND_GROUND = Value[11];
-        if (TEXT_LAYER != Value[12])
+        ShowVirtualKey = Value[10];
+        CAVE_OVERLAY = Value[11];
+        showBlackScreen = CAVE_OVERLAY != 0 && IsCave(CurScene);
+        SEMIREAL = Value[12];
+        EXPAND_GROUND = Value[13];
+        if (TEXT_LAYER != Value[14])
         {
             DestroyRenderTextures();
-            TEXT_LAYER = Value[12];
+            TEXT_LAYER = Value[14];
             if (TEXT_LAYER == 1)
             {
                 CreateAssistantRenderTextures();
@@ -6601,6 +6626,8 @@ void MenuSet()
         ini.setKey("system", "SIMPLE", std::to_string(SIMPLE));
         ini.setKey("system", "touch_walk", std::to_string(touch_walk));
         ini.setKey("system", "enable_haptic", std::to_string(enable_haptic));
+        ini.setKey("system", "virtual_key", std::to_string(ShowVirtualKey));
+        ini.setKey("system", "cave_overlay", std::to_string(CAVE_OVERLAY));
         ini.setKey("system", "SEMIREAL", std::to_string(SEMIREAL));
         ini.setKey("system", "EXPAND_GROUND", std::to_string(EXPAND_GROUND));
         ini.setKey("system", "Text_Layer", std::to_string(TEXT_LAYER));
