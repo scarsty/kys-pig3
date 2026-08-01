@@ -496,6 +496,14 @@ void DrawScene()
                         DrawSPic(num, pos.x, pos.y);
                     }
                 }
+                else
+                {
+                    int num = SData[CurScene][0][i1][i2] / 2;
+                    if (num > 0 && !IsGroundOnlySPic(num))
+                    {
+                        DrawSPic(num, pos.x, pos.y);
+                    }
+                }
 
                 if (SData[CurScene][1][i1][i2] > 0)
                 {
@@ -726,6 +734,10 @@ void DrawBField()
     int Bx1 = Bx, By1 = By;
     int widthregion = CENTER_X / (TILE_W * 2) + 3;
     int sumregion = CENTER_Y / TILE_H;
+
+    SDL_SetRenderTarget(render, screenTex);
+    SDL_SetRenderDrawColor(render, 0, 0, 0, 255);
+    SDL_RenderClear(render);
 
     const bool hasGround = RenderSceneGround(battleGroundTextures, "battle-earth", WarSta.BFieldNum, Bx1, By1);
     if (!hasGround)

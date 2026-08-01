@@ -541,6 +541,7 @@ inline int EXPAND_GROUND = 0;
 extern int16_t ExGroundS[64][64];
 extern int16_t ExGroundB[64][64];
 
+inline int CIFA_SCRIPT = 0;
 inline int AI_USE_SPECIAL = 1;
 inline int BattleRound = 0;
 

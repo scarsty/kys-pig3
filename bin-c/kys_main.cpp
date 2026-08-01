@@ -356,11 +356,11 @@ void Quit()
 void SetMODVersion()
 {
     Music.resize(99, nullptr);
-    ESound.resize(99, nullptr);
-    ASound.resize(99, nullptr);
+    ESound.resize(101, nullptr);
+    ASound.resize(25, nullptr);
 
     StartMusic = 59;
-    versionstr = "108 Brothers and Sisters (c++) v15";
+    versionstr = "108 Brothers and Sisters (c++) v16";
     TitleString = "Legend of Little Village III - " + versionstr;
 
     OpenPicPosition.x = 0;
@@ -496,6 +496,8 @@ void ReadFiles()
     THREAD_READ_PNG = ini.getInt("system", "THREAD_READ_PNG", 0);
     DISABLE_MENU_AMI = ini.getInt("system", "DISABLE_MENU_AMI", 0);
     EXPAND_GROUND = ini.getInt("system", "EXPAND_GROUND", 1);
+    CIFA_SCRIPT = ini.getInt("system", "CIFA_SCRIPT", 0);
+    EventScriptExt = CIFA_SCRIPT != 0 ? ".cifa" : ".lua";
     AI_USE_SPECIAL = ini.getInt("system", "AI_USE_SPECIAL", 1);
     PRESENT_SYNC = ini.getInt("system", "PRESENT_SYNC", 1);
     FONT_MEMERY = ini.getInt("system", "FONT_VIDEOMEMERY", 1);
@@ -6207,8 +6209,8 @@ void MenuSet()
     uint32 color1, color2, mixcolorl, mixcolorr;
     int mixalphal, mixalphar, arrowy, arrowlx, arrowrx;
 
-    maxmenu = 15;
-    std::string str[15] = {
+    maxmenu = 16;
+    std::string str[16] = {
         "音樂音量",
         "音效音量",
         "大地圖走路延遲",
@@ -6223,14 +6225,15 @@ void MenuSet()
         "山洞遮蓋",
         "半即時",
         "擴展地面",
-        "文字分層"
+        "文字分層",
+        "腳本引擎"
     };
-    std::string str2[15];
+    std::string str2[16];
     std::string menuString[2] = {
         "取消",    // 取消
         "確定"     // 確定
     };
-    int Value[16];
+    int Value[17];
     Value[0] = VOLUME;
     Value[1] = VOLUMEWAV;
     Value[2] = WALK_SPEED;
@@ -6246,6 +6249,7 @@ void MenuSet()
     Value[12] = SEMIREAL;
     Value[13] = EXPAND_GROUND;
     Value[14] = TEXT_LAYER;
+    Value[15] = CIFA_SCRIPT;
     Value[maxmenu] = 0;
 
     x = CENTER_X + 120;
@@ -6351,6 +6355,10 @@ void MenuSet()
                     if (i == 14)
                     {
                         str2[i] = (Value[i] == 0) ? "關閉" : "打開";
+                    }
+                    if (i == 15)
+                    {
+                        str2[i] = (Value[i] == 0) ? "Lua" : "Cifa";
                     }
                 }
                 DrawShadowText(str[i], x + 10, y + 5 + i * h0, color1, color2);
@@ -6522,6 +6530,10 @@ void MenuSet()
                     {
                         Value[14] = 1 - Value[14];
                     }
+                    if (MouseInRegion(x + 160 + 13, y + 5 + 15 * h0, 50, h0))
+                    {
+                        Value[15] = 1 - Value[15];
+                    }
                     leftright = 0;
                     valuechanged = 1;
                 }
@@ -6613,6 +6625,8 @@ void MenuSet()
                 SetFontSize(20, 18, -1);
             }
         }
+        CIFA_SCRIPT = Value[15];
+        EventScriptExt = CIFA_SCRIPT != 0 ? ".cifa" : ".lua";
 
         INIReaderNormal ini;
         ini.loadFile(iniFilename);
@@ -6631,6 +6645,7 @@ void MenuSet()
         ini.setKey("system", "SEMIREAL", std::to_string(SEMIREAL));
         ini.setKey("system", "EXPAND_GROUND", std::to_string(EXPAND_GROUND));
         ini.setKey("system", "Text_Layer", std::to_string(TEXT_LAYER));
+        ini.setKey("system", "CIFA_SCRIPT", std::to_string(CIFA_SCRIPT));
         ini.saveFile(iniFilename);
     }
 }
@@ -7210,26 +7225,30 @@ void CallEvent(int num)
         NeedRefreshScene = 1;
     };
 
-    std::string cifaFilename = AppPath + "script/event-cifa/" + std::to_string(num) + ".cifa";
-    if (filefunc::fileExist(cifaFilename))
+    if (CIFA_SCRIPT != 0)
     {
-        kyslog("Enter cifa script {}", num);
-        ExecCifaScript(cifaFilename);
+        std::string cifaFilename = AppPath + "script/event-cifa/" + std::to_string(num) + ".cifa";
+        if (filefunc::fileExist(cifaFilename))
+        {
+            kyslog("Enter cifa script {}", num);
+            ExecCifaScript(cifaFilename);
+            finishEvent();
+            return;
+        }
         finishEvent();
         return;
     }
 
-    if (KDEF_SCRIPT >= 1)
+    std::string filename = AppPath + EventScriptPath + std::to_string(num) + ".lua";
+    if (filefunc::fileExist(filename))
     {
-        std::string filename = AppPath + EventScriptPath + std::to_string(num) + EventScriptExt;
-        if (filefunc::fileExist(filename))
-        {
-            kyslog("Enter script {}", num);
-            ExecScript(filename);
-            finishEvent();
-            return;
-        }
+        kyslog("Enter script {}", num);
+        ExecScript(filename);
+        finishEvent();
+        return;
     }
+    finishEvent();
+    return;
 
     // 使用KDEF二进制指令
     if (KDEF.Amount > 0 && num > 0 && num < (int)KDEF.IDX.size())

@@ -308,6 +308,10 @@ void InitialMusic()
             ESound[i] = nullptr;
         }
         std::string str = AppPath + "sound/e" + std::to_string(i) + ".wav";
+        if (!filefunc::fileExist(str))
+        {
+            str = AppPath + std::format("sound/e{:02d}.wav", i);
+        }
         if (filefunc::fileExist(str))
         {
             ESound[i] = MIX_LoadAudio(nullptr, str.c_str(), false);
