@@ -174,7 +174,7 @@ SDL_Texture* LoadGroundTexture(std::vector<SDL_Texture*>& textures, int index, c
 
 static MIX_Track* AcquireSfxTrack(MIX_Audio* audio)
 {
-    if (audio == nullptr)
+    if (audio == nullptr || gMixer == nullptr)
     {
         return nullptr;
     }
@@ -183,7 +183,7 @@ static MIX_Track* AcquireSfxTrack(MIX_Audio* audio)
     for (int offset = 0; offset < SfxTrackCount; ++offset)
     {
         int candidate = (SfxNextTrack + offset) % SfxTrackCount;
-        if (!MIX_TrackPlaying(SfxTracks[candidate]))
+        if (SfxTracks[candidate] == nullptr || !MIX_TrackPlaying(SfxTracks[candidate]))
         {
             idx = candidate;
             break;
@@ -191,11 +191,46 @@ static MIX_Track* AcquireSfxTrack(MIX_Audio* audio)
     }
     SfxNextTrack = (idx + 1) % SfxTrackCount;
 
+    if (SfxTracks[idx] == nullptr)
+    {
+        SfxTracks[idx] = MIX_CreateTrack(gMixer);
+        if (SfxTracks[idx] == nullptr)
+        {
+            kyslog("MIX_CreateTrack failed: {}", SDL_GetError());
+            return nullptr;
+        }
+    }
     if (!MIX_SetTrackAudio(SfxTracks[idx], audio))
     {
+        kyslog("MIX_SetTrackAudio failed: {}", SDL_GetError());
         return nullptr;
     }
     return SfxTracks[idx];
+}
+
+static bool PlaySfxTrack(MIX_Track* track, int loops, const MIX_Point3D* position)
+{
+    if (!MIX_SetTrack3DPosition(track, position))
+    {
+        kyslog("MIX_SetTrack3DPosition failed: {}", SDL_GetError());
+        return false;
+    }
+    if (!MIX_SetTrackGain(track, VOLUMEWAV / 100.0f))
+    {
+        kyslog("MIX_SetTrackGain failed: {}", SDL_GetError());
+        return false;
+    }
+    if (!MIX_SetTrackLoops(track, loops))
+    {
+        kyslog("MIX_SetTrackLoops failed: {}", SDL_GetError());
+        return false;
+    }
+    if (!MIX_PlayTrack(track, 0))
+    {
+        kyslog("MIX_PlayTrack failed: {}", SDL_GetError());
+        return false;
+    }
+    return true;
 }
 
 //----------------------------------------------------------------------
@@ -436,9 +471,7 @@ void PlaySound(int SoundNum, int times)
             {
                 return;
             }
-            MIX_SetTrackGain(track, VOLUMEWAV / 100.0f);
-            MIX_SetTrackLoops(track, loops);
-            MIX_PlayTrack(track, 0);
+            PlaySfxTrack(track, loops, nullptr);
         }
     }
 }
@@ -458,14 +491,15 @@ void PlaySound(int SoundNum, int times, int x, int y, int z)
             if (SOUND3D == 1)
             {
                 MIX_Point3D pos;
-                pos.x = (float)(x * 100);
-                pos.y = (float)(y * 100);
-                pos.z = (float)(z * 100);
-                MIX_SetTrack3DPosition(track, &pos);
+                pos.x = x / 50.0f;
+                pos.y = y / 50.0f;
+                pos.z = z / 50.0f;
+                PlaySfxTrack(track, loops, &pos);
             }
-            MIX_SetTrackGain(track, VOLUMEWAV / 100.0f);
-            MIX_SetTrackLoops(track, loops);
-            MIX_PlayTrack(track, 0);
+            else
+            {
+                PlaySfxTrack(track, loops, nullptr);
+            }
         }
     }
 }
@@ -482,9 +516,7 @@ void PlaySoundA(int SoundNum, int times)
             {
                 return;
             }
-            MIX_SetTrackGain(track, VOLUMEWAV / 100.0f);
-            MIX_SetTrackLoops(track, loops);
-            MIX_PlayTrack(track, 0);
+            PlaySfxTrack(track, loops, nullptr);
         }
     }
 }

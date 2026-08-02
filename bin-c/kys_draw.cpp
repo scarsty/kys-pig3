@@ -14,7 +14,8 @@
 #include <cstring>
 #include <format>
 
-bool RenderGroundTexture(SDL_Texture* texture, int logicalWidth, int logicalHeight, int centerX, int centerY)
+bool RenderGroundTexture(SDL_Texture* texture, int logicalWidth, int logicalHeight, int centerX, int centerY,
+    int screenOffsetX = 0, int screenOffsetY = 0)
 {
     if (!texture)
     {
@@ -25,8 +26,8 @@ bool RenderGroundTexture(SDL_Texture* texture, int logicalWidth, int logicalHeig
     const float scaleX = textureWidth / logicalWidth;
     const float scaleY = textureHeight / logicalHeight;
     SDL_FRect source = {
-        centerX * scaleX - CENTER_X,
-        centerY * scaleY - CENTER_Y,
+        centerX * scaleX - CENTER_X + screenOffsetX,
+        centerY * scaleY - CENTER_Y + screenOffsetY,
         (float)CENTER_X * 2,
         (float)CENTER_Y * 2
     };
@@ -67,6 +68,7 @@ bool IsGroundOnlySPic(int num)
 {
     return (num >= 0 && num <= 232)
         || (num >= 261 && num <= 399)
+        || (num >= 469 && num <= 471)
         || (num >= 511 && num <= 592)
         || (num >= 609 && num <= 698);
 }
@@ -84,7 +86,10 @@ bool RenderSceneGround(std::vector<SDL_Texture*>& textures, const std::string& f
         std::to_string(mapId), archive);
     const int centerX = -x * TILE_W_0 + y * TILE_W_0 + TILE_W_0 * SCENE_MAP_SIZE;
     const int centerY = x * TILE_H_0 + y * TILE_H_0 + 17;
-    return RenderGroundTexture(texture, TILE_W_0 * SCENE_MAP_SIZE * 2, TILE_H_0 * SCENE_MAP_SIZE * 2, centerX, centerY);
+    const int screenOffsetX = needOffset != 0 ? offsetX : 0;
+    const int screenOffsetY = needOffset != 0 ? offsetY : 0;
+    return RenderGroundTexture(texture, TILE_W_0 * SCENE_MAP_SIZE * 2, TILE_H_0 * SCENE_MAP_SIZE * 2,
+        centerX, centerY, screenOffsetX, screenOffsetY);
 }
 
 bool RenderMainGround(int x, int y)
@@ -1027,8 +1032,9 @@ void DrawBFieldWithEft(int Epicnum, int beginpic, int endpic, int curlevel, int 
 {
     if (needOffset != 0)
     {
-        offsetX = rand() % 5;
-        offsetY = rand() % 5;
+        const int shakeScale = TILE_W / TILE_W_0;
+        offsetX = (rand() % 5) * shakeScale;
+        offsetY = (rand() % 5) * shakeScale;
     }
     int rnum = Brole[bnum].rnum;
     for (int i = 0; i < BRoleAmount; i++)

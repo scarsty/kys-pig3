@@ -612,7 +612,11 @@ int Lua_AskRest(lua_State* L) { lua_pushboolean(L, instruct_11(1, 0) == 1); retu
 int Lua_Rest(lua_State* L) { instruct_12(); return 0; }
 int Lua_LightScene(lua_State* L) { instruct_13(); return 0; }
 int Lua_DarkScene(lua_State* L) { instruct_14(); return 0; }
-int Lua_Dead(lua_State* L) { instruct_15(); return 0; }
+int Lua_Dead(lua_State* L)
+{
+    instruct_15();
+    return Lua_ExitScript(L);
+}
 
 int Lua_InTeam(lua_State* L)
 {

@@ -104,6 +104,7 @@ void RegisterCifaFunctions(cifa::Cifa& c)
         });
     };
 
+    R("debuglog", [](ObjectVector& args) -> Object { kyslog("Cifa: {}", cifa_arg_string(args, 0)); return Object(); });
     R("clear", [](ObjectVector&) -> Object { Redraw(); return Object(); });
     R("instruct_0", [](ObjectVector&) -> Object { Redraw(); return Object(); });
     R("pause", [](ObjectVector&) -> Object { return Object(WaitAnyKey()); });
@@ -221,8 +222,9 @@ void RegisterCifaFunctions(cifa::Cifa& c)
     R("instruct_6", [](ObjectVector& args) -> Object { bool result = ForceBattleWin != 0 || Battle(cifa_arg_int(args, 0), cifa_arg_int(args, 1, 1), cifa_arg_int(args, 2, 0)); return cifa_bool(result); });
     R("askjoin", [](ObjectVector&) -> Object { return cifa_bool(instruct_9(1, 0) == 1); });
     R("instruct_9", [](ObjectVector&) -> Object { return cifa_bool(instruct_9(1, 0) == 1); });
-    R("askrest", [](ObjectVector&) -> Object { return cifa_bool(instruct_11(1, 0) == 1); });
-    R("instruct_11", [](ObjectVector&) -> Object { return cifa_bool(instruct_11(1, 0) == 1); });
+    auto askRest = [](ObjectVector&) -> Object { return Object(instruct_11(1, 0)); };
+    R("askrest", askRest);
+    R("instruct_11", askRest);
     R("join", [](ObjectVector& args) -> Object { instruct_10(cifa_arg_int(args, 0)); return Object(); });
     R("instruct_10", [](ObjectVector& args) -> Object { instruct_10(cifa_arg_int(args, 0)); return Object(); });
     R("leave", [](ObjectVector& args) -> Object { instruct_21(cifa_arg_int(args, 0)); return Object(); });
@@ -240,8 +242,9 @@ void RegisterCifaFunctions(cifa::Cifa& c)
     R("instruct_13", [](ObjectVector&) -> Object { instruct_13(); return Object(); });
     R("darkscene", [](ObjectVector&) -> Object { instruct_14(); return Object(); });
     R("instruct_14", [](ObjectVector&) -> Object { instruct_14(); return Object(); });
-    R("dead", [](ObjectVector&) -> Object { instruct_15(); return Object(); });
-    R("instruct_15", [](ObjectVector&) -> Object { instruct_15(); return Object(); });
+    auto dead = [&c](ObjectVector&) -> Object { instruct_15(); c.request_exit(); return Object(); };
+    R("dead", dead);
+    R("instruct_15", dead);
     R("asksoftstar", [](ObjectVector&) -> Object { instruct_51(); return Object(); });
     R("instruct_51", [](ObjectVector&) -> Object { instruct_51(); return Object(); });
     R("instruct_7", [](ObjectVector&) -> Object { return Object(); });
@@ -476,7 +479,6 @@ void RegisterCifaFunctions(cifa::Cifa& c)
 
 void InitialCifaScript()
 {
-    cifa_script = cifa::Cifa();
     cifa_script.set_output_error(false);
     cifa_script.set_include_dirs({ AppPath + "script", AppPath + "script/event", AppPath + "script/event-cifa" });
     RegisterCifaFunctions(cifa_script);
@@ -484,7 +486,6 @@ void InitialCifaScript()
 
 void DestroyCifaScript()
 {
-    cifa_script = cifa::Cifa();
 }
 
 std::string NormalizeCifaScript(std::string script)

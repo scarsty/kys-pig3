@@ -2145,10 +2145,6 @@ void PlayMagicAnimation(int bnum, int eNum, int aimMode, int mode)
     int x = posA.x - posB.x;
     int y = posB.y - posA.y;
     int z = -((Ax + Ay) - (Bx + By)) * TILE_H;
-    PlaySound(eNum, 0, x, y, z);
-
-    if (CellPhone == 1 && needOffset != 0 && enable_haptic)
-        SDL_PlayHapticRumble(haptic, 0.5f, 2000);
 
     int rnum = Brole[bnum].rnum;
     int endpic = 0;
@@ -2162,6 +2158,11 @@ void PlayMagicAnimation(int bnum, int eNum, int aimMode, int mode)
         }
         endpic = EPNGIndex[eNum].Amount;
     }
+    PlaySound(eNum, 0, x, y, z);
+
+    if (CellPhone == 1 && needOffset != 0 && enable_haptic)
+        SDL_PlayHapticRumble(haptic, 0.5f, 2000);
+
     Redraw();
     int i = 0;
     if (endpic > 0)
@@ -3100,7 +3101,6 @@ void PlayActionAnimation(int bnum, int mode)
     Redraw();
     int rnum = Brole[bnum].rnum;
     int actnum = Rrole[rnum].ActionNum;
-    if (rnum == 0) actnum = 0;
 
     // 如果对应帧数<=0, 寻找第一个不为零的帧数
     if (FPNGIndex[actnum].FightFrame[mode] <= 0)
