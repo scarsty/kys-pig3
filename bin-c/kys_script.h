@@ -178,6 +178,7 @@ int Lua_SetTeam(lua_State* L);
 int Lua_GetTeam(lua_State* L);
 int Lua_ReadMem(lua_State* L);
 int Lua_WriteMem(lua_State* L);
+int Lua_DebugLog(lua_State* L);
 int Lua_GetRoleName(lua_State* L);
 int Lua_GetItemName(lua_State* L);
 int Lua_GetMagicName(lua_State* L);

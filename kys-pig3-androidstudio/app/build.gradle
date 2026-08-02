@@ -2,8 +2,6 @@ plugins {
     id 'com.android.application'
 }
 
-def gameAssetsDir = project.findProperty('GAME_ASSETS_DIR') ?: "D:/kys-all/_pascal/pig3/发布版游戏/game"
-
 android {
     namespace = "org.libsdl.app"
     compileSdkVersion 35
@@ -39,7 +37,6 @@ android {
     }
     sourceSets.main {
         jniLibs.srcDir 'lib'
-        assets.srcDirs = ['src/main/assets', gameAssetsDir]
     }
     externalNativeBuild {
         cmake {

@@ -212,6 +212,7 @@ void InitialScript()
     R("zeroallmp", Lua_ZeroAllMP);
     R("getx50", Lua_GetX50);
     R("setx50", Lua_SetX50);
+    R("debuglog", Lua_DebugLog);
 
     R("showtitle", Lua_ShowTitle);
     R("readtalkasstring", Lua_ReadTalkAsString);
@@ -1310,6 +1311,25 @@ int Lua_SetX50(lua_State* L)
     }
     else
         x50[lua_tointeger(L, 1)] = lua_tointeger(L, 2);
+    return 0;
+}
+
+int Lua_DebugLog(lua_State* L)
+{
+    const int count = lua_gettop(L);
+    std::string message;
+    for (int index = 1; index <= count; ++index)
+    {
+        size_t length = 0;
+        const char* value = luaL_tolstring(L, index, &length);
+        if (index > 1)
+        {
+            message += ' ';
+        }
+        message.append(value, length);
+        lua_pop(L, 1);
+    }
+    kyslog("Lua: {}", message);
     return 0;
 }
 

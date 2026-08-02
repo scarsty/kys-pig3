@@ -533,6 +533,10 @@ void ExecCifaScriptString(const std::string& script, const std::string& function
 
     std::string code = NormalizeCifaScript(script);
     Object result = cifa_script.run_script(code);
+    if (callDepth == 1 && cifa_script.has_runtime_error())
+    {
+        kyslog("Cifa runtime error:\n{}", cifa_script.get_runtime_error());
+    }
     if (cifa_script.has_error())
     {
         if (callDepth == 1)
@@ -544,6 +548,10 @@ void ExecCifaScriptString(const std::string& script, const std::string& function
     if (!functionname.empty())
     {
         cifa_script.run_script(NormalizeCifaScript(functionname + "();"));
+        if (callDepth == 1 && cifa_script.has_runtime_error())
+        {
+            kyslog("Cifa runtime error:\n{}", cifa_script.get_runtime_error());
+        }
         if (cifa_script.has_error())
         {
             if (callDepth == 1)
