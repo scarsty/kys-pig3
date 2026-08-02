@@ -78,6 +78,23 @@ int ScaleSceneHeight(int height)
     return height * TILE_H / TILE_H_0;
 }
 
+int GetSceneBottomOverhangTiles()
+{
+    static int cachedTileHeight = 0;
+    static int bottomOverhangTiles = 15;
+    if (cachedTileHeight != TILE_H)
+    {
+        int maxAnchorY = 0;
+        for (const auto& index : SPNGIndex)
+        {
+            maxAnchorY = std::max(maxAnchorY, index.y);
+        }
+        bottomOverhangTiles = std::max(15, (maxAnchorY + TILE_H - 1) / TILE_H + 1);
+        cachedTileHeight = TILE_H;
+    }
+    return bottomOverhangTiles;
+}
+
 bool RenderSceneGround(std::vector<SDL_Texture*>& textures, const std::string& folder, int mapId, int x, int y)
 {
     GroundArchive& archive = folder == "smap-earth" ? sceneGroundArchive : battleGroundArchive;
@@ -483,7 +500,8 @@ void DrawScene()
     const bool hasGround = RenderSceneGround(sceneGroundTextures, "smap-earth", CurScene, Cx1, Cy1);
 
     // 建筑和事件层
-    for (int sum = -sumregion; sum <= sumregion + 15; sum++)
+    const int bottomOverhangTiles = GetSceneBottomOverhangTiles();
+    for (int sum = -sumregion; sum <= sumregion + bottomOverhangTiles; sum++)
     {
         for (int i = -widthregion; i <= widthregion; i++)
         {
@@ -504,7 +522,7 @@ void DrawScene()
                 else
                 {
                     int num = SData[CurScene][0][i1][i2] / 2;
-                    if (num > 0 && !IsGroundOnlySPic(num))
+                    if (num > 0 && (!IsGroundOnlySPic(num) || SData[CurScene][4][i1][i2] > 8))
                     {
                         DrawSPic(num, pos.x, pos.y);
                     }
