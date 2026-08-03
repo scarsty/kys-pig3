@@ -6833,9 +6833,16 @@ void MenuQuit()
         str = "輸入功能編號";
         DrawTextWithRect(str, CENTER_X + 120, CENTER_Y - 240 + 130, 128, 0, ColColor(0x23));
         int funcNum = EnterNumber(0, 32767, CENTER_X + 120, CENTER_Y - 240 + 200, 0);
-        std::string scriptFile = AppPath + "script/" + std::to_string(scriptNum) + ".lua";
         std::string funcName = "f" + std::to_string(funcNum);
-        ExecScript(scriptFile, funcName);
+        std::string scriptBase = AppPath + "script/" + std::to_string(scriptNum);
+        if (CIFA_SCRIPT != 0)
+        {
+            ExecCifaScript(scriptBase + ".cifa", funcName);
+        }
+        else
+        {
+            ExecScript(scriptBase + ".lua", funcName);
+        }
     }
 }
 
@@ -7920,7 +7927,8 @@ void SpecialFunction()
     std::string str = "輸入功能編號";
     DrawTextWithRect(str, CENTER_X + 120, CENTER_Y - 240 + 130, 128, 0, ColColor(0x23));
     std::string str2 = "f" + std::to_string(EnterNumber(0, 32767, CENTER_X + 120, CENTER_Y - 240 + 200, 0));
-    std::string scriptFile = AppPath + "script/1.lua";
+    std::string scriptBase = AppPath + "script/1";
+    std::string scriptFile = scriptBase + (CIFA_SCRIPT != 0 ? ".cifa" : ".lua");
     if (!filefunc::fileExist(scriptFile))
     {
         str = " Script fail!";
@@ -7928,5 +7936,12 @@ void SpecialFunction()
         WaitAnyKey();
         return;
     }
-    ExecScript(scriptFile, str2);
+    if (CIFA_SCRIPT != 0)
+    {
+        ExecCifaScript(scriptFile, str2);
+    }
+    else
+    {
+        ExecScript(scriptFile, str2);
+    }
 }

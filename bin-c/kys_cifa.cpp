@@ -9,6 +9,7 @@
 #include "kys_script.h"
 
 #include "Cifa.h"
+#include "filefunc.h"
 
 #include <SDL3/SDL.h>
 #include <algorithm>
@@ -117,7 +118,8 @@ void RegisterCifaFunctions(cifa::Cifa& c)
     R("clearbutton", [](ObjectVector&) -> Object { event.key.key = 0; event.button.button = 0; return Object(); });
     R("checkbutton", [](ObjectVector&) -> Object { SDL_PollEvent(&event); int t = (event.button.button > 0) ? 1 : 0; SDL_Delay(10); return Object(t); });
     R("getbutton", [](ObjectVector&) -> Object { return cifa_array({ Object((int)event.key.key), Object((int)event.button.button) }); });
-    R("getmouseposition", [](ObjectVector&) -> Object { SDL_Event ev; SDL_PollEvent(&ev); float x = 0, y = 0; SDL_GetMouseState(&x, &y); return cifa_array({ Object((int)x), Object((int)y) }); });
+    R("getmousex", [](ObjectVector&) -> Object { SDL_Event ev; SDL_PollEvent(&ev); float x = 0, y = 0; SDL_GetMouseState(&x, &y); return Object((int)x); });
+    R("getmousey", [](ObjectVector&) -> Object { float x = 0, y = 0; SDL_GetMouseState(&x, &y); return Object((int)y); });
     R("getscreen", [](ObjectVector&) -> Object { return cifa_array({ Object(CENTER_X * 2), Object(CENTER_Y * 2) }); });
     R("getscreensize", [](ObjectVector&) -> Object { return cifa_array({ Object(CENTER_X * 2), Object(CENTER_Y * 2) }); });
     R("getcurrentscene", [](ObjectVector&) -> Object { return Object(CurScene); });
@@ -201,7 +203,8 @@ void RegisterCifaFunctions(cifa::Cifa& c)
     R("instruct_43", [](ObjectVector& args) -> Object { return cifa_bool(instruct_18(cifa_arg_int(args, 0), 1, 0) == 1); });
     R("useitem", [](ObjectVector& args) -> Object { int inum = args.size() == 3 ? cifa_arg_int(args, 0) : cifa_arg_int(args, args.empty() ? 0 : args.size() - 1); return cifa_bool(inum == CurItem); });
     R("instruct_4", [](ObjectVector& args) -> Object { int inum = args.size() == 3 ? cifa_arg_int(args, 0) : cifa_arg_int(args, args.empty() ? 0 : args.size() - 1); return cifa_bool(inum == CurItem); });
-    R("getitemlist", [](ObjectVector& args) -> Object { int i = cifa_arg_int(args, 0); return cifa_array({ Object(RItemList[i].Number), Object(RItemList[i].Amount) }); });
+    R("getitemlistitem", [](ObjectVector& args) -> Object { return Object(RItemList[cifa_arg_int(args, 0)].Number); });
+    R("getitemlistamount", [](ObjectVector& args) -> Object { return Object(RItemList[cifa_arg_int(args, 0)].Amount); });
     R("anothergetitem", [](ObjectVector& args) -> Object { instruct_41(cifa_arg_int(args, 0), cifa_arg_int(args, 1), cifa_arg_int(args, 2)); return Object(); });
     R("instruct_41", [](ObjectVector& args) -> Object { instruct_41(cifa_arg_int(args, 0), cifa_arg_int(args, 1), cifa_arg_int(args, 2)); return Object(); });
     R("npcgetitem", [](ObjectVector& args) -> Object { instruct_41(cifa_arg_int(args, 0), cifa_arg_int(args, 1), cifa_arg_int(args, 2)); return Object(); });
@@ -355,6 +358,8 @@ void RegisterCifaFunctions(cifa::Cifa& c)
     R("judgesceneevent", [](ObjectVector& args) -> Object { return cifa_bool(DData[CurScene][cifa_arg_int(args, 0)][2 + cifa_arg_int(args, 1)] == cifa_arg_int(args, 2)); });
     R("compareprointeam", [](ObjectVector& args) -> Object { int count = 0; int datalist = cifa_arg_int(args, 0); int value = cifa_arg_int(args, 1); for (int i = 0; i < 6; i++) if (Rrole[TeamList[i]].Data[datalist] == value) count++; return Object(count); });
     R("instruct_50", [](ObjectVector& args) -> Object { std::vector<int> x(7); for (size_t i = 0; i < 7 && i < args.size(); i++) x[i] = cifa_arg_int(args, i); int result = instruct_50(x); return cifa_bool(result == x[5]); });
+    R("memoryset", [](ObjectVector& args) -> Object { std::vector<int> x(7); x[0] = 25; for (size_t i = 0; i < 6 && i < args.size(); i++) x[i + 1] = cifa_arg_int(args, i); instruct_50(x); return Object(); });
+    R("memoryget", [](ObjectVector& args) -> Object { std::vector<int> x(7); x[0] = 26; for (size_t i = 0; i < 6 && i < args.size(); i++) x[i + 1] = cifa_arg_int(args, i); instruct_50(x); return Object(); });
     R50("setx50value", 0);
     R50("setx50array", 1);
     R50("getx50array", 2);
@@ -396,8 +401,6 @@ void RegisterCifaFunctions(cifa::Cifa& c)
     R50("showhurtvalue", 45);
     R50("seteffect", 46);
     R50("redraw", 47);
-    R50("debug", 48);
-    R50("pe", 49);
     R50("entername", 50);
     R50("inputnumber", 51);
     R50("havemagic", 52);
@@ -473,7 +476,12 @@ void RegisterCifaFunctions(cifa::Cifa& c)
     R("drawpicture", [](ObjectVector& args) -> Object { int type = cifa_arg_int(args, 0); int picture = cifa_arg_int(args, 1); int x = cifa_arg_int(args, 2); int y = cifa_arg_int(args, 3); if (type == 0) { if (Where == 1) DrawSPic(picture / 2, x, y); else DrawMPic(picture / 2, x, y); } else if (type == 1) DrawHeadPic(picture, x, y); UpdateAllScreen(); return Object(); });
     R("addroleattribute", [](ObjectVector& args) -> Object { int role = cifa_arg_int(args, 0); int attribute = cifa_arg_int(args, 1); int amount = cifa_arg_int(args, 2); if (attribute >= 43 && attribute <= 58) Rrole[role].Data[attribute] = RegionParameter(Rrole[role].Data[attribute] + amount, 0, MaxProList[attribute]); if (attribute == 18) { Rrole[role].MaxHP = std::min(Rrole[role].MaxHP + amount, MAX_HP); Rrole[role].CurrentHP = std::min(Rrole[role].CurrentHP + amount, Rrole[role].MaxHP); } if (attribute == 42) { Rrole[role].MaxMP = std::min(Rrole[role].MaxMP + amount, MAX_MP); Rrole[role].CurrentMP = std::min(Rrole[role].CurrentMP + amount, Rrole[role].MaxMP); } return Object(); });
     R("setwalkpicture", [](ObjectVector& args) -> Object { BEGIN_WALKPIC = cifa_arg_int(args, 0); BEGIN_WALKPIC2 = cifa_arg_int(args, 1); return Object(); });
-    R("callscript", [](ObjectVector& args) -> Object { ExecScript(std::format("{}script/{}.lua", AppPath, cifa_arg_int(args, 0)), std::format("f{}", cifa_arg_int(args, 1))); return Object(); });
+    R("callscript", [](ObjectVector& args) -> Object {
+        std::string scriptBase = std::format("{}script/{}", AppPath, cifa_arg_int(args, 0));
+        std::string functionName = std::format("f{}", cifa_arg_int(args, 1));
+        ExecCifaScript(scriptBase + ".cifa", functionName);
+        return Object();
+    });
     R("callevent", [](ObjectVector& args) -> Object { return Object(instruct_50e(43, 0, cifa_arg_int(args, 0), cifa_arg_int(args, 1), cifa_arg_int(args, 2), cifa_arg_int(args, 3), cifa_arg_int(args, 4))); });
 }
 

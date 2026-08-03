@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import re
 from pathlib import Path
 
@@ -151,7 +152,7 @@ SPECIAL_EVENT_REASONS = {
 
 
 BOOLEAN_CALL_NAMES = frozenset({
-    "AskBattle", "AskJoin", "AskYesOrNo", "CheckJumpFlag", "HaveItem", "HaveItemAmount",
+    "AskBattle", "AskJoin", "AskRest", "AskYesOrNo", "CheckJumpFlag", "HaveItem", "HaveItemAmount",
     "InTeam", "Judge14BooksPlaced", "JudgeAttack", "JudgeEthics", "JudgeEventNum",
     "JudgeFemaleInTeam", "JudgeMoney", "JudgeSceneEvent", "JudgeScenePic", "JudgeSexual",
     "TeamIsFull", "TryBattle", "UseItem",
@@ -167,10 +168,8 @@ class ConvertError(Exception):
 
 UNSUPPORTED_PATTERNS = [
     (re.compile(r"\bpairs\s*\("), "pairs iteration"),
-    (re.compile(r"#[A-Za-z_{]"), "length operator"),
     (re.compile(r"\bthen\b[^\r\n;]+\bend\b", re.IGNORECASE), "inline if/end"),
     (re.compile(r"\[[\"']"), "string keyed table access"),
-    (re.compile(r"^\s*[A-Za-z_][A-Za-z0-9_]*(?:\[[^\]]+\])?\s*=\s*\{", re.MULTILINE), "Lua table construction"),
 ]
 
 
@@ -221,9 +220,7 @@ INSTRUCT_50_ALIASES = {
     45: "showhurtvalue",
     46: "SetAnimationLayer",
     47: "redraw",
-    48: "Debug",
-    49: "pe",
-    50: "InputName",
+    50: "entername",
     51: "EnterNumber",
     52: "HaveMagic",
     53: "AddRoleAttribute",
@@ -314,8 +311,8 @@ do {
         battlefieldget(1, 1075, 0, 1077, 0, 0);
         if (GetX50(1077) != -1) {
             battlefieldget(1, 1075, 2, 1079, 0, 0);
-            if (GetX50(1079) == GetX50(1074)) {
-                SetX50(1078, GetRole(GetX50(1077), 110 / 2));
+            if (GetX50(1079) != GetX50(1074)) {
+                SetX50(1078, GetRole(GetX50(1077), 55));
                 if (GetX50(1078) >= GetX50(1080)) {
                     SetX50(1042, GetX50(1042) + GetX50(1078));
                 }
@@ -545,9 +542,9 @@ do {
     } else {
         SetX50(2, GetRole(GetX50(0), 19));
         getname(1, 0, 0, GetX50(3), 0, 0);
-        string_length_x50(GetX50(3), 4, 0, 0, 0, 0);
+        stringlength(GetX50(3), 4, 0, 0, 0, 0);
         SetX50(4, GetX50(5) - GetX50(4));
-        spaces_x50(1, 50, 4, 0, 0, 0, 0);
+        spaces(1, 50, 4, 0, 0, 0);
         concat(60, GetX50(3), 50, 0, 0, 0, 0);
         format50(1, 50, 10, 2, 0, 0, 0);
         concat(60, 60, 50, 0, 0, 0, 0);
@@ -711,7 +708,7 @@ ka211_build_line(slot, item, amount) {
     SetX50(2, GetX50(2) + 1000);
     SetX50(800 + slot, GetX50(2));
     getname(0, 1, item, GetX50(2), 0, 0);
-    string_length_x50(GetX50(2), 3, 0, 0, 0, 0);
+    stringlength(GetX50(2), 3, 0, 0, 0, 0);
     SetX50(8, 21);
     SetX50(8, GetX50(8) - GetX50(3));
     SetX50(180, MakeSpaces(GetX50(8)));
@@ -1600,27 +1597,26 @@ SetX50(28931, ScrollMenu50(GetX50(28929), 15000, 12, 50, 8));
 def convert_ka353() -> str:
     return """SetX50(9000, 5);
 Talk(382, "客官您要住店嗎？本店明碼實價，童叟無欺，住宿每人紋銀5兩。", -2, 1, 0, 0);
-if (!AskRest()) {
-    exit();
-}
-SetX50(1, 0);
-do {
-    SetX50(1, GetX50(1) + 1);
-    if (GetX50(1) > 5) {
-        break;
+if (AskRest() == 1) {
+    SetX50(1, 0);
+    do {
+        SetX50(1, GetX50(1) + 1);
+        if (GetX50(1) > 5) {
+            break;
+        }
+        SetX50(2, GetTeam(GetX50(1)));
+    } while (GetX50(2) > 0);
+    SetX50(9001, GetX50(1) * GetX50(9000));
+    if (JudgeMoney(GetX50(9001))) {
+        Talk(382, "好咧，客官裡面請。", -2, 1, 0, 0);
+        ChangeItem(0, GetX50(9001), 0, 1);
+        DarkScene();
+        Rest();
+        LightScene();
+    } else {
+        Talk(382, "這位客官，好像您的銀子不夠呀……", -2, 1, 0, 0);
     }
-    SetX50(2, GetTeam(GetX50(1)));
-} while (GetX50(2) > 0);
-SetX50(9001, GetX50(1) * GetX50(9000));
-if (!JudgeMoney(GetX50(9001))) {
-    Talk(382, "這位客官，好像您的銀子不夠呀……", -2, 1, 0, 0);
-    exit();
 }
-Talk(382, "好咧，客官裡面請。", -2, 1, 0, 0);
-ChangeItem(174, GetX50(9001), 0, 1);
-DarkScene();
-Rest();
-LightScene();
 """
 
 
@@ -1764,6 +1760,38 @@ def strip_cifa_comments(text: str) -> str:
     return "\n".join(lines) + "\n"
 
 
+def join_lua_multiline_calls(text: str) -> str:
+    """Join Lua lines while a function-call parenthesis remains open."""
+    output: list[str] = []
+    pending = ""
+    depth = 0
+
+    for raw_line in text.splitlines():
+        code, comment = split_comment(raw_line)
+        stripped = code.strip()
+        if not stripped:
+            if not pending:
+                output.append(raw_line)
+            continue
+
+        protected, _strings = replace_strings(stripped)
+        if pending:
+            pending += " " + stripped
+        else:
+            pending = code.rstrip()
+        depth += protected.count("(") - protected.count(")")
+        if depth > 0:
+            continue
+
+        output.append(pending + (" " + comment.strip() if comment else ""))
+        pending = ""
+        depth = 0
+
+    if pending:
+        output.append(pending)
+    return "\n".join(output)
+
+
 def strip_terminal_exit(text: str) -> str:
     lines = text.splitlines()
     while lines and not lines[-1].strip():
@@ -1826,6 +1854,7 @@ def restore_strings(text: str, strings: list[str]) -> str:
 
 def normalize_expr(expr: str) -> str:
     protected, strings = replace_strings(expr)
+    protected = re.sub(r"#\s*([A-Za-z_][A-Za-z0-9_]*)", r"size(\1)", protected)
     protected = re.sub(r"\btrue\b", "1", protected)
     protected = re.sub(r"\bfalse\b", "0", protected)
     protected = re.sub(r"\bnil\b", "0", protected)
@@ -1840,6 +1869,21 @@ def normalize_expr(expr: str) -> str:
     protected = re.sub(r"\bnot\b", "!", protected)
     protected = re.sub(r"\b([A-Z][A-Za-z0-9_]*)\s*\(", lambda m: m.group(1) + "(", protected)
     protected = re.sub(r"\b([a-zA-Z_][A-Za-z0-9_]*)\s*\{", r"\1 {", protected)
+
+    # Lua tables are 1-based, while Cifa arrays are 0-based. This only runs
+    # over Lua input before generating Cifa, so every numeric table subscript
+    # must be shifted exactly once.
+    def convert_array_index(match: re.Match[str]) -> str:
+        name, index = match.groups()
+        index = index.strip()
+        plus_one = re.fullmatch(r"([A-Za-z_][A-Za-z0-9_]*)\s*\+\s*1", index)
+        if plus_one:
+            return f"{name}[{plus_one.group(1)}]"
+        if re.fullmatch(r"\d+", index):
+            return f"{name}[{int(index) - 1}]"
+        return f"{name}[({index}) - 1]"
+
+    protected = re.sub(r"\b([A-Za-z_][A-Za-z0-9_]*)\s*\[([^\[\]]+)\]", convert_array_index, protected)
     call = r"(?P<call>(?P<name>[A-Za-z_][A-Za-z0-9_]*)\s*\([^()]*\))"
 
     def simplify_bool_call(match: re.Match[str], negate: bool) -> str:
@@ -1854,6 +1898,122 @@ def normalize_expr(expr: str) -> str:
     restored = restore_strings(protected, strings)
     restored = re.sub(r'("(?:[^"\\]|\\.)*")\s*\+\s*([A-Za-z_][A-Za-z0-9_]*)\b', r'\1 + to_string(\2)', restored)
     return restored
+
+
+def fold_constant_integer_expressions(text: str) -> str:
+    """Fold standalone integer arithmetic without evaluating variables or calls."""
+    protected, strings = replace_strings(text)
+    binary = re.compile(r"(?<![A-Za-z0-9_])(-?\d+)\s*([+\-*/%])\s*(-?\d+)(?![A-Za-z0-9_])")
+
+    def fold(match: re.Match[str]) -> str:
+        left, operator, right = match.groups()
+        left_value, right_value = int(left), int(right)
+        if operator == "+":
+            return str(left_value + right_value)
+        if operator == "-":
+            return str(left_value - right_value)
+        if operator == "*":
+            return str(left_value * right_value)
+        if right_value == 0:
+            return match.group(0)
+        if operator == "/":
+            return str(abs(left_value) // abs(right_value) * (-1 if (left_value < 0) != (right_value < 0) else 1))
+        quotient = abs(left_value) // abs(right_value) * (-1 if (left_value < 0) != (right_value < 0) else 1)
+        return str(left_value - quotient * right_value)
+
+    previous = None
+    while protected != previous:
+        previous = protected
+        protected = binary.sub(fold, protected)
+    return restore_strings(protected, strings)
+
+
+def fold_literal_conditions(text: str) -> str:
+    """Remove only literal true/false Cifa branches without evaluating state."""
+    lines = text.splitlines()
+    changed = False
+
+    def find_block_end(start: int) -> int | None:
+        depth = 0
+        for index in range(start, len(lines)):
+            protected, _strings = replace_strings(lines[index])
+            if depth == 1 and joined_else.fullmatch(protected):
+                return index
+            depth += protected.count("{") - protected.count("}")
+            if depth == 0:
+                return index
+        return None
+
+    def find_following_block_end(start: int) -> int | None:
+        depth = 1
+        for index in range(start, len(lines)):
+            protected, _strings = replace_strings(lines[index])
+            depth += protected.count("{") - protected.count("}")
+            if depth == 0:
+                return index
+        return None
+
+    output: list[str] = []
+    index = 0
+    branch = re.compile(r"^(?P<indent>\s*)if\s*\(\s*(?P<value>[01])\s*\)\s*\{\s*$")
+    else_branch = re.compile(r"^\s*else\s*\{\s*$")
+    joined_else = re.compile(r"^\s*}\s*else\s*\{\s*$")
+    inline_goto = re.compile(r"^(?P<indent>\s*)if\s*\(\s*1\s*\)\s*\{\s*(?P<body>goto\s+\w+\s*;)\s*}\s*$")
+
+    while index < len(lines):
+        inline = inline_goto.fullmatch(lines[index])
+        if inline:
+            output.append(inline.group("indent") + inline.group("body"))
+            changed = True
+            index += 1
+            continue
+
+        match = branch.fullmatch(lines[index])
+        if not match:
+            output.append(lines[index])
+            index += 1
+            continue
+
+        then_end = find_block_end(index)
+        if then_end is None:
+            output.append(lines[index])
+            index += 1
+            continue
+
+        value = match.group("value") == "1"
+        then_body = lines[index + 1 : then_end]
+        else_start = then_end + 1
+        else_end = None
+        if then_end < len(lines) and joined_else.fullmatch(lines[then_end]):
+            else_start = then_end + 1
+            else_end = find_following_block_end(else_start)
+        elif else_start < len(lines) and else_branch.fullmatch(lines[else_start]):
+            else_start += 1
+            else_end = find_block_end(else_start - 1)
+
+        if else_end is None:
+            if value:
+                output.extend(then_body)
+                changed = True
+            index = then_end + 1
+            continue
+
+        else_body = lines[else_start:else_end]
+        output.extend(then_body if value else else_body)
+        changed = True
+        index = else_end + 1
+
+    if not changed:
+        return text
+    return format_cifa_indentation("\n".join(output))
+
+
+def remove_empty_else_blocks(text: str) -> str:
+    """Remove else blocks that contain no statements."""
+    updated = re.sub(r"\n[ \t]*else\s*\{\s*\n[ \t]*\}", "", text)
+    if updated == text:
+        return text
+    return format_cifa_indentation(updated)
 
 
 def normalize_call_name(stripped: str) -> str:
@@ -2044,6 +2204,8 @@ def convert_instruct_50(stripped: str) -> str | None:
         dynamic = parse_instruct_50_arguments(stripped)
         if dynamic is not None:
             code, values = dynamic
+            if code in (48, 49):
+                return ""
             alias = INSTRUCT_50_ALIASES.get(code)
             if alias is not None:
                 return f"{alias}({', '.join(values)})"
@@ -2075,6 +2237,8 @@ def convert_instruct_50(stripped: str) -> str | None:
     if code == 5:
         return "ClearX50()"
     if code in (6, 7):
+        return ""
+    if code in (48, 49):
         return ""
     if code == 8:
         if (e1 & 1) == 0:
@@ -2250,9 +2414,13 @@ def convert_statement(line: str) -> str:
     if re.fullmatch(r"do\s+return\s*;?\s*end\s*;?", stripped, re.IGNORECASE):
         return indent + "return;" + (" " + comment.strip() if comment else "")
 
-    match = re.match(r"else\s+if\s+(.+)\s+then$", stripped, re.IGNORECASE)
+    match = re.match(r"else\s*if\s+(.+)\s+then$", stripped, re.IGNORECASE)
     if match:
         return indent + "else if (" + normalize_expr(match.group(1)) + ") {" + (" " + comment.strip() if comment else "")
+
+    match = re.match(r"elseif\s+(.+)\s+then$", stripped, re.IGNORECASE)
+    if match:
+        return indent + "} else if (" + normalize_expr(match.group(1)) + ") {" + (" " + comment.strip() if comment else "")
 
     match = re.match(r"function\s+([A-Za-z_][A-Za-z0-9_]*)\s*\((.*)\)$", stripped, re.IGNORECASE)
     if match:
@@ -2285,12 +2453,77 @@ def convert_statement(line: str) -> str:
     match = re.match(r"([A-Za-z_][A-Za-z0-9_]*)\s*,\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.+)$", stripped)
     if match:
         name1, name2, expr = match.groups()
+        item_list = re.fullmatch(r"getitemlist\s*\((.+)\)", expr, re.IGNORECASE)
+        if item_list:
+            index = normalize_expr(item_list.group(1))
+            return (indent + f"{name1} = getitemlistitem({index});\n"
+                    + indent + f"{name2} = getitemlistamount({index});"
+                    + (" " + comment.strip() if comment else ""))
+        if re.fullmatch(r"getmouseposition\s*\(\s*\)", expr, re.IGNORECASE):
+            return (indent + f"{name1} = getmousex();\n"
+                    + indent + f"{name2} = getmousey();"
+                    + (" " + comment.strip() if comment else ""))
         temp_name = f"__{name1}_{name2}_values"
         converted_expr = normalize_expr(expr)
         return indent + f"{temp_name} = {converted_expr};\n" + indent + f"{name1} = {temp_name}[0];\n" + indent + f"{name2} = {temp_name}[1];" + (" " + comment.strip() if comment else "")
     converted = normalize_expr(stripped)
     converted = re.sub(r"^([A-Z][A-Za-z0-9_]*)\s*\(", lambda m: m.group(1) + "(", converted)
     return indent + converted + ";" + (" " + comment.strip() if comment else "")
+
+
+def expand_inline_lua_blocks(text: str) -> str:
+    """Expand one-line Lua blocks so the normal block converter can process them."""
+    output: list[str] = []
+    inline_if = re.compile(r"^(\s*)if\s+(.+?)\s+then\s+(.+?)\s*;?\s*end\s*;?\s*$", re.IGNORECASE)
+    inline_for = re.compile(
+        r"^(\s*)for\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.+?)\s*,\s*(.+?)\s+do\s+(.+?)\s*;?\s*end\s*;?\s*$",
+        re.IGNORECASE,
+    )
+    inline_else = re.compile(r"^(\s*)else\s+(.+?)\s*;?\s*$", re.IGNORECASE)
+
+    for line in text.splitlines():
+        code, comment = split_comment(line)
+        suffix = (" " + comment.strip()) if comment else ""
+        match = inline_if.fullmatch(code)
+        if match:
+            indent, condition, body = match.groups()
+            output.extend((f"{indent}if {condition} then", f"{indent}    {body}", f"{indent}end{suffix}"))
+            continue
+        match = inline_for.fullmatch(code)
+        if match:
+            indent, name, start, end, body = match.groups()
+            output.extend((f"{indent}for {name} = {start}, {end} do", f"{indent}    {body}", f"{indent}end{suffix}"))
+            continue
+        match = inline_else.fullmatch(code)
+        if match:
+            indent, body = match.groups()
+            output.extend((f"{indent}else", f"{indent}    {body}{suffix}"))
+            continue
+        output.append(line)
+    return "\n".join(output)
+
+
+def lower_repeat_until(text: str) -> str:
+    """Lower Lua repeat/until into a Cifa-compatible loop with a guarded break."""
+    output: list[str] = []
+    repeat_indent: list[str] = []
+    for line in text.splitlines():
+        code, comment = split_comment(line)
+        stripped = code.strip().rstrip(";")
+        if re.fullmatch(r"repeat", stripped, re.IGNORECASE):
+            indent = re.match(r"\s*", code).group(0)
+            repeat_indent.append(indent)
+            output.append(f"{indent}while true do")
+            continue
+        match = re.fullmatch(r"until\s+(.+)", stripped, re.IGNORECASE)
+        if match and repeat_indent:
+            indent = repeat_indent.pop()
+            suffix = (" " + comment.strip()) if comment else ""
+            output.append(f"{indent}    if {match.group(1)} then break; end")
+            output.append(f"{indent}end{suffix}")
+            continue
+        output.append(line)
+    return "\n".join(output)
 
 
 def has_goto(text: str) -> bool:
@@ -3581,7 +3814,7 @@ def remove_legacy_memory_calls(output: str) -> str:
     return output
 
 
-def convert_lua_text(text: str, event_id: str = "") -> str:
+def _convert_lua_text(text: str, event_id: str = "") -> str:
     if event_id == "1424":
         return convert_ka1424()
     if event_id == "241":
@@ -3644,9 +3877,12 @@ def convert_lua_text(text: str, event_id: str = "") -> str:
         return convert_ka351()
     if event_id in SYNTHESIS_CONFIG_EVENTS:
         return convert_synthesis_config(text)
+    text = join_lua_multiline_calls(text)
     text = inline_legacy_next_instruction(text)
     text = simplify_star_state_pairs(text)
     text = simplify_jump_flag_pairs(text)
+    text = lower_repeat_until(text)
+    text = expand_inline_lua_blocks(text)
     if has_goto(text):
         try:
             return convert_goto_lua_text(text, event_id)
@@ -3669,11 +3905,160 @@ def convert_lua_text(text: str, event_id: str = "") -> str:
     return output
 
 
+def convert_lua_text(text: str, event_id: str = "") -> str:
+    output = fold_constant_integer_expressions(_convert_lua_text(text, event_id))
+    return remove_empty_else_blocks(fold_literal_conditions(output))
+
+
 def event_number(path: Path) -> str:
     match = re.fullmatch(r"ka(\d+)\.lua", path.name, re.IGNORECASE)
     if not match:
         raise ConvertError(f"unexpected event filename: {path.name}")
     return match.group(1)
+
+
+def x50_value_reads(flags: int, bit: int, slot: int) -> set[int]:
+    return {slot} if flags & (1 << bit) else set()
+
+
+def analyze_x50_local_candidates(text: str) -> dict[str, object]:
+    """Find slots that are safely local within a legacy instruct_50 event.
+
+    This is intentionally stricter than the converter: any instruction with a
+    dynamic x50 address, string buffer access, shared-state barrier, or unknown
+    opcode rejects the whole event rather than risking a semantic rewrite.
+    """
+    reads: set[int] = set()
+    writes: set[int] = set()
+    defined_slots: set[int] = set()
+    reads_before_write: set[int] = set()
+    rejected_reasons: set[str] = set()
+    parsed_count = 0
+    has_legacy_instruction = False
+
+    def record_accesses(instruction_reads: set[int], instruction_writes: set[int]) -> None:
+        reads.update(instruction_reads)
+        writes.update(instruction_writes)
+        reads_before_write.update(instruction_reads - defined_slots)
+        defined_slots.update(instruction_writes)
+
+    for raw_line in join_lua_multiline_calls(text).splitlines():
+        code, _comment = split_comment(raw_line)
+        stripped = code.strip().rstrip(";")
+        if not stripped:
+            continue
+        parsed = parse_instruct_50(stripped)
+        if parsed is None:
+            if re.search(r"\binstruct_50\s*\(", stripped, re.IGNORECASE):
+                rejected_reasons.add("dynamic-instruct-50")
+            continue
+
+        has_legacy_instruction = True
+        parsed_count += 1
+        opcode, values = parsed
+        e1, e2, e3, e4, e5, e6 = values
+        instruction_reads: set[int] = set()
+        instruction_writes: set[int] = set()
+
+        if opcode == 0:
+            instruction_writes.add(e1)
+        elif opcode == 3 and e2 in range(6):
+            instruction_writes.add(e3)
+            instruction_reads.add(e4)
+            instruction_reads.update(x50_value_reads(e1, 0, e5))
+        elif opcode == 4:
+            instruction_reads.add(e3)
+            if e2 in range(6):
+                instruction_reads.update(x50_value_reads(e1, 0, e4))
+        elif opcode == 16 and e2 in RECORD_ACCESSORS:
+            instruction_reads.update(x50_value_reads(e1, 0, e3))
+            instruction_reads.update(x50_value_reads(e1, 1, e4))
+            instruction_reads.update(x50_value_reads(e1, 2, e5))
+        elif opcode == 17 and e2 in RECORD_ACCESSORS:
+            instruction_writes.add(e5)
+            instruction_reads.update(x50_value_reads(e1, 0, e3))
+            instruction_reads.update(x50_value_reads(e1, 1, e4))
+        elif opcode == 18:
+            instruction_reads.update(x50_value_reads(e1, 0, e2))
+            instruction_reads.update(x50_value_reads(e1, 1, e3))
+        elif opcode == 19:
+            instruction_writes.add(e3)
+            instruction_reads.update(x50_value_reads(e1, 0, e2))
+        elif opcode == 20:
+            instruction_writes.add(e3)
+            instruction_reads.update(x50_value_reads(e1, 0, e2))
+        elif opcode == 21:
+            for bit, slot in enumerate((e2, e3, e4, e5)):
+                instruction_reads.update(x50_value_reads(e1, bit, slot))
+        elif opcode == 22:
+            instruction_writes.add(e5)
+            for bit, slot in enumerate((e2, e3, e4)):
+                instruction_reads.update(x50_value_reads(e1, bit, slot))
+        elif opcode == 23:
+            for bit, slot in enumerate((e2, e3, e4, e5, e6)):
+                instruction_reads.update(x50_value_reads(e1, bit, slot))
+        elif opcode == 24:
+            instruction_writes.add(e6)
+            for bit, slot in enumerate((e2, e3, e4, e5)):
+                instruction_reads.update(x50_value_reads(e1, bit, slot))
+        elif opcode == 26:
+            instruction_writes.add(e5)
+            instruction_reads.update(x50_value_reads(e1, 0, e6))
+        elif opcode == 35:
+            instruction_writes.add(e1)
+        elif opcode == 38:
+            instruction_writes.add(e3)
+            instruction_reads.update(x50_value_reads(e1, 0, e2))
+        elif opcode == 51:
+            instruction_writes.add(e1)
+        elif opcode in (1, 2):
+            rejected_reasons.add("dynamic-x50-address")
+        elif opcode in (5, 43, 60):
+            rejected_reasons.add("shared-x50-barrier")
+        elif opcode in (8, 9, 10, 11, 12, 27, 39, 40):
+            rejected_reasons.add("string-or-menu-buffer")
+        else:
+            rejected_reasons.add(f"unsupported-opcode-{opcode}")
+
+        record_accesses(instruction_reads, instruction_writes)
+
+    # A read without an event-local write may depend on x50 state from the
+    # caller. Reject it instead of inventing an initialization for a local.
+    # A write-only slot is observable after the event; retain it as x50 state
+    # rather than assuming it was an unused temporary.
+    candidates = sorted((writes & reads) - reads_before_write) if not rejected_reasons else []
+    return {
+        "status": "eligible" if has_legacy_instruction and candidates else "rejected",
+        "candidate_slots": candidates,
+        "reads": sorted(reads),
+        "writes": sorted(writes),
+        "reads_before_write": sorted(reads_before_write),
+        "reasons": sorted(rejected_reasons) or (["no-eligible-local-slots"] if not candidates else []),
+        "legacy_instruction_count": parsed_count,
+    }
+
+
+def write_x50_local_candidates_report(src: Path, report_path: Path) -> None:
+    events: list[dict[str, object]] = []
+    for path in sorted(src.glob("ka*.lua")):
+        result = analyze_x50_local_candidates(path.read_text(encoding="utf-8-sig"))
+        result["event"] = int(event_number(path))
+        result["path"] = path.as_posix()
+        events.append(result)
+
+    eligible = [event for event in events if event["status"] == "eligible"]
+    payload = {
+        "schema_version": 1,
+        "source": src.as_posix(),
+        "summary": {
+            "events_scanned": len(events),
+            "eligible_events": len(eligible),
+            "eligible_slots": sum(len(event["candidate_slots"]) for event in eligible),
+        },
+        "events": events,
+    }
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    report_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 def main() -> int:
@@ -3683,8 +4068,30 @@ def main() -> int:
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--clean", action="store_true", help="remove existing generated .cifa files before writing")
     parser.add_argument("--overwrite-existing", action="store_true", help="overwrite existing .cifa files, including hand-edited experiments")
+    parser.add_argument("--fold-existing", action="store_true", help="fold literal 0/1 conditions in existing .cifa files")
     parser.add_argument("--skip-report", type=Path, help="write every skipped event and its reason to this file")
+    parser.add_argument("--x50-local-candidates-report", type=Path, help="write conservative legacy x50 local-variable candidates as JSON")
     args = parser.parse_args()
+
+    if args.x50_local_candidates_report:
+        write_x50_local_candidates_report(args.src, args.x50_local_candidates_report)
+        print(f"x50_local_candidates_report={args.x50_local_candidates_report}")
+        return 0
+
+    if args.fold_existing:
+        if args.clean:
+            parser.error("--fold-existing cannot be used with --clean")
+        folded = 0
+        for path in sorted(args.dst.glob("*.cifa")):
+            original = path.read_text(encoding="utf-8")
+            updated = remove_empty_else_blocks(fold_literal_conditions(original))
+            if updated == original:
+                continue
+            folded += 1
+            if not args.dry_run:
+                path.write_text(updated, encoding="utf-8")
+        print(f"folded={folded}")
+        return 0
 
     if args.clean and not args.overwrite_existing:
         parser.error("--clean requires --overwrite-existing")
