@@ -121,13 +121,13 @@ struct TRole
             int Sexual, Level;
             int Exp;
             int CurrentHP, MaxHP, Hurt, Poison, PhyPower;
-            int ExpForItem;
+            int ExpForMakeItem;
             int Equip[2];
-            int AmiFrameNum[5];
+            int SpecialAttack2, AmiFrameNum1, AmiFrameNum2, AmiFrameNum3, AmiFrameNum4;
             int AmiDelay[5];
-            int SoundDealy[5];
+            int SoundDelay[5];
             int MPType, CurrentMP, MaxMP;
-            int Attack, Speed, Defence, Medcine, UsePoi, MedPoi, DefPoi, Fist, Sword, Knife, Unusual, HidWeapon;
+            int Attack, Speed, Defence, Medicine, UsePoi, MedPoi, DefPoi, Fist, Sword, Knife, Unusual, HidWeapon;
             int Knowledge, Ethics, AttPoi, Movestep, Repute, Aptitude, PracticeBook;
             int ExpForBook;
             int Magic[10], MagLevel[10];
@@ -150,11 +150,11 @@ struct TItem
             int ForgeTimes, Price;
             char Name[40];
             char Introduction[60];
-            int Magic, AmiNum, User, EquipType, ShowIntro, ItemType, UnKnow5, UnKnow6, UnKnow7;
+            int Magic, AmiNum, User, EquipType, ShowIntro, ItemType, Unknown5, Unknown6, UseEvent;
             int AddCurrentHP, AddMaxHP, AddPoi, AddPhyPower, ChangeMPType, AddCurrentMP, AddMaxMP;
-            int AddAttack, AddSpeed, AddDefence, AddMedcine, AddUsePoi, AddMedPoi, AddDefPoi;
+            int AddAttack, AddSpeed, AddDefence, AddMedicine, AddUsePoi, AddMedPoi, AddDefPoi;
             int AddFist, AddSword, AddKnife, AddUnusual, AddHidWeapon, AddKnowledge, AddRepute, AddMove, AddAttPoi;
-            int OnlyPracRole, NeedMPType, NeedMP, NeedAttack, NeedSpeed, NeedUsePoi, NeedMedcine, NeedMedPoi;
+            int OnlyPracRole, NeedMPType, NeedMP, NeedAttack, NeedSpeed, NeedUsePoi, NeedMedicine, NeedMedPoi;
             int NeedFist, NeedSword, NeedKnife, NeedUnusual, NeedHidWeapon, NeedAptitude;
             int NeedExp, NeedExpForItem, NeedMaterial;
             int GetItem[5], NeedMatAmount[5];
@@ -244,7 +244,7 @@ struct TWarData
             int16_t Enemy[20], EnemyY[20], EnemyX[20];
             char Name[100];
         };
-        int16_t Data[0x5D];
+        int16_t Data[143];
     };
 };
 

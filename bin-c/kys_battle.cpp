@@ -900,7 +900,7 @@ int BattleMenu(int bnum)
         max++;
     }
     // 医疗是否可用
-    if (Rrole[rnum].Medcine > 0 && Rrole[rnum].PhyPower >= 50)
+    if (Rrole[rnum].Medicine > 0 && Rrole[rnum].PhyPower >= 50)
     {
         MenuStatus = MenuStatus | 16;
         max++;
@@ -2819,7 +2819,7 @@ void AddExp()
             }
             int x = CENTER_X - 270 + (p % 2) * 270;
             int y = CENTER_Y - 240 + 90 + (p / 2) * 110;
-            Rrole[rnum].ExpForItem += basicvalue * 3 / 5;
+            Rrole[rnum].ExpForMakeItem += basicvalue * 3 / 5;
             ShowSimpleStatus(rnum, x, y);
             auto str = std::format("經驗+{}", basicvalue);
             DrawTextWithRect(str, x, y + 70, 0, ColColor(0x64), ColColor(0x66), 153, 0);
@@ -2940,7 +2940,7 @@ void CheckBook()
             }
 
             // 是否能够炼出物品
-            if (Rrole[rnum].ExpForItem >= Ritem[inum].NeedExpForItem
+            if (Rrole[rnum].ExpForMakeItem >= Ritem[inum].NeedExpForItem
                 && Ritem[inum].NeedExpForItem > 0 && Brole[i].Team == 0)
             {
                 int p = 0;
@@ -2974,7 +2974,7 @@ void CheckBook()
                         instruct_2(Ritem[inum].GetItem[p], 30 + rand() % 25);
                         UpdateAllScreen();
                         instruct_32(needitem, -needitemamount);
-                        Rrole[rnum].ExpForItem = 0;
+                        Rrole[rnum].ExpForMakeItem = 0;
                     }
                 }
             }
@@ -3136,7 +3136,7 @@ void PlayActionAnimation(int bnum, int mode)
 void Medcine(int bnum)
 {
     int rnum = Brole[bnum].rnum;
-    int med = Rrole[rnum].Medcine;
+    int med = Rrole[rnum].Medicine;
     int step = med / 15 + 1;
     CalCanSelect(bnum, 1, step);
     SelectAimMode = 1;
@@ -3218,7 +3218,7 @@ void UseHiddenWeapon(int bnum, int inum)
     int step = std::min(10, hidden / 15 + 1);
     CalCanSelect(bnum, 1, step);
     bool select = false;
-    int eventnum = (inum >= 0) ? Ritem[inum].UnKnow7 : -1;
+    int eventnum = (inum >= 0) ? Ritem[inum].UseEvent : -1;
     if (eventnum > 0)
     {
         CallEvent(eventnum);
@@ -3431,7 +3431,7 @@ void AutoBattle3(int bnum)
             {
                 if (rand() % 100 < 70)
                 {
-                    if (Rrole[rnum].Medcine >= 60 && Rrole[rnum].PhyPower >= 50)
+                    if (Rrole[rnum].Medicine >= 60 && Rrole[rnum].PhyPower >= 50)
                     {
                         int Movex, Movey;
                         FarthestMove(Movex, Movey, bnum);
@@ -3501,7 +3501,7 @@ void AutoBattle3(int bnum)
                 SpecialAttack(bnum);
 
             // 医疗大于70, 寻找生命最低队友医疗
-            if (Brole[bnum].Acted != 1 && Rrole[rnum].Medcine > 70 && Rrole[rnum].PhyPower >= 70)
+            if (Brole[bnum].Acted != 1 && Rrole[rnum].Medicine > 70 && Rrole[rnum].PhyPower >= 70)
             {
                 if (rand() % 100 < 30)
                 {
@@ -3900,7 +3900,7 @@ void TryMoveCure(int& Mx1, int& My1, int& Ax1, int& Ay1, int bnum)
 {
     int step = Brole[bnum].Step;
     int myteam = Brole[bnum].Team;
-    int curedis = Rrole[Brole[bnum].rnum].Medcine / 15 + 1;
+    int curedis = Rrole[Brole[bnum].rnum].Medicine / 15 + 1;
     int tempminHP = MAX_HP;
     Mx1 = Bx; My1 = By;
     CalCanSelect(bnum, 0, step);
@@ -3935,7 +3935,7 @@ void CureAction(int bnum)
     Rrole[rnum].PhyPower -= 5;
     int bnum1 = BField[2][Ax][Ay];
     int rnum1 = Brole[bnum1].rnum;
-    int addlife = Rrole[rnum].Medcine;
+    int addlife = Rrole[rnum].Medicine;
     if (addlife < 0) addlife = 0;
     if (addlife + Rrole[rnum1].CurrentHP > Rrole[rnum1].MaxHP)
         addlife = Rrole[rnum1].MaxHP - Rrole[rnum1].CurrentHP;
@@ -4254,7 +4254,7 @@ void CallSA2Func(TSpecialAbility2& sa2, int f, int bnum, int mnum, int mnum2, in
 void CheckAttackAttachment(int bnum, int mnum, int level)
 {
     TSpecialAbility2 sa2;
-    int16_t f = Rrole[Brole[bnum].rnum].AmiFrameNum[0];
+    int16_t f = Rrole[Brole[bnum].rnum].SpecialAttack2;
     int16_t mnum2 = GetMagicWithSA2(f);
     if (mnum2 > 0 && Rmagic[mnum2].HurtType == 4 && Rmagic[mnum2].Poison == 0 && rand() % 100 < Rmagic[mnum2].NeedMP)
         CallSA2Func(sa2, f, bnum, mnum, mnum2, level);
@@ -4263,7 +4263,7 @@ void CheckAttackAttachment(int bnum, int mnum, int level)
     {
         if (Brole[bnum].Team != Brole[i].Team && Brole[i].Dead == 0 && BField[4][Brole[i].X][Brole[i].Y] > 0)
         {
-            f = Rrole[Brole[i].rnum].AmiFrameNum[0];
+            f = Rrole[Brole[i].rnum].SpecialAttack2;
             mnum2 = GetMagicWithSA2(f);
             if (mnum2 > 0 && Rmagic[mnum2].HurtType == 4 && Rmagic[mnum2].Poison == 1 && rand() % 100 < Rmagic[mnum2].NeedMP)
                 CallSA2Func(sa2, f, i, mnum, mnum2, level);

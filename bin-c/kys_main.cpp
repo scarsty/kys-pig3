@@ -967,7 +967,7 @@ bool InitialRole()
             Rrole[0].Attack = 30 + rand() % 6;
             Rrole[0].Speed = 30 + rand() % 6;
             Rrole[0].Defence = 30 + rand() % 6;
-            Rrole[0].Medcine = 25 + rand() % 6;
+            Rrole[0].Medicine = 25 + rand() % 6;
             Rrole[0].UsePoi = 25 + rand() % 6;
             Rrole[0].MedPoi = 25 + rand() % 6;
             Rrole[0].Fist = 25 + rand() % 6;
@@ -1014,7 +1014,7 @@ bool InitialRole()
                 Rrole[0].Attack = 35;
                 Rrole[0].Speed = 35;
                 Rrole[0].Defence = 35;
-                Rrole[0].Medcine = 30;
+                Rrole[0].Medicine = 30;
                 Rrole[0].UsePoi = 30;
                 Rrole[0].MedPoi = 30;
                 Rrole[0].Fist = 30;
@@ -1030,7 +1030,7 @@ bool InitialRole()
                 Rrole[0].addnum = 1;
                 Rrole[0].Aptitude = 100;
                 Rrole[0].MagLevel[0] = 999;
-                Rrole[0].AmiFrameNum[0] = 2;
+                Rrole[0].SpecialAttack2 = 2;
                 if (MODVersion == 31)
                 {
                     Rrole[0].HeadNum = 448;
@@ -1039,14 +1039,14 @@ bool InitialRole()
             if (input_name == "風劍琴")
             {
                 Rrole[0].addnum = 1;
-                Rrole[0].AmiFrameNum[0] = 0;
+                Rrole[0].SpecialAttack2 = 0;
             }
             if (input_name == "阮小二")
             {
                 Rrole[0].addnum = 1;
                 Rrole[0].Aptitude = 100;
                 Rrole[0].MagLevel[0] = 999;
-                Rrole[0].AmiFrameNum[0] = 1;
+                Rrole[0].SpecialAttack2 = 1;
                 if (MODVersion == 31)
                 {
                     Rrole[0].HeadNum = 434;
@@ -1057,7 +1057,7 @@ bool InitialRole()
                 Rrole[0].addnum = 1;
                 Rrole[0].Aptitude = 100;
                 Rrole[0].MagLevel[0] = 999;
-                Rrole[0].AmiFrameNum[0] = 2;
+                Rrole[0].SpecialAttack2 = 2;
                 if (MODVersion == 31)
                 {
                     Rrole[0].HeadNum = 435;
@@ -1067,7 +1067,7 @@ bool InitialRole()
             {
                 Rrole[0].Aptitude = 100;
                 Rrole[0].MagLevel[0] = 999;
-                Rrole[0].AmiFrameNum[0] = 12;
+                Rrole[0].SpecialAttack2 = 12;
                 if (MODVersion == 31)
                 {
                     Rrole[0].HeadNum = 454;
@@ -1091,7 +1091,7 @@ bool InitialRole()
                 Ritem[0x6C].AddAttack = 10;
                 Ritem[0xA5].AddAttack = 6;
                 Rrole[0].Movestep = 50;
-                Rrole[0].AmiFrameNum[0] = 3;
+                Rrole[0].SpecialAttack2 = 3;
             }
             if (input_name == "虛僞帝")
             {
@@ -1112,7 +1112,7 @@ bool InitialRole()
             }
             if (input_name == "智障帝")
             {
-                Rrole[0].AmiFrameNum[0] = 103;
+                Rrole[0].SpecialAttack2 = 103;
                 Rrole[0].MagLevel[0] = 999;
             }
             if (input_name == "光頭強")
@@ -1380,8 +1380,8 @@ bool LoadR(int num)
         {
             Rrole[168].Data[73] = 97;
             Rrole[168].Data[63] = 121;
-            Rrole[8].AmiFrameNum[0] = 3;
-            Rrole[13].AmiFrameNum[0] = 5;
+            Rrole[8].SpecialAttack2 = 3;
+            Rrole[13].SpecialAttack2 = 5;
         }
         if (MODVersion != 13)
         {
@@ -4533,9 +4533,9 @@ void UseItem(int inum, int teammate)
     {
     case 0:    // 剧情物品
     {
-        if (Ritem[inum].UnKnow7 > 0)
+        if (Ritem[inum].UseEvent > 0)
         {
-            CallEvent(Ritem[inum].UnKnow7);
+            CallEvent(Ritem[inum].UseEvent);
         }
         else
         {
@@ -4692,8 +4692,8 @@ void UseItem(int inum, int teammate)
                     Ritem[inum].User = rnum;
                     if (preUser != rnum)
                     {
-                        Rrole[rnum].ExpForItem = 0;
                         Rrole[rnum].ExpForBook = 0;
+                        Rrole[rnum].ExpForMakeItem = 0;
                     }
                 }
                 else
@@ -4762,7 +4762,7 @@ bool CanEquip(int rnum, int inum, int use)
     case 2:
     {
         result = true;
-        if (sign(Ritem[inum].NeedMP) * Rrole[rnum].CurrentMP < Ritem[inum].NeedMP)
+        if (sign(Ritem[inum].NeedMP) * Rrole[rnum].MaxMP < Ritem[inum].NeedMP)
         {
             result = false;
         }
@@ -4778,7 +4778,7 @@ bool CanEquip(int rnum, int inum, int use)
         {
             result = false;
         }
-        if (sign(Ritem[inum].NeedMedcine) * Rrole[rnum].Medcine < Ritem[inum].NeedMedcine)
+        if (sign(Ritem[inum].NeedMedicine) * Rrole[rnum].Medicine < Ritem[inum].NeedMedicine)
         {
             result = false;
         }
@@ -5306,8 +5306,8 @@ void ShowStatus(int rnum, int bnum)
     SetColorByPro(Rrole[rnum].Movestep + addnum[3], 100, color1, color2);
     DrawEngShadowText(buf, x + 380, y + 5 + h * 3, color1, color2);
 
-    buf = std::format("{:4d}", Rrole[rnum].Medcine);
-    SetColorByPro(Rrole[rnum].Medcine, 200, color1, color2);
+    buf = std::format("{:4d}", Rrole[rnum].Medicine);
+    SetColorByPro(Rrole[rnum].Medicine, 200, color1, color2);
     DrawEngShadowText(buf, x + 380, y + 5 + h * 4, color1, color2);
 
     buf = std::format("{:4d}", Rrole[rnum].UsePoi);
@@ -5676,7 +5676,7 @@ void MenuAbility()
         {
             if (select >= 0)
             {
-                if ((select == 0 && Rrole[TeamList[menu]].Medcine > 0) || (select == 1 && Rrole[TeamList[menu]].MedPoi > 0))
+                if ((select == 0 && Rrole[TeamList[menu]].Medicine > 0) || (select == 1 && Rrole[TeamList[menu]].MedPoi > 0))
                 {
                     TransBlackScreen();
                     int menu2 = SelectOneTeamMember(x + 50, y + 80 + select * 150,
@@ -5785,7 +5785,7 @@ void ShowAbility(int rnum, int select, int showLeave)
     DrawTextWithRect(strs[0], x + 70, y + 20, 10, 0, 0x202020, 255, 0);
 
     // 醫療
-    if (Rrole[rnum].Medcine > 0)
+    if (Rrole[rnum].Medicine > 0)
     {
         color1 = 0;
         color2 = 0x202020;
@@ -5801,7 +5801,7 @@ void ShowAbility(int rnum, int select, int showLeave)
         color2 = ColColor(0x6F);
     }
     std::string buf;
-    buf = std::format("{:4d}", Rrole[rnum].Medcine);
+    buf = std::format("{:4d}", Rrole[rnum].Medicine);
     std::string str = strs1[0] + buf;
     DrawTextWithRect(str, x + 70, y + 50, 0, color1, color2, 204, 0);
 
@@ -6735,9 +6735,9 @@ bool LoadForSecondRound(int num)
                     instruct_32(tempRItemList[i].Number, tempRItemList[i].Amount);
                 }
             }
-            if (Rrole[0].AmiFrameNum[0] < 0)
+            if (Rrole[0].SpecialAttack2 < 0)
             {
-                Rrole[0].AmiFrameNum[0] = 8;
+                Rrole[0].SpecialAttack2 = 8;
             }
         }
         if (mode >= 3)
@@ -6851,7 +6851,7 @@ void MenuQuit()
 //----------------------------------------------------------------------
 void EffectMedcine(int role1, int role2)
 {
-    int addlife = Rrole[role1].Medcine * 2 - Rrole[role2].Hurt + rand() % 10 - 5;
+    int addlife = Rrole[role1].Medicine * 2 - Rrole[role2].Hurt + rand() % 10 - 5;
     if (addlife < 0)
     {
         addlife = 0;

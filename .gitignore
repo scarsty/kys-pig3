@@ -135,3 +135,5 @@ game0/script/event-cifa
 bin-c/x64
 game0/exported_ground_maps
 tmp
+game/script
+game0/script

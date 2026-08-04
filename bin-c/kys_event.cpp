@@ -3733,7 +3733,7 @@ void SetAttribute(int rnum, int selecttype, int modlevel, int minlevel, int maxl
     addSkill(Rrole[rnum].Knife, lv);
     addSkill(Rrole[rnum].Unusual, lv);
     addSkill(Rrole[rnum].HidWeapon, lv);
-    addSkill(Rrole[rnum].Medcine, lv);
+    addSkill(Rrole[rnum].Medicine, lv);
     addSkill(Rrole[rnum].UsePoi, lv);
     addSkill(Rrole[rnum].MedPoi, lv);
 
