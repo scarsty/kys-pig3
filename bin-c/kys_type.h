@@ -487,7 +487,7 @@ inline TWoodMan WoodManSta = {};
 
 inline std::string Star[108];
 inline std::string RoleName[108];
-inline int loverlist[100][5] = {};
+inline int LoverList[100][5] = {};
 
 inline int SelectAimMode = 0;
 

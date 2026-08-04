@@ -415,22 +415,22 @@ void BattleMainControl()
     ClearDeadRolePic();
     for (int k = 0; k < MAX_LOVER; k++)
     {
-        int m = IFinbattle(loverlist[k][0]);
-        int n = IFinbattle(loverlist[k][1]);
+        int m = IFinbattle(LoverList[k][0]);
+        int n = IFinbattle(LoverList[k][1]);
         if (m >= 0 && n >= 0 && m != n)
         {
             if (m == 0 && n == 0) break;
             Bx = Brole[n].X;
             By = Brole[n].Y;
             Redraw();
-            NewTalk(loverlist[k][1], loverlist[k][4], -2, 0, 0, 28515, 0);
+            NewTalk(LoverList[k][1], LoverList[k][4], -2, 0, 0, 28515, 0);
             Bx = Brole[m].X;
             By = Brole[m].Y;
             Redraw();
-            NewTalk(loverlist[k][0], loverlist[k][4] + 1, -2, 1, 0, 28515, 0);
-            Brole[m].loverlevel[loverlist[k][2]] = loverlist[k][3];
-            if (loverlist[k][2] != 6) // 替代伤害为单向
-                Brole[n].loverlevel[loverlist[k][2]] = loverlist[k][3];
+            NewTalk(LoverList[k][0], LoverList[k][4] + 1, -2, 1, 0, 28515, 0);
+            Brole[m].loverlevel[LoverList[k][2]] = LoverList[k][3];
+            if (LoverList[k][2] != 6) // 替代伤害为单向
+                Brole[n].loverlevel[LoverList[k][2]] = LoverList[k][3];
         }
     }
 

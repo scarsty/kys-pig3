@@ -241,7 +241,7 @@ void SetMODVersion()
     ASound.resize(25, nullptr);
 
     StartMusic = 59;
-    versionstr = "108 Brothers and Sisters (c++) v18";
+    versionstr = "108 Brothers and Sisters (c++) v20";
     TitleString = "Legend of Little Village III - " + versionstr;
 
     OpenPicPosition.x = 0;
@@ -462,7 +462,7 @@ void ReadFiles()
     ReadFileToBuffer((char*)&LeaveList[0], AppPath + "binlist/leave.bin", 200, 0);
     ReadFileToBuffer((char*)&LevelUpList[0], AppPath + "binlist/levelup.bin", 200, 0);
 
-    ReadTxtFileToBuffer((char*)&loverlist[0], sizeof(loverlist), AppPath + "list/lover.txt");
+    ReadTxtFileToBuffer((char*)&LoverList[0], sizeof(LoverList), AppPath + "list/lover.txt");
     ReadFileToBuffer((char*)&WarStaList[0], AppPath + "resource/war.sta", sizeof(TWarData) * 401, 0);
 
     KDEF = LoadIdxGrp("resource/kdef.idx", "resource/kdef.grp");

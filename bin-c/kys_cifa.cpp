@@ -109,7 +109,17 @@ void RegisterCifaFunctions(cifa::Cifa& c)
     R("clear", [](ObjectVector&) -> Object { Redraw(); return Object(); });
     R("instruct_0", [](ObjectVector&) -> Object { Redraw(); return Object(); });
     R("pause", [](ObjectVector&) -> Object { return Object(WaitAnyKey()); });
-    R("getkey", [](ObjectVector&) -> Object { return Object(WaitAnyKey()); });
+    R("getkey", [](ObjectVector&) -> Object {
+        int key = WaitAnyKey();
+        switch (key)
+        {
+        case SDLK_LEFT: key = 154; break;
+        case SDLK_RIGHT: key = 156; break;
+        case SDLK_UP: key = 158; break;
+        case SDLK_DOWN: key = 152; break;
+        }
+        return Object(key);
+    });
     R("gettime", [](ObjectVector&) -> Object { return Object((int)(SDL_GetTicks() / 1000)); });
     R("time", [](ObjectVector&) -> Object { return Object((int)time(nullptr)); });
     R("randomseed", [](ObjectVector& args) -> Object { srand((unsigned int)cifa_arg_int(args, 0)); return Object(); });
