@@ -241,7 +241,7 @@ void SetMODVersion()
     ASound.resize(25, nullptr);
 
     StartMusic = 59;
-    versionstr = "108 Brothers and Sisters (c++) v20";
+    versionstr = "108 Brothers and Sisters (c++) v21";
     TitleString = "Legend of Little Village III - " + versionstr;
 
     OpenPicPosition.x = 0;
@@ -5123,7 +5123,7 @@ void ShowStatus(int rnum, int bnum)
             color2 = ColColor(7);
         }
         buf = std::format("{:4d}", Rrole[rnum].CurrentHP);
-        DrawEngShadowText(buf, x + 60, y + 211 + h * 1, color1, color2);
+        DrawEngShadowText(buf, x + 60 - std::max(0, (int)buf.size() - 4) * 9, y + 211 + h * 1, color1, color2);
         DrawEngShadowText("/", x + 100, y + 211 + h * 1, ColColor(0x64), ColColor(0x66));
 
         if (Rrole[rnum].Poison >= 67)
@@ -5142,7 +5142,7 @@ void ShowStatus(int rnum, int bnum)
             color2 = ColColor(0x23);
         }
         buf = std::format("{:4d}", Rrole[rnum].MaxHP);
-        DrawEngShadowText(buf, x + 110, y + 211 + h * 1, color1, color2);
+        DrawEngShadowText(buf, x + 110 - std::max(0, (int)buf.size() - 4) * 9, y + 211 + h * 1, color1, color2);
 
         if (Rrole[rnum].MPType == 0)
         {
@@ -5502,7 +5502,7 @@ void ShowSimpleStatus(int rnum, int x, int y, int forTeam)
         color2 = ColColor(7);
     }
     buf = std::format("{:4d}", Rrole[rnum].CurrentHP);
-    DrawEngShadowText(buf, ox + 138, oy + 28, color1, color2, tex, sur);
+    DrawEngShadowText(buf, ox + 138 - std::max(0, (int)buf.size() - 4) * 9, oy + 28, color1, color2, tex, sur);
     DrawEngShadowText("/", ox + 165, oy + 28, ColColor(0x64), ColColor(0x66), tex, sur);
 
     if (Rrole[rnum].Poison >= 67)
@@ -5521,7 +5521,7 @@ void ShowSimpleStatus(int rnum, int x, int y, int forTeam)
         color2 = ColColor(0x23);
     }
     buf = std::format("{:4d}", Rrole[rnum].MaxHP);
-    DrawEngShadowText(buf, ox + 173, oy + 28, color1, color2, tex, sur);
+    DrawEngShadowText(buf, ox + 173 - std::max(0, (int)buf.size() - 4) * 9, oy + 28, color1, color2, tex, sur);
 
     // MP
     if (Rrole[rnum].MPType == 0)
@@ -7614,6 +7614,7 @@ void Maker()
     words.push_back("Android移植");
     words.push_back("KA");
     words.push_back("bttt");
+    words.push_back("杨裕彪");
     words.push_back("");
 
     words.push_back("特別感謝");
@@ -7636,6 +7637,7 @@ void Maker()
     words.push_back("soastao");
     words.push_back("NamelessOne47");
     words.push_back("lsl330");
+    words.push_back("whyb");
     words.push_back("泥巴");
     words.push_back("王子");
     words.push_back("ice");
@@ -7653,6 +7655,7 @@ void Maker()
     words.push_back("FFmpeg / Libav");
     words.push_back("zlib / minizip / libzip");
     words.push_back("lua");
+    words.push_back("cifa");
     words.push_back("Github Copilot");
     words.push_back("");
 

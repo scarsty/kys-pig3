@@ -295,7 +295,7 @@ inline int ui_y = 60;
 // 游戏常数 (多数可由ini文件改变)
 inline int BEGIN_MISSION_NUM = 100;
 inline int MISSION_AMOUNT = 49;
-inline int STATUS_AMOUNT = 29;
+inline int STATUS_AMOUNT = 34;
 inline int BEGIN_EVENT = 301;
 inline int BEGIN_SCENE = 0;
 inline int BEGIN_Sx = 20;
