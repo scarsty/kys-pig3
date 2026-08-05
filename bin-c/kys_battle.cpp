@@ -779,8 +779,12 @@ int CalBroleMoveAbility(int bnum)
     int result = step / 10;
     if (result > 15)
         result = 15;
-    result = result + Brole[bnum].StateLevel[3] + Brole[bnum].loverlevel[2]
-        + Ritem[Rrole[rnum].Equip[1]].AddMove + Ritem[Rrole[rnum].Equip[0]].AddMove;
+    result = result + Brole[bnum].StateLevel[3] + Brole[bnum].loverlevel[2];
+    for (int equip : Rrole[rnum].Equip)
+    {
+        if (equip >= 0 && equip < 1000)
+            result += Ritem[equip].AddMove;
+    }
     if (SEMIREAL == 1 && result > 7)
         result = 7;
     return result;
@@ -1829,6 +1833,51 @@ void AttackAction(int bnum, int mnum, int level)
         {
             if (Rmagic[mnum].HurtType == 0)
             {
+                // 19号状态: 青翼, 被攻击后移动
+                if (Brole[bnum].Team != Brole[i].Team
+                    && BField[4][Brole[i].X][Brole[i].Y] > 0
+                    && Brole[i].StateLevel[19] == 1)
+                {
+                    int oldBx = Bx;
+                    int oldBy = By;
+                    int oldStep = Brole[i].Step;
+                    Bx = Brole[i].X;
+                    By = Brole[i].Y;
+                    Brole[i].Step = CalBroleMoveAbility(i);
+                    CalCanSelect(i, 0, Brole[i].Step);
+                    bool moved = true;
+                    if (Brole[i].Team == 0 && Brole[i].Auto == 0)
+                        moved = SelectAim(i, Brole[i].Step);
+                    else
+                        FarthestMove(Ax, Ay, i);
+                    if (moved)
+                    {
+                        BField[2][Brole[i].X][Brole[i].Y] = -1;
+                        Brole[i].X = Ax;
+                        Brole[i].Y = Ay;
+                        BField[2][Ax][Ay] = i;
+                    }
+                    Brole[i].Step = oldStep;
+                    Bx = oldBx;
+                    By = oldBy;
+                }
+
+                // 17号状态: 博采, 受攻击后增加对应兵器值
+                if (BField[4][Brole[i].X][Brole[i].Y] > 0
+                    && Brole[i].StateLevel[17] > 0
+                    && rand() % 100 < Brole[i].StateLevel[17])
+                {
+                    auto& role = Rrole[Brole[i].rnum];
+                    switch (Rmagic[mnum].MagicType)
+                    {
+                    case 1: if (role.Fist >= 20) role.Fist = std::min((int)role.Fist + 1, MaxProList[50]); break;
+                    case 2: if (role.Sword >= 20) role.Sword = std::min((int)role.Sword + 1, MaxProList[51]); break;
+                    case 3: if (role.Knife >= 20) role.Knife = std::min((int)role.Knife + 1, MaxProList[52]); break;
+                    case 4: if (role.Unusual >= 20) role.Unusual = std::min((int)role.Unusual + 1, MaxProList[53]); break;
+                    case 5: if (role.HidWeapon >= 20) role.HidWeapon = std::min((int)role.HidWeapon + 1, MaxProList[54]); break;
+                    }
+                }
+
                 // 8号状态: 风雷, 攻击后直线敌人后移
                 if (Brole[bnum].StateLevel[8] > 0 && Brole[bnum].Team != Brole[i].Team)
                 {

@@ -1145,15 +1145,11 @@ void BufferRead(char*& p, char* buf, int size)
 
 void BufferRead16to32(char*& p, char* buf, int size)
 {
-    // 将16位数据转换为32位
-    int16_t* src = (int16_t*)p;
-    int* dst = (int*)buf;
-    int count = size / 4;
-    for (int i = 0; i < count; i++)
-    {
-        dst[i] = src[i];
-    }
-    p += count * 2;
+    int16_t value;
+    memcpy(&value, p, size);
+    p += size;
+    int expanded = value;
+    memcpy(buf, &expanded, sizeof(expanded));
 }
 
 void BufferWrite(char*& p, char* buf, int size)
@@ -7675,9 +7671,7 @@ void Maker()
     words.push_back("逐夢江湖行");
     words.push_back("");
 
-    words.push_back(
-        "特別致謝短歌行"
-        "MIDI音色庫");
+    words.push_back("特別致謝短歌行MIDI音色庫");
     words.push_back("");
 
     words.push_back("再次致謝");
