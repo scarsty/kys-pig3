@@ -241,7 +241,7 @@ void SetMODVersion()
     ASound.resize(25, nullptr);
 
     StartMusic = 59;
-    versionstr = "108 Brothers and Sisters (c++) v21";
+    versionstr = "108 Brothers and Sisters (c++) v22";
     TitleString = "Legend of Little Village III - " + versionstr;
 
     OpenPicPosition.x = 0;
@@ -956,6 +956,7 @@ bool InitialRole()
         std::string surname, givenname;
         DivideName((char*)Rrole[0].Name, surname, givenname);
         Redraw();
+        int buttonFocus = 0;
         do
         {
             Rrole[0].MaxHP = 100 + rand() % 26;
@@ -980,21 +981,110 @@ bool InitialRole()
             {
                 Rrole[0].Aptitude = rand() % 100;
             }
-            Redraw();
-            ShowStatus(0);
             const int initialRoleX = CENTER_X - 320;
-            DrawTextWithRect("資質", initialRoleX + 150, CENTER_Y + 120, 80, 0, 0x202020, 179, 0);
-            auto buf = std::format("{:4d}", Rrole[0].Aptitude);
-            DrawEngShadowText(buf, initialRoleX + 200, CENTER_Y + 123, ColColor(0x64), ColColor(0x66));
-            DrawTextWithRect("選定屬性后按回車或這裡確認", initialRoleX + 175, CENTER_Y + 171, 260, 0, 0, 255);
-            UpdateAllScreen();
-            int i = WaitAnyKey();
-            if (i == SDLK_RETURN || i == SDLK_Y || (MouseInRegion(initialRoleX + 175, CENTER_Y + 171, 260, 22) && i != SDLK_ESCAPE))
+            const SDL_Rect randomButton = {initialRoleX + 150, CENTER_Y + 171, 90, 23};
+            const SDL_Rect confirmButton = {initialRoleX + 250, CENTER_Y + 171, 90, 23};
+            const SDL_Rect cancelButton = {initialRoleX + 350, CENTER_Y + 171, 90, 23};
+            bool confirmed = false;
+            bool cancelled = false;
+            bool reroll = false;
+            bool refresh = true;
+            do
             {
-                break;
-            }
-            if (i == SDLK_ESCAPE) { return false; }
-        } while (true);    // repeat until Enter/Y/click
+                if (refresh)
+                {
+                    Redraw();
+                    ShowStatus(0);
+                    DrawTextWithRect("資質", initialRoleX + 150, CENTER_Y + 120, 80, 0, 0x202020, 179, 0);
+                    auto buf = std::format("{:4d}", Rrole[0].Aptitude);
+                    DrawEngShadowText(buf, initialRoleX + 200, CENTER_Y + 123, ColColor(0x64), ColColor(0x66));
+                    DrawTextFrame(randomButton.x, randomButton.y, 5, 255);
+                    DrawTextFrame(confirmButton.x, confirmButton.y, 5, 255);
+                    DrawTextFrame(cancelButton.x, cancelButton.y, 5, 255);
+                    DrawShadowText("隨機", randomButton.x + 24, randomButton.y + 3,
+                        buttonFocus == 0 ? ColColor(0x64) : 0, buttonFocus == 0 ? ColColor(0x66) : 0x202020);
+                    DrawShadowText("確定", confirmButton.x + 24, confirmButton.y + 3,
+                        buttonFocus == 1 ? ColColor(0x64) : 0, buttonFocus == 1 ? ColColor(0x66) : 0x202020);
+                    DrawShadowText("取消", cancelButton.x + 24, cancelButton.y + 3,
+                        buttonFocus == 2 ? ColColor(0x64) : 0, buttonFocus == 2 ? ColColor(0x66) : 0x202020);
+                    UpdateAllScreen();
+                    refresh = false;
+                }
+
+                SDL_PollEvent(&event);
+                CheckBasicEvent();
+                if (event.type == SDL_EVENT_KEY_DOWN)
+                {
+                    if (event.key.key == SDLK_LEFT)
+                    {
+                        buttonFocus = (buttonFocus + 2) % 3;
+                        refresh = true;
+                    }
+                    else if (event.key.key == SDLK_RIGHT)
+                    {
+                        buttonFocus = (buttonFocus + 1) % 3;
+                        refresh = true;
+                    }
+                }
+                else if (event.type == SDL_EVENT_KEY_UP)
+                {
+                    if (event.key.key == SDLK_RETURN)
+                    {
+                        reroll = buttonFocus == 0;
+                        confirmed = buttonFocus == 1;
+                        cancelled = buttonFocus == 2;
+                    }
+                    else if (event.key.key == SDLK_Y)
+                    {
+                        confirmed = true;
+                    }
+                    else if (event.key.key == SDLK_ESCAPE)
+                    {
+                        cancelled = true;
+                    }
+                }
+                else if (event.type == SDL_EVENT_MOUSE_BUTTON_UP && event.button.button == SDL_BUTTON_LEFT)
+                {
+                    reroll = MouseInRegion(randomButton.x, randomButton.y, randomButton.w, randomButton.h);
+                    confirmed = MouseInRegion(confirmButton.x, confirmButton.y, confirmButton.w, confirmButton.h);
+                    cancelled = MouseInRegion(cancelButton.x, cancelButton.y, cancelButton.w, cancelButton.h);
+                }
+                else if (event.type == SDL_EVENT_MOUSE_MOTION)
+                {
+                    if (MouseInRegion(randomButton.x, randomButton.y, randomButton.w, randomButton.h))
+                    {
+                        if (buttonFocus != 0)
+                        {
+                            buttonFocus = 0;
+                            refresh = true;
+                        }
+                    }
+                    else if (MouseInRegion(confirmButton.x, confirmButton.y, confirmButton.w, confirmButton.h))
+                    {
+                        if (buttonFocus != 1)
+                        {
+                            buttonFocus = 1;
+                            refresh = true;
+                        }
+                    }
+                    else if (MouseInRegion(cancelButton.x, cancelButton.y, cancelButton.w, cancelButton.h))
+                    {
+                        if (buttonFocus != 2)
+                        {
+                            buttonFocus = 2;
+                            refresh = true;
+                        }
+                    }
+                }
+                else if (event.type == SDL_EVENT_MOUSE_BUTTON_UP && event.button.button == SDL_BUTTON_RIGHT)
+                {
+                    cancelled = true;
+                }
+                SDL_Delay(16);
+            } while (!confirmed && !cancelled && !reroll);
+            if (confirmed) { break; }
+            if (cancelled) { return false; }
+        } while (true);
 
         InitGrowth();
         if (MODVersion == 0 || MODVersion == 13 || MODVersion == 31 || MODVersion == 12 || MODVersion == 41)
@@ -7692,124 +7782,114 @@ void ScrollTextAmi(std::vector<std::string>& words, int chnsize, int engsize, in
 {
     Redraw();
     CleanTextScreen();
-    SetFontSize(chnsize, engsize, 1);
 
-    int texw, texh0;
-    if (TEXT_LAYER == 0)
+    int screenw = CENTER_X * 2;
+    int screenh = CENTER_Y * 2;
+    int screenx = 0;
+    int screeny = 0;
+    double textScale = 1;
+    if (TEXT_LAYER == 1)
     {
-        texw = CENTER_X * 2;
-        texh0 = CENTER_Y * 2;
+        TStretchInfo stretch = KeepRatioScale(CENTER_X * 2, CENTER_Y * 2, RESOLUTIONX, RESOLUTIONY);
+        textScale = (double)stretch.num / stretch.den;
+        screenw = (int)std::round(screenw * textScale);
+        screenh = (int)std::round(screenh * textScale);
+        screenx = stretch.px;
+        screeny = stretch.py;
     }
-    else
-    {
-        texw = RESOLUTIONX;
-        texh0 = RESOLUTIONY;
-    }
-    int texh = (int)words.size() * linespace + texh0 * 3 / 2;
+    SetFontSize(chnsize, engsize, TEXT_LAYER == 1 ? 0 : 1);
+
+    double fontScale = (chnsize > 0) ? (double)CHINESE_FONT_REALSIZE / chnsize : textScale;
+    int scaledLineSpace = std::max(1, (int)std::round(linespace * fontScale));
+    int scrollEnd = (int)std::round(240 * fontScale);
+    int scrollDistance = (int)words.size() * scaledLineSpace + scrollEnd;
 
     if (picnum < 0)
     {
         RecordFreshScreen();
     }
 
-    SDL_Texture* tex = nullptr;
-    SDL_Surface* sur = nullptr;
-    tex = SDL_CreateTexture(render, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, texw, texh);
-    SDL_SetRenderTarget(render, tex);
-    SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_NONE);
-    SDL_SetRenderDrawColor(render, 0, 0, 0, 255);
-    SDL_RenderFillRect(render, nullptr);
-    SDL_SetRenderTarget(render, screenTex);
-    if (TEXT_LAYER == 0)
-    {
-        SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
-    }
-    else
-    {
-        SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_NONE);
-    }
-
-    for (int l = 0; l < (int)words.size(); l++)
-    {
-        std::string str = words[l];
-        int len = DrawLength(str.c_str());
-        int x;
-        if (align == 0)
-        {
-            x = texw / 2 - len * chnsize / 4 - 10;
-        }
-        else
-        {
-            x = alignx;
-        }
-
-        uint32 color1 = ColColor(0x64);
-        uint32 color2 = ColColor(0x66);
-        if (l > 0 && !words[l - 1].empty() && style == 0)
-        {
-            color1 = ColColor(5);
-            color2 = ColColor(7);
-        }
-        DrawShadowText(str, x, l * linespace + texh0, color1, color2, tex, sur, 1);
-    }
-    ResetFontSize();
-
-    SDL_SetTextureAlphaMod(tex, 192);
-
     int i = 0;
+    int initialResolutionX = RESOLUTIONX;
+    int initialResolutionY = RESOLUTIONY;
     CleanTextScreen();
     HaveText = 1;
     while (SDL_PollEvent(&event) || true)
     {
-        SDL_FRect dest = { 0, (float)-i, (float)texw, (float)texh0 };
+        if (event.type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED)
+        {
+            ResizeWindow(event.window.data1, event.window.data2);
+            break;
+        }
+        if (event.type == SDL_EVENT_WINDOW_RESIZED)
+        {
+            ResizeWindow(event.window.data1, event.window.data2);
+            break;
+        }
         if (picnum < 0)
         {
             LoadFreshScreen();
-            if (TEXT_LAYER == 1)
-            {
-                SDL_SetRenderTarget(render, TextScreenTex);
-            }
-            else
-            {
-                SDL_SetRenderTarget(render, screenTex);
-            }
-            SDL_RenderTexture(render, tex, &dest, nullptr);
         }
         else
         {
+            SDL_SetRenderTarget(render, screenTex);
+            SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_NONE);
+            SDL_SetRenderDrawColor(render, 0, 0, 0, 255);
+            SDL_RenderClear(render);
             if (picnum <= (int)TitlePNGIndex.size() - 1)
             {
                 int w = TitlePNGIndex[picnum].w;
                 int h = TitlePNGIndex[picnum].h;
                 SDL_FRect src;
-                src.x = (float)(i * (w - CENTER_X * 2) / std::max(1, texh - CENTER_Y * 2) + w - CENTER_X * 2);
+                src.x = (float)(i * (w - CENTER_X * 2) / std::max(1, scrollDistance) + w - CENTER_X * 2);
                 src.y = 0;
                 src.w = (float)(CENTER_X * 2);
                 src.h = (float)h;
                 SDL_SetRenderTarget(render, screenTex);
                 SDL_Rect src1 = Rectf2(src);
                 DrawTPic(picnum, 0, 0, &src1);
-                SDL_FRect destpic = { 0, 240, (float)texw, (float)(texh0 - 240) };
-                SDL_FRect tempdest = { 0, (float)(-i + texh0 / 2), (float)texw, (float)(texh0 / 2) };
-                if (TEXT_LAYER != 0)
-                {
-                    SDL_SetRenderTarget(render, TextScreenTex);
-                }
-                else
-                {
-                    SDL_SetTextureAlphaMod(tex, 255);
-                }
-                SDL_RenderTexture(render, tex, &tempdest, &destpic);
             }
+        }
+        if (picnum < 0)
+        {
+            DrawRectangleWithoutFrame(0, 0, CENTER_X * 2, CENTER_Y * 2, 0, 128);
+        }
+
+        CleanTextScreen();
+        for (int line = 0; line < (int)words.size(); line++)
+        {
+            const std::string& str = words[line];
+            int x;
+            if (align == 0)
+            {
+                x = screenx + screenw / 2 - DrawLength(str) * CHINESE_FONT_REALSIZE / 4;
+            }
+            else
+            {
+                x = screenx + (int)std::round(alignx * textScale);
+            }
+
+            uint32 color1 = ColColor(0x64);
+            uint32 color2 = ColColor(0x66);
+            if (line > 0 && !words[line - 1].empty() && style == 0)
+            {
+                color1 = ColColor(5);
+                color2 = ColColor(7);
+            }
+            DrawShadowText(str, x, screeny + screenh + i + line * scaledLineSpace, color1, color2, nullptr, nullptr, 1);
         }
         UpdateAllScreen();
         i--;
-        if (i <= -texh + texh0)
+        if (i <= -scrollDistance)
         {
             WaitAnyKey();
             break;
         }
         CheckBasicEvent();
+        if (RESOLUTIONX != initialResolutionX || RESOLUTIONY != initialResolutionY)
+        {
+            break;
+        }
         if (event.type == SDL_EVENT_MOUSE_BUTTON_UP && event.button.button == SDL_BUTTON_RIGHT)
         {
             break;
@@ -7820,8 +7900,7 @@ void ScrollTextAmi(std::vector<std::string>& words, int chnsize, int engsize, in
         }
         SDL_Delay(delay);
     }
-
-    SDL_DestroyTexture(tex);
+    ResetFontSize();
 
     if (picnum < 0)
     {

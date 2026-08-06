@@ -2312,8 +2312,8 @@ void TransBlackScreen()
     if (TEXT_LAYER == 1)
     {
         SDL_SetRenderTarget(render, TextScreenTex);
-        SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_MOD);
-        SDL_SetRenderDrawColor(render, 128, 128, 128, 0);
+        SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_NONE);
+        SDL_SetRenderDrawColor(render, 255, 255, 255, 0);
         SDL_RenderClear(render);
         SDL_SetRenderTarget(render, screenTex);
     }

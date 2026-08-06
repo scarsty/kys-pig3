@@ -4444,7 +4444,10 @@ int16_t EnterNumber(int MinValue, int MaxValue, int x, int y, int Default)
 
 bool EnterString(std::string& str, int x, int y, int w, int h)
 {
-    SDL_Rect r = {x, y, w, h};
+    const int inputY = (CellPhone == 1) ? std::min(y, CENTER_Y - 180) : y;
+    SDL_Rect r = {x, inputY, w, h};
+    const SDL_Rect confirmButton = {x + 50, inputY + 30, 90, 23};
+    const SDL_Rect cancelButton = {x + 150, inputY + 30, 90, 23};
     SDL_StartTextInput(window);
     SDL_SetTextInputArea(window, &r, 0);
     uint32_t tick = 0;
@@ -4455,7 +4458,16 @@ bool EnterString(std::string& str, int x, int y, int w, int h)
         std::string display = "請輸入主角之姓名：" + str; // 請輸入主角之姓名：
         if (tick % 16 < 8) display += "_";
         else display += " ";
-        DrawTextWithRect(display.c_str(), x, y, 280, 0, 0, 255, 1);
+        bool confirmSelected = MouseInRegion(confirmButton.x, confirmButton.y, confirmButton.w, confirmButton.h);
+        bool cancelSelected = MouseInRegion(cancelButton.x, cancelButton.y, cancelButton.w, cancelButton.h);
+        DrawTextWithRect(display.c_str(), x, inputY, 280, 0, 0, 255, 0);
+        DrawTextFrame(confirmButton.x, confirmButton.y, 5, 255);
+        DrawTextFrame(cancelButton.x, cancelButton.y, 5, 255);
+        DrawShadowText("確定", confirmButton.x + 24, confirmButton.y + 3,
+            confirmSelected ? ColColor(0x64) : 0, confirmSelected ? ColColor(0x66) : 0x202020);
+        DrawShadowText("取消", cancelButton.x + 24, cancelButton.y + 3,
+            cancelSelected ? ColColor(0x64) : 0, cancelSelected ? ColColor(0x66) : 0x202020);
+        UpdateAllScreen();
         SDL_PollEvent(&event);
         CheckBasicEvent();
         if (event.type == SDL_EVENT_TEXT_INPUT)
@@ -4473,6 +4485,19 @@ bool EnterString(std::string& str, int x, int y, int w, int h)
                     str.resize(l - 3);
                 else if (l >= 1)
                     str.resize(l - 1);
+            }
+        }
+        else if (event.type == SDL_EVENT_MOUSE_BUTTON_UP && event.button.button == SDL_BUTTON_LEFT)
+        {
+            if (MouseInRegion(confirmButton.x, confirmButton.y, confirmButton.w, confirmButton.h))
+            {
+                SDL_StopTextInput(window);
+                return true;
+            }
+            if (MouseInRegion(cancelButton.x, cancelButton.y, cancelButton.w, cancelButton.h))
+            {
+                SDL_StopTextInput(window);
+                return false;
             }
         }
         else if (event.type == SDL_EVENT_MOUSE_BUTTON_UP && event.button.button == SDL_BUTTON_RIGHT)
