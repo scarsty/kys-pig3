@@ -2517,13 +2517,20 @@ bool MouseInRegion(int x, int y, int w, int h, int& x1, int& y1)
 
 void GetRealRect(int& x, int& y, int& w, int& h, int force)
 {
-    if (TEXT_LAYER == 1 || force == 1)
+    if (KEEP_SCREEN_RATIO == 1 && (TEXT_LAYER == 1 || force == 1))
     {
         TStretchInfo s = KeepRatioScale(CENTER_X * 2, CENTER_Y * 2, RESOLUTIONX, RESOLUTIONY);
         x = x * s.num / s.den + s.px;
         y = y * s.num / s.den + s.py;
         w = w * s.num / s.den;
         h = h * s.num / s.den;
+    }
+    else if (TEXT_LAYER == 1)
+    {
+        x = x * RESOLUTIONX / (CENTER_X * 2);
+        y = y * RESOLUTIONY / (CENTER_Y * 2);
+        w = w * RESOLUTIONX / (CENTER_X * 2);
+        h = h * RESOLUTIONY / (CENTER_Y * 2);
     }
 }
 

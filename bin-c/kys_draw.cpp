@@ -522,12 +522,13 @@ void DrawScene()
                 else
                 {
                     int num = SData[CurScene][0][i1][i2] / 2;
-                    if (num > 0 && (!IsGroundOnlySPic(num) || SData[CurScene][4][i1][i2] > 8))
+                    const bool redrawWanAnTempleFloor = CurScene >= 109 && CurScene <= 113
+                        && (num == 512 || num == 675);
+                    if (num > 0 && (!IsGroundOnlySPic(num) || SData[CurScene][4][i1][i2] > 8 || redrawWanAnTempleFloor))
                     {
                         DrawSPic(num, pos.x, pos.y);
                     }
                 }
-
                 if (SData[CurScene][1][i1][i2] > 0)
                 {
                     int num = SData[CurScene][1][i1][i2] / 2;

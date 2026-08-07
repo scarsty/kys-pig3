@@ -1,5 +1,6 @@
 package org.libsdl.app;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -22,6 +23,7 @@ import android.hardware.Sensor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.LocaleList;
 import android.os.Message;
@@ -47,6 +49,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.provider.Settings;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -228,6 +231,8 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
     protected static boolean mActivityCreated = false;
     private static SDLFileDialogState mFileDialogState = null;
     protected static boolean mDispatchingKeyEvent = false;
+    private static final int REQUEST_EXTERNAL_STORAGE = 0x5D1;
+    private boolean mExternalStorageAccessRequested = false;
 
     public static SDLGenericMotionListener_API14 getMotionListener() {
         if (mMotionListener == null) {
@@ -845,6 +850,9 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
 
         // Try a transition to resumed state
         if (mNextNativeState == NativeState.RESUMED) {
+            if (mSingleton != null && !mSingleton.ensureExternalStorageAccess()) {
+                return;
+            }
             if (mSurface.mIsSurfaceReady && (mHasFocus || mHasMultiWindow) && mIsResumedCalled) {
                 if (mSDLThread == null) {
                     // This is the entry point to the C app.
@@ -1948,8 +1956,43 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         }
     }
 
+    private boolean ensureExternalStorageAccess() {
+        if (Build.VERSION.SDK_INT >= 30 /* Android 11 (R) */) {
+            if (Environment.isExternalStorageManager()) {
+                return true;
+            }
+            if (!mExternalStorageAccessRequested) {
+                mExternalStorageAccessRequested = true;
+                Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                intent.setData(Uri.parse("package:" + getPackageName()));
+                startActivity(intent);
+            }
+            return false;
+        }
+
+        if (Build.VERSION.SDK_INT < 23 /* Android 6.0 (M) */ ||
+            checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        }
+
+        if (!mExternalStorageAccessRequested) {
+            mExternalStorageAccessRequested = true;
+            requestPermissions(new String[]{
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            }, REQUEST_EXTERNAL_STORAGE);
+        }
+        return false;
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == REQUEST_EXTERNAL_STORAGE) {
+            if (ensureExternalStorageAccess()) {
+                SDLActivity.handleNativeState();
+            }
+            return;
+        }
         boolean result = (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED);
         nativePermissionResult(requestCode, result);
     }

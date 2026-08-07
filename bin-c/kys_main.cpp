@@ -134,7 +134,6 @@ void Run()
     if (CellPhone == 1)
     {
         KEEP_SCREEN_RATIO = 0;
-        TEXT_LAYER = 0;
     }
 
     kyslog("Creating window with width and height {} and {}", RESOLUTIONX, RESOLUTIONY);
@@ -412,11 +411,6 @@ void ReadFiles()
     {
         touch_walk = ini.getInt("system", "touch_walk", 1);
         enable_haptic = ini.getInt("system", "enable_haptic", 1);
-    }
-
-    if (KEEP_SCREEN_RATIO == 0)
-    {
-        TEXT_LAYER = 0;
     }
 
     if (!filefunc::fileExist(AppPath + "save/ranger.grp"))
@@ -7688,6 +7682,7 @@ void Maker()
     words.push_back("路人甲");
     words.push_back("杨裕彪");
     words.push_back("CLRGC");
+    words.push_back("镜花水月");
     words.push_back("");
 
     words.push_back("校對");
@@ -7735,7 +7730,7 @@ void Maker()
     words.push_back("Lazarus / CodeTyphon");
     words.push_back("MSVC / Clang / GCC");
     words.push_back("ADT / NDK");
-    words.push_back("SDL & TTF & Image & gfx & Mixer");
+    words.push_back("SDL & TTF & Image & Mixer & gfx");
     words.push_back("OpenGL");
     words.push_back("bass & bassmidi");
     words.push_back("FFmpeg / Libav");
@@ -7743,6 +7738,7 @@ void Maker()
     words.push_back("lua");
     words.push_back("cifa");
     words.push_back("Github Copilot");
+    words.push_back("Codex / Claude");
     words.push_back("");
 
     words.push_back("致謝以下開源項目");
@@ -7764,9 +7760,12 @@ void Maker()
     words.push_back("特別致謝短歌行MIDI音色庫");
     words.push_back("");
 
+    words.push_back("致謝網絡上的諸多素材");
+    words.push_back("");
+
     words.push_back("再次致謝");
     words.push_back("論壇無數版友");
-    words.push_back("以及網絡上的諸多素材");
+    words.push_back("以及網路上的無數玩家");
     words.push_back("");
 
     if (Where < 3)
@@ -7790,12 +7789,21 @@ void ScrollTextAmi(std::vector<std::string>& words, int chnsize, int engsize, in
     double textScale = 1;
     if (TEXT_LAYER == 1)
     {
-        TStretchInfo stretch = KeepRatioScale(CENTER_X * 2, CENTER_Y * 2, RESOLUTIONX, RESOLUTIONY);
-        textScale = (double)stretch.num / stretch.den;
-        screenw = (int)std::round(screenw * textScale);
-        screenh = (int)std::round(screenh * textScale);
-        screenx = stretch.px;
-        screeny = stretch.py;
+        if (KEEP_SCREEN_RATIO == 1)
+        {
+            TStretchInfo stretch = KeepRatioScale(CENTER_X * 2, CENTER_Y * 2, RESOLUTIONX, RESOLUTIONY);
+            textScale = (double)stretch.num / stretch.den;
+            screenw = (int)std::round(screenw * textScale);
+            screenh = (int)std::round(screenh * textScale);
+            screenx = stretch.px;
+            screeny = stretch.py;
+        }
+        else
+        {
+            textScale = std::min((double)RESOLUTIONX / screenw, (double)RESOLUTIONY / screenh);
+            screenw = RESOLUTIONX;
+            screenh = RESOLUTIONY;
+        }
     }
     SetFontSize(chnsize, engsize, TEXT_LAYER == 1 ? 0 : 1);
 

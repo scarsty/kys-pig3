@@ -6245,7 +6245,7 @@ void TSpecialAbility::SA_37(int bnum, int mnum, int level)
     ShowMagicName(mnum);
     for (int i = 0; i < BRoleAmount; i++)
     {
-        if (Brole[i].Team != Brole[bnum].Team)
+        if (Brole[i].Team != Brole[bnum].Team && Brole[i].Dead == 0)
         {
             if (Brole[i].StateLevel[2] >= 0)
             {
