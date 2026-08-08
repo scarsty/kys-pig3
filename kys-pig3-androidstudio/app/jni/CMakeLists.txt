@@ -59,7 +59,6 @@ set(GAME_SOURCES
     ${BIN_C_PATH}/kys_main.cpp
     ${BIN_C_PATH}/kys_event.cpp
     ${BIN_C_PATH}/kys_battle.cpp
-    ${BIN_C_PATH}/kys_script.cpp
     ${BIN_C_PATH}/kys_cifa.cpp
 )
 
@@ -108,10 +107,6 @@ set_target_properties(SDL3_ttf PROPERTIES IMPORTED_LOCATION ${PREBUILT_LIB_PATH}
 add_library(SDL3_image SHARED IMPORTED)
 set_target_properties(SDL3_image PROPERTIES IMPORTED_LOCATION ${PREBUILT_LIB_PATH}/libSDL3_image.so)
 
-# Lua
-add_library(lua SHARED IMPORTED)
-set_target_properties(lua PROPERTIES IMPORTED_LOCATION ${PREBUILT_LIB_PATH}/liblua.so)
-
 # zlib
 add_library(z_lib SHARED IMPORTED)
 set_target_properties(z_lib PROPERTIES IMPORTED_LOCATION ${PREBUILT_LIB_PATH}/libz.so)
@@ -125,7 +120,6 @@ target_link_libraries(kys_pig3_c PRIVATE
     SDL3_image
     SDL3_mixer
     SDL3_ttf
-    lua
     z_lib
     android
     log

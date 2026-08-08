@@ -7,7 +7,6 @@
 #include "kys_engine.h"
 #include "kys_draw.h"
 #include "kys_event.h"
-#include "kys_script.h"
 
 #include <SDL3/SDL.h>
 #include <algorithm>

@@ -9,6 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # mlcc 基础库路径
 set(MLCC_PATH "C:/project/mlcc")
+set(CIFA_PATH "C:/project/cifa")
 
 # --- 源文件 ---
 add_executable(kys_pig3
@@ -19,25 +20,22 @@ add_executable(kys_pig3
     kys_main.cpp
     kys_event.cpp
     kys_battle.cpp
-    kys_script.cpp
+    kys_cifa.cpp
+    ${CIFA_PATH}/Cifa.cpp
 )
 
 # mlcc 头文件
-target_include_directories(kys_pig3 PRIVATE ${MLCC_PATH})
+target_include_directories(kys_pig3 PRIVATE ${MLCC_PATH} ${CIFA_PATH})
 
 # --- 依赖库查找 ---
 find_package(SDL3 REQUIRED)
 find_package(SDL3_ttf REQUIRED)
 find_package(SDL3_mixer REQUIRED)
-find_package(Lua REQUIRED)
-
-target_include_directories(kys_pig3 PRIVATE ${LUA_INCLUDE_DIR})
 
 target_link_libraries(kys_pig3 PRIVATE
     SDL3::SDL3
     SDL3_ttf::SDL3_ttf
     SDL3_mixer::SDL3_mixer
-    ${LUA_LIBRARIES}
 )
 
 # simplecc 动态加载 (SDL_LoadObject), 不需要静态链接

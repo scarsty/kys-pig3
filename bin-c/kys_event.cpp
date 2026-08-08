@@ -6,7 +6,7 @@
 #include "kys_engine.h"
 #include "kys_draw.h"
 #include "kys_battle.h"
-#include "kys_script.h"
+#include "kys_cifa.h"
 
 #include <cstring>
 #include <cstdlib>
@@ -1813,13 +1813,13 @@ int instruct_50e(int code, int e1, int e2, int e3, int e4, int e5, int e6)
         Redraw();
         break;
     }
-    case 60: // 调用脚本
+    case 60: // 调用Cifa脚本
     {
         e2 = e_GetValue(0, e1, e2);
         e3 = e_GetValue(1, e1, e3);
-        auto scriptpath = std::format("{}script/{}.lua", AppPath, e2);
+        auto scriptpath = std::format("{}script/{}.cifa", AppPath, e2);
         auto funcname = std::format("f{}", e3);
-        ExecScript(scriptpath, funcname);
+        ExecCifaScript(scriptpath, funcname);
         break;
     }
     } // end switch

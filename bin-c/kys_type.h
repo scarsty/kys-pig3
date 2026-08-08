@@ -14,8 +14,6 @@
 #include <utility>
 #include <vector>
 
-// Forward declarations
-struct lua_State;
 class TSpecialAbility;
 class TSpecialAbility2;
 
@@ -422,7 +420,6 @@ inline int SfxNextTrack = 0;
 
 // 事件和脚本
 extern int x50[0x10000];    // [-0x8000..0x7FFF] => 偏移0x8000访问
-inline lua_State* lua_script = nullptr;
 inline cifa::Cifa cifa_script;
 inline int CurSceneRolePic = 0;
 inline int NeedRefreshScene = 1;
@@ -541,15 +538,13 @@ inline int EXPAND_GROUND = 0;
 extern int16_t ExGroundS[64][64];
 extern int16_t ExGroundB[64][64];
 
-inline int CIFA_SCRIPT = 0;
 inline int AI_USE_SPECIAL = 1;
 inline int BattleRound = 0;
 
 inline int offsetX = 0, offsetY = 0;
 inline int needOffset = 0;
 
-inline std::string EventScriptPath = "script/event/ka";
-inline std::string EventScriptExt = ".lua";
+inline std::string EventScriptExt = ".cifa";
 inline int p5032pos = -100;
 inline int p5032value = -1;
 

@@ -7,7 +7,6 @@
 #include "kys_engine.h"
 #include "kys_event.h"
 #include "kys_cifa.h"
-#include "kys_script.h"
 
 #include <SDL3/SDL.h>
 #include <SDL3_mixer/SDL_mixer.h>
@@ -172,7 +171,6 @@ void Run()
     CreateAssistantRenderTextures();
 
     kyslog("Initial script environment");
-    InitialScript();
     InitialCifaScript();
     kyslog("Initial music");
     InitialMusic();
@@ -219,7 +217,6 @@ void Quit()
     }
     DestroyAllTextures();
     DestroyCifaScript();
-    DestroyScript();
     TTF_CloseFont(Font);
     TTF_CloseFont(EngFont);
     TTF_Quit();
@@ -240,7 +237,7 @@ void SetMODVersion()
     ASound.resize(25, nullptr);
 
     StartMusic = 59;
-    versionstr = "108 Brothers and Sisters (c++) v22";
+    versionstr = "108 Brothers and Sisters (c++) v23";
     TitleString = "Legend of Little Village III - " + versionstr;
 
     OpenPicPosition.x = 0;
@@ -259,7 +256,6 @@ void SetMODVersion()
         BEGIN_LEAVE_EVENT = 950;
         BEGIN_NAME_IN_TALK = 0;
         MAX_LOVER = 0;
-        EventScriptExt = ".lua";
         break;
     case 12:
         TitleString = "We Are Dragons";
@@ -376,8 +372,7 @@ void ReadFiles()
     THREAD_READ_PNG = ini.getInt("system", "THREAD_READ_PNG", 0);
     DISABLE_MENU_AMI = ini.getInt("system", "DISABLE_MENU_AMI", 0);
     EXPAND_GROUND = ini.getInt("system", "EXPAND_GROUND", 1);
-    CIFA_SCRIPT = ini.getInt("system", "CIFA_SCRIPT", 0);
-    EventScriptExt = CIFA_SCRIPT != 0 ? ".cifa" : ".lua";
+    EventScriptExt = ".cifa";
     AI_USE_SPECIAL = ini.getInt("system", "AI_USE_SPECIAL", 1);
     PRESENT_SYNC = ini.getInt("system", "PRESENT_SYNC", 1);
     FONT_MEMERY = ini.getInt("system", "FONT_VIDEOMEMERY", 1);
@@ -6173,8 +6168,8 @@ void MenuSet()
     uint32 color1, color2, mixcolorl, mixcolorr;
     int mixalphal, mixalphar, arrowy, arrowlx, arrowrx;
 
-    maxmenu = 16;
-    std::string str[16] = {
+    maxmenu = 15;
+    std::string str[15] = {
         "音樂音量",
         "音效音量",
         "大地圖走路延遲",
@@ -6189,15 +6184,14 @@ void MenuSet()
         "山洞遮蓋",
         "半即時",
         "擴展地面",
-        "文字分層",
-        "腳本引擎"
+        "文字分層"
     };
-    std::string str2[16];
+    std::string str2[15];
     std::string menuString[2] = {
         "取消",    // 取消
         "確定"     // 確定
     };
-    int Value[17];
+    int Value[16];
     Value[0] = VOLUME;
     Value[1] = VOLUMEWAV;
     Value[2] = WALK_SPEED;
@@ -6213,7 +6207,6 @@ void MenuSet()
     Value[12] = SEMIREAL;
     Value[13] = EXPAND_GROUND;
     Value[14] = TEXT_LAYER;
-    Value[15] = CIFA_SCRIPT;
     Value[maxmenu] = 0;
 
     x = CENTER_X + 120;
@@ -6319,10 +6312,6 @@ void MenuSet()
                     if (i == 14)
                     {
                         str2[i] = (Value[i] == 0) ? "關閉" : "打開";
-                    }
-                    if (i == 15)
-                    {
-                        str2[i] = (Value[i] == 0) ? "Lua" : "Cifa";
                     }
                 }
                 DrawShadowText(str[i], x + 10, y + 5 + i * h0, color1, color2);
@@ -6494,10 +6483,6 @@ void MenuSet()
                     {
                         Value[14] = 1 - Value[14];
                     }
-                    if (MouseInRegion(x + 160 + 13, y + 5 + 15 * h0, 50, h0))
-                    {
-                        Value[15] = 1 - Value[15];
-                    }
                     leftright = 0;
                     valuechanged = 1;
                 }
@@ -6589,9 +6574,6 @@ void MenuSet()
                 SetFontSize(20, 18, -1);
             }
         }
-        CIFA_SCRIPT = Value[15];
-        EventScriptExt = CIFA_SCRIPT != 0 ? ".cifa" : ".lua";
-
         INIReaderNormal ini;
         ini.loadFile(iniFilename);
         ini.setKey("music", "VOLUME", std::to_string(VOLUME));
@@ -6609,7 +6591,6 @@ void MenuSet()
         ini.setKey("system", "SEMIREAL", std::to_string(SEMIREAL));
         ini.setKey("system", "EXPAND_GROUND", std::to_string(EXPAND_GROUND));
         ini.setKey("system", "Text_Layer", std::to_string(TEXT_LAYER));
-        ini.setKey("system", "CIFA_SCRIPT", std::to_string(CIFA_SCRIPT));
         ini.saveFile(iniFilename);
     }
 }
@@ -6915,14 +6896,7 @@ void MenuQuit()
         int funcNum = EnterNumber(0, 32767, CENTER_X + 120, CENTER_Y - 240 + 200, 0);
         std::string funcName = "f" + std::to_string(funcNum);
         std::string scriptBase = AppPath + "script/" + std::to_string(scriptNum);
-        if (CIFA_SCRIPT != 0)
-        {
-            ExecCifaScript(scriptBase + ".cifa", funcName);
-        }
-        else
-        {
-            ExecScript(scriptBase + ".lua", funcName);
-        }
+        ExecCifaScript(scriptBase + ".cifa", funcName);
     }
 }
 
@@ -7196,28 +7170,15 @@ void CallEvent(int num)
         NeedRefreshScene = 1;
     };
 
-    if (CIFA_SCRIPT != 0)
+    std::string cifaFilename = AppPath + "script/event-cifa/" + std::to_string(num) + ".cifa";
+    if (filefunc::fileExist(cifaFilename))
     {
-        std::string cifaFilename = AppPath + "script/event-cifa/" + std::to_string(num) + ".cifa";
-        if (filefunc::fileExist(cifaFilename))
-        {
-            kyslog("Enter cifa script {}", num);
-            ExecCifaScript(cifaFilename);
-            finishEvent();
-            return;
-        }
+        kyslog("Enter cifa script {}", num);
+        ExecCifaScript(cifaFilename);
         finishEvent();
         return;
     }
-
-    std::string filename = AppPath + EventScriptPath + std::to_string(num) + ".lua";
-    if (filefunc::fileExist(filename))
-    {
-        kyslog("Enter script {}", num);
-        ExecScript(filename);
-        finishEvent();
-        return;
-    }
+    kyslog("Cifa event script {} not found", num);
     finishEvent();
     return;
 
@@ -7589,6 +7550,7 @@ void Maker()
     words.push_back("www.tiexuedanxin.net");
     words.push_back("www.dawuxia.net");
     words.push_back("www.txdx.net");
+    words.push_back("github.com/scarsty/kys-pig3");
     words.push_back("");
 
     words.push_back("總策劃");
@@ -7687,7 +7649,7 @@ void Maker()
 
     words.push_back("校對");
     words.push_back("天一水");
-    words.push_back("天下有敵");
+    words.push_back("天下有敌");
     words.push_back("南窗寄傲生");
     words.push_back("xq3366");
     words.push_back("");
@@ -7726,29 +7688,37 @@ void Maker()
     words.push_back("");
 
     words.push_back("開發工具以及開發庫");
-    words.push_back("Free Pascal Compiler");
-    words.push_back("Lazarus / CodeTyphon");
     words.push_back("MSVC / Clang / GCC");
     words.push_back("ADT / NDK");
-    words.push_back("SDL & TTF & Image & Mixer & gfx");
-    words.push_back("OpenGL");
-    words.push_back("bass & bassmidi");
-    words.push_back("FFmpeg / Libav");
-    words.push_back("zlib / minizip / libzip");
-    words.push_back("lua");
+    words.push_back("SDL & TTF & Image & Mixer");
+    words.push_back("FFmpeg");
     words.push_back("cifa");
+    words.push_back("mlcc");
+    words.push_back("vcpkg");
     words.push_back("Github Copilot");
     words.push_back("Codex / Claude");
     words.push_back("");
 
     words.push_back("致謝以下開源項目");
-    words.push_back("JEDI-SDL");
     words.push_back("kys-pascal");
     words.push_back("kys-cpp");
     words.push_back("smallpot / smallpot-lite");
     words.push_back("UltraStar Deluxe");
     words.push_back("Open Chinese Convert");
+    words.push_back("Waifu2x-Extension-GUI");
+    words.push_back("Real-ESRGAN");
+    words.push_back("ncnn");
+    words.push_back("");
+
+    words.push_back("曾經使用的開發庫");
+    words.push_back("Free Pascal Compiler");
+    words.push_back("Lazarus / CodeTyphon");
+    words.push_back("JEDI-SDL");
     words.push_back("Pascal Game Development");
+    words.push_back("OpenGL");
+    words.push_back("bass & bassmidi");
+    words.push_back("zlib / minizip / libzip");
+    words.push_back("lua");
     words.push_back("");
 
     words.push_back("致謝以下MOD項目");
@@ -8012,7 +7982,7 @@ void SpecialFunction()
     DrawTextWithRect(str, CENTER_X + 120, CENTER_Y - 240 + 130, 128, 0, ColColor(0x23));
     std::string str2 = "f" + std::to_string(EnterNumber(0, 32767, CENTER_X + 120, CENTER_Y - 240 + 200, 0));
     std::string scriptBase = AppPath + "script/1";
-    std::string scriptFile = scriptBase + (CIFA_SCRIPT != 0 ? ".cifa" : ".lua");
+    std::string scriptFile = scriptBase + ".cifa";
     if (!filefunc::fileExist(scriptFile))
     {
         str = " Script fail!";
@@ -8020,12 +7990,5 @@ void SpecialFunction()
         WaitAnyKey();
         return;
     }
-    if (CIFA_SCRIPT != 0)
-    {
-        ExecCifaScript(scriptFile, str2);
-    }
-    else
-    {
-        ExecScript(scriptFile, str2);
-    }
+    ExecCifaScript(scriptFile, str2);
 }
