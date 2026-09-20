@@ -2428,6 +2428,8 @@ void CalHurtRole(int bnum, int mnum, int level, int mode)
             if (Rmagic[mnum].HurtType == 1 || Rmagic[mnum].HurtType == 6)
             {
                 int hurt = Rmagic[mnum].HurtMP[level - 1] + rand() % 5 - rand() % 5;
+                int availableMP = std::max(0, (int)Rrole[Brole[i].rnum].CurrentMP);
+                hurt = std::clamp(hurt, 0, availableMP);
                 if (Rmagic[mnum].HurtType != 6)
                     Brole[i].ShowNumber += hurt;
                 Rrole[Brole[i].rnum].CurrentMP -= hurt;
@@ -5122,6 +5124,11 @@ void TSpecialAbility::SA_12(int bnum, int mnum, int level)
     int rnum = Brole[bnum].rnum;
     int incx = Ax - Bx;
     int incy = Ay - By;
+    if (incx == 0 && incy == 0)
+    {
+        Brole[bnum].Acted = 1;
+        return;
+    }
     int curx = Bx, cury = By;
     for (int i = 0; i < Rmagic[mnum].MoveDistance[level - 1]; i++)
     {
@@ -5131,6 +5138,8 @@ void TSpecialAbility::SA_12(int bnum, int mnum, int level)
         if (BField[2][curx][cury] >= 0)
         {
             int aimbnum = BField[2][curx][cury];
+            if (aimbnum < 0 || aimbnum >= BRoleAmount || Brole[aimbnum].Dead != 0)
+                continue;
             int aimx = curx, aimy = cury;
             while (aimx - incx >= 0 && aimx - incx < 64 && aimy - incy >= 0 && aimy - incy < 64
                 && BField[2][aimx - incx][aimy - incy] < 0 && BField[1][aimx - incx][aimy - incy] <= 0)
@@ -5144,7 +5153,8 @@ void TSpecialAbility::SA_12(int bnum, int mnum, int level)
             Brole[aimbnum].Y = aimy;
 
             int hurt = Rmagic[mnum].HurtMP[level - 1] + rand() % 5 - rand() % 5;
-            hurt = std::clamp(hurt, 0, (int)Rrole[Brole[aimbnum].rnum].CurrentMP);
+            int availableMP = std::max(0, (int)Rrole[Brole[aimbnum].rnum].CurrentMP);
+            hurt = std::clamp(hurt, 0, availableMP);
             Brole[aimbnum].ShowNumber = hurt;
             Rrole[Brole[aimbnum].rnum].CurrentMP -= hurt;
 

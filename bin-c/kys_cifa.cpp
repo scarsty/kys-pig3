@@ -321,7 +321,7 @@ void RegisterCifaFunctions(cifa::Cifa& c)
     R("drawlength", [](ObjectVector& args) -> Object { return Object(DrawLength(cifa_arg_string(args, 0).c_str())); });
     R("drawrect", [](ObjectVector& args) -> Object { if (args.size() == 7) DrawRectangle(cifa_arg_int(args, 0), cifa_arg_int(args, 1), cifa_arg_int(args, 2), cifa_arg_int(args, 3), cifa_arg_int(args, 4), cifa_arg_int(args, 5), cifa_arg_int(args, 6)); if (args.size() == 6) DrawRectangleWithoutFrame(cifa_arg_int(args, 0), cifa_arg_int(args, 1), cifa_arg_int(args, 2), cifa_arg_int(args, 3), cifa_arg_int(args, 4), cifa_arg_int(args, 5)); return Object(); });
     R("showpicture", [](ObjectVector& args) -> Object { if (args.size() == 4) { int t = cifa_arg_int(args, 0); int p = cifa_arg_int(args, 1); int x = cifa_arg_int(args, 2); int y = cifa_arg_int(args, 3); switch (t) { case 0: DrawMPic(p, x, y); break; case 1: case 2: DrawSPic(p, x, y); break; case 3: DrawHeadPic(p, x, y); break; case 4: DrawEPic(p, x, y); break; } } return Object(); });
-    R("colcolor", [](ObjectVector& args) -> Object { return Object((double)ColColor(cifa_arg_int(args, 0))); });
+    R("colcolor", [](ObjectVector& args) -> Object { return Object(static_cast<int32_t>(ColColor(cifa_arg_int(args, 0)))); });
 
     R("playmusic", [](ObjectVector& args) -> Object { instruct_66(cifa_arg_int(args, 0)); return Object(); });
     R("changemmapmusic", [](ObjectVector& args) -> Object { instruct_8(cifa_arg_int(args, 0)); return Object(); });

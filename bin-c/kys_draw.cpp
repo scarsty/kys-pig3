@@ -850,7 +850,7 @@ void InitialBFieldImage(int layer)
 void DrawBFieldWithCursor(int AttAreaType, int step, int range)
 {
     CleanTextScreen();
-    SDL_SetTextureColorMod(ImgBGroundTex, 128, 128, 128);
+    SDL_SetTextureColorMod(ImgBGroundTex, 64, 64, 64);
     LoadGroundTex(Bx, By);
     SDL_SetTextureColorMod(ImgBGroundTex, 255, 255, 255);
     SetAnimationPosition(AttAreaType, step, range);
@@ -962,13 +962,15 @@ void DrawBFieldWithCursor(int AttAreaType, int step, int range)
                     break;
                 }
                 }
-                if (shadow == 0)
+                if (shadow >= 0)
                 {
-                    DrawSPic(BField[0][i1][i2] / 2, pos.x, pos.y, nullptr, shadow, 255, 0, 0);
-                }
-                if (shadow > 0)
-                {
-                    DrawSPic(BField[0][i1][i2] / 2, pos.x, pos.y, nullptr, shadow, 255, 0, 0);
+                    int brightness = shadow > 0 ? 192 : 128;
+                    if (i1 == Ax && i2 == Ay)
+                    {
+                        brightness = 255;
+                    }
+                    uint32 color = MapRGBA(brightness, brightness, brightness);
+                    DrawSPic(BField[0][i1][i2] / 2, pos.x, pos.y, nullptr, 0, 255, color, -1);
                 }
             }
         }
@@ -998,15 +1000,9 @@ void DrawBFieldWithCursor(int AttAreaType, int step, int range)
                 case 6: highlight = true; break;
                 case 7: highlight = false; break;
                 }
-                uint32 mc = 0xFFFFFFFF;
-                int ma = 0, sh = 0;
-                if (highlight)
-                {
-                    ma = 20;
-                    sh = 1;
-                }
+                uint32 mc = highlight ? 0xFFFFFFFF : MapRGBA(128, 128, 128);
                 DrawFPic(Brole[bnum].StaticPic[Brole[bnum].Face], pos.x, pos.y,
-                    Rrole[Brole[bnum].rnum].ActionNum, sh, 255, mc, ma);
+                    Rrole[Brole[bnum].rnum].ActionNum, 0, 255, mc, -1);
             }
         }
     }
